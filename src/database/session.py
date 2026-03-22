@@ -1,6 +1,4 @@
-"""
-数据库会话管理
-"""
+"""Database session management"""
 
 from contextlib import contextmanager
 from typing import Generator
@@ -24,7 +22,7 @@ def _build_sqlalchemy_url(database_url: str) -> str:
 
 
 class DatabaseSessionManager:
-    """数据库会话管理器"""
+    """Database session manager"""
 
     def __init__(self, database_url: str = None):
         if database_url is None:
@@ -32,13 +30,13 @@ class DatabaseSessionManager:
             if env_url:
                 database_url = env_url
             else:
-                # 优先使用 APP_DATA_DIR 环境变量（PyInstaller 打包后由 webui.py 设置）
+                # Give priority to using the APP_DATA_DIR environment variable (set by webui.py after PyInstaller is packaged)
                 data_dir = os.environ.get('APP_DATA_DIR') or os.path.join(
                     os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                     'data'
                 )
                 db_path = os.path.join(data_dir, 'database.db')
-                # 确保目录存在
+                # Make sure the directory exists
                 os.makedirs(data_dir, exist_ok=True)
                 database_url = f"sqlite:///{db_path}"
 
@@ -46,19 +44,17 @@ class DatabaseSessionManager:
         self.engine = create_engine(
             self.database_url,
             connect_args={"check_same_thread": False} if self.database_url.startswith("sqlite") else {},
-            echo=False,  # 设置为 True 可以查看所有 SQL 语句
-            pool_pre_ping=True  # 连接池预检查
+            echo=False,  # Set to True to view all SQL statements
+            pool_pre_ping=True  # Connection pool pre-check
         )
         self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
 
     def get_db(self) -> Generator[Session, None, None]:
-        """
-        获取数据库会话的上下文管理器
-        使用示例:
+        """Get the context manager for a database session
+        Usage example:
             with get_db() as db:
-                # 使用 db 进行数据库操作
-                pass
-        """
+                # Use db for database operations
+                pass"""
         db = self.SessionLocal()
         try:
             yield db
@@ -67,13 +63,11 @@ class DatabaseSessionManager:
 
     @contextmanager
     def session_scope(self) -> Generator[Session, None, None]:
-        """
-        事务作用域上下文管理器
-        使用示例:
+        """transaction scope context manager
+        Usage example:
             with session_scope() as session:
-                # 数据库操作
-                pass
-        """
+                # Database operations
+                pass"""
         session = self.SessionLocal()
         try:
             yield session
@@ -85,25 +79,23 @@ class DatabaseSessionManager:
             session.close()
 
     def create_tables(self):
-        """创建所有表"""
+        """Create all tables"""
         Base.metadata.create_all(bind=self.engine)
 
     def drop_tables(self):
-        """删除所有表（谨慎使用）"""
+        """Drop all tables (use with caution)"""
         Base.metadata.drop_all(bind=self.engine)
 
     def migrate_tables(self):
-        """
-        数据库迁移 - 添加缺失的列
-        用于在不删除数据的情况下更新表结构
-        """
+        """Database migration - adding missing columns
+        Used to update table structure without deleting data"""
         if not self.database_url.startswith("sqlite"):
-            logger.info("非 SQLite 数据库，跳过自动迁移")
+            logger.info("Non-SQLite databases, skip automatic migration")
             return
 
-        # 需要检查和添加的新列
+        # New columns to check and add
         migrations = [
-            # (表名, 列名, 列类型)
+            # (table name, column name, column type)
             ("accounts", "cpa_uploaded", "BOOLEAN DEFAULT 0"),
             ("accounts", "cpa_uploaded_at", "DATETIME"),
             ("accounts", "source", "VARCHAR(20) DEFAULT 'register'"),
@@ -113,67 +105,61 @@ class DatabaseSessionManager:
             ("proxies", "is_default", "BOOLEAN DEFAULT 0"),
         ]
 
-        # 确保新表存在（create_tables 已处理，此处兜底）
+        # Make sure the new table exists (create_tables has been processed, here’s the bottom line)
         Base.metadata.create_all(bind=self.engine)
 
         with self.engine.connect() as conn:
-            # 数据迁移：将旧的 custom_domain 记录统一为 moe_mail
+            # Data migration: Unify old custom_domain records to moe_mail
             try:
                 conn.execute(text("UPDATE email_services SET service_type='moe_mail' WHERE service_type='custom_domain'"))
                 conn.execute(text("UPDATE accounts SET email_service='moe_mail' WHERE email_service='custom_domain'"))
                 conn.commit()
             except Exception as e:
-                logger.warning(f"迁移 custom_domain -> moe_mail 时出错: {e}")
+                logger.warning(f"Error migrating custom_domain -> moe_mail: {e}")
 
             for table_name, column_name, column_type in migrations:
                 try:
-                    # 检查列是否存在
+                    # Check if column exists
                     result = conn.execute(text(
                         f"SELECT * FROM pragma_table_info('{table_name}') WHERE name='{column_name}'"
                     ))
                     if result.fetchone() is None:
-                        # 列不存在，添加它
-                        logger.info(f"添加列 {table_name}.{column_name}")
+                        # Column does not exist, add it
+                        logger.info(f"Add column {table_name}.{column_name}")
                         conn.execute(text(
                             f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_type}"
                         ))
                         conn.commit()
-                        logger.info(f"成功添加列 {table_name}.{column_name}")
+                        logger.info(f"Column {table_name}.{column_name} added successfully")
                 except Exception as e:
-                    logger.warning(f"迁移列 {table_name}.{column_name} 时出错: {e}")
+                    logger.warning(f"Error migrating column {table_name}.{column_name}: {e}")
 
 
-# 全局数据库会话管理器实例
+# Global database session manager instance
 _db_manager: DatabaseSessionManager = None
 
 
 def init_database(database_url: str = None) -> DatabaseSessionManager:
-    """
-    初始化数据库会话管理器
-    """
+    """Initialize the database session manager"""
     global _db_manager
     if _db_manager is None:
         _db_manager = DatabaseSessionManager(database_url)
         _db_manager.create_tables()
-        # 执行数据库迁移
+        # Perform database migration
         _db_manager.migrate_tables()
     return _db_manager
 
 
 def get_session_manager() -> DatabaseSessionManager:
-    """
-    获取数据库会话管理器
-    """
+    """Get the database session manager"""
     if _db_manager is None:
-        raise RuntimeError("数据库未初始化，请先调用 init_database()")
+        raise RuntimeError("The database has not been initialized, please call init_database() first")
     return _db_manager
 
 
 @contextmanager
 def get_db() -> Generator[Session, None, None]:
-    """
-    获取数据库会话的快捷函数
-    """
+    """Shortcut function to get database session"""
     manager = get_session_manager()
     db = manager.SessionLocal()
     try:

@@ -1,7 +1,5 @@
-"""
-Outlook 服务基础定义
-包含枚举类型和数据类
-"""
+"""Outlook service basic definition
+Contains enumeration types and data classes"""
 
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -10,49 +8,49 @@ from typing import Optional, Dict, Any, List
 
 
 class ProviderType(str, Enum):
-    """Outlook 提供者类型"""
-    IMAP_OLD = "imap_old"      # 旧版 IMAP (outlook.office365.com)
-    IMAP_NEW = "imap_new"      # 新版 IMAP (outlook.live.com)
+    """Outlook provider type"""
+    IMAP_OLD = "imap_old"      # Legacy IMAP (outlook.office365.com)
+    IMAP_NEW = "imap_new"      # New version of IMAP (outlook.live.com)
     GRAPH_API = "graph_api"    # Microsoft Graph API
 
 
 class TokenEndpoint(str, Enum):
-    """Token 端点"""
+    """Token endpoint"""
     LIVE = "https://login.live.com/oauth20_token.srf"
     CONSUMERS = "https://login.microsoftonline.com/consumers/oauth2/v2.0/token"
     COMMON = "https://login.microsoftonline.com/common/oauth2/v2.0/token"
 
 
 class IMAPServer(str, Enum):
-    """IMAP 服务器"""
+    """IMAP server"""
     OLD = "outlook.office365.com"
     NEW = "outlook.live.com"
 
 
 class ProviderStatus(str, Enum):
-    """提供者状态"""
-    HEALTHY = "healthy"        # 健康
-    DEGRADED = "degraded"      # 降级
-    DISABLED = "disabled"      # 禁用
+    """provider status"""
+    HEALTHY = "healthy"        # healthy
+    DEGRADED = "degraded"      # Downgrade
+    DISABLED = "disabled"      # Disable
 
 
 @dataclass
 class EmailMessage:
-    """邮件消息数据类"""
-    id: str                                    # 消息 ID
-    subject: str                               # 主题
-    sender: str                                # 发件人
-    recipients: List[str] = field(default_factory=list)  # 收件人列表
-    body: str = ""                             # 正文内容
-    body_preview: str = ""                     # 正文预览
-    received_at: Optional[datetime] = None     # 接收时间
-    received_timestamp: int = 0                # 接收时间戳
-    is_read: bool = False                      # 是否已读
-    has_attachments: bool = False              # 是否有附件
-    raw_data: Optional[bytes] = None           # 原始数据（用于调试）
+    """Email message data class"""
+    id: str                                    # Message ID
+    subject: str                               # theme
+    sender: str                                # sender
+    recipients: List[str] = field(default_factory=list)  # Recipient list
+    body: str = ""                             # Text content
+    body_preview: str = ""                     # Text preview
+    received_at: Optional[datetime] = None     # Receiving time
+    received_timestamp: int = 0                # receive timestamp
+    is_read: bool = False                      # Has it been read?
+    has_attachments: bool = False              # Is there any attachment?
+    raw_data: Optional[bytes] = None           # Raw data (for debugging)
 
     def to_dict(self) -> Dict[str, Any]:
-        """转换为字典"""
+        """Convert to dictionary"""
         return {
             "id": self.id,
             "subject": self.subject,
@@ -69,21 +67,21 @@ class EmailMessage:
 
 @dataclass
 class TokenInfo:
-    """Token 信息数据类"""
+    """Token information data class"""
     access_token: str
-    expires_at: float              # 过期时间戳
+    expires_at: float              # Expiration timestamp
     token_type: str = "Bearer"
     scope: str = ""
     refresh_token: Optional[str] = None
 
     def is_expired(self, buffer_seconds: int = 120) -> bool:
-        """检查 Token 是否已过期"""
+        """Check if the Token has expired"""
         import time
         return time.time() >= (self.expires_at - buffer_seconds)
 
     @classmethod
     def from_response(cls, data: Dict[str, Any], scope: str = "") -> "TokenInfo":
-        """从 API 响应创建"""
+        """Created from API response"""
         import time
         return cls(
             access_token=data.get("access_token", ""),
@@ -96,52 +94,52 @@ class TokenInfo:
 
 @dataclass
 class ProviderHealth:
-    """提供者健康状态"""
+    """Provider health status"""
     provider_type: ProviderType
     status: ProviderStatus = ProviderStatus.HEALTHY
-    failure_count: int = 0                       # 连续失败次数
-    last_success: Optional[datetime] = None      # 最后成功时间
-    last_failure: Optional[datetime] = None      # 最后失败时间
-    last_error: str = ""                         # 最后错误信息
-    disabled_until: Optional[datetime] = None    # 禁用截止时间
+    failure_count: int = 0                       # Number of consecutive failures
+    last_success: Optional[datetime] = None      # last success time
+    last_failure: Optional[datetime] = None      # last failure time
+    last_error: str = ""                         # last error message
+    disabled_until: Optional[datetime] = None    # Disable deadline
 
     def record_success(self):
-        """记录成功"""
+        """Record success"""
         self.status = ProviderStatus.HEALTHY
         self.failure_count = 0
         self.last_success = datetime.now()
         self.disabled_until = None
 
     def record_failure(self, error: str):
-        """记录失败"""
+        """Logging failed"""
         self.failure_count += 1
         self.last_failure = datetime.now()
         self.last_error = error
 
     def should_disable(self, threshold: int = 3) -> bool:
-        """判断是否应该禁用"""
+        """Determine whether it should be disabled"""
         return self.failure_count >= threshold
 
     def is_disabled(self) -> bool:
-        """检查是否被禁用"""
+        """Check if disabled"""
         if self.disabled_until and datetime.now() < self.disabled_until:
             return True
         return False
 
     def disable(self, duration_seconds: int = 300):
-        """禁用提供者"""
+        """Disable provider"""
         from datetime import timedelta
         self.status = ProviderStatus.DISABLED
         self.disabled_until = datetime.now() + timedelta(seconds=duration_seconds)
 
     def enable(self):
-        """启用提供者"""
+        """enable provider"""
         self.status = ProviderStatus.HEALTHY
         self.disabled_until = None
         self.failure_count = 0
 
     def to_dict(self) -> Dict[str, Any]:
-        """转换为字典"""
+        """Convert to dictionary"""
         return {
             "provider_type": self.provider_type.value,
             "status": self.status.value,

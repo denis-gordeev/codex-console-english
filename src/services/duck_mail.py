@@ -1,7 +1,5 @@
-"""
-DuckMail 邮箱服务实现
-兼容 DuckMail 的 accounts/token/messages 接口模型
-"""
+"""DuckMail mailbox service implementation
+Compatible with DuckMail’s accounts/token/messages interface model"""
 
 import logging
 import random
@@ -21,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class DuckMailService(BaseEmailService):
-    """DuckMail 邮箱服务"""
+    """DuckMail email service"""
 
     def __init__(self, config: Dict[str, Any] = None, name: str = None):
         super().__init__(EmailServiceType.DUCK_MAIL, name)
@@ -29,7 +27,7 @@ class DuckMailService(BaseEmailService):
         required_keys = ["base_url", "default_domain"]
         missing_keys = [key for key in required_keys if not (config or {}).get(key)]
         if missing_keys:
-            raise ValueError(f"缺少必需配置: {missing_keys}")
+            raise ValueError(f"Missing required configuration: {missing_keys}")
 
         default_config = {
             "api_key": "",
@@ -96,7 +94,7 @@ class DuckMailService(BaseEmailService):
         try:
             response = self.http_client.request(method, url, **kwargs)
             if response.status_code >= 400:
-                error_message = f"API 请求失败: {response.status_code}"
+                error_message = f"API request failed: {response.status_code}"
                 try:
                     error_payload = response.json()
                     error_message = f"{error_message} - {error_payload}"
@@ -112,7 +110,7 @@ class DuckMailService(BaseEmailService):
             self.update_status(False, e)
             if isinstance(e, EmailServiceError):
                 raise
-            raise EmailServiceError(f"请求失败: {method} {path} - {e}")
+            raise EmailServiceError(f"Request failed: {method} {path} - {e}")
 
     def _generate_local_part(self) -> str:
         first = random.choice(string.ascii_lowercase)
@@ -211,7 +209,7 @@ class DuckMailService(BaseEmailService):
         token = str(token_response.get("token") or "").strip()
 
         if not account_id or not resolved_address or not token:
-            raise EmailServiceError("DuckMail 返回数据不完整")
+            raise EmailServiceError("DuckMail returns incomplete data")
 
         email_info = {
             "email": resolved_address,
@@ -238,12 +236,12 @@ class DuckMailService(BaseEmailService):
     ) -> Optional[str]:
         account_info = self._get_account_info(email=email, email_id=email_id)
         if not account_info:
-            logger.warning(f"DuckMail 未找到邮箱缓存: {email}, {email_id}")
+            logger.warning(f"DuckMail Mailbox cache not found: {email}, {email_id}")
             return None
 
         token = account_info.get("token")
         if not token:
-            logger.warning(f"DuckMail 邮箱缺少访问 token: {email}")
+            logger.warning(f"DuckMail mailbox is missing access token: {email}")
             return None
 
         start_time = time.time()
@@ -284,7 +282,7 @@ class DuckMailService(BaseEmailService):
                         self.update_status(True)
                         return match.group(1)
             except Exception as e:
-                logger.debug(f"DuckMail 轮询验证码失败: {e}")
+                logger.debug(f"DuckMail polling verification code failed: {e}")
 
             time.sleep(3)
 
@@ -314,7 +312,7 @@ class DuckMailService(BaseEmailService):
             self.update_status(True)
             return True
         except Exception as e:
-            logger.warning(f"DuckMail 删除邮箱失败: {e}")
+            logger.warning(f"DuckMail failed to delete mailbox: {e}")
             self.update_status(False, e)
             return False
 
@@ -329,7 +327,7 @@ class DuckMailService(BaseEmailService):
             self.update_status(True)
             return True
         except Exception as e:
-            logger.warning(f"DuckMail 健康检查失败: {e}")
+            logger.warning(f"DuckMail health check failed: {e}")
             self.update_status(False, e)
             return False
 

@@ -1,7 +1,7 @@
 """
-IMAP 邮箱服务
-支持 Gmail / QQ / 163 / Yahoo / Outlook 等标准 IMAP 协议邮件服务商。
-仅用于接收验证码，强制直连（imaplib 不支持代理）。
+IMAP email service
+Supports standard IMAP protocol email service providers such as Gmail / QQ / 163 / Yahoo / Outlook.
+Only used to receive verification codes, forcing direct connection (imaplib does not support proxy).
 """
 
 import imaplib
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 class ImapMailService(BaseEmailService):
-    """标准 IMAP 邮箱服务（仅接收验证码，强制直连）"""
+    """Standard IMAP email service (only receives verification code, forced direct connection)"""
 
     def __init__(self, config: Dict[str, Any] = None, name: str = None):
         super().__init__(EmailServiceType.IMAP_MAIL, name)
@@ -33,7 +33,7 @@ class ImapMailService(BaseEmailService):
         required_keys = ["host", "email", "password"]
         missing_keys = [k for k in required_keys if not cfg.get(k)]
         if missing_keys:
-            raise ValueError(f"缺少必需配置: {missing_keys}")
+            raise ValueError(f"Missing required configuration: {missing_keys}")
 
         self.host: str = str(cfg["host"]).strip()
         self.port: int = int(cfg.get("port", 993))
@@ -44,7 +44,7 @@ class ImapMailService(BaseEmailService):
         self.max_retries: int = int(cfg.get("max_retries", 3))
 
     def _connect(self) -> imaplib.IMAP4:
-        """建立 IMAP 连接并登录，返回 mail 对象"""
+        """Establish IMAP connection and log in, return mail object"""
         if self.use_ssl:
             mail = imaplib.IMAP4_SSL(self.host, self.port)
         else:
@@ -54,7 +54,7 @@ class ImapMailService(BaseEmailService):
         return mail
 
     def _decode_str(self, value) -> str:
-        """解码邮件头部字段"""
+        """Decoding email header fields"""
         if value is None:
             return ""
         parts = decode_header(value)
@@ -67,7 +67,7 @@ class ImapMailService(BaseEmailService):
         return " ".join(decoded)
 
     def _get_text_body(self, msg) -> str:
-        """提取邮件纯文本内容"""
+        """Extract the plain text content of the email"""
         body = ""
         if msg.is_multipart():
             for part in msg.walk():
@@ -84,7 +84,7 @@ class ImapMailService(BaseEmailService):
         return body
 
     def _is_openai_sender(self, from_addr: str) -> bool:
-        """判断发件人是否为 OpenAI"""
+        """Determine whether the sender is OpenAI"""
         from_lower = from_addr.lower()
         for sender in OPENAI_EMAIL_SENDERS:
             if sender.startswith("@") or sender.startswith("."):
@@ -96,7 +96,7 @@ class ImapMailService(BaseEmailService):
         return False
 
     def _extract_otp(self, text: str) -> Optional[str]:
-        """从文本中提取 6 位验证码，优先语义匹配，回退简单匹配"""
+        """Extract the 6-digit verification code from the text, giving priority to semantic matching and falling back to simple matching"""
         match = re.search(OTP_CODE_SEMANTIC_PATTERN, text, re.IGNORECASE)
         if match:
             return match.group(1)
@@ -106,7 +106,7 @@ class ImapMailService(BaseEmailService):
         return None
 
     def create_email(self, config: Dict[str, Any] = None) -> Dict[str, Any]:
-        """IMAP 模式不创建新邮箱，直接返回配置中的固定地址"""
+        """IMAP mode does not create a new mailbox and directly returns the fixed address in the configuration"""
         self.update_status(True)
         return {
             "email": self.email_addr,
@@ -122,7 +122,7 @@ class ImapMailService(BaseEmailService):
         pattern: str = None,
         otp_sent_at: Optional[float] = None,
     ) -> Optional[str]:
-        """轮询 IMAP 收件箱，获取 OpenAI 验证码"""
+        """Poll IMAP inbox for OpenAI verification code"""
         start_time = time.time()
         seen_ids: set = set()
         mail = None
@@ -133,20 +133,20 @@ class ImapMailService(BaseEmailService):
 
             while time.time() - start_time < timeout:
                 try:
-                    # 搜索所有未读邮件
+                    # Search all unread emails
                     status, data = mail.search(None, "UNSEEN")
                     if status != "OK" or not data or not data[0]:
                         time.sleep(3)
                         continue
 
                     msg_ids = data[0].split()
-                    for msg_id in reversed(msg_ids):  # 最新的优先
+                    for msg_id in reversed(msg_ids): # Newest first
                         id_str = msg_id.decode()
                         if id_str in seen_ids:
                             continue
                         seen_ids.add(id_str)
 
-                        # 获取邮件
+                        # Get mail
                         status, msg_data = mail.fetch(msg_id, "(RFC822)")
                         if status != "OK" or not msg_data:
                             continue
@@ -154,24 +154,24 @@ class ImapMailService(BaseEmailService):
                         raw = msg_data[0][1]
                         msg = email.message_from_bytes(raw)
 
-                        # 检查发件人
+                        # Check sender
                         from_addr = self._decode_str(msg.get("From", ""))
                         if not self._is_openai_sender(from_addr):
                             continue
 
-                        # 提取验证码
+                        # Extract verification code
                         body = self._get_text_body(msg)
                         code = self._extract_otp(body)
                         if code:
-                            # 标记已读
+                            # Mark as read
                             mail.store(msg_id, "+FLAGS", "\\Seen")
                             self.update_status(True)
-                            logger.info(f"IMAP 获取验证码成功: {code}")
+                            logger.info(f"IMAP successfully obtained verification code: {code}")
                             return code
 
                 except imaplib.IMAP4.error as e:
-                    logger.debug(f"IMAP 搜索邮件失败: {e}")
-                    # 尝试重新连接
+                    logger.debug(f"IMAP search for mail failed: {e}")
+                    # Try to reconnect
                     try:
                         mail.select("INBOX")
                     except Exception:
@@ -180,7 +180,7 @@ class ImapMailService(BaseEmailService):
                 time.sleep(3)
 
         except Exception as e:
-            logger.warning(f"IMAP 连接/轮询失败: {e}")
+            logger.warning(f"IMAP connection/polling failed: {e}")
             self.update_status(False, str(e))
         finally:
             if mail:
@@ -192,14 +192,14 @@ class ImapMailService(BaseEmailService):
         return None
 
     def check_health(self) -> bool:
-        """尝试 IMAP 登录并选择收件箱"""
+        """Try IMAP login and select inbox"""
         mail = None
         try:
             mail = self._connect()
             status, _ = mail.select("INBOX")
             return status == "OK"
         except Exception as e:
-            logger.warning(f"IMAP 健康检查失败: {e}")
+            logger.warning(f"IMAP health check failed: {e}")
             return False
         finally:
             if mail:
@@ -209,9 +209,9 @@ class ImapMailService(BaseEmailService):
                     pass
 
     def list_emails(self, **kwargs) -> list:
-        """IMAP 单账号模式，返回固定地址"""
+        """IMAP single account mode, return to fixed address"""
         return [{"email": self.email_addr, "id": self.email_addr}]
 
     def delete_email(self, email_id: str) -> bool:
-        """IMAP 模式无需删除逻辑"""
+        """IMAP mode does not require deletion logic"""
         return True

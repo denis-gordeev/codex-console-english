@@ -1,5 +1,5 @@
 """
-SQLAlchemy ORM 模型定义
+SQLAlchemy ORM model definition
 """
 
 from datetime import datetime
@@ -14,7 +14,7 @@ Base = declarative_base()
 
 
 class JSONEncodedDict(TypeDecorator):
-    """JSON 编码字典类型"""
+    """JSON encoding dictionary type"""
     impl = Text
 
     def process_bind_param(self, value: Optional[Dict[str, Any]], dialect):
@@ -29,38 +29,38 @@ class JSONEncodedDict(TypeDecorator):
 
 
 class Account(Base):
-    """已注册账号表"""
+    """Registered account table"""
     __tablename__ = 'accounts'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     email = Column(String(255), nullable=False, unique=True, index=True)
-    password = Column(String(255))  # 注册密码（明文存储）
+    password = Column(String(255)) #Registration password (clear text storage)
     access_token = Column(Text)
     refresh_token = Column(Text)
     id_token = Column(Text)
-    session_token = Column(Text)  # 会话令牌（优先刷新方式）
+    session_token = Column(Text) # Session token (priority refresh method)
     client_id = Column(String(255))  # OAuth Client ID
     account_id = Column(String(255))
     workspace_id = Column(String(255))
     email_service = Column(String(50), nullable=False)  # 'tempmail', 'outlook', 'moe_mail'
-    email_service_id = Column(String(255))  # 邮箱服务中的ID
+    email_service_id = Column(String(255)) # ID in the email service
     proxy_used = Column(String(255))
     registered_at = Column(DateTime, default=datetime.utcnow)
-    last_refresh = Column(DateTime)  # 最后刷新时间
-    expires_at = Column(DateTime)  # Token 过期时间
+    last_refresh = Column(DateTime) #Last refresh time
+    expires_at = Column(DateTime) # Token expiration time
     status = Column(String(20), default='active')  # 'active', 'expired', 'banned', 'failed'
-    extra_data = Column(JSONEncodedDict)  # 额外信息存储
-    cpa_uploaded = Column(Boolean, default=False)  # 是否已上传到 CPA
-    cpa_uploaded_at = Column(DateTime)  # 上传时间
-    source = Column(String(20), default='register')  # 'register' 或 'login'，区分账号来源
+    extra_data = Column(JSONEncodedDict) # Extra information storage
+    cpa_uploaded = Column(Boolean, default=False) # Whether it has been uploaded to CPA
+    cpa_uploaded_at = Column(DateTime) #Upload time
+    source = Column(String(20), default='register') # 'register' or 'login', distinguish the account source
     subscription_type = Column(String(20))  # None / 'plus' / 'team'
-    subscription_at = Column(DateTime)  # 订阅开通时间
-    cookies = Column(Text)  # 完整 cookie 字符串，用于支付请求
+    subscription_at = Column(DateTime) # Subscription activation time
+    cookies = Column(Text) # Complete cookie string, used for payment requests
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def to_dict(self) -> Dict[str, Any]:
-        """转换为字典"""
+        """Convert to dictionary"""
         return {
             'id': self.id,
             'email': self.email,
@@ -85,42 +85,42 @@ class Account(Base):
 
 
 class EmailService(Base):
-    """邮箱服务配置表"""
+    """Mailbox service configuration table"""
     __tablename__ = 'email_services'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     service_type = Column(String(50), nullable=False)  # 'outlook', 'moe_mail'
     name = Column(String(100), nullable=False)
-    config = Column(JSONEncodedDict, nullable=False)  # 服务配置（加密存储）
+    config = Column(JSONEncodedDict, nullable=False) # Service configuration (encrypted storage)
     enabled = Column(Boolean, default=True)
-    priority = Column(Integer, default=0)  # 使用优先级
+    priority = Column(Integer, default=0) # Use priority
     last_used = Column(DateTime)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
 class RegistrationTask(Base):
-    """注册任务表"""
+    """Registration task list"""
     __tablename__ = 'registration_tasks'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    task_uuid = Column(String(36), unique=True, nullable=False, index=True)  # 任务唯一标识
+    task_uuid = Column(String(36), unique=True, nullable=False, index=True) # Task unique identifier
     status = Column(String(20), default='pending')  # 'pending', 'running', 'completed', 'failed', 'cancelled'
-    email_service_id = Column(Integer, ForeignKey('email_services.id'), index=True)  # 使用的邮箱服务
-    proxy = Column(String(255))  # 使用的代理
-    logs = Column(Text)  # 注册过程日志
-    result = Column(JSONEncodedDict)  # 注册结果
+    email_service_id = Column(Integer, ForeignKey('email_services.id'), index=True) # Email service used
+    proxy = Column(String(255)) # proxy used
+    logs = Column(Text) #Registration process log
+    result = Column(JSONEncodedDict) #Registration result
     error_message = Column(Text)
     created_at = Column(DateTime, default=datetime.utcnow)
     started_at = Column(DateTime)
     completed_at = Column(DateTime)
 
-    # 关系
+    # relation
     email_service = relationship('EmailService')
 
 
 class Setting(Base):
-    """系统设置表"""
+    """System Settings Table"""
     __tablename__ = 'settings'
 
     key = Column(String(100), primary_key=True)
@@ -131,67 +131,67 @@ class Setting(Base):
 
 
 class CpaService(Base):
-    """CPA 服务配置表"""
+    """CPA Service Configuration Table"""
     __tablename__ = 'cpa_services'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(100), nullable=False)  # 服务名称
+    name = Column(String(100), nullable=False) # Service name
     api_url = Column(String(500), nullable=False)  # API URL
     api_token = Column(Text, nullable=False)  # API Token
     enabled = Column(Boolean, default=True)
-    priority = Column(Integer, default=0)  # 优先级
+    priority = Column(Integer, default=0) # Priority
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
 class Sub2ApiService(Base):
-    """Sub2API 服务配置表"""
+    """Sub2API service configuration table"""
     __tablename__ = 'sub2api_services'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(100), nullable=False)  # 服务名称
+    name = Column(String(100), nullable=False) # Service name
     api_url = Column(String(500), nullable=False)  # API URL (host)
     api_key = Column(Text, nullable=False)  # x-api-key
     enabled = Column(Boolean, default=True)
-    priority = Column(Integer, default=0)  # 优先级
+    priority = Column(Integer, default=0) # Priority
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
 class TeamManagerService(Base):
-    """Team Manager 服务配置表"""
+    """Team Manager Service Configuration Table"""
     __tablename__ = 'tm_services'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(100), nullable=False)  # 服务名称
+    name = Column(String(100), nullable=False) # Service name
     api_url = Column(String(500), nullable=False)  # API URL
     api_key = Column(Text, nullable=False)  # X-API-Key
     enabled = Column(Boolean, default=True)
-    priority = Column(Integer, default=0)  # 优先级
+    priority = Column(Integer, default=0) # Priority
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
 class Proxy(Base):
-    """代理列表表"""
+    """Agent list table"""
     __tablename__ = 'proxies'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(100), nullable=False)  # 代理名称
+    name = Column(String(100), nullable=False) #Agent name
     type = Column(String(20), nullable=False, default='http')  # http, socks5
     host = Column(String(255), nullable=False)
     port = Column(Integer, nullable=False)
     username = Column(String(100))
     password = Column(String(255))
     enabled = Column(Boolean, default=True)
-    is_default = Column(Boolean, default=False)  # 是否为默认代理
-    priority = Column(Integer, default=0)  # 优先级（保留字段）
-    last_used = Column(DateTime)  # 最后使用时间
+    is_default = Column(Boolean, default=False) # Whether it is the default proxy
+    priority = Column(Integer, default=0) # Priority (reserved field)
+    last_used = Column(DateTime) # Last used time
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def to_dict(self, include_password: bool = False) -> Dict[str, Any]:
-        """转换为字典"""
+        """Convert to dictionary"""
         result = {
             'id': self.id,
             'name': self.name,
@@ -214,7 +214,7 @@ class Proxy(Base):
 
     @property
     def proxy_url(self) -> str:
-        """获取完整的代理 URL"""
+        """Get the complete proxy URL"""
         if self.type == "http":
             scheme = "http"
         elif self.type == "socks5":

@@ -1,5 +1,5 @@
 """
-Outlook 账户数据类
+Outlook Account Data Class
 """
 
 from dataclasses import dataclass
@@ -8,7 +8,7 @@ from typing import Dict, Any, Optional
 
 @dataclass
 class OutlookAccount:
-    """Outlook 账户信息"""
+    """Outlook account information"""
     email: str
     password: str = ""
     client_id: str = ""
@@ -16,7 +16,7 @@ class OutlookAccount:
 
     @classmethod
     def from_config(cls, config: Dict[str, Any]) -> "OutlookAccount":
-        """从配置创建账户"""
+        """Create account from configuration"""
         return cls(
             email=config.get("email", ""),
             password=config.get("password", ""),
@@ -25,15 +25,15 @@ class OutlookAccount:
         )
 
     def has_oauth(self) -> bool:
-        """是否支持 OAuth2"""
+        """Does OAuth2 support"""
         return bool(self.client_id and self.refresh_token)
 
     def validate(self) -> bool:
-        """验证账户信息是否有效"""
+        """Verify whether the account information is valid"""
         return bool(self.email and self.password) or self.has_oauth()
 
     def to_dict(self, include_sensitive: bool = False) -> Dict[str, Any]:
-        """转换为字典"""
+        """Convert to dictionary"""
         result = {
             "email": self.email,
             "has_oauth": self.has_oauth(),
@@ -47,5 +47,5 @@ class OutlookAccount:
         return result
 
     def __str__(self) -> str:
-        """字符串表示"""
+        """ string represents """
         return f"OutlookAccount({self.email})"

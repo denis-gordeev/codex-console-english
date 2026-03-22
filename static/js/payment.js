@@ -1,5 +1,5 @@
 /**
- * 支付页面 JavaScript
+ * Payment page JavaScript
  */
 
 const COUNTRY_CURRENCY_MAP = {
@@ -11,18 +11,18 @@ const COUNTRY_CURRENCY_MAP = {
 let selectedPlan = 'plus';
 let generatedLink = '';
 
-// 初始化
+// initialization
 document.addEventListener('DOMContentLoaded', () => {
     loadAccounts();
 });
 
-// 加载账号列表
+//Load the account list
 async function loadAccounts() {
     try {
         const resp = await fetch('/api/accounts?page=1&page_size=100&status=active');
         const data = await resp.json();
         const sel = document.getElementById('account-select');
-        sel.innerHTML = '<option value="">-- 请选择账号 --</option>';
+        sel.innerHTML = '<option value="">-- Please select an account --</option>';
         (data.accounts || []).forEach(acc => {
             const opt = document.createElement('option');
             opt.value = acc.id;
@@ -30,33 +30,33 @@ async function loadAccounts() {
             sel.appendChild(opt);
         });
     } catch (e) {
-        console.error('加载账号失败:', e);
+        console.error('Failed to load account:', e);
     }
 }
 
-// 国家切换
+// Country switch
 function onCountryChange() {
     const country = document.getElementById('country-select').value;
     const currency = COUNTRY_CURRENCY_MAP[country] || 'USD';
     document.getElementById('currency-display').value = currency;
 }
 
-// 选择套餐
+//Select a package
 function selectPlan(plan) {
     selectedPlan = plan;
     document.getElementById('plan-plus').classList.toggle('selected', plan === 'plus');
     document.getElementById('plan-team').classList.toggle('selected', plan === 'team');
     document.getElementById('team-options').classList.toggle('show', plan === 'team');
-    // 隐藏已生成的链接
+    //Hide generated links
     document.getElementById('link-box').classList.remove('show');
     generatedLink = '';
 }
 
-// 生成支付链接
+// Generate payment link
 async function generateLink() {
     const accountId = document.getElementById('account-select').value;
     if (!accountId) {
-        ui.showToast('请先选择账号', 'warning');
+        ui.showToast('Please select an account first', 'warning');
         return;
     }
 
@@ -75,7 +75,7 @@ async function generateLink() {
     }
 
     const btn = document.querySelector('.form-actions .btn-primary');
-    if (btn) { btn.disabled = true; btn.textContent = '生成中...'; }
+    if (btn) { btn.disabled = true; btn.textContent = 'Generating...'; }
 
     try {
         const resp = await fetch('/api/payment/generate-link', {
@@ -89,39 +89,39 @@ async function generateLink() {
             document.getElementById('link-text').value = data.link;
             document.getElementById('link-box').classList.add('show');
             document.getElementById('open-status').textContent = '';
-            ui.showToast('支付链接生成成功', 'success');
+            ui.showToast('Payment link generated successfully', 'success');
         } else {
-            ui.showToast(data.detail || '生成链接失败', 'error');
+            ui.showToast(data.detail || 'Failed to generate link', 'error');
         }
     } catch (e) {
-        ui.showToast('请求失败: ' + e.message, 'error');
+        ui.showToast('Request failed: ' + e.message, 'error');
     } finally {
-        if (btn) { btn.disabled = false; btn.textContent = '生成支付链接'; }
+        if (btn) { btn.disabled = false; btn.textContent = 'Generate payment link'; }
     }
 }
 
-// 复制链接
+// copy link
 function copyLink() {
     if (!generatedLink) return;
     navigator.clipboard.writeText(generatedLink).then(() => {
-        ui.showToast('已复制到剪贴板', 'success');
+        ui.showToast('Copied to clipboard', 'success');
     }).catch(() => {
         const ta = document.getElementById('link-text');
         ta.select();
         document.execCommand('copy');
-        ui.showToast('已复制到剪贴板', 'success');
+        ui.showToast('Copied to clipboard', 'success');
     });
 }
 
-// 无痕打开浏览器（携带账号 cookie）
+// Open the browser without trace (carry account cookie)
 async function openIncognito() {
     if (!generatedLink) {
-        ui.showToast('请先生成链接', 'warning');
+        ui.showToast('Please generate a link first', 'warning');
         return;
     }
     const accountId = document.getElementById('account-select').value;
     const statusEl = document.getElementById('open-status');
-    statusEl.textContent = '正在打开...';
+    statusEl.textContent = 'Opening...';
     try {
         const body = { url: generatedLink };
         if (accountId) body.account_id = parseInt(accountId);
@@ -133,14 +133,14 @@ async function openIncognito() {
         });
         const data = await resp.json();
         if (data.success) {
-            statusEl.textContent = '已在无痕模式打开浏览器';
-            ui.showToast('无痕浏览器已打开', 'success');
+            statusEl.textContent = 'Browser opened in incognito mode';
+            ui.showToast('Incognito browser is opened', 'success');
         } else {
-            statusEl.textContent = data.message || '未找到可用浏览器，请手动复制链接';
-            ui.showToast(data.message || '未找到浏览器', 'warning');
+            statusEl.textContent = data.message || 'No available browser found, please copy the link manually';
+            ui.showToast(data.message || 'Browser not found', 'warning');
         }
     } catch (e) {
-        statusEl.textContent = '请求失败: ' + e.message;
-        ui.showToast('请求失败', 'error');
+        statusEl.textContent = 'Request failed: ' + e.message;
+        ui.showToast('Request failed', 'error');
     }
 }

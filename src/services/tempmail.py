@@ -1,5 +1,5 @@
 """
-Tempmail.lol 邮箱服务实现
+Tempmail.lol mailbox service implementation
 """
 
 import re
@@ -20,25 +20,25 @@ logger = logging.getLogger(__name__)
 
 class TempmailService(BaseEmailService):
     """
-    Tempmail.lol 邮箱服务
-    基于 Tempmail.lol API v2
+    Tempmail.lol Email Service
+    Based on Tempmail.lol API v2
     """
 
     def __init__(self, config: Dict[str, Any] = None, name: str = None):
         """
-        初始化 Tempmail 服务
+        Initialize Tempmail service
 
         Args:
-            config: 配置字典，支持以下键:
-                - base_url: API 基础地址 (默认: https://api.tempmail.lol/v2)
-                - timeout: 请求超时时间 (默认: 30)
-                - max_retries: 最大重试次数 (默认: 3)
-                - proxy_url: 代理 URL
-            name: 服务名称
+            config: configuration dictionary, supports the following keys:
+                - base_url: API base address (default: https://api.tempmail.lol/v2)
+                - timeout: request timeout (default: 30)
+                - max_retries: Maximum number of retries (default: 3)
+                - proxy_url: proxy URL
+            name: service name
         """
         super().__init__(EmailServiceType.TEMPMAIL, name)
 
-        # 默认配置
+        #Default configuration
         default_config = {
             "base_url": "https://api.tempmail.lol/v2",
             "timeout": 30,
@@ -48,7 +48,7 @@ class TempmailService(BaseEmailService):
 
         self.config = {**default_config, **(config or {})}
 
-        # 创建 HTTP 客户端
+        #Create HTTP client
         http_config = RequestConfig(
             timeout=self.config["timeout"],
             max_retries=self.config["max_retries"],
@@ -58,26 +58,26 @@ class TempmailService(BaseEmailService):
             config=http_config
         )
 
-        # 状态变量
+        #State variables
         self._email_cache: Dict[str, Dict[str, Any]] = {}
         self._last_check_time: float = 0
 
     def create_email(self, config: Dict[str, Any] = None) -> Dict[str, Any]:
         """
-        创建新的临时邮箱
+        Create a new temporary mailbox
 
         Args:
-            config: 配置参数（Tempmail.lol 目前不支持自定义配置）
+            config: Configuration parameters (Tempmail.lol currently does not support custom configuration)
 
         Returns:
-            包含邮箱信息的字典:
-            - email: 邮箱地址
-            - service_id: 邮箱 token
-            - token: 邮箱 token（同 service_id）
-            - created_at: 创建时间戳
+            Dictionary containing email information:
+            - email: email address
+            - service_id: email token
+            - token: email token (same as service_id)
+            - created_at: creation timestamp
         """
         try:
-            # 发送创建请求
+            #Send create request
             response = self.http_client.post(
                 f"{self.config['base_url']}/inbox/create",
                 headers={
@@ -88,18 +88,18 @@ class TempmailService(BaseEmailService):
             )
 
             if response.status_code not in (200, 201):
-                self.update_status(False, EmailServiceError(f"请求失败，状态码: {response.status_code}"))
-                raise EmailServiceError(f"Tempmail.lol 请求失败，状态码: {response.status_code}")
+                self.update_status(False, EmailServiceError(f"Request failed, status code: {response.status_code}"))
+                raise EmailServiceError(f"Tempmail.lol request failed, status code: {response.status_code}")
 
             data = response.json()
             email = str(data.get("address", "")).strip()
             token = str(data.get("token", "")).strip()
 
             if not email or not token:
-                self.update_status(False, EmailServiceError("返回数据不完整"))
-                raise EmailServiceError("Tempmail.lol 返回数据不完整")
+                self.update_status(False, EmailServiceError("Return data is incomplete"))
+                raise EmailServiceError("Tempmail.lol returns incomplete data")
 
-            # 缓存邮箱信息
+            #Cache email information
             email_info = {
                 "email": email,
                 "service_id": token,
@@ -108,7 +108,7 @@ class TempmailService(BaseEmailService):
             }
             self._email_cache[email] = email_info
 
-            logger.info(f"Tempmail.lol 邮箱创建成功，新鲜热乎: {email}")
+            logger.info(f"Tempmail.lol mailbox was created successfully, fresh and hot: {email}")
             self.update_status(True)
             return email_info
 
@@ -116,7 +116,7 @@ class TempmailService(BaseEmailService):
             self.update_status(False, e)
             if isinstance(e, EmailServiceError):
                 raise
-            raise EmailServiceError(f"创建 Tempmail.lol 邮箱失败: {e}")
+            raise EmailServiceError(f"Failed to create Tempmail.lol mailbox: {e}")
 
     def get_verification_code(
         self,
@@ -127,39 +127,39 @@ class TempmailService(BaseEmailService):
         otp_sent_at: Optional[float] = None,
     ) -> Optional[str]:
         """
-        从 Tempmail.lol 获取验证码
+        Get verification code from Tempmail.lol
 
         Args:
-            email: 邮箱地址
-            email_id: 邮箱 token（如果不提供，从缓存中查找）
-            timeout: 超时时间（秒）
-            pattern: 验证码正则表达式
-            otp_sent_at: OTP 发送时间戳（Tempmail 服务暂不使用此参数）
+            email: email address
+            email_id: Email token (if not provided, search from cache)
+            timeout: timeout (seconds)
+            pattern: verification code regular expression
+            otp_sent_at: OTP sending timestamp (Tempmail service does not use this parameter yet)
 
         Returns:
-            验证码字符串，如果超时或未找到返回 None
+            Verification code string, returns None if timeout or not found
         """
         token = email_id
         if not token:
-            # 从缓存中查找 token
+            # Find token from cache
             if email in self._email_cache:
                 token = self._email_cache[email].get("token")
             else:
-                logger.warning(f"未找到邮箱 {email} 的 token，无法获取验证码")
+                logger.warning(f"The token for the mailbox {email} was not found and the verification code cannot be obtained")
                 return None
 
         if not token:
-            logger.warning(f"邮箱 {email} 没有 token，无法获取验证码")
+            logger.warning(f"The email address {email} does not have a token and cannot obtain the verification code")
             return None
 
-        logger.info(f"正在等邮箱 {email} 的验证码，邮差应该在路上了...")
+        logger.info(f"Waiting for the verification code from email address {email}, the postman should be on the way...")
 
         start_time = time.time()
         seen_ids = set()
 
         while time.time() - start_time < timeout:
             try:
-                # 获取邮件列表
+                # Get mailing list
                 response = self.http_client.get(
                     f"{self.config['base_url']}/inbox",
                     params={"token": token},
@@ -172,9 +172,9 @@ class TempmailService(BaseEmailService):
 
                 data = response.json()
 
-                # 检查 inbox 是否过期
+                # Check if the inbox has expired
                 if data is None or (isinstance(data, dict) and not data):
-                    logger.warning(f"邮箱 {email} 已过期")
+                    logger.warning(f"Email {email} has expired")
                     return None
 
                 email_list = data.get("emails", []) if isinstance(data, dict) else []
@@ -187,7 +187,7 @@ class TempmailService(BaseEmailService):
                     if not isinstance(msg, dict):
                         continue
 
-                    # 使用 date 作为唯一标识
+                    # Use date as unique identifier
                     msg_date = msg.get("date", 0)
                     if not msg_date or msg_date in seen_ids:
                         continue
@@ -200,44 +200,44 @@ class TempmailService(BaseEmailService):
 
                     content = "\n".join([sender, subject, body, html])
 
-                    # 检查是否是 OpenAI 邮件
+                    # Check if it is an OpenAI email
                     if "openai" not in sender and "openai" not in content.lower():
                         continue
 
-                    # 提取验证码
+                    # Extract verification code
                     match = re.search(pattern, content)
                     if match:
                         code = match.group(1)
-                        logger.info(f"找到验证码了，六位嘉宾登场: {code}")
+                        logger.info(f"The verification code was found, six guests appeared: {code}")
                         self.update_status(True)
                         return code
 
             except Exception as e:
-                logger.debug(f"检查邮件时出错: {e}")
+                logger.debug(f"Error checking email: {e}")
 
-            # 等待一段时间再检查
+            # Wait for some time and check again
             time.sleep(3)
 
-        logger.warning(f"等验证码等到超时了: {email}")
+        logger.warning(f"Waiting for the verification code until timeout: {email}")
         return None
 
     def list_emails(self, **kwargs) -> List[Dict[str, Any]]:
         """
-        列出所有缓存的邮箱
+        List all cached mailboxes
 
         Note:
-            Tempmail.lol API 不支持列出所有邮箱，这里返回缓存的邮箱
+            Tempmail.lol API does not support listing all mailboxes, and cached mailboxes are returned here.
         """
         return list(self._email_cache.values())
 
     def delete_email(self, email_id: str) -> bool:
         """
-        删除邮箱
+        Delete mailbox
 
         Note:
-            Tempmail.lol API 不支持删除邮箱，这里从缓存中移除
+            Tempmail.lol API does not support deleting mailboxes, so it will be removed from the cache here.
         """
-        # 从缓存中查找并移除
+        # Find and remove from cache
         emails_to_delete = []
         for email, info in self._email_cache.items():
             if info.get("token") == email_id:
@@ -245,34 +245,34 @@ class TempmailService(BaseEmailService):
 
         for email in emails_to_delete:
             del self._email_cache[email]
-            logger.info(f"从缓存中移除邮箱: {email}")
+            logger.info(f"Remove email from cache: {email}")
 
         return len(emails_to_delete) > 0
 
     def check_health(self) -> bool:
-        """检查 Tempmail.lol 服务是否可用"""
+        """Check whether the Tempmail.lol service is available"""
         try:
             response = self.http_client.get(
                 f"{self.config['base_url']}/inbox/create",
                 timeout=10
             )
-            # 即使返回错误状态码也认为服务可用（只要可以连接）
+            # The service is considered available even if an error status code is returned (as long as it can be connected)
             self.update_status(True)
             return True
         except Exception as e:
-            logger.warning(f"Tempmail.lol 健康检查失败: {e}")
+            logger.warning(f"Tempmail.lol health check failed: {e}")
             self.update_status(False, e)
             return False
 
     def get_inbox(self, token: str) -> Optional[Dict[str, Any]]:
         """
-        获取邮箱收件箱内容
+        Get email inbox contents
 
         Args:
-            token: 邮箱 token
+            token: email token
 
         Returns:
-            收件箱数据
+            Inbox data
         """
         try:
             response = self.http_client.get(
@@ -286,7 +286,7 @@ class TempmailService(BaseEmailService):
 
             return response.json()
         except Exception as e:
-            logger.error(f"获取收件箱失败: {e}")
+            logger.error(f"Failed to get inbox: {e}")
             return None
 
     def wait_for_verification_code_with_callback(
@@ -297,16 +297,16 @@ class TempmailService(BaseEmailService):
         timeout: int = 120
     ) -> Optional[str]:
         """
-        等待验证码并支持回调函数
+        Wait for verification code and support callback function
 
         Args:
-            email: 邮箱地址
-            token: 邮箱 token
-            callback: 回调函数，接收当前状态信息
-            timeout: 超时时间
+            email: email address
+            token: email token
+            callback: callback function, receives current status information
+            timeout: timeout time
 
         Returns:
-            验证码或 None
+            Verification code or None
         """
         start_time = time.time()
         seen_ids = set()
@@ -329,13 +329,13 @@ class TempmailService(BaseEmailService):
                     time.sleep(3)
                     continue
 
-                # 检查 inbox 是否过期
+                # Check if the inbox has expired
                 if data is None or (isinstance(data, dict) and not data):
                     if callback:
                         callback({
                             "status": "expired",
                             "email": email,
-                            "message": "邮箱已过期"
+                            "message": "Email has expired"
                         })
                     return None
 
@@ -354,11 +354,11 @@ class TempmailService(BaseEmailService):
 
                     content = "\n".join([sender, subject, body, html])
 
-                    # 检查是否是 OpenAI 邮件
+                    # Check if it is an OpenAI email
                     if "openai" not in sender and "openai" not in content.lower():
                         continue
 
-                    # 提取验证码
+                    # Extract verification code
                     match = re.search(OTP_CODE_PATTERN, content)
                     if match:
                         code = match.group(1)
@@ -367,7 +367,7 @@ class TempmailService(BaseEmailService):
                                 "status": "found",
                                 "email": email,
                                 "code": code,
-                                "message": "找到验证码"
+                                "message": "Verification code found"
                             })
                         return code
 
@@ -376,17 +376,17 @@ class TempmailService(BaseEmailService):
                         "status": "waiting",
                         "email": email,
                         "check_count": check_count,
-                        "message": f"已检查 {len(seen_ids)} 封邮件，等待验证码..."
+                        "message": f"Checked {len(seen_ids)} emails, waiting for verification code..."
                     })
 
             except Exception as e:
-                logger.debug(f"检查邮件时出错: {e}")
+                logger.debug(f"Error checking email: {e}")
                 if callback:
                     callback({
                         "status": "error",
                         "email": email,
                         "error": str(e),
-                        "message": "检查邮件时出错"
+                        "message": "An error occurred while checking mail"
                     })
 
             time.sleep(3)
@@ -395,6 +395,6 @@ class TempmailService(BaseEmailService):
             callback({
                 "status": "timeout",
                 "email": email,
-                "message": "等待验证码超时"
+                "message": "Timeout waiting for verification code"
             })
         return None

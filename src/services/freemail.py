@@ -1,6 +1,6 @@
 """
-Freemail 邮箱服务实现
-基于自部署 Cloudflare Worker 临时邮箱服务 (https://github.com/idinging/freemail)
+Freemail mailbox service implementation
+Based on self-deployed Cloudflare Worker temporary mailbox service (https://github.com/idinging/freemail)
 """
 
 import re
@@ -19,29 +19,29 @@ logger = logging.getLogger(__name__)
 
 class FreemailService(BaseEmailService):
     """
-    Freemail 邮箱服务
-    基于自部署 Cloudflare Worker 的临时邮箱
+    Freemail email service
+    Temporary mailbox based on self-deployed Cloudflare Worker
     """
 
     def __init__(self, config: Dict[str, Any] = None, name: str = None):
         """
-        初始化 Freemail 服务
+        Initialize Freemail service
 
         Args:
-            config: 配置字典，支持以下键:
-                - base_url: Worker 域名地址 (必需)
-                - admin_token: Admin Token，对应 JWT_TOKEN (必需)
-                - domain: 邮箱域名，如 example.com
-                - timeout: 请求超时时间，默认 30
-                - max_retries: 最大重试次数，默认 3
-            name: 服务名称
+            config: configuration dictionary, supports the following keys:
+                - base_url: Worker domain name address (required)
+                - admin_token: Admin Token, corresponding to JWT_TOKEN (required)
+                - domain: email domain name, such as example.com
+                - timeout: request timeout, default 30
+                - max_retries: Maximum number of retries, default 3
+            name: service name
         """
         super().__init__(EmailServiceType.FREEMAIL, name)
 
         required_keys = ["base_url", "admin_token"]
         missing_keys = [key for key in required_keys if not (config or {}).get(key)]
         if missing_keys:
-            raise ValueError(f"缺少必需配置: {missing_keys}")
+            raise ValueError(f"Missing required configuration: {missing_keys}")
 
         default_config = {
             "timeout": 30,
@@ -56,11 +56,11 @@ class FreemailService(BaseEmailService):
         )
         self.http_client = HTTPClient(proxy_url=None, config=http_config)
 
-        # 缓存 domain 列表
+        # Cache domain list
         self._domains = []
 
     def _get_headers(self) -> Dict[str, str]:
-        """构造 admin 请求头"""
+        """Construct admin request header"""
         return {
             "Authorization": f"Bearer {self.config['admin_token']}",
             "Content-Type": "application/json",
@@ -69,18 +69,18 @@ class FreemailService(BaseEmailService):
 
     def _make_request(self, method: str, path: str, **kwargs) -> Any:
         """
-        发送请求并返回 JSON 数据
+        Send a request and return JSON data
 
         Args:
-            method: HTTP 方法
-            path: 请求路径（以 / 开头）
-            **kwargs: 传递给 http_client.request 的额外参数
+            method: HTTP method
+            path: request path (starting with /)
+            **kwargs: additional parameters passed to http_client.request
 
         Returns:
-            响应 JSON 数据
+            Respond to JSON data
 
         Raises:
-            EmailServiceError: 请求失败
+            EmailServiceError: Request failed
         """
         url = f"{self.config['base_url']}{path}"
         kwargs.setdefault("headers", {})
@@ -90,7 +90,7 @@ class FreemailService(BaseEmailService):
             response = self.http_client.request(method, url, **kwargs)
 
             if response.status_code >= 400:
-                error_msg = f"请求失败: {response.status_code}"
+                error_msg = f"Request failed: {response.status_code}"
                 try:
                     error_data = response.json()
                     error_msg = f"{error_msg} - {error_data}"
@@ -108,26 +108,26 @@ class FreemailService(BaseEmailService):
             self.update_status(False, e)
             if isinstance(e, EmailServiceError):
                 raise
-            raise EmailServiceError(f"请求失败: {method} {path} - {e}")
+            raise EmailServiceError(f"Request failed: {method} {path} - {e}")
 
     def _ensure_domains(self):
-        """获取并缓存可用域名列表"""
+        """Get and cache the list of available domain names"""
         if not self._domains:
             try:
                 domains = self._make_request("GET", "/api/domains")
                 if isinstance(domains, list):
                     self._domains = domains
             except Exception as e:
-                logger.warning(f"获取 Freemail 域名列表失败: {e}")
+                logger.warning(f"Failed to obtain Freemail domain name list: {e}")
 
     def create_email(self, config: Dict[str, Any] = None) -> Dict[str, Any]:
         """
-        通过 API 创建临时邮箱
+        Create temporary mailbox via API
 
         Returns:
-            包含邮箱信息的字典:
-            - email: 邮箱地址
-            - service_id: 同 email（用作标识）
+            Dictionary containing email information:
+            - email: email address
+            - service_id: same as email (used as identifier)
         """
         self._ensure_domains()
         
@@ -158,7 +158,7 @@ class FreemailService(BaseEmailService):
 
             email = resp.get("email")
             if not email:
-                raise EmailServiceError(f"创建邮箱失败，未返回邮箱地址: {resp}")
+                raise EmailServiceError(f"Failed to create email, no email address returned: {resp}")
 
             email_info = {
                 "email": email,
@@ -167,7 +167,7 @@ class FreemailService(BaseEmailService):
                 "created_at": time.time(),
             }
 
-            logger.info(f"成功创建 Freemail 邮箱: {email}")
+            logger.info(f"Freemail mailbox successfully created: {email}")
             self.update_status(True)
             return email_info
 
@@ -175,7 +175,7 @@ class FreemailService(BaseEmailService):
             self.update_status(False, e)
             if isinstance(e, EmailServiceError):
                 raise
-            raise EmailServiceError(f"创建邮箱失败: {e}")
+            raise EmailServiceError(f"Failed to create email: {e}")
 
     def get_verification_code(
         self,
@@ -186,19 +186,19 @@ class FreemailService(BaseEmailService):
         otp_sent_at: Optional[float] = None,
     ) -> Optional[str]:
         """
-        从 Freemail 邮箱获取验证码
+        Get verification code from Freemail email
 
         Args:
-            email: 邮箱地址
-            email_id: 未使用，保留接口兼容
-            timeout: 超时时间（秒）
-            pattern: 验证码正则
-            otp_sent_at: OTP 发送时间戳（暂未使用）
+            email: email address
+            email_id: Unused, reserved for interface compatibility
+            timeout: timeout (seconds)
+            pattern: Verification code regular
+            otp_sent_at: OTP sending timestamp (not used yet)
 
         Returns:
-            验证码字符串，超时返回 None
+            Verification code string, returns None when timeout
         """
-        logger.info(f"正在从 Freemail 邮箱 {email} 获取验证码...")
+        logger.info(f"Getting verification code from Freemail email address {email}...")
 
         start_time = time.time()
         seen_mail_ids: set = set()
@@ -226,51 +226,51 @@ class FreemailService(BaseEmailService):
                     if "openai" not in content.lower():
                         continue
 
-                    # 尝试直接使用 Freemail 提取的验证码
+                    # Try to use the verification code extracted by Freemail directly
                     v_code = mail.get("verification_code")
                     if v_code:
-                        logger.info(f"从 Freemail 邮箱 {email} 找到验证码: {v_code}")
+                        logger.info(f"Find the verification code from the Freemail mailbox {email}: {v_code}")
                         self.update_status(True)
                         return v_code
 
-                    # 如果没有直接提供，通过正则匹配 preview
+                    # If not provided directly, match preview through regular expression
                     match = re.search(pattern, content)
                     if match:
                         code = match.group(1)
-                        logger.info(f"从 Freemail 邮箱 {email} 找到验证码: {code}")
+                        logger.info(f"Find the verification code from the Freemail email address {email}: {code}")
                         self.update_status(True)
                         return code
 
-                    # 如果依然未找到，获取邮件详情进行匹配
+                    # If still not found, get email details for matching
                     try:
                         detail = self._make_request("GET", f"/api/email/{mail_id}")
                         full_content = str(detail.get("content", "")) + "\n" + str(detail.get("html_content", ""))
                         match = re.search(pattern, full_content)
                         if match:
                             code = match.group(1)
-                            logger.info(f"从 Freemail 邮箱 {email} 找到验证码: {code}")
+                            logger.info(f"Find the verification code from the Freemail email address {email}: {code}")
                             self.update_status(True)
                             return code
                     except Exception as e:
-                        logger.debug(f"获取 Freemail 邮件详情失败: {e}")
+                        logger.debug(f"Failed to obtain Freemail email details: {e}")
 
             except Exception as e:
-                logger.debug(f"检查 Freemail 邮件时出错: {e}")
+                logger.debug(f"Error checking Freemail mail: {e}")
 
             time.sleep(3)
 
-        logger.warning(f"等待 Freemail 验证码超时: {email}")
+        logger.warning(f"Timeout waiting for Freemail verification code: {email}")
         return None
 
     def list_emails(self, **kwargs) -> List[Dict[str, Any]]:
         """
-        列出邮箱
+        List mailboxes
 
         Args:
-            **kwargs: 额外查询参数
+            **kwargs: additional query parameters
 
         Returns:
-            邮箱列表
+            Email list
         """
         try:
             params = {
@@ -294,31 +294,31 @@ class FreemailService(BaseEmailService):
             self.update_status(True)
             return emails
         except Exception as e:
-            logger.warning(f"列出 Freemail 邮箱失败: {e}")
+            logger.warning(f"Failed to list Freemail mailboxes: {e}")
             self.update_status(False, e)
             return []
 
     def delete_email(self, email_id: str) -> bool:
         """
-        删除邮箱
+        Delete mailbox
         """
         try:
             self._make_request("DELETE", "/api/mailboxes", params={"address": email_id})
-            logger.info(f"已删除 Freemail 邮箱: {email_id}")
+            logger.info(f"Deleted Freemail email: {email_id}")
             self.update_status(True)
             return True
         except Exception as e:
-            logger.warning(f"删除 Freemail 邮箱失败: {e}")
+            logger.warning(f"Failed to delete Freemail mailbox: {e}")
             self.update_status(False, e)
             return False
 
     def check_health(self) -> bool:
-        """检查服务健康状态"""
+        """Check service health status"""
         try:
             self._make_request("GET", "/api/domains")
             self.update_status(True)
             return True
         except Exception as e:
-            logger.warning(f"Freemail 健康检查失败: {e}")
+            logger.warning(f"Freemail health check failed: {e}")
             self.update_status(False, e)
             return False

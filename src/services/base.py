@@ -1,7 +1,5 @@
-"""
-邮箱服务抽象基类
-所有邮箱服务实现的基类
-"""
+"""Mailbox service abstract base class
+Base class for all mailbox service implementations"""
 
 import abc
 import logging
@@ -15,32 +13,28 @@ logger = logging.getLogger(__name__)
 
 
 class EmailServiceError(Exception):
-    """邮箱服务异常"""
+    """Email service abnormality"""
     pass
 
 
 class EmailServiceStatus(Enum):
-    """邮箱服务状态"""
+    """Email service status"""
     HEALTHY = "healthy"
     DEGRADED = "degraded"
     UNAVAILABLE = "unavailable"
 
 
 class BaseEmailService(abc.ABC):
-    """
-    邮箱服务抽象基类
+    """Mailbox service abstract base class
 
-    所有邮箱服务必须实现此接口
-    """
+    All mailbox services must implement this interface"""
 
     def __init__(self, service_type: EmailServiceType, name: str = None):
-        """
-        初始化邮箱服务
+        """Initialize mailbox service
 
         Args:
-            service_type: 服务类型
-            name: 服务名称
-        """
+            service_type: service type
+            name: service name"""
         self.service_type = service_type
         self.name = name or f"{service_type.value}_service"
         self._status = EmailServiceStatus.HEALTHY
@@ -48,31 +42,29 @@ class BaseEmailService(abc.ABC):
 
     @property
     def status(self) -> EmailServiceStatus:
-        """获取服务状态"""
+        """Get service status"""
         return self._status
 
     @property
     def last_error(self) -> Optional[str]:
-        """获取最后一次错误信息"""
+        """Get the last error message"""
         return self._last_error
 
     @abc.abstractmethod
     def create_email(self, config: Dict[str, Any] = None) -> Dict[str, Any]:
-        """
-        创建新邮箱地址
+        """Create new email address
 
         Args:
-            config: 配置参数，如邮箱前缀、域名等
+            config: configuration parameters, such as email prefix, domain name, etc.
 
         Returns:
-            包含邮箱信息的字典，至少包含:
-            - email: 邮箱地址
-            - service_id: 邮箱服务中的 ID
-            - token/credentials: 访问凭证（如果需要）
+            A dictionary containing email information, containing at least:
+            - email: email address
+            - service_id: ID in the mailbox service
+            - token/credentials: access credentials (if required)
 
         Raises:
-            EmailServiceError: 创建失败
-        """
+            EmailServiceError: Creation failed"""
         pass
 
     @abc.abstractmethod
@@ -84,80 +76,70 @@ class BaseEmailService(abc.ABC):
         pattern: str = r"(?<!\d)(\d{6})(?!\d)",
         otp_sent_at: Optional[float] = None,
     ) -> Optional[str]:
-        """
-        获取验证码
+        """Get verification code
 
         Args:
-            email: 邮箱地址
-            email_id: 邮箱服务中的 ID（如果需要）
-            timeout: 超时时间（秒）
-            pattern: 验证码正则表达式
-            otp_sent_at: OTP 发送时间戳，用于过滤旧邮件
+            email: email address
+            email_id: ID in the email service (if required)
+            timeout: timeout (seconds)
+            pattern: verification code regular expression
+            otp_sent_at: OTP sending timestamp, used to filter old emails
 
         Returns:
-            验证码字符串，如果超时或未找到返回 None
+            Verification code string, returns None if timeout or not found
 
         Raises:
-            EmailServiceError: 服务错误
-        """
+            EmailServiceError: Service error"""
         pass
 
     @abc.abstractmethod
     def list_emails(self, **kwargs) -> List[Dict[str, Any]]:
-        """
-        列出所有邮箱（如果服务支持）
+        """List all mailboxes (if supported by the service)
 
         Args:
-            **kwargs: 其他参数
+            **kwargs: other parameters
 
         Returns:
-            邮箱列表
+            Email list
 
         Raises:
-            EmailServiceError: 服务错误
-        """
+            EmailServiceError: Service error"""
         pass
 
     @abc.abstractmethod
     def delete_email(self, email_id: str) -> bool:
-        """
-        删除邮箱
+        """Delete mailbox
 
         Args:
-            email_id: 邮箱服务中的 ID
+            email_id: ID in the email service
 
         Returns:
-            是否删除成功
+            Is deletion successful?
 
         Raises:
-            EmailServiceError: 服务错误
-        """
+            EmailServiceError: Service error"""
         pass
 
     @abc.abstractmethod
     def check_health(self) -> bool:
-        """
-        检查服务健康状态
+        """Check service health status
 
         Returns:
-            服务是否健康
+            Is the service healthy?
 
         Note:
-            此方法不应抛出异常，应捕获异常并返回 False
-        """
+            This method should not throw an exception, it should catch the exception and return False"""
         pass
 
     def get_email_info(self, email_id: str) -> Optional[Dict[str, Any]]:
-        """
-        获取邮箱信息（可选实现）
+        """Get email information (optional implementation)
 
         Args:
-            email_id: 邮箱服务中的 ID
+            email_id: ID in the email service
 
         Returns:
-            邮箱信息字典，如果不存在返回 None
-        """
-        # 默认实现：遍历列表查找
+            Email information dictionary, returns None if it does not exist"""
+        # Default implementation: traverse the list to find
         for email_info in self.list_emails():
             if email_info.get("id") == email_id:
                 return email_info
@@ -172,20 +154,18 @@ class BaseEmailService(abc.ABC):
         expected_sender: str = None,
         expected_subject: str = None
     ) -> Optional[Dict[str, Any]]:
-        """
-        等待并获取邮件（可选实现）
+        """Wait for and get mail (optional implementation)
 
         Args:
-            email: 邮箱地址
-            email_id: 邮箱服务中的 ID
-            timeout: 超时时间（秒）
-            check_interval: 检查间隔（秒）
-            expected_sender: 期望的发件人（包含检查）
-            expected_subject: 期望的主题（包含检查）
+            email: email address
+            email_id: ID in the email service
+            timeout: timeout (seconds)
+            check_interval: check interval (seconds)
+            expected_sender: expected sender (check included)
+            expected_subject: expected subject (contains checks)
 
         Returns:
-            邮件信息字典，如果超时返回 None
-        """
+            Email information dictionary, returns None if timeout occurs"""
         import time
         from datetime import datetime
 
@@ -199,26 +179,26 @@ class BaseEmailService(abc.ABC):
                     email_data = email_info.get("email", {})
                     current_email_id = email_info.get("id")
 
-                    # 检查是否是新的邮件
+                    # Check if it is a new email
                     if last_email_id and current_email_id == last_email_id:
                         continue
 
-                    # 检查邮箱地址
+                    # Check email address
                     if email_data.get("address") != email:
                         continue
 
-                    # 获取邮件列表
+                    # Get mailing list
                     messages = self.get_email_messages(email_id or current_email_id)
                     for message in messages:
-                        # 检查发件人
+                        # Check sender
                         if expected_sender and expected_sender not in message.get("from", ""):
                             continue
 
-                        # 检查主题
+                        # Check topic
                         if expected_subject and expected_subject not in message.get("subject", ""):
                             continue
 
-                        # 返回邮件信息
+                        # Return email information
                         return {
                             "id": message.get("id"),
                             "from": message.get("from"),
@@ -228,57 +208,51 @@ class BaseEmailService(abc.ABC):
                             "email_info": email_info
                         }
 
-                    # 更新最后检查的邮件 ID
+                    # Update last checked email ID
                     if messages:
                         last_email_id = current_email_id
 
             except Exception as e:
-                logger.warning(f"等待邮件时出错: {e}")
+                logger.warning(f"Error while waiting for mail: {e}")
 
             time.sleep(check_interval)
 
         return None
 
     def get_email_messages(self, email_id: str, **kwargs) -> List[Dict[str, Any]]:
-        """
-        获取邮箱中的邮件列表（可选实现）
+        """Get the list of messages in the mailbox (optional implementation)
 
         Args:
-            email_id: 邮箱服务中的 ID
-            **kwargs: 其他参数
+            email_id: ID in the email service
+            **kwargs: other parameters
 
         Returns:
-            邮件列表
+            mailing list
 
         Note:
-            这是可选方法，某些服务可能不支持
-        """
-        raise NotImplementedError("此邮箱服务不支持获取邮件列表")
+            This is an optional method and may not be supported by some services"""
+        raise NotImplementedError("This email service does not support obtaining mailing lists")
 
     def get_message_content(self, email_id: str, message_id: str) -> Optional[Dict[str, Any]]:
-        """
-        获取邮件内容（可选实现）
+        """Get email content (optional implementation)
 
         Args:
-            email_id: 邮箱服务中的 ID
-            message_id: 邮件 ID
+            email_id: ID in the email service
+            message_id: email ID
 
         Returns:
-            邮件内容字典
+            Email content dictionary
 
         Note:
-            这是可选方法，某些服务可能不支持
-        """
-        raise NotImplementedError("此邮箱服务不支持获取邮件内容")
+            This is an optional method and may not be supported by some services"""
+        raise NotImplementedError("This email service does not support obtaining email content")
 
     def update_status(self, success: bool, error: Exception = None):
-        """
-        更新服务状态
+        """Update service status
 
         Args:
-            success: 操作是否成功
-            error: 错误信息
-        """
+            success: whether the operation was successful
+            error: error message"""
         if success:
             self._status = EmailServiceStatus.HEALTHY
             self._last_error = None
@@ -288,28 +262,26 @@ class BaseEmailService(abc.ABC):
                 self._last_error = str(error)
 
     def __str__(self) -> str:
-        """字符串表示"""
+        """string representation"""
         return f"{self.name} ({self.service_type.value})"
 
 
 class EmailServiceFactory:
-    """邮箱服务工厂"""
+    """Email service factory"""
 
     _registry: Dict[EmailServiceType, type] = {}
 
     @classmethod
     def register(cls, service_type: EmailServiceType, service_class: type):
-        """
-        注册邮箱服务类
+        """Register email service class
 
         Args:
-            service_type: 服务类型
-            service_class: 服务类
-        """
+            service_type: service type
+            service_class: service class"""
         if not issubclass(service_class, BaseEmailService):
-            raise TypeError(f"{service_class} 必须是 BaseEmailService 的子类")
+            raise TypeError(f"{service_class} must be a subclass of BaseEmailService")
         cls._registry[service_type] = service_class
-        logger.info(f"注册邮箱服务: {service_type.value} -> {service_class.__name__}")
+        logger.info(f"Register email service: {service_type.value} -> {service_class.__name__}")
 
     @classmethod
     def create(
@@ -318,69 +290,61 @@ class EmailServiceFactory:
         config: Dict[str, Any],
         name: str = None
     ) -> BaseEmailService:
-        """
-        创建邮箱服务实例
+        """Create an email service instance
 
         Args:
-            service_type: 服务类型
-            config: 服务配置
-            name: 服务名称
+            service_type: service type
+            config: service configuration
+            name: service name
 
         Returns:
-            邮箱服务实例
+            Email service instance
 
         Raises:
-            ValueError: 服务类型未注册或配置无效
-        """
+            ValueError: The service type is not registered or the configuration is invalid"""
         if service_type not in cls._registry:
-            raise ValueError(f"未注册的服务类型: {service_type.value}")
+            raise ValueError(f"Unregistered service type: {service_type.value}")
 
         service_class = cls._registry[service_type]
         try:
             instance = service_class(config, name)
             return instance
         except Exception as e:
-            raise ValueError(f"创建邮箱服务失败: {e}")
+            raise ValueError(f"Failed to create mailbox service: {e}")
 
     @classmethod
     def get_available_services(cls) -> List[EmailServiceType]:
-        """
-        获取所有已注册的服务类型
+        """Get all registered service types
 
         Returns:
-            已注册的服务类型列表
-        """
+            List of registered service types"""
         return list(cls._registry.keys())
 
     @classmethod
     def get_service_class(cls, service_type: EmailServiceType) -> Optional[type]:
-        """
-        获取服务类
+        """Get service class
 
         Args:
-            service_type: 服务类型
+            service_type: service type
 
         Returns:
-            服务类，如果未注册返回 None
-        """
+            Service class, returns None if not registered"""
         return cls._registry.get(service_type)
 
 
-# 简化的工厂函数
+# Simplified factory function
 def create_email_service(
     service_type: EmailServiceType,
     config: Dict[str, Any],
     name: str = None
 ) -> BaseEmailService:
-    """
-    创建邮箱服务（简化工厂函数）
+    """Create a mailbox service (simplified factory function)
 
     Args:
-        service_type: 服务类型
-        config: 服务配置
-        name: 服务名称
+        service_type: service type
+        config: service configuration
+        name: service name
 
     Returns:
-        邮箱服务实例
-    """
+        Email service instance"""
     return EmailServiceFactory.create(service_type, config, name)

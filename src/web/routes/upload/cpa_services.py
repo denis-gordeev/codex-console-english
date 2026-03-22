@@ -1,5 +1,5 @@
 """
-CPA 服务管理 API 路由
+CPA Service Management API Routing
 """
 
 from typing import List, Optional
@@ -67,7 +67,7 @@ def _to_response(svc) -> CpaServiceResponse:
 
 @router.get("", response_model=List[CpaServiceResponse])
 async def list_cpa_services(enabled: Optional[bool] = None):
-    """获取 CPA 服务列表"""
+    """Get CPA service list"""
     with get_db() as db:
         services = crud.get_cpa_services(db, enabled=enabled)
         return [_to_response(s) for s in services]
@@ -75,7 +75,7 @@ async def list_cpa_services(enabled: Optional[bool] = None):
 
 @router.post("", response_model=CpaServiceResponse)
 async def create_cpa_service(request: CpaServiceCreate):
-    """新增 CPA 服务"""
+    """Add CPA service"""
     with get_db() as db:
         service = crud.create_cpa_service(
             db,
@@ -90,21 +90,21 @@ async def create_cpa_service(request: CpaServiceCreate):
 
 @router.get("/{service_id}", response_model=CpaServiceResponse)
 async def get_cpa_service(service_id: int):
-    """获取单个 CPA 服务详情"""
+    """Get individual CPA service details"""
     with get_db() as db:
         service = crud.get_cpa_service_by_id(db, service_id)
         if not service:
-            raise HTTPException(status_code=404, detail="CPA 服务不存在")
+            raise HTTPException(status_code=404, detail="CPA service does not exist")
         return _to_response(service)
 
 
 @router.get("/{service_id}/full")
 async def get_cpa_service_full(service_id: int):
-    """获取 CPA 服务完整配置（含 token）"""
+    """Get the complete configuration of CPA service (including token)"""
     with get_db() as db:
         service = crud.get_cpa_service_by_id(db, service_id)
         if not service:
-            raise HTTPException(status_code=404, detail="CPA 服务不存在")
+            raise HTTPException(status_code=404, detail="CPA service does not exist")
         return {
             "id": service.id,
             "name": service.name,
@@ -117,18 +117,18 @@ async def get_cpa_service_full(service_id: int):
 
 @router.patch("/{service_id}", response_model=CpaServiceResponse)
 async def update_cpa_service(service_id: int, request: CpaServiceUpdate):
-    """更新 CPA 服务配置"""
+    """Update CPA service configuration"""
     with get_db() as db:
         service = crud.get_cpa_service_by_id(db, service_id)
         if not service:
-            raise HTTPException(status_code=404, detail="CPA 服务不存在")
+            raise HTTPException(status_code=404, detail="CPA service does not exist")
 
         update_data = {}
         if request.name is not None:
             update_data["name"] = request.name
         if request.api_url is not None:
             update_data["api_url"] = request.api_url
-        # api_token 留空则保持原值
+        # api_token If left blank, the original value will be retained.
         if request.api_token:
             update_data["api_token"] = request.api_token
         if request.enabled is not None:
@@ -142,30 +142,30 @@ async def update_cpa_service(service_id: int, request: CpaServiceUpdate):
 
 @router.delete("/{service_id}")
 async def delete_cpa_service(service_id: int):
-    """删除 CPA 服务"""
+    """Delete CPA service"""
     with get_db() as db:
         service = crud.get_cpa_service_by_id(db, service_id)
         if not service:
-            raise HTTPException(status_code=404, detail="CPA 服务不存在")
+            raise HTTPException(status_code=404, detail="CPA service does not exist")
         crud.delete_cpa_service(db, service_id)
-        return {"success": True, "message": f"CPA 服务 {service.name} 已删除"}
+        return {"success": True, "message": f"CPA service {service.name} has been deleted"}
 
 
 @router.post("/{service_id}/test")
 async def test_cpa_service(service_id: int):
-    """测试 CPA 服务连接"""
+    """Test CPA service connection"""
     with get_db() as db:
         service = crud.get_cpa_service_by_id(db, service_id)
         if not service:
-            raise HTTPException(status_code=404, detail="CPA 服务不存在")
+            raise HTTPException(status_code=404, detail="CPA service does not exist")
         success, message = test_cpa_connection(service.api_url, service.api_token)
         return {"success": success, "message": message}
 
 
 @router.post("/test-connection")
 async def test_cpa_connection_direct(request: CpaServiceTestRequest):
-    """直接测试 CPA 连接（用于添加前验证）"""
+    """Test CPA connection directly (for pre-add verification)"""
     if not request.api_url or not request.api_token:
-        raise HTTPException(status_code=400, detail="api_url 和 api_token 不能为空")
+        raise HTTPException(status_code=400, detail="api_url and api_token cannot be empty")
     success, message = test_cpa_connection(request.api_url, request.api_token)
     return {"success": success, "message": message}

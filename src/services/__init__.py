@@ -1,6 +1,4 @@
-"""
-邮箱服务模块
-"""
+"""Email service module"""
 
 from .base import (
     BaseEmailService,
@@ -18,7 +16,7 @@ from .duck_mail import DuckMailService
 from .freemail import FreemailService
 from .imap_mail import ImapMailService
 
-# 注册服务
+# Registration service
 EmailServiceFactory.register(EmailServiceType.TEMPMAIL, TempmailService)
 EmailServiceFactory.register(EmailServiceType.OUTLOOK, OutlookService)
 EmailServiceFactory.register(EmailServiceType.MOE_MAIL, MeoMailEmailService)
@@ -27,7 +25,7 @@ EmailServiceFactory.register(EmailServiceType.DUCK_MAIL, DuckMailService)
 EmailServiceFactory.register(EmailServiceType.FREEMAIL, FreemailService)
 EmailServiceFactory.register(EmailServiceType.IMAP_MAIL, ImapMailService)
 
-# 导出 Outlook 模块的额外内容
+# Export additional content for the Outlook module
 from .outlook.base import (
     ProviderType,
     EmailMessage,
@@ -44,14 +42,14 @@ from .outlook.providers import (
 )
 
 __all__ = [
-    # 基类
+    # base class
     'BaseEmailService',
     'EmailServiceError',
     'EmailServiceStatus',
     'EmailServiceFactory',
     'create_email_service',
     'EmailServiceType',
-    # 服务类
+    # Service category
     'TempmailService',
     'OutlookService',
     'MeoMailEmailService',
@@ -59,7 +57,7 @@ __all__ = [
     'DuckMailService',
     'FreemailService',
     'ImapMailService',
-    # Outlook 模块
+    # Outlook module
     'ProviderType',
     'EmailMessage',
     'TokenInfo',

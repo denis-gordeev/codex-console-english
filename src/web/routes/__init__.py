@@ -1,5 +1,5 @@
 """
-API 路由模块
+API routing module
 """
 
 from fastapi import APIRouter
@@ -15,7 +15,7 @@ from .upload.tm_services import router as tm_services_router
 
 api_router = APIRouter()
 
-# 注册各模块路由
+# Register routes for each module
 api_router.include_router(accounts_router, prefix="/accounts", tags=["accounts"])
 api_router.include_router(registration_router, prefix="/registration", tags=["registration"])
 api_router.include_router(settings_router, prefix="/settings", tags=["settings"])

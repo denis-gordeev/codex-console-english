@@ -1,5 +1,5 @@
 """
-Team Manager 服务管理 API 路由
+Team Manager Service Management API Routing
 """
 
 from typing import List, Optional
@@ -67,7 +67,7 @@ def _to_response(svc) -> TmServiceResponse:
 
 @router.get("", response_model=List[TmServiceResponse])
 async def list_tm_services(enabled: Optional[bool] = None):
-    """获取 Team Manager 服务列表"""
+    """Get Team Manager service list"""
     with get_db() as db:
         services = crud.get_tm_services(db, enabled=enabled)
         return [_to_response(s) for s in services]
@@ -75,7 +75,7 @@ async def list_tm_services(enabled: Optional[bool] = None):
 
 @router.post("", response_model=TmServiceResponse)
 async def create_tm_service(request: TmServiceCreate):
-    """新增 Team Manager 服务"""
+    """Add Team Manager service"""
     with get_db() as db:
         svc = crud.create_tm_service(
             db,
@@ -90,21 +90,21 @@ async def create_tm_service(request: TmServiceCreate):
 
 @router.get("/{service_id}", response_model=TmServiceResponse)
 async def get_tm_service(service_id: int):
-    """获取单个 Team Manager 服务详情"""
+    """Get individual Team Manager service details"""
     with get_db() as db:
         svc = crud.get_tm_service_by_id(db, service_id)
         if not svc:
-            raise HTTPException(status_code=404, detail="Team Manager 服务不存在")
+            raise HTTPException(status_code=404, detail="Team Manager service does not exist")
         return _to_response(svc)
 
 
 @router.patch("/{service_id}", response_model=TmServiceResponse)
 async def update_tm_service(service_id: int, request: TmServiceUpdate):
-    """更新 Team Manager 服务配置"""
+    """Update Team Manager service configuration"""
     with get_db() as db:
         svc = crud.get_tm_service_by_id(db, service_id)
         if not svc:
-            raise HTTPException(status_code=404, detail="Team Manager 服务不存在")
+            raise HTTPException(status_code=404, detail="Team Manager service does not exist")
 
         update_data = {}
         if request.name is not None:
@@ -124,30 +124,30 @@ async def update_tm_service(service_id: int, request: TmServiceUpdate):
 
 @router.delete("/{service_id}")
 async def delete_tm_service(service_id: int):
-    """删除 Team Manager 服务"""
+    """Remove Team Manager service"""
     with get_db() as db:
         svc = crud.get_tm_service_by_id(db, service_id)
         if not svc:
-            raise HTTPException(status_code=404, detail="Team Manager 服务不存在")
+            raise HTTPException(status_code=404, detail="Team Manager service does not exist")
         crud.delete_tm_service(db, service_id)
-        return {"success": True, "message": f"Team Manager 服务 {svc.name} 已删除"}
+        return {"success": True, "message": f"Team Manager service {svc.name} has been deleted"}
 
 
 @router.post("/{service_id}/test")
 async def test_tm_service(service_id: int):
-    """测试 Team Manager 服务连接"""
+    """Test Team Manager service connection"""
     with get_db() as db:
         svc = crud.get_tm_service_by_id(db, service_id)
         if not svc:
-            raise HTTPException(status_code=404, detail="Team Manager 服务不存在")
+            raise HTTPException(status_code=404, detail="Team Manager service does not exist")
         success, message = test_team_manager_connection(svc.api_url, svc.api_key)
         return {"success": success, "message": message}
 
 
 @router.post("/test-connection")
 async def test_tm_connection_direct(request: TmTestRequest):
-    """直接测试 Team Manager 连接（用于添加前验证）"""
+    """Test Team Manager connection directly (for pre-add verification)"""
     if not request.api_url or not request.api_key:
-        raise HTTPException(status_code=400, detail="api_url 和 api_key 不能为空")
+        raise HTTPException(status_code=400, detail="api_url and api_key cannot be empty")
     success, message = test_team_manager_connection(request.api_url, request.api_key)
     return {"success": success, "message": message}

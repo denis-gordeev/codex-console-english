@@ -1,8 +1,6 @@
-"""
-Temp-Mail 邮箱服务实现
-基于自部署 Cloudflare Worker 临时邮箱服务
-接口文档参见 plan/temp-mail.md
-"""
+"""Temp-Mail mailbox service implementation
+Based on self-deployed Cloudflare Worker temporary mailbox service
+For interface documentation, see plan/temp-mail.md"""
 
 import re
 import time
@@ -24,32 +22,28 @@ logger = logging.getLogger(__name__)
 
 
 class TempMailService(BaseEmailService):
-    """
-    Temp-Mail 邮箱服务
-    基于自部署 Cloudflare Worker 的临时邮箱，admin 模式管理邮箱
-    不走代理，不使用 requests 库
-    """
+    """Temp-Mail email service
+    Temporary mailbox based on self-deployed Cloudflare Worker, admin mode management mailbox
+    No proxy, no requests library"""
 
     def __init__(self, config: Dict[str, Any] = None, name: str = None):
-        """
-        初始化 TempMail 服务
+        """Initialize TempMail service
 
         Args:
-            config: 配置字典，支持以下键:
-                - base_url: Worker 域名地址，如 https://mail.example.com (必需)
-                - admin_password: Admin 密码，对应 x-admin-auth header (必需)
-                - domain: 邮箱域名，如 example.com (必需)
-                - enable_prefix: 是否启用前缀，默认 True
-                - timeout: 请求超时时间，默认 30
-                - max_retries: 最大重试次数，默认 3
-            name: 服务名称
-        """
+            config: configuration dictionary, supports the following keys:
+                - base_url: Worker domain name address, such as https://mail.example.com (required)
+                - admin_password: Admin password, corresponding to x-admin-auth header (required)
+                - domain: email domain name, such as example.com (required)
+                - enable_prefix: Whether to enable prefix, default True
+                - timeout: request timeout, default 30
+                - max_retries: Maximum number of retries, default 3
+            name: service name"""
         super().__init__(EmailServiceType.TEMP_MAIL, name)
 
         required_keys = ["base_url", "admin_password", "domain"]
         missing_keys = [key for key in required_keys if not (config or {}).get(key)]
         if missing_keys:
-            raise ValueError(f"缺少必需配置: {missing_keys}")
+            raise ValueError(f"Missing required configuration: {missing_keys}")
 
         default_config = {
             "enable_prefix": True,
@@ -58,18 +52,18 @@ class TempMailService(BaseEmailService):
         }
         self.config = {**default_config, **(config or {})}
 
-        # 不走代理，proxy_url=None
+        # Not using a proxy, proxy_url=None
         http_config = RequestConfig(
             timeout=self.config["timeout"],
             max_retries=self.config["max_retries"],
         )
         self.http_client = HTTPClient(proxy_url=None, config=http_config)
 
-        # 邮箱缓存：email -> {jwt, address}
+        # Mailbox cache: email -> {jwt, address}
         self._email_cache: Dict[str, Dict[str, Any]] = {}
 
     def _decode_mime_header(self, value: str) -> str:
-        """解码 MIME 头，兼容 RFC 2047 编码主题。"""
+        """Decode MIME headers, compatible with RFC 2047 encoding topics."""
         if not value:
             return ""
         try:
@@ -78,7 +72,7 @@ class TempMailService(BaseEmailService):
             return value
 
     def _extract_body_from_message(self, message: Message) -> str:
-        """从 MIME 邮件对象中提取可读正文。"""
+        """Extracts the readable body from a MIME message object."""
         parts: List[str] = []
 
         if message.is_multipart():
@@ -121,7 +115,7 @@ class TempMailService(BaseEmailService):
         return unescape("\n".join(part for part in parts if part).strip())
 
     def _extract_mail_fields(self, mail: Dict[str, Any]) -> Dict[str, str]:
-        """统一提取邮件字段，兼容 raw MIME 和不同 Worker 返回格式。"""
+        """Unified extraction of email fields, compatible with raw MIME and different Worker return formats."""
         sender = str(
             mail.get("source")
             or mail.get("from")
@@ -148,7 +142,7 @@ class TempMailService(BaseEmailService):
                 if parsed_body:
                     body_text = f"{body_text}\n{parsed_body}".strip() if body_text else parsed_body
             except Exception as e:
-                logger.debug(f"解析 TempMail raw 邮件失败: {e}")
+                logger.debug(f"Failed to parse TempMail raw email: {e}")
                 body_text = f"{body_text}\n{raw}".strip() if body_text else raw
 
         body_text = unescape(re.sub(r"<[^>]+>", " ", body_text))
@@ -160,7 +154,7 @@ class TempMailService(BaseEmailService):
         }
 
     def _admin_headers(self) -> Dict[str, str]:
-        """构造 admin 请求头"""
+        """Construct admin request header"""
         return {
             "x-admin-auth": self.config["admin_password"],
             "Content-Type": "application/json",
@@ -168,24 +162,22 @@ class TempMailService(BaseEmailService):
         }
 
     def _make_request(self, method: str, path: str, **kwargs) -> Any:
-        """
-        发送请求并返回 JSON 数据
+        """Send a request and return JSON data
 
         Args:
-            method: HTTP 方法
-            path: 请求路径（以 / 开头）
-            **kwargs: 传递给 http_client.request 的额外参数
+            method: HTTP method
+            path: request path (starting with /)
+            **kwargs: additional parameters passed to http_client.request
 
         Returns:
-            响应 JSON 数据
+            Respond to JSON data
 
         Raises:
-            EmailServiceError: 请求失败
-        """
+            EmailServiceError: Request failed"""
         base_url = self.config["base_url"].rstrip("/")
         url = f"{base_url}{path}"
 
-        # 合并默认 admin headers
+        # Merge default admin headers
         kwargs.setdefault("headers", {})
         for k, v in self._admin_headers().items():
             kwargs["headers"].setdefault(k, v)
@@ -194,7 +186,7 @@ class TempMailService(BaseEmailService):
             response = self.http_client.request(method, url, **kwargs)
 
             if response.status_code >= 400:
-                error_msg = f"请求失败: {response.status_code}"
+                error_msg = f"Request failed: {response.status_code}"
                 try:
                     error_data = response.json()
                     error_msg = f"{error_msg} - {error_data}"
@@ -212,22 +204,20 @@ class TempMailService(BaseEmailService):
             self.update_status(False, e)
             if isinstance(e, EmailServiceError):
                 raise
-            raise EmailServiceError(f"请求失败: {method} {path} - {e}")
+            raise EmailServiceError(f"Request failed: {method} {path} - {e}")
 
     def create_email(self, config: Dict[str, Any] = None) -> Dict[str, Any]:
-        """
-        通过 admin API 创建临时邮箱
+        """Create temporary mailbox via admin API
 
         Returns:
-            包含邮箱信息的字典:
-            - email: 邮箱地址
-            - jwt: 用户级 JWT token
-            - service_id: 同 email（用作标识）
-        """
+            Dictionary containing email information:
+            - email: email address
+            - jwt: user-level JWT token
+            - service_id: same as email (used as identifier)"""
         import random
         import string
 
-        # 生成随机邮箱名
+        # Generate random email name
         letters = ''.join(random.choices(string.ascii_lowercase, k=5))
         digits = ''.join(random.choices(string.digits, k=random.randint(1, 3)))
         suffix = ''.join(random.choices(string.ascii_lowercase, k=random.randint(1, 3)))
@@ -249,7 +239,7 @@ class TempMailService(BaseEmailService):
             jwt = response.get("jwt", "").strip()
 
             if not address:
-                raise EmailServiceError(f"API 返回数据不完整: {response}")
+                raise EmailServiceError(f"API return data is incomplete: {response}")
 
             email_info = {
                 "email": address,
@@ -259,10 +249,10 @@ class TempMailService(BaseEmailService):
                 "created_at": time.time(),
             }
 
-            # 缓存 jwt，供获取验证码时使用
+            # Cache jwt for use when obtaining verification code
             self._email_cache[address] = email_info
 
-            logger.info(f"成功创建 TempMail 邮箱: {address}")
+            logger.info(f"TempMail mailbox created successfully: {address}")
             self.update_status(True)
             return email_info
 
@@ -270,7 +260,7 @@ class TempMailService(BaseEmailService):
             self.update_status(False, e)
             if isinstance(e, EmailServiceError):
                 raise
-            raise EmailServiceError(f"创建邮箱失败: {e}")
+            raise EmailServiceError(f"Failed to create mailbox: {e}")
 
     def get_verification_code(
         self,
@@ -280,25 +270,23 @@ class TempMailService(BaseEmailService):
         pattern: str = OTP_CODE_PATTERN,
         otp_sent_at: Optional[float] = None,
     ) -> Optional[str]:
-        """
-        从 TempMail 邮箱获取验证码
+        """Get verification code from TempMail email
 
         Args:
-            email: 邮箱地址
-            email_id: 未使用，保留接口兼容
-            timeout: 超时时间（秒）
-            pattern: 验证码正则
-            otp_sent_at: OTP 发送时间戳（暂未使用）
+            email: email address
+            email_id: Unused, reserved for interface compatibility
+            timeout: timeout (seconds)
+            pattern: Verification code regular
+            otp_sent_at: OTP sending timestamp (not used yet)
 
         Returns:
-            验证码字符串，超时返回 None
-        """
-        logger.info(f"正在从 TempMail 邮箱 {email} 获取验证码...")
+            Verification code string, returns None when timeout"""
+        logger.info(f"Retrieving verification code from TempMail email address {email}...")
 
         start_time = time.time()
         seen_mail_ids: set = set()
 
-        # 优先使用用户级 JWT，回退到 admin API
+        # Prefer user-level JWT and fall back to admin API
         cached = self._email_cache.get(email, {})
         jwt = cached.get("jwt")
 
@@ -318,7 +306,7 @@ class TempMailService(BaseEmailService):
                         params={"limit": 20, "offset": 0, "address": email},
                     )
 
-                # /user_api/mails 和 /admin/mails 返回格式相同: {"results": [...], "total": N}
+                # /user_api/mails and /admin/mails return the same format: {"results": [...], "total": N}
                 mails = response.get("results", [])
                 if not isinstance(mails, list):
                     time.sleep(3)
@@ -338,37 +326,35 @@ class TempMailService(BaseEmailService):
                     raw_text = parsed["raw"]
                     content = f"{sender}\n{subject}\n{body_text}\n{raw_text}".strip()
 
-                    # 只处理 OpenAI 邮件
+                    # Only handle OpenAI emails
                     if "openai" not in sender and "openai" not in content.lower():
                         continue
 
                     match = re.search(pattern, content)
                     if match:
                         code = match.group(1)
-                        logger.info(f"从 TempMail 邮箱 {email} 找到验证码: {code}")
+                        logger.info(f"Verification code found from TempMail email {email}: {code}")
                         self.update_status(True)
                         return code
 
             except Exception as e:
-                logger.debug(f"检查 TempMail 邮件时出错: {e}")
+                logger.debug(f"Error checking TempMail: {e}")
 
             time.sleep(3)
 
-        logger.warning(f"等待 TempMail 验证码超时: {email}")
+        logger.warning(f"Timeout waiting for TempMail verification code: {email}")
         return None
 
     def list_emails(self, limit: int = 100, offset: int = 0, **kwargs) -> List[Dict[str, Any]]:
-        """
-        列出邮箱
+        """List mailboxes
 
         Args:
-            limit: 返回数量上限
-            offset: 分页偏移
-            **kwargs: 额外查询参数，透传给 admin API
+            limit: the upper limit of the returned quantity
+            offset: paging offset
+            **kwargs: additional query parameters, transparently passed to the admin API
 
         Returns:
-            邮箱列表
-        """
+            Email list"""
         params = {
             "limit": limit,
             "offset": offset,
@@ -379,7 +365,7 @@ class TempMailService(BaseEmailService):
             response = self._make_request("GET", "/admin/mails", params=params)
             mails = response.get("results", [])
             if not isinstance(mails, list):
-                raise EmailServiceError(f"API 返回数据格式错误: {response}")
+                raise EmailServiceError(f"API return data format error: {response}")
 
             emails: List[Dict[str, Any]] = []
             for mail in mails:
@@ -403,18 +389,16 @@ class TempMailService(BaseEmailService):
             self.update_status(True)
             return emails
         except Exception as e:
-            logger.warning(f"列出 TempMail 邮箱失败: {e}")
+            logger.warning(f"Failed to list TempMail mailboxes: {e}")
             self.update_status(False, e)
             return list(self._email_cache.values())
 
     def delete_email(self, email_id: str) -> bool:
-        """
-        删除邮箱
+        """Delete mailbox
 
         Note:
-            当前 TempMail admin API 文档未见删除地址接口，这里先从本地缓存移除，
-            以满足统一接口并避免服务实例化失败。
-        """
+            The current TempMail admin API document does not see the deletion address interface. Here, remove it from the local cache first.
+            To satisfy the unified interface and avoid service instantiation failure."""
         removed = False
         emails_to_delete = []
 
@@ -432,15 +416,15 @@ class TempMailService(BaseEmailService):
             removed = True
 
         if removed:
-            logger.info(f"已从 TempMail 缓存移除邮箱: {email_id}")
+            logger.info(f"Mailbox removed from TempMail cache: {email_id}")
             self.update_status(True)
         else:
-            logger.info(f"TempMail 缓存中未找到邮箱: {email_id}")
+            logger.info(f"Email not found in TempMail cache: {email_id}")
 
         return removed
 
     def check_health(self) -> bool:
-        """检查服务健康状态"""
+        """Check service health status"""
         try:
             self._make_request(
                 "GET",
@@ -450,6 +434,6 @@ class TempMailService(BaseEmailService):
             self.update_status(True)
             return True
         except Exception as e:
-            logger.warning(f"TempMail 健康检查失败: {e}")
+            logger.warning(f"TempMail health check failed: {e}")
             self.update_status(False, e)
             return False

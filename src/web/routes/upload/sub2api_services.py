@@ -1,5 +1,5 @@
 """
-Sub2API 服务管理 API 路由
+Sub2API service management API routing
 """
 
 from typing import List, Optional
@@ -74,7 +74,7 @@ def _to_response(svc) -> Sub2ApiServiceResponse:
 
 @router.get("", response_model=List[Sub2ApiServiceResponse])
 async def list_sub2api_services(enabled: Optional[bool] = None):
-    """获取 Sub2API 服务列表"""
+    """Get Sub2API service list"""
     with get_db() as db:
         services = crud.get_sub2api_services(db, enabled=enabled)
         return [_to_response(s) for s in services]
@@ -82,7 +82,7 @@ async def list_sub2api_services(enabled: Optional[bool] = None):
 
 @router.post("", response_model=Sub2ApiServiceResponse)
 async def create_sub2api_service(request: Sub2ApiServiceCreate):
-    """新增 Sub2API 服务"""
+    """Add Sub2API service"""
     with get_db() as db:
         svc = crud.create_sub2api_service(
             db,
@@ -97,21 +97,21 @@ async def create_sub2api_service(request: Sub2ApiServiceCreate):
 
 @router.get("/{service_id}", response_model=Sub2ApiServiceResponse)
 async def get_sub2api_service(service_id: int):
-    """获取单个 Sub2API 服务详情"""
+    """Get individual Sub2API service details"""
     with get_db() as db:
         svc = crud.get_sub2api_service_by_id(db, service_id)
         if not svc:
-            raise HTTPException(status_code=404, detail="Sub2API 服务不存在")
+            raise HTTPException(status_code=404, detail="Sub2API service does not exist")
         return _to_response(svc)
 
 
 @router.get("/{service_id}/full")
 async def get_sub2api_service_full(service_id: int):
-    """获取 Sub2API 服务完整配置（含 API Key）"""
+    """Get the complete configuration of Sub2API service (including API Key)"""
     with get_db() as db:
         svc = crud.get_sub2api_service_by_id(db, service_id)
         if not svc:
-            raise HTTPException(status_code=404, detail="Sub2API 服务不存在")
+            raise HTTPException(status_code=404, detail="Sub2API service does not exist")
         return {
             "id": svc.id,
             "name": svc.name,
@@ -124,18 +124,18 @@ async def get_sub2api_service_full(service_id: int):
 
 @router.patch("/{service_id}", response_model=Sub2ApiServiceResponse)
 async def update_sub2api_service(service_id: int, request: Sub2ApiServiceUpdate):
-    """更新 Sub2API 服务配置"""
+    """Update Sub2API service configuration"""
     with get_db() as db:
         svc = crud.get_sub2api_service_by_id(db, service_id)
         if not svc:
-            raise HTTPException(status_code=404, detail="Sub2API 服务不存在")
+            raise HTTPException(status_code=404, detail="Sub2API service does not exist")
 
         update_data = {}
         if request.name is not None:
             update_data["name"] = request.name
         if request.api_url is not None:
             update_data["api_url"] = request.api_url
-        # api_key 留空则保持原值
+        # api_key If left blank, the original value will be retained.
         if request.api_key:
             update_data["api_key"] = request.api_key
         if request.enabled is not None:
@@ -149,40 +149,40 @@ async def update_sub2api_service(service_id: int, request: Sub2ApiServiceUpdate)
 
 @router.delete("/{service_id}")
 async def delete_sub2api_service(service_id: int):
-    """删除 Sub2API 服务"""
+    """Delete Sub2API service"""
     with get_db() as db:
         svc = crud.get_sub2api_service_by_id(db, service_id)
         if not svc:
-            raise HTTPException(status_code=404, detail="Sub2API 服务不存在")
+            raise HTTPException(status_code=404, detail="Sub2API service does not exist")
         crud.delete_sub2api_service(db, service_id)
-        return {"success": True, "message": f"Sub2API 服务 {svc.name} 已删除"}
+        return {"success": True, "message": f"Sub2API service {svc.name} has been deleted"}
 
 
 @router.post("/{service_id}/test")
 async def test_sub2api_service(service_id: int):
-    """测试 Sub2API 服务连接"""
+    """Test Sub2API service connection"""
     with get_db() as db:
         svc = crud.get_sub2api_service_by_id(db, service_id)
         if not svc:
-            raise HTTPException(status_code=404, detail="Sub2API 服务不存在")
+            raise HTTPException(status_code=404, detail="Sub2API service does not exist")
         success, message = test_sub2api_connection(svc.api_url, svc.api_key)
         return {"success": success, "message": message}
 
 
 @router.post("/test-connection")
 async def test_sub2api_connection_direct(request: Sub2ApiTestRequest):
-    """直接测试 Sub2API 连接（用于添加前验证）"""
+    """Test Sub2API connection directly (for verification before adding)"""
     if not request.api_url or not request.api_key:
-        raise HTTPException(status_code=400, detail="api_url 和 api_key 不能为空")
+        raise HTTPException(status_code=400, detail="api_url and api_key cannot be empty")
     success, message = test_sub2api_connection(request.api_url, request.api_key)
     return {"success": success, "message": message}
 
 
 @router.post("/upload")
 async def upload_accounts_to_sub2api(request: Sub2ApiUploadRequest):
-    """批量上传账号到 Sub2API 平台"""
+    """Batch upload accounts to Sub2API platform"""
     if not request.account_ids:
-        raise HTTPException(status_code=400, detail="账号 ID 列表不能为空")
+        raise HTTPException(status_code=400, detail="Account ID list cannot be empty")
 
     with get_db() as db:
         if request.service_id:
@@ -192,7 +192,7 @@ async def upload_accounts_to_sub2api(request: Sub2ApiUploadRequest):
             svc = svcs[0] if svcs else None
 
         if not svc:
-            raise HTTPException(status_code=400, detail="未找到可用的 Sub2API 服务")
+            raise HTTPException(status_code=400, detail="No available Sub2API service found")
 
         api_url = svc.api_url
         api_key = svc.api_key

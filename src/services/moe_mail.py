@@ -1,7 +1,5 @@
-"""
-自定义域名邮箱服务实现
-基于 email.md 中的 REST API 接口
-"""
+"""Implementation of custom domain name mailbox service
+Based on the REST API interface in email.md"""
 
 import re
 import time
@@ -19,37 +17,33 @@ logger = logging.getLogger(__name__)
 
 
 class MeoMailEmailService(BaseEmailService):
-    """
-    自定义域名邮箱服务
-    基于 REST API 接口
-    """
+    """Custom domain name email service
+    Based on REST API interface"""
 
     def __init__(self, config: Dict[str, Any] = None, name: str = None):
-        """
-        初始化自定义域名邮箱服务
+        """Initialize custom domain name mailbox service
 
         Args:
-            config: 配置字典，支持以下键:
-                - base_url: API 基础地址 (必需)
-                - api_key: API 密钥 (必需)
-                - api_key_header: API 密钥请求头名称 (默认: X-API-Key)
-                - timeout: 请求超时时间 (默认: 30)
-                - max_retries: 最大重试次数 (默认: 3)
-                - proxy_url: 代理 URL
-                - default_domain: 默认域名
-                - default_expiry: 默认过期时间（毫秒）
-            name: 服务名称
-        """
+            config: configuration dictionary, supports the following keys:
+                - base_url: API base address (required)
+                - api_key: API key (required)
+                - api_key_header: API key request header name (default: X-API-Key)
+                - timeout: request timeout (default: 30)
+                - max_retries: Maximum number of retries (default: 3)
+                - proxy_url: proxy URL
+                - default_domain: default domain name
+                - default_expiry: default expiration time (milliseconds)
+            name: service name"""
         super().__init__(EmailServiceType.MOE_MAIL, name)
 
-        # 必需配置检查
+        # Required configuration check
         required_keys = ["base_url", "api_key"]
         missing_keys = [key for key in required_keys if key not in (config or {})]
 
         if missing_keys:
-            raise ValueError(f"缺少必需配置: {missing_keys}")
+            raise ValueError(f"Missing required configuration: {missing_keys}")
 
-        # 默认配置
+        # Default configuration
         default_config = {
             "base_url": "",
             "api_key": "",
@@ -58,12 +52,12 @@ class MeoMailEmailService(BaseEmailService):
             "max_retries": 3,
             "proxy_url": None,
             "default_domain": None,
-            "default_expiry": 3600000,  # 1小时
+            "default_expiry": 3600000,  # 1 hour
         }
 
         self.config = {**default_config, **(config or {})}
 
-        # 创建 HTTP 客户端
+        # Create HTTP client
         http_config = RequestConfig(
             timeout=self.config["timeout"],
             max_retries=self.config["max_retries"],
@@ -73,51 +67,49 @@ class MeoMailEmailService(BaseEmailService):
             config=http_config
         )
 
-        # 状态变量
+        # state variables
         self._emails_cache: Dict[str, Dict[str, Any]] = {}
         self._last_config_check: float = 0
         self._cached_config: Optional[Dict[str, Any]] = None
 
     def _get_headers(self) -> Dict[str, str]:
-        """获取 API 请求头"""
+        """Get API request headers"""
         headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
         }
 
-        # 添加 API 密钥
+        # Add API key
         api_key_header = self.config.get("api_key_header", "X-API-Key")
         headers[api_key_header] = self.config["api_key"]
 
         return headers
 
     def _make_request(self, method: str, endpoint: str, **kwargs) -> Dict[str, Any]:
-        """
-        发送 API 请求
+        """Send API request
 
         Args:
-            method: HTTP 方法
-            endpoint: API 端点
-            **kwargs: 请求参数
+            method: HTTP method
+            endpoint: API endpoint
+            **kwargs: request parameters
 
         Returns:
-            响应 JSON 数据
+            Respond to JSON data
 
         Raises:
-            EmailServiceError: 请求失败
-        """
+            EmailServiceError: Request failed"""
         url = urljoin(self.config["base_url"], endpoint)
 
-        # 添加默认请求头
+        # Add default request header
         kwargs.setdefault("headers", {})
         kwargs["headers"].update(self._get_headers())
 
         try:
-            # POST 请求禁用自动重定向，手动处理以保持 POST 方法（避免 HTTP→HTTPS 重定向时被转为 GET）
+            # Disable automatic redirection for POST requests and handle them manually to keep the POST method (to avoid being converted to GET when HTTP→HTTPS redirects)
             if method.upper() == "POST":
                 kwargs["allow_redirects"] = False
                 response = self.http_client.request(method, url, **kwargs)
-                # 处理重定向
+                # Handle redirects
                 max_redirects = 5
                 redirect_count = 0
                 while response.status_code in (301, 302, 303, 307, 308) and redirect_count < max_redirects:
@@ -126,13 +118,13 @@ class MeoMailEmailService(BaseEmailService):
                         break
                     import urllib.parse as _urlparse
                     redirect_url = _urlparse.urljoin(url, location)
-                    # 307/308 保持 POST，其余（301/302/303）转为 GET
+                    # 307/308 remain POST, the rest (301/302/303) convert to GET
                     if response.status_code in (307, 308):
                         redirect_method = method
                         redirect_kwargs = kwargs
                     else:
                         redirect_method = "GET"
-                        # GET 不传 body
+                        # GET does not pass body
                         redirect_kwargs = {k: v for k, v in kwargs.items() if k not in ("json", "data")}
                     response = self.http_client.request(redirect_method, redirect_url, **redirect_kwargs)
                     url = redirect_url
@@ -141,7 +133,7 @@ class MeoMailEmailService(BaseEmailService):
                 response = self.http_client.request(method, url, **kwargs)
 
             if response.status_code >= 400:
-                error_msg = f"API 请求失败: {response.status_code}"
+                error_msg = f"API request failed: {response.status_code}"
                 try:
                     error_data = response.json()
                     error_msg = f"{error_msg} - {error_data}"
@@ -151,7 +143,7 @@ class MeoMailEmailService(BaseEmailService):
                 self.update_status(False, EmailServiceError(error_msg))
                 raise EmailServiceError(error_msg)
 
-            # 解析响应
+            # Parse response
             try:
                 return response.json()
             except json.JSONDecodeError:
@@ -161,19 +153,17 @@ class MeoMailEmailService(BaseEmailService):
             self.update_status(False, e)
             if isinstance(e, EmailServiceError):
                 raise
-            raise EmailServiceError(f"API 请求失败: {method} {endpoint} - {e}")
+            raise EmailServiceError(f"API request failed: {method} {endpoint} - {e}")
 
     def get_config(self, force_refresh: bool = False) -> Dict[str, Any]:
-        """
-        获取系统配置
+        """Get system configuration
 
         Args:
-            force_refresh: 是否强制刷新缓存
+            force_refresh: whether to force cache refresh
 
         Returns:
-            配置信息
-        """
-        # 检查缓存
+            Configuration information"""
+        # Check cache
         if not force_refresh and self._cached_config and time.time() - self._last_config_check < 300:
             return self._cached_config
 
@@ -184,35 +174,33 @@ class MeoMailEmailService(BaseEmailService):
             self.update_status(True)
             return response
         except Exception as e:
-            logger.warning(f"获取配置失败: {e}")
+            logger.warning(f"Failed to get configuration: {e}")
             return {}
 
     def create_email(self, config: Dict[str, Any] = None) -> Dict[str, Any]:
-        """
-        创建临时邮箱
+        """Create temporary mailbox
 
         Args:
-            config: 配置参数:
-                - name: 邮箱前缀（可选）
-                - expiryTime: 有效期（毫秒）（可选）
-                - domain: 邮箱域名（可选）
+            config: configuration parameters:
+                - name: email prefix (optional)
+                - expiryTime: validity period (milliseconds) (optional)
+                - domain: email domain name (optional)
 
         Returns:
-            包含邮箱信息的字典:
-            - email: 邮箱地址
-            - service_id: 邮箱 ID
-            - id: 邮箱 ID（同 service_id）
-            - expiry: 过期时间信息
-        """
-        # 获取默认配置
+            Dictionary containing email information:
+            - email: email address
+            - service_id: Email ID
+            - id: Email ID (same as service_id)
+            - expiry: expiration time information"""
+        # Get default configuration
         sys_config = self.get_config()
         default_domain = self.config.get("default_domain")
         if not default_domain and sys_config.get("emailDomains"):
-            # 使用系统配置的第一个域名
+            # Use the first domain name configured by the system
             domains = sys_config["emailDomains"].split(",")
             default_domain = domains[0].strip() if domains else None
 
-        # 构建请求参数
+        # Build request parameters
         request_config = config or {}
         create_data = {
             "name": request_config.get("name", ""),
@@ -220,7 +208,7 @@ class MeoMailEmailService(BaseEmailService):
             "domain": request_config.get("domain", default_domain),
         }
 
-        # 移除空值
+        # Remove null values
         create_data = {k: v for k, v in create_data.items() if v is not None and v != ""}
 
         try:
@@ -230,7 +218,7 @@ class MeoMailEmailService(BaseEmailService):
             email_id = response.get("id", "").strip()
 
             if not email or not email_id:
-                raise EmailServiceError("API 返回数据不完整")
+                raise EmailServiceError("API returns incomplete data")
 
             email_info = {
                 "email": email,
@@ -242,10 +230,10 @@ class MeoMailEmailService(BaseEmailService):
                 "raw_response": response,
             }
 
-            # 缓存邮箱信息
+            # Caching email information
             self._emails_cache[email_id] = email_info
 
-            logger.info(f"成功创建自定义域名邮箱: {email} (ID: {email_id})")
+            logger.info(f"Successfully created custom domain name email: {email} (ID: {email_id})")
             self.update_status(True)
             return email_info
 
@@ -253,7 +241,7 @@ class MeoMailEmailService(BaseEmailService):
             self.update_status(False, e)
             if isinstance(e, EmailServiceError):
                 raise
-            raise EmailServiceError(f"创建邮箱失败: {e}")
+            raise EmailServiceError(f"Failed to create mailbox: {e}")
 
     def get_verification_code(
         self,
@@ -263,40 +251,38 @@ class MeoMailEmailService(BaseEmailService):
         pattern: str = OTP_CODE_PATTERN,
         otp_sent_at: Optional[float] = None,
     ) -> Optional[str]:
-        """
-        从自定义域名邮箱获取验证码
+        """Get verification code from custom domain name email
 
         Args:
-            email: 邮箱地址
-            email_id: 邮箱 ID（如果不提供，从缓存中查找）
-            timeout: 超时时间（秒）
-            pattern: 验证码正则表达式
-            otp_sent_at: OTP 发送时间戳（自定义域名服务暂不使用此参数）
+            email: email address
+            email_id: Email ID (if not provided, search from cache)
+            timeout: timeout (seconds)
+            pattern: verification code regular expression
+            otp_sent_at: OTP sending timestamp (custom domain name service does not use this parameter yet)
 
         Returns:
-            验证码字符串，如果超时或未找到返回 None
-        """
-        # 查找邮箱 ID
+            Verification code string, returns None if timeout or not found"""
+        # Find email ID
         target_email_id = email_id
         if not target_email_id:
-            # 从缓存中查找
+            # Find from cache
             for eid, info in self._emails_cache.items():
                 if info.get("email") == email:
                     target_email_id = eid
                     break
 
         if not target_email_id:
-            logger.warning(f"未找到邮箱 {email} 的 ID，无法获取验证码")
+            logger.warning(f"The ID of the email address {email} was not found and the verification code cannot be obtained.")
             return None
 
-        logger.info(f"正在从自定义域名邮箱 {email} 获取验证码...")
+        logger.info(f"Obtaining verification code from custom domain name email {email}...")
 
         start_time = time.time()
         seen_message_ids = set()
 
         while time.time() - start_time < timeout:
             try:
-                # 获取邮件列表
+                # Get mailing list
                 response = self._make_request("GET", f"/api/emails/{target_email_id}")
 
                 messages = response.get("messages", [])
@@ -311,69 +297,67 @@ class MeoMailEmailService(BaseEmailService):
 
                     seen_message_ids.add(message_id)
 
-                    # 检查是否是目标邮件
+                    # Check if it is the target email
                     sender = str(message.get("from_address", "")).lower()
                     subject = str(message.get("subject", ""))
 
-                    # 获取邮件内容
+                    # Get email content
                     message_content = self._get_message_content(target_email_id, message_id)
                     if not message_content:
                         continue
 
                     content = f"{sender} {subject} {message_content}"
 
-                    # 检查是否是 OpenAI 邮件
+                    # Check if it is an OpenAI email
                     if "openai" not in sender and "openai" not in content.lower():
                         continue
 
-                    # 提取验证码 过滤掉邮箱
+                    # Extract verification code and filter out emails
                     email_pattern = r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
                     match = re.search(pattern, re.sub(email_pattern, "", content))
                     if match:
                         code = match.group(1)
-                        logger.info(f"从自定义域名邮箱 {email} 找到验证码: {code}")
+                        logger.info(f"Find the verification code from the custom domain name email {email}: {code}")
                         self.update_status(True)
                         return code
 
             except Exception as e:
-                logger.debug(f"检查邮件时出错: {e}")
+                logger.debug(f"Error checking mail: {e}")
 
-            # 等待一段时间再检查
+            # Wait for some time and check again
             time.sleep(3)
 
-        logger.warning(f"等待验证码超时: {email}")
+        logger.warning(f"Timeout waiting for verification code: {email}")
         return None
 
     def _get_message_content(self, email_id: str, message_id: str) -> Optional[str]:
-        """获取邮件内容"""
+        """Get email content"""
         try:
             response = self._make_request("GET", f"/api/emails/{email_id}/{message_id}")
             message = response.get("message", {})
 
-            # 优先使用纯文本内容，其次使用 HTML 内容
+            # Use plain text content first, HTML content second
             content = message.get("content", "")
             if not content:
                 html = message.get("html", "")
                 if html:
-                    # 简单去除 HTML 标签
+                    # Easily remove HTML tags
                     content = re.sub(r"<[^>]+>", " ", html)
 
             return content
         except Exception as e:
-            logger.debug(f"获取邮件内容失败: {e}")
+            logger.debug(f"Failed to get email content: {e}")
             return None
 
     def list_emails(self, cursor: str = None, **kwargs) -> List[Dict[str, Any]]:
-        """
-        列出所有邮箱
+        """List all emails
 
         Args:
-            cursor: 分页游标
-            **kwargs: 其他参数
+            cursor: paging cursor
+            **kwargs: other parameters
 
         Returns:
-            邮箱列表
-        """
+            Email list"""
         params = {}
         if cursor:
             params["cursor"] = cursor
@@ -382,7 +366,7 @@ class MeoMailEmailService(BaseEmailService):
             response = self._make_request("GET", "/api/emails", params=params)
             emails = response.get("emails", [])
 
-            # 更新缓存
+            # Update cache
             for email_info in emails:
                 email_id = email_info.get("id")
                 if email_id:
@@ -391,68 +375,64 @@ class MeoMailEmailService(BaseEmailService):
             self.update_status(True)
             return emails
         except Exception as e:
-            logger.warning(f"列出邮箱失败: {e}")
+            logger.warning(f"Failed to list mailbox: {e}")
             self.update_status(False, e)
             return []
 
     def delete_email(self, email_id: str) -> bool:
-        """
-        删除邮箱
+        """Delete mailbox
 
         Args:
-            email_id: 邮箱 ID
+            email_id: Email ID
 
         Returns:
-            是否删除成功
-        """
+            Is deletion successful?"""
         try:
             response = self._make_request("DELETE", f"/api/emails/{email_id}")
             success = response.get("success", False)
 
             if success:
-                # 从缓存中移除
+                # Remove from cache
                 self._emails_cache.pop(email_id, None)
-                logger.info(f"成功删除邮箱: {email_id}")
+                logger.info(f"Email deleted successfully: {email_id}")
             else:
-                logger.warning(f"删除邮箱失败: {email_id}")
+                logger.warning(f"Failed to delete mailbox: {email_id}")
 
             self.update_status(success)
             return success
 
         except Exception as e:
-            logger.error(f"删除邮箱失败: {email_id} - {e}")
+            logger.error(f"Failed to delete mailbox: {email_id} - {e}")
             self.update_status(False, e)
             return False
 
     def check_health(self) -> bool:
-        """检查自定义域名邮箱服务是否可用"""
+        """Check whether the custom domain name email service is available"""
         try:
-            # 尝试获取配置
+            # Try to get configuration
             config = self.get_config(force_refresh=True)
             if config:
-                logger.debug(f"自定义域名邮箱服务健康检查通过，配置: {config.get('defaultRole', 'N/A')}")
+                logger.debug(f"The custom domain name mailbox service health check passed, configuration: {config.get('defaultRole', 'N/A')}")
                 self.update_status(True)
                 return True
             else:
-                logger.warning("自定义域名邮箱服务健康检查失败：获取配置为空")
-                self.update_status(False, EmailServiceError("获取配置为空"))
+                logger.warning("Custom domain name mailbox service health check failed: the obtained configuration is empty")
+                self.update_status(False, EmailServiceError("Get configuration is empty"))
                 return False
         except Exception as e:
-            logger.warning(f"自定义域名邮箱服务健康检查失败: {e}")
+            logger.warning(f"Custom domain name mailbox service health check failed: {e}")
             self.update_status(False, e)
             return False
 
     def get_email_messages(self, email_id: str, cursor: str = None) -> List[Dict[str, Any]]:
-        """
-        获取邮箱中的邮件列表
+        """Get the mailing list in your mailbox
 
         Args:
-            email_id: 邮箱 ID
-            cursor: 分页游标
+            email_id: Email ID
+            cursor: paging cursor
 
         Returns:
-            邮件列表
-        """
+            mailing list"""
         params = {}
         if cursor:
             params["cursor"] = cursor
@@ -463,42 +443,38 @@ class MeoMailEmailService(BaseEmailService):
             self.update_status(True)
             return messages
         except Exception as e:
-            logger.error(f"获取邮件列表失败: {email_id} - {e}")
+            logger.error(f"Failed to get mailing list: {email_id} - {e}")
             self.update_status(False, e)
             return []
 
     def get_message_detail(self, email_id: str, message_id: str) -> Optional[Dict[str, Any]]:
-        """
-        获取邮件详情
+        """Get email details
 
         Args:
-            email_id: 邮箱 ID
-            message_id: 邮件 ID
+            email_id: Email ID
+            message_id: email ID
 
         Returns:
-            邮件详情
-        """
+            Email details"""
         try:
             response = self._make_request("GET", f"/api/emails/{email_id}/{message_id}")
             message = response.get("message")
             self.update_status(True)
             return message
         except Exception as e:
-            logger.error(f"获取邮件详情失败: {email_id}/{message_id} - {e}")
+            logger.error(f"Failed to get email details: {email_id}/{message_id} - {e}")
             self.update_status(False, e)
             return None
 
     def create_email_share(self, email_id: str, expires_in: int = 86400000) -> Optional[Dict[str, Any]]:
-        """
-        创建邮箱分享链接
+        """Create email sharing link
 
         Args:
-            email_id: 邮箱 ID
-            expires_in: 有效期（毫秒）
+            email_id: Email ID
+            expires_in: validity period (milliseconds)
 
         Returns:
-            分享信息
-        """
+            share information"""
         try:
             response = self._make_request(
                 "POST",
@@ -508,7 +484,7 @@ class MeoMailEmailService(BaseEmailService):
             self.update_status(True)
             return response
         except Exception as e:
-            logger.error(f"创建邮箱分享链接失败: {email_id} - {e}")
+            logger.error(f"Failed to create email sharing link: {email_id} - {e}")
             self.update_status(False, e)
             return None
 
@@ -518,17 +494,15 @@ class MeoMailEmailService(BaseEmailService):
         message_id: str,
         expires_in: int = 86400000
     ) -> Optional[Dict[str, Any]]:
-        """
-        创建邮件分享链接
+        """Create email sharing link
 
         Args:
-            email_id: 邮箱 ID
-            message_id: 邮件 ID
-            expires_in: 有效期（毫秒）
+            email_id: Email ID
+            message_id: email ID
+            expires_in: validity period (milliseconds)
 
         Returns:
-            分享信息
-        """
+            share information"""
         try:
             response = self._make_request(
                 "POST",
@@ -538,12 +512,12 @@ class MeoMailEmailService(BaseEmailService):
             self.update_status(True)
             return response
         except Exception as e:
-            logger.error(f"创建邮件分享链接失败: {email_id}/{message_id} - {e}")
+            logger.error(f"Failed to create email sharing link: {email_id}/{message_id} - {e}")
             self.update_status(False, e)
             return None
 
     def get_service_info(self) -> Dict[str, Any]:
-        """获取服务信息"""
+        """Get service information"""
         config = self.get_config()
         return {
             "service_type": self.service_type.value,

@@ -1,6 +1,4 @@
-"""
-Database CRUD operations
-"""
+"""Database CRUD operations"""
 
 from typing import List, Optional, Dict, Any, Union
 from datetime import datetime, timedelta
@@ -65,7 +63,7 @@ def get_account_by_id(db: Session, account_id: int) -> Optional[Account]:
 
 
 def get_account_by_email(db: Session, email: str) -> Optional[Account]:
-    """Get an account based on email address"""
+    """Get account based on email"""
     return db.query(Account).filter(Account.email == email).first()
 
 
@@ -261,7 +259,7 @@ def create_registration_task(
 
 
 def get_registration_task_by_uuid(db: Session, task_uuid: str) -> Optional[RegistrationTask]:
-    """Get the registration task based on UUID"""
+    """Get registration tasks based on UUID"""
     return db.query(RegistrationTask).filter(RegistrationTask.task_uuid == task_uuid).first()
 
 
@@ -271,7 +269,7 @@ def get_registration_tasks(
     skip: int = 0,
     limit: int = 100
 ) -> List[RegistrationTask]:
-    """Get the registration task list"""
+    """Get registration task list"""
     query = db.query(RegistrationTask)
 
     if status:
@@ -301,7 +299,7 @@ def update_registration_task(
 
 
 def append_task_log(db: Session, task_uuid: str, log_message: str) -> bool:
-    """Append task log"""
+    """Add task log"""
     db_task = get_registration_task_by_uuid(db, task_uuid)
     if not db_task:
         return False
@@ -326,7 +324,7 @@ def delete_registration_task(db: Session, task_uuid: str) -> bool:
     return True
 
 
-# Add alias for API route
+# Add aliases to API routes
 get_account = get_account_by_id
 get_registration_task = get_registration_task_by_uuid
 
@@ -417,7 +415,7 @@ def create_proxy(
 
 
 def get_proxy_by_id(db: Session, proxy_id: int) -> Optional[Proxy]:
-    """Get proxy based on ID"""
+    """Get proxy by ID"""
     return db.query(Proxy).filter(Proxy.id == proxy_id).first()
 
 
@@ -473,7 +471,7 @@ def delete_proxy(db: Session, proxy_id: int) -> bool:
 
 
 def update_proxy_last_used(db: Session, proxy_id: int) -> bool:
-    """Update agent last usage time"""
+    """Update agent last used time"""
     db_proxy = get_proxy_by_id(db, proxy_id)
     if not db_proxy:
         return False
@@ -484,9 +482,9 @@ def update_proxy_last_used(db: Session, proxy_id: int) -> bool:
 
 
 def get_random_proxy(db: Session) -> Optional[Proxy]:
-    """Get an enabled proxy randomly, and return the proxy with is_default=True first"""
+    """Randomly obtain an enabled proxy, and return the proxy with is_default=True first."""
     import random
-    # Return to the default proxy first
+    # Return to default proxy first
     default_proxy = db.query(Proxy).filter(Proxy.enabled == True, Proxy.is_default == True).first()
     if default_proxy:
         return default_proxy
@@ -497,10 +495,10 @@ def get_random_proxy(db: Session) -> Optional[Proxy]:
 
 
 def set_proxy_default(db: Session, proxy_id: int) -> Optional[Proxy]:
-    """Set the specified proxy as the default and clear the default flags of other proxies"""
+    """Sets the specified proxy as the default and clears the default flag for other proxies"""
     # Clear all default tags
     db.query(Proxy).filter(Proxy.is_default == True).update({"is_default": False})
-    # Set new default proxy
+    # Set a new default proxy
     proxy = db.query(Proxy).filter(Proxy.id == proxy_id).first()
     if proxy:
         proxy.is_default = True
@@ -518,7 +516,7 @@ def get_proxies_count(db: Session, enabled: Optional[bool] = None) -> int:
 
 
 # ============================================================================
-# CPA SERVICE CRUD
+# CPA Services CRUD
 # ============================================================================
 
 def create_cpa_service(
@@ -529,7 +527,7 @@ def create_cpa_service(
     enabled: bool = True,
     priority: int = 0
 ) -> CpaService:
-    """Create CPA service configuration"""
+    """Create a CPA service configuration"""
     db_service = CpaService(
         name=name,
         api_url=api_url,
@@ -552,7 +550,7 @@ def get_cpa_services(
     db: Session,
     enabled: Optional[bool] = None
 ) -> List[CpaService]:
-    """Get CPA service list"""
+    """Get a list of CPA services"""
     query = db.query(CpaService)
     if enabled is not None:
         query = query.filter(CpaService.enabled == enabled)
@@ -587,7 +585,7 @@ def delete_cpa_service(db: Session, service_id: int) -> bool:
 
 
 # ============================================================================
-# Sub2API Service CRUD
+# Sub2API service CRUD
 # ============================================================================
 
 def create_sub2api_service(
@@ -662,7 +660,7 @@ def create_tm_service(
     enabled: bool = True,
     priority: int = 0,
 ):
-    """Create Team Manager service configuration"""
+    """Create a Team Manager service configuration"""
     from .models import TeamManagerService
     svc = TeamManagerService(
         name=name,
@@ -684,7 +682,7 @@ def get_tm_service_by_id(db: Session, service_id: int):
 
 
 def get_tm_services(db: Session, enabled=None):
-    """Get Team Manager service list"""
+    """Get a list of Team Manager services"""
     from .models import TeamManagerService
     q = db.query(TeamManagerService)
     if enabled is not None:

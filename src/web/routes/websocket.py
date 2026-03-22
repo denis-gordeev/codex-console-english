@@ -1,6 +1,6 @@
 """
-WebSocket 路由
-提供实时日志推送和任务状态更新
+WebSocket routing
+Provide real-time log push and task status updates
 """
 
 import asyncio
@@ -16,22 +16,22 @@ router = APIRouter()
 @router.websocket("/ws/task/{task_uuid}")
 async def task_websocket(websocket: WebSocket, task_uuid: str):
     """
-    任务日志 WebSocket
+    Task log WebSocket
 
-    消息格式：
-    - 服务端发送: {"type": "log", "task_uuid": "xxx", "message": "...", "timestamp": "..."}
-    - 服务端发送: {"type": "status", "task_uuid": "xxx", "status": "running|completed|failed|cancelled", ...}
-    - 客户端发送: {"type": "ping"} - 心跳
-    - 客户端发送: {"type": "cancel"} - 取消任务
+    Message format:
+    - Server sends: {"type": "log", "task_uuid": "xxx", "message": "...", "timestamp": "..."}
+    - The server sends: {"type": "status", "task_uuid": "xxx", "status": "running|completed|failed|cancelled", ...}
+    - Client sends: {"type": "ping"} - Heartbeat
+    - The client sends: {"type": "cancel"} - Cancel the task
     """
     await websocket.accept()
 
-    # 注册连接（会记录当前日志数量，避免重复发送历史日志）
+    #Register connection (the current number of logs will be recorded to avoid repeated sending of historical logs)
     task_manager.register_websocket(task_uuid, websocket)
-    logger.info(f"WebSocket 连接已建立，日志频道正式开麦: {task_uuid}")
+    logger.info(f"WebSocket connection has been established, log channel is officially opened: {task_uuid}")
 
     try:
-        # 发送当前状态
+        # Send current status
         status = task_manager.get_status(task_uuid)
         if status:
             await websocket.send_json({
@@ -40,7 +40,7 @@ async def task_websocket(websocket: WebSocket, task_uuid: str):
                 **status
             })
 
-        # 发送历史日志（只发送注册时已存在的日志，避免与实时推送重复）
+        # Send historical logs (only send logs that already exist at the time of registration to avoid duplication with real-time push)
         history_logs = task_manager.get_unsent_logs(task_uuid, websocket)
         for log in history_logs:
             await websocket.send_json({
@@ -49,44 +49,44 @@ async def task_websocket(websocket: WebSocket, task_uuid: str):
                 "message": log
             })
 
-        # 保持连接，等待客户端消息
+        # Keep connected and wait for client messages
         while True:
             try:
-                # 使用 wait_for 实现超时，但不是断开连接
-                # 而是发送心跳检测
+                # Use wait_for to implement timeout, but not disconnect
+                # Instead send heartbeat detection
                 data = await asyncio.wait_for(
                     websocket.receive_json(),
-                    timeout=30.0  # 30秒超时
+                    timeout=30.0 # 30 seconds timeout
                 )
 
-                # 处理心跳
+                # Handle heartbeat
                 if data.get("type") == "ping":
                     await websocket.send_json({"type": "pong"})
 
-                # 处理取消请求
+                # Handle cancellation request
                 elif data.get("type") == "cancel":
                     task_manager.cancel_task(task_uuid)
                     await websocket.send_json({
                         "type": "status",
                         "task_uuid": task_uuid,
                         "status": "cancelling",
-                        "message": "取消请求已提交，正在踩刹车，别慌"
+                        "message": "The cancellation request has been submitted and the brakes are being applied, don't panic"
                     })
 
             except asyncio.TimeoutError:
-                # 超时，发送心跳检测
+                # Timeout, send heartbeat detection
                 try:
                     await websocket.send_json({"type": "ping"})
                 except Exception:
-                    # 发送失败，可能是连接断开
-                    logger.info(f"WebSocket 心跳检测失败: {task_uuid}")
+                    # Sending failed, maybe the connection was disconnected
+                    logger.info(f"WebSocket heartbeat detection failed: {task_uuid}")
                     break
 
     except WebSocketDisconnect:
-        logger.info(f"WebSocket 断开: {task_uuid}")
+        logger.info(f"WebSocket disconnected: {task_uuid}")
 
     except Exception as e:
-        logger.error(f"WebSocket 错误: {e}")
+        logger.error(f"WebSocket error: {e}")
 
     finally:
         task_manager.unregister_websocket(task_uuid, websocket)
@@ -95,24 +95,24 @@ async def task_websocket(websocket: WebSocket, task_uuid: str):
 @router.websocket("/ws/batch/{batch_id}")
 async def batch_websocket(websocket: WebSocket, batch_id: str):
     """
-    批量任务 WebSocket
+    Batch Task WebSocket
 
-    用于批量注册任务的实时状态更新
+    Real-time status updates for batch registration tasks
 
-    消息格式：
-    - 服务端发送: {"type": "log", "batch_id": "xxx", "message": "...", "timestamp": "..."}
-    - 服务端发送: {"type": "status", "batch_id": "xxx", "status": "running|completed|cancelled", ...}
-    - 客户端发送: {"type": "ping"} - 心跳
-    - 客户端发送: {"type": "cancel"} - 取消批量任务
+    Message format:
+    - Server sends: {"type": "log", "batch_id": "xxx", "message": "...", "timestamp": "..."}
+    - Server sends: {"type": "status", "batch_id": "xxx", "status": "running|completed|cancelled", ...}
+    - Client sends: {"type": "ping"} - Heartbeat
+    - Client sends: {"type": "cancel"} - Cancel batch task
     """
     await websocket.accept()
 
-    # 注册连接（会记录当前日志数量，避免重复发送历史日志）
+    #Register connection (the current number of logs will be recorded to avoid repeated sending of historical logs)
     task_manager.register_batch_websocket(batch_id, websocket)
-    logger.info(f"批量任务 WebSocket 连接已建立，群聊频道正式开麦: {batch_id}")
+    logger.info(f"The batch task WebSocket connection has been established, and the group chat channel is officially opened: {batch_id}")
 
     try:
-        # 发送当前状态
+        # Send current status
         status = task_manager.get_batch_status(batch_id)
         if status:
             await websocket.send_json({
@@ -121,7 +121,7 @@ async def batch_websocket(websocket: WebSocket, batch_id: str):
                 **status
             })
 
-        # 发送历史日志（只发送注册时已存在的日志，避免与实时推送重复）
+        # Send historical logs (only send logs that already exist at the time of registration to avoid duplication with real-time push)
         history_logs = task_manager.get_unsent_batch_logs(batch_id, websocket)
         for log in history_logs:
             await websocket.send_json({
@@ -130,7 +130,7 @@ async def batch_websocket(websocket: WebSocket, batch_id: str):
                 "message": log
             })
 
-        # 保持连接，等待客户端消息
+        # Keep connected and wait for client messages
         while True:
             try:
                 data = await asyncio.wait_for(
@@ -138,33 +138,33 @@ async def batch_websocket(websocket: WebSocket, batch_id: str):
                     timeout=30.0
                 )
 
-                # 处理心跳
+                # Handle heartbeat
                 if data.get("type") == "ping":
                     await websocket.send_json({"type": "pong"})
 
-                # 处理取消请求
+                # Handle cancellation request
                 elif data.get("type") == "cancel":
                     task_manager.cancel_batch(batch_id)
                     await websocket.send_json({
                         "type": "status",
                         "batch_id": batch_id,
                         "status": "cancelling",
-                        "message": "取消请求已提交，正在让整队缓缓靠边停车"
+                        "message": "Cancellation request has been submitted and the entire team is slowly pulling over."
                     })
 
             except asyncio.TimeoutError:
-                # 超时，发送心跳检测
+                # Timeout, send heartbeat detection
                 try:
                     await websocket.send_json({"type": "ping"})
                 except Exception:
-                    logger.info(f"批量任务 WebSocket 心跳检测失败: {batch_id}")
+                    logger.info(f"Batch task WebSocket heartbeat detection failed: {batch_id}")
                     break
 
     except WebSocketDisconnect:
-        logger.info(f"批量任务 WebSocket 断开: {batch_id}")
+        logger.info(f"Batch task WebSocket disconnected: {batch_id}")
 
     except Exception as e:
-        logger.error(f"批量任务 WebSocket 错误: {e}")
+        logger.error(f"Batch task WebSocket error: {e}")
 
     finally:
         task_manager.unregister_batch_websocket(batch_id, websocket)
