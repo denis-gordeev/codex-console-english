@@ -3,99 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>系统设置 - OpenAI 注册系统</title>
+    <title>System Settings - OpenAI Registration System</title>
     <link rel="stylesheet" href="/static/css/style.css?v={{ static_version }}">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>">
 </head>
 <body>
     <div class="container">
-        <!-- 导航栏 -->
+        <!-- Navigation bar -->
         <nav class="navbar">
             <div class="nav-brand">
-                <h1>OpenAI 注册系统</h1>
+                <h1>OpenAI registration system</h1>
             </div>
             <div class="nav-links">
-                <a href="/" class="nav-link">注册</a>
-                <a href="/accounts" class="nav-link">账号管理</a>
-                <a href="/email-services" class="nav-link">邮箱服务</a>
-                <a href="/payment" class="nav-link">支付</a>
-                <a href="/settings" class="nav-link active">设置</a>
-                <a href="/logout" class="nav-link">退出</a>
+                <a href="/" class="nav-link">Register</a>
+                <a href="/accounts" class="nav-link">Account management</a>
+                <a href="/email-services" class="nav-link">Email Services</a>
+                <a href="/payment" class="nav-link">Payment</a>
+                <a href="/settings" class="nav-link active">Settings</a>
+                <a href="/logout" class="nav-link">Logout</a>
             </div>
-            <button class="theme-toggle" onclick="theme.toggle()" title="切换主题">
+            <button class="theme-toggle" onclick="theme.toggle()" title="Toggle theme">
                 🌙
             </button>
         </nav>
 
-        <!-- 主内容区 -->
+        <!-- Main content area -->
         <main class="main-content">
             <div class="page-header">
-                <h2>系统设置</h2>
-                <p class="subtitle">配置代理、邮箱服务和系统参数</p>
+                <h2>System settings</h2>
+                <p class="subtitle">Configuring agents, email services and system parameters</p>
             </div>
 
-            <!-- 设置标签页 -->
+            <!-- Set tab page -->
             <div class="tabs">
-                <button class="tab-btn active" data-tab="proxy">🌐 代理设置</button>
-                <button class="tab-btn" data-tab="webui">🔒 访问控制</button>
-                <button class="tab-btn" data-tab="upload">☁️ 上传</button>
-                <button class="tab-btn" data-tab="outlook">📮 Outlook配置</button>
-                <button class="tab-btn" data-tab="registration">⚙️ 注册配置</button>
-                <button class="tab-btn" data-tab="email-code">📧 验证码配置</button>
-                <button class="tab-btn" data-tab="database">💾 数据库</button>
+                <button class="tab-btn active" data-tab="proxy">🌐 Proxy settings</button>
+                <button class="tab-btn" data-tab="webui">🔒 Access Control</button>
+                <button class="tab-btn" data-tab="upload">☁️ Upload</button>
+                <button class="tab-btn" data-tab="outlook">📮 Outlook configuration</button>
+                <button class="tab-btn" data-tab="registration">⚙️ Registration configuration</button>
+                <button class="tab-btn" data-tab="email-code">📧 Verification code configuration</button>
+                <button class="tab-btn" data-tab="database">💾 database</button>
             </div>
 
-            <!-- 代理设置 -->
+            <!-- Proxy settings -->
             <div class="tab-content active" id="proxy-tab">
-                <!-- 动态代理配置 -->
+                <!-- Dynamic proxy configuration -->
                 <div class="card" style="margin-top: var(--spacing-lg);">
                     <div class="card-header">
-                        <h3>动态代理配置</h3>
-                        <span class="hint">通过 API 每次获取新代理 IP，优先级高于代理列表</span>
+                        <h3>Dynamic proxy configuration</h3>
+                        <span class="hint">Get a new proxy IP every time through the API, with priority higher than the proxy list</span>
                     </div>
                     <div class="card-body">
                         <form id="dynamic-proxy-form">
                             <div class="form-group">
                                 <label>
                                     <input type="checkbox" id="dynamic-proxy-enabled" name="enabled">
-                                    启用动态代理
+                                    Enable dynamic proxy
                                 </label>
                             </div>
                             <div class="form-group">
-                                <label for="dynamic-proxy-api-url">代理 API 地址</label>
+                                <label for="dynamic-proxy-api-url">Proxy API address</label>
                                 <input type="text" id="dynamic-proxy-api-url" name="api_url" placeholder="http://api.example.com/get_proxy">
-                                <small style="color: var(--text-muted);">每次注册任务启动时调用此 API 获取代理 URL</small>
+                                <small style="color: var(--text-muted);">Call this API to obtain the proxy URL each time the registration task is started</small>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="dynamic-proxy-api-key">API 密钥 (可选)</label>
-                                    <input type="password" id="dynamic-proxy-api-key" name="api_key" placeholder="留空保持不变" autocomplete="new-password">
+                                    <label for="dynamic-proxy-api-key">API key (optional)</label>
+                                    <input type="password" id="dynamic-proxy-api-key" name="api_key" placeholder="leave blank to remain unchanged" autocomplete="new-password">
                                 </div>
                                 <div class="form-group">
-                                    <label for="dynamic-proxy-api-key-header">密钥请求头</label>
+                                    <label for="dynamic-proxy-api-key-header">Key request header</label>
                                     <input type="text" id="dynamic-proxy-api-key-header" name="api_key_header" value="X-API-Key">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="dynamic-proxy-result-field">JSON 字段路径 (可选)</label>
-                                <input type="text" id="dynamic-proxy-result-field" name="result_field" placeholder="例如: data.proxy 或留空使用响应原文">
-                                <small style="color: var(--text-muted);">若 API 返回 JSON，填写点号分隔的字段路径提取代理 URL；留空则将响应原文作为代理 URL</small>
+                                <label for="dynamic-proxy-result-field">JSON field path (optional)</label>
+                                <input type="text" id="dynamic-proxy-result-field" name="result_field" placeholder="For example: data.proxy or leave it blank to use the original response text">
+                                <small style="color: var(--text-muted);">If the API returns JSON, fill in the field path separated by dots to extract the proxy URL; leave it blank to use the original response text as the proxy URL</small>
                             </div>
                             <div class="form-actions">
-                                <button type="submit" class="btn btn-primary">💾 保存设置</button>
-                                <button type="button" class="btn btn-secondary" id="test-dynamic-proxy-btn">🔌 测试动态代理</button>
+                                <button type="submit" class="btn btn-primary">💾 Save settings</button>
+                                <button type="button" class="btn btn-secondary" id="test-dynamic-proxy-btn">🔌 Test dynamic proxy</button>
                             </div>
                         </form>
                     </div>
                 </div>
 
-                <!-- 代理列表 -->
+                <!-- Agent list -->
                 <div class="card" style="margin-top: var(--spacing-lg);">
                     <div class="card-header">
-                        <h3>代理列表</h3>
+                        <h3>Agent list</h3>
                         <div style="display: flex; gap: var(--spacing-sm);">
-                            <button class="btn btn-secondary btn-sm" id="test-all-proxies-btn">🔌 测试全部</button>
-                            <button class="btn btn-primary btn-sm" id="add-proxy-btn">➕ 添加代理</button>
+                            <button class="btn btn-secondary btn-sm" id="test-all-proxies-btn">🔌 Test all</button>
+                            <button class="btn btn-primary btn-sm" id="add-proxy-btn">➕ Add proxy</button>
                         </div>
                     </div>
                     <div class="card-body" style="padding: 0;">
@@ -104,13 +104,13 @@
                                 <thead>
                                     <tr>
                                         <th style="width: 50px;">ID</th>
-                                        <th>名称</th>
-                                        <th>类型</th>
-                                        <th>地址</th>
-                                        <th style="width: 60px;">默认</th>
-                                        <th style="width: 80px;">状态</th>
-                                        <th style="width: 120px;">最后使用</th>
-                                        <th style="width: 180px;">操作</th>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th>Address</th>
+                                        <th style="width: 60px;">Default</th>
+                                        <th style="width: 80px;">Status</th>
+                                        <th style="width: 120px;">Last used</th>
+                                        <th style="width: 180px;">Operation</th>
                                     </tr>
                                 </thead>
                                 <tbody id="proxies-table">
@@ -118,8 +118,8 @@
                                         <td colspan="7">
                                             <div class="empty-state">
                                                 <div class="empty-state-icon">🌐</div>
-                                                <div class="empty-state-title">暂无代理</div>
-                                                <div class="empty-state-description">点击"添加代理"按钮添加代理服务器</div>
+                                                <div class="empty-state-title">No agent yet</div>
+                                                <div class="empty-state-description">Click the "Add Proxy" button to add a proxy server</div>
                                             </div>
                                         </td>
                                     </tr>
@@ -130,151 +130,151 @@
                 </div>
             </div>
 
-            <!-- 访问控制 -->
+            <!-- Access control -->
             <div class="tab-content" id="webui-tab">
                 <div class="card">
                     <div class="card-header">
-                        <h3>Web UI 访问密码</h3>
-                        <span class="hint">用于访问页面的密码，留空表示不修改</span>
+                        <h3>Web UI access password</h3>
+                        <span class="hint">Password used to access the page, leave blank to not change</span>
                     </div>
                     <div class="card-body">
                         <form id="webui-settings-form">
                             <div class="form-group">
-                                <label for="webui-access-password">访问密码</label>
-                                <input type="password" id="webui-access-password" name="access_password" placeholder="留空保持不变" autocomplete="new-password">
+                                <label for="webui-access-password">Access password</label>
+                                <input type="password" id="webui-access-password" name="access_password" placeholder="leave blank to remain unchanged" autocomplete="new-password">
                             </div>
                             <div class="form-actions">
-                                <button type="submit" class="btn btn-primary">💾 保存设置</button>
+                                <button type="submit" class="btn btn-primary">💾 Save settings</button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
 
-            <!-- 添加代理模态框 -->
+            <!-- Add proxy modal box -->
             <div class="modal" id="add-proxy-modal">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h3 id="proxy-modal-title">添加代理</h3>
+                        <h3 id="proxy-modal-title">Add proxy</h3>
                         <button class="modal-close" id="close-proxy-modal">&times;</button>
                     </div>
                     <div class="modal-body">
                         <form id="proxy-item-form">
                             <input type="hidden" id="proxy-item-id">
                             <div class="form-group">
-                                <label for="proxy-item-name">名称</label>
-                                <input type="text" id="proxy-item-name" name="name" required placeholder="例如：美国代理 1">
+                                <label for="proxy-item-name">name</label>
+                                <input type="text" id="proxy-item-name" name="name" required placeholder="Example: US proxy 1">
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="proxy-item-type">类型</label>
+                                    <label for="proxy-item-type">Type</label>
                                     <select id="proxy-item-type" name="type">
                                         <option value="http">HTTP</option>
                                         <option value="socks5">SOCKS5</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="proxy-item-host">主机地址</label>
+                                    <label for="proxy-item-host">Host address</label>
                                     <input type="text" id="proxy-item-host" name="host" required placeholder="127.0.0.1">
                                 </div>
                                 <div class="form-group">
-                                    <label for="proxy-item-port">端口</label>
+                                    <label for="proxy-item-port">port</label>
                                     <input type="number" id="proxy-item-port" name="port" required placeholder="7890">
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="proxy-item-username">用户名 (可选)</label>
+                                    <label for="proxy-item-username">Username (optional)</label>
                                     <input type="text" id="proxy-item-username" name="username" autocomplete="off">
                                 </div>
                                 <div class="form-group">
-                                    <label for="proxy-item-password">密码 (可选)</label>
+                                    <label for="proxy-item-password">Password (optional)</label>
                                     <input type="password" id="proxy-item-password" name="password" autocomplete="new-password">
                                 </div>
                             </div>
                             <div class="form-actions">
-                                <button type="button" class="btn btn-secondary" id="cancel-proxy-btn">取消</button>
-                                <button type="submit" class="btn btn-primary">💾 保存</button>
+                                <button type="button" class="btn btn-secondary" id="cancel-proxy-btn">Cancel</button>
+                                <button type="submit" class="btn btn-primary">💾 Save</button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
 
-            <!-- 上传服务设置（CPA + Sub2API + Team Manager） -->
+            <!-- Upload service settings (CPA + Sub2API + Team Manager) -->
             <div class="tab-content" id="upload-tab">
-                <!-- CPA 服务管理 -->
+                <!-- CPA Service Management -->
                 <div class="card" style="margin-top: var(--spacing-lg);">
                     <div class="card-header">
-                        <h3>☁️ CPA 服务</h3>
-                        <button class="btn btn-primary btn-sm" id="add-cpa-service-btn">+ 添加服务</button>
+                        <h3>☁️ CPA Service</h3>
+                        <button class="btn btn-primary btn-sm" id="add-cpa-service-btn">+ Add service</button>
                     </div>
                     <div class="card-body" style="padding: 0;">
                         <div class="table-container">
                             <table class="data-table">
                                 <thead>
                                     <tr>
-                                        <th style="width:150px;">名称</th>
+                                        <th style="width:150px;">Name</th>
                                         <th>API URL</th>
-                                        <th style="width:80px;">状态</th>
-                                        <th style="width:60px;text-align:center;">优先级</th>
-                                        <th style="width:220px;">操作</th>
+                                        <th style="width:80px;">Status</th>
+                                        <th style="width:60px;text-align:center;">Priority</th>
+                                        <th style="width:220px;">Operation</th>
                                     </tr>
                                 </thead>
                                 <tbody id="cpa-services-table">
-                                    <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">加载中...</td></tr>
+                                    <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">Loading...</td></tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
-                <!-- Sub2API 服务管理 -->
+                <!-- Sub2API service management -->
                 <div class="card" style="margin-top: var(--spacing-lg);">
                     <div class="card-header">
-                        <h3>🔗 Sub2API 服务</h3>
-                        <button class="btn btn-primary btn-sm" id="add-sub2api-service-btn">+ 添加服务</button>
+                        <h3>🔗 Sub2API Service</h3>
+                        <button class="btn btn-primary btn-sm" id="add-sub2api-service-btn">+ Add service</button>
                     </div>
                     <div class="card-body" style="padding: 0;">
                         <div class="table-container">
                             <table class="data-table">
                                 <thead>
                                     <tr>
-                                        <th style="width:150px;">名称</th>
+                                        <th style="width:150px;">Name</th>
                                         <th>API URL</th>
-                                        <th style="width:80px;">状态</th>
-                                        <th style="width:60px;text-align:center;">优先级</th>
-                                        <th style="width:220px;">操作</th>
+                                        <th style="width:80px;">Status</th>
+                                        <th style="width:60px;text-align:center;">Priority</th>
+                                        <th style="width:220px;">Operation</th>
                                     </tr>
                                 </thead>
                                 <tbody id="sub2api-services-table">
-                                    <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">加载中...</td></tr>
+                                    <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">Loading...</td></tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
-                <!-- Team Manager 服务管理 -->
+                <!-- Team Manager service management -->
                 <div class="card" style="margin-top: var(--spacing-lg);">
                     <div class="card-header">
-                        <h3>🚀 Team Manager 服务</h3>
-                        <button class="btn btn-primary btn-sm" id="add-tm-service-btn">+ 添加服务</button>
+                        <h3>🚀Team Manager Service</h3>
+                        <button class="btn btn-primary btn-sm" id="add-tm-service-btn">+ Add service</button>
                     </div>
                     <div class="card-body" style="padding: 0;">
                         <div class="table-container">
                             <table class="data-table">
                                 <thead>
                                     <tr>
-                                        <th style="width:150px;">名称</th>
+                                        <th style="width:150px;">Name</th>
                                         <th>API URL</th>
-                                        <th style="width:80px;">状态</th>
-                                        <th style="width:60px;text-align:center;">优先级</th>
-                                        <th style="width:220px;">操作</th>
+                                        <th style="width:80px;">Status</th>
+                                        <th style="width:60px;text-align:center;">Priority</th>
+                                        <th style="width:220px;">Operation</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tm-services-table">
-                                    <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">加载中...</td></tr>
+                                    <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">Loading...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -282,19 +282,19 @@
                 </div>
             </div>
 
-            <!-- Team Manager 服务编辑模态框 -->
+            <!-- Team Manager service editing modal box -->
             <div class="modal" id="tm-service-edit-modal">
                 <div class="modal-content" style="max-width: 500px;">
                     <div class="modal-header">
-                        <h3 id="tm-service-modal-title">添加 Team Manager 服务</h3>
+                        <h3 id="tm-service-modal-title">Add Team Manager service</h3>
                         <button class="modal-close" id="close-tm-service-modal">&times;</button>
                     </div>
                     <div class="modal-body">
                         <form id="tm-service-form">
                             <input type="hidden" id="tm-service-id">
                             <div class="form-group">
-                                <label for="tm-service-name">名称 *</label>
-                                <input type="text" id="tm-service-name" placeholder="例如: 主服务" required>
+                                <label for="tm-service-name">Name *</label>
+                                <input type="text" id="tm-service-name" placeholder="Example: Main Service" required>
                             </div>
                             <div class="form-group">
                                 <label for="tm-service-url">API URL *</label>
@@ -302,44 +302,44 @@
                             </div>
                             <div class="form-group">
                                 <label for="tm-service-key">API Key</label>
-                                <input type="password" id="tm-service-key" placeholder="编辑时留空则保持原值" autocomplete="new-password">
+                                <input type="password" id="tm-service-key" placeholder="Leave blank when editing to keep the original value" autocomplete="new-password">
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="tm-service-priority">优先级</label>
+                                    <label for="tm-service-priority">Priority</label>
                                     <input type="number" id="tm-service-priority" value="0" min="0">
-                                    <p class="hint">数字越小优先级越高</p>
+                                    <p class="hint">The smaller the number, the higher the priority</p>
                                 </div>
                                 <div class="form-group">
                                     <label>&nbsp;</label>
                                     <label style="margin-top:10px;display:flex;align-items:center;gap:8px;">
-                                        <input type="checkbox" id="tm-service-enabled" checked> 启用
+                                        <input type="checkbox" id="tm-service-enabled" checked> Enable
                                     </label>
                                 </div>
                             </div>
                             <div class="form-actions">
-                                <button type="submit" class="btn btn-primary">💾 保存</button>
-                                <button type="button" class="btn btn-secondary" id="test-tm-service-btn">🔌 测试连接</button>
-                                <button type="button" class="btn btn-secondary" id="cancel-tm-service-btn">取消</button>
+                                <button type="submit" class="btn btn-primary">💾 Save</button>
+                                <button type="button" class="btn btn-secondary" id="test-tm-service-btn">🔌 Test connection</button>
+                                <button type="button" class="btn btn-secondary" id="cancel-tm-service-btn">Cancel</button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
 
-            <!-- Sub2API 服务编辑模态框 -->
+            <!-- Sub2API service editing modal box -->
             <div class="modal" id="sub2api-service-edit-modal">
                 <div class="modal-content" style="max-width: 500px;">
                     <div class="modal-header">
-                        <h3 id="sub2api-service-modal-title">添加 Sub2API 服务</h3>
+                        <h3 id="sub2api-service-modal-title">Add Sub2API service</h3>
                         <button class="modal-close" id="close-sub2api-service-modal">&times;</button>
                     </div>
                     <div class="modal-body">
                         <form id="sub2api-service-form">
                             <input type="hidden" id="sub2api-service-id">
                             <div class="form-group">
-                                <label for="sub2api-service-name">名称 *</label>
-                                <input type="text" id="sub2api-service-name" placeholder="例如: 主服务" required>
+                                <label for="sub2api-service-name">Name *</label>
+                                <input type="text" id="sub2api-service-name" placeholder="Example: Main Service" required>
                             </div>
                             <div class="form-group">
                                 <label for="sub2api-service-url">API URL *</label>
@@ -347,171 +347,171 @@
                             </div>
                             <div class="form-group">
                                 <label for="sub2api-service-key">API Key</label>
-                                <input type="password" id="sub2api-service-key" placeholder="编辑时留空则保持原值" autocomplete="new-password">
+                                <input type="password" id="sub2api-service-key" placeholder="Leave blank when editing to keep the original value" autocomplete="new-password">
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="sub2api-service-priority">优先级</label>
+                                    <label for="sub2api-service-priority">Priority</label>
                                     <input type="number" id="sub2api-service-priority" value="0" min="0">
-                                    <p class="hint">数字越小优先级越高</p>
+                                    <p class="hint">The smaller the number, the higher the priority</p>
                                 </div>
                                 <div class="form-group">
                                     <label>&nbsp;</label>
                                     <label style="margin-top:10px;display:flex;align-items:center;gap:8px;">
-                                        <input type="checkbox" id="sub2api-service-enabled" checked> 启用
+                                        <input type="checkbox" id="sub2api-service-enabled" checked> Enable
                                     </label>
                                 </div>
                             </div>
                             <div class="form-actions">
-                                <button type="submit" class="btn btn-primary">💾 保存</button>
-                                <button type="button" class="btn btn-secondary" id="test-sub2api-service-btn">🔌 测试连接</button>
-                                <button type="button" class="btn btn-secondary" id="cancel-sub2api-service-btn">取消</button>
+                                <button type="submit" class="btn btn-primary">💾 Save</button>
+                                <button type="button" class="btn btn-secondary" id="test-sub2api-service-btn">🔌 Test connection</button>
+                                <button type="button" class="btn btn-secondary" id="cancel-sub2api-service-btn">Cancel</button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
 
-            <!-- CPA 服务编辑模态框 -->
+            <!-- CPA service editing modal box -->
             <div class="modal" id="cpa-service-edit-modal">
                 <div class="modal-content" style="max-width: 500px;">
                     <div class="modal-header">
-                        <h3 id="cpa-service-modal-title">添加 CPA 服务</h3>
+                        <h3 id="cpa-service-modal-title">Add CPA service</h3>
                         <button class="modal-close" id="close-cpa-service-modal">&times;</button>
                     </div>
                     <div class="modal-body">
                         <form id="cpa-service-form">
                             <input type="hidden" id="cpa-service-id">
                             <div class="form-group">
-                                <label for="cpa-service-name">名称 *</label>
-                                <input type="text" id="cpa-service-name" placeholder="例如: 主服务" required>
+                                <label for="cpa-service-name">Name *</label>
+                                <input type="text" id="cpa-service-name" placeholder="Example: Main Service" required>
                             </div>
                             <div class="form-group">
                                 <label for="cpa-service-url">API URL *</label>
                                 <input type="text" id="cpa-service-url" placeholder="https://cpa.example.com" required>
-                                <p class="hint">支持填写根地址、`/v0/management` 或完整的 `/v0/management/auth-files` 地址</p>
+                                <p class="hint">Supports filling in the root address, `/v0/management` or the complete `/v0/management/auth-files` address</p>
                             </div>
                             <div class="form-group">
                                 <label for="cpa-service-token">API Token</label>
-                                <input type="password" id="cpa-service-token" placeholder="编辑时留空则保持原值" autocomplete="new-password">
+                                <input type="password" id="cpa-service-token" placeholder="Leave blank when editing to keep the original value" autocomplete="new-password">
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="cpa-service-priority">优先级</label>
+                                    <label for="cpa-service-priority">Priority</label>
                                     <input type="number" id="cpa-service-priority" value="0" min="0">
-                                    <p class="hint">数字越小优先级越高</p>
+                                    <p class="hint">The smaller the number, the higher the priority</p>
                                 </div>
                                 <div class="form-group">
                                     <label>&nbsp;</label>
                                     <label style="margin-top:10px;display:flex;align-items:center;gap:8px;">
-                                        <input type="checkbox" id="cpa-service-enabled" checked> 启用
+                                        <input type="checkbox" id="cpa-service-enabled" checked> Enable
                                     </label>
                                 </div>
                             </div>
                             <div class="form-actions">
-                                <button type="submit" class="btn btn-primary">💾 保存</button>
-                                <button type="button" class="btn btn-secondary" id="test-cpa-service-btn">🔌 测试连接</button>
-                                <button type="button" class="btn btn-secondary" id="cancel-cpa-service-btn">取消</button>
+                                <button type="submit" class="btn btn-primary">💾 Save</button>
+                                <button type="button" class="btn btn-secondary" id="test-cpa-service-btn">🔌 Test connection</button>
+                                <button type="button" class="btn btn-secondary" id="cancel-cpa-service-btn">Cancel</button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
 
-            <!-- Outlook 配置 -->
+            <!-- Outlook Configuration -->
             <div class="tab-content" id="outlook-tab">
                 <div class="card">
                     <div class="card-header">
-                        <h3>Outlook OAuth 配置</h3>
-                        <span class="hint">配置 Outlook 邮箱 OAuth 认证参数</span>
+                        <h3>Outlook OAuth configuration</h3>
+                        <span class="hint">Configure Outlook mailbox OAuth authentication parameters</span>
                     </div>
                     <div class="card-body">
                         <form id="outlook-settings-form">
                             <div class="form-group">
-                                <label for="outlook-default-client-id">默认 Client ID</label>
+                                <label for="outlook-default-client-id">Default Client ID</label>
                                 <input type="text" id="outlook-default-client-id" name="default_client_id"
                                     placeholder="24d9a0ed-8787-4584-883c-2fd79308940a">
-                                <p class="hint">Outlook OAuth 应用的 Client ID。导入账户时未填写 client_id 则使用此默认值。</p>
+                                <p class="hint">Client ID for the Outlook OAuth application. If client_id is not filled in when importing the account, this default value will be used. </p>
                             </div>
 
                             <div class="form-actions">
-                                <button type="submit" class="btn btn-primary">💾 保存设置</button>
+                                <button type="submit" class="btn btn-primary">💾 Save settings</button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
 
-            <!-- 注册配置 -->
+            <!-- Registration configuration -->
             <div class="tab-content" id="registration-tab">
                 <div class="card">
                     <div class="card-header">
-                        <h3>注册配置</h3>
+                        <h3>Registration configuration</h3>
                     </div>
                     <div class="card-body">
                         <form id="registration-settings-form">
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="max-retries">最大重试次数</label>
+                                    <label for="max-retries">Maximum number of retries</label>
                                     <input type="number" id="max-retries" name="max_retries" value="3" min="1" max="10">
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="timeout">超时时间 (秒)</label>
+                                    <label for="timeout">Timeout (seconds)</label>
                                     <input type="number" id="timeout" name="timeout" value="120" min="30" max="600">
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="password-length">密码长度</label>
+                                    <label for="password-length">Password length</label>
                                     <input type="number" id="password-length" name="default_password_length" value="12" min="8" max="32">
                                 </div>
                             </div>
 
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="sleep-min">最小等待时间 (秒)</label>
+                                    <label for="sleep-min">Minimum wait time (seconds)</label>
                                     <input type="number" id="sleep-min" name="sleep_min" value="5" min="1" max="60">
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="sleep-max">最大等待时间 (秒)</label>
+                                    <label for="sleep-max">Maximum wait time (seconds)</label>
                                     <input type="number" id="sleep-max" name="sleep_max" value="30" min="5" max="120">
                                 </div>
                             </div>
 
                             <div class="form-actions">
-                                <button type="submit" class="btn btn-primary">💾 保存设置</button>
+                                <button type="submit" class="btn btn-primary">💾 Save settings</button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
 
-            <!-- 验证码配置 -->
+            <!-- Verification code configuration -->
             <div class="tab-content" id="email-code-tab">
                 <div class="card">
                     <div class="card-header">
-                        <h3>验证码等待配置</h3>
-                        <span class="hint">配置 Outlook 邮箱验证码获取的超时时间和轮询间隔</span>
+                        <h3>Verification code waiting for configuration</h3>
+                        <span class="hint">Configure the timeout and polling interval for obtaining Outlook email verification codes</span>
                     </div>
                     <div class="card-body">
                         <form id="email-code-form">
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="email-code-timeout">等待超时 (秒)</label>
+                                    <label for="email-code-timeout">Wait timeout (seconds)</label>
                                     <input type="number" id="email-code-timeout" name="timeout" value="120" min="30" max="600">
-                                    <span class="hint">等待验证码的最大时间，建议 60-300 秒</span>
+                                    <span class="hint">Maximum time to wait for verification code, recommended 60-300 seconds</span>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="email-code-poll-interval">轮询间隔 (秒)</label>
+                                    <label for="email-code-poll-interval">Polling interval (seconds)</label>
                                     <input type="number" id="email-code-poll-interval" name="poll_interval" value="3" min="1" max="30">
-                                    <span class="hint">检查邮箱的时间间隔，建议 2-5 秒</span>
+                                    <span class="hint">The time interval for checking the mailbox, 2-5 seconds is recommended</span>
                                 </div>
                             </div>
 
                             <div class="form-actions">
-                                <button type="submit" class="btn btn-primary">💾 保存设置</button>
+                                <button type="submit" class="btn btn-primary">💾 Save settings</button>
                             </div>
                         </form>
                     </div>
@@ -519,49 +519,49 @@
 
                 <div class="card" style="margin-top: var(--spacing-lg);">
                     <div class="card-header">
-                        <h3>验证码获取策略</h3>
+                        <h3>Verification code acquisition strategy</h3>
                     </div>
                     <div class="card-body">
                         <ul class="info-list">
-                            <li><strong>渐进式检查</strong>：前 3 次轮询只检查未读邮件，之后检查所有邮件</li>
-                            <li><strong>时间戳过滤</strong>：自动跳过 OTP 发送前的旧邮件</li>
-                            <li><strong>验证码去重</strong>：避免重复使用同一验证码</li>
-                            <li><strong>多策略提取</strong>：主题优先 → 语义匹配 → 兜底匹配</li>
-                            <li><strong>发件人验证</strong>：严格验证邮件来自 OpenAI 官方</li>
+                            <li><strong>Progressive checking</strong>: only unread messages are checked in the first 3 polls, then all messages are checked</li>
+                            <li><strong>Timestamp filtering</strong>: Automatically skip old emails before OTP is sent</li>
+                            <li><strong>Verification code deduplication</strong>: Avoid reusing the same verification code</li>
+                            <li><strong>Multi-strategy extraction</strong>: topic priority → semantic matching → covert matching</li>
+                            <li><strong>Sender Verification</strong>: Strictly verify that the email comes from the official OpenAI</li>
                         </ul>
                     </div>
                 </div>
             </div>
 
-            <!-- 数据库 -->
+            <!-- Database -->
             <div class="tab-content" id="database-tab">
                 <div class="card">
                     <div class="card-header">
-                        <h3>数据库信息</h3>
+                        <h3>Database information</h3>
                     </div>
                     <div class="card-body">
                         <div class="info-grid" style="margin-bottom: var(--spacing-lg);">
                             <div class="info-item">
-                                <span class="label">数据库大小</span>
+                                <span class="label">Database size</span>
                                 <span id="db-size" class="value">-</span>
                             </div>
                             <div class="info-item">
-                                <span class="label">账号数量</span>
+                                <span class="label">Number of accounts</span>
                                 <span id="db-accounts" class="value">-</span>
                             </div>
                             <div class="info-item">
-                                <span class="label">邮箱服务数量</span>
+                                <span class="label">Number of mailbox services</span>
                                 <span id="db-services" class="value">-</span>
                             </div>
                             <div class="info-item">
-                                <span class="label">任务记录数量</span>
+                                <span class="label">Number of task records</span>
                                 <span id="db-tasks" class="value">-</span>
                             </div>
                         </div>
 
                         <div class="form-actions">
-                            <button class="btn btn-secondary" id="backup-btn">💾 备份数据库</button>
-                            <button class="btn btn-warning" id="cleanup-btn">🧹 清理过期数据</button>
+                            <button class="btn btn-secondary" id="backup-btn">💾 Backup database</button>
+                            <button class="btn btn-warning" id="cleanup-btn">🧹 Clean expired data</button>
                         </div>
                     </div>
                 </div>

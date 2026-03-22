@@ -1,5 +1,5 @@
 """
-支付相关 API 路由
+Payment related API routing
 """
 
 import logging
@@ -34,13 +34,13 @@ class GenerateLinkRequest(BaseModel):
     price_interval: str = "month"
     seat_quantity: int = 5
     proxy: Optional[str] = None
-    auto_open: bool = False  # 生成后是否自动无痕打开
-    country: str = "SG"  # 计费国家，决定货币  # 生成后是否自动无痕打开
+    auto_open: bool = False # Whether to automatically open without trace after generation
+    country: str = "SG" # Billing country, determines the currency # Whether to automatically open without trace after generation
 
 
 class OpenIncognitoRequest(BaseModel):
     url: str
-    account_id: Optional[int] = None  # 可选，用于注入账号 cookie
+    account_id: Optional[int] = None # Optional, used to inject account cookie
 
 
 class MarkSubscriptionRequest(BaseModel):
@@ -56,15 +56,15 @@ class BatchCheckSubscriptionRequest(BaseModel):
     search_filter: Optional[str] = None
 
 
-# ============== 支付链接生成 ==============
+# ============== Payment link generation ==============
 
 @router.post("/generate-link")
 def generate_payment_link(request: GenerateLinkRequest):
-    """生成 Plus 或 Team 支付链接，可选自动无痕打开"""
+    """Generate Plus or Team payment link, optionally open it automatically and incognito"""
     with get_db() as db:
         account = db.query(Account).filter(Account.id == request.account_id).first()
         if not account:
-            raise HTTPException(status_code=404, detail="账号不存在")
+            raise HTTPException(status_code=404, detail="Account does not exist")
 
         proxy = request.proxy or get_settings().proxy_url
 
@@ -81,12 +81,12 @@ def generate_payment_link(request: GenerateLinkRequest):
                     country=request.country,
                 )
             else:
-                raise HTTPException(status_code=400, detail="plan_type 必须为 plus 或 team")
+                raise HTTPException(status_code=400, detail="plan_type must be plus or team")
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))
         except Exception as e:
-            logger.error(f"生成支付链接失败: {e}")
-            raise HTTPException(status_code=500, detail=f"生成链接失败: {str(e)}")
+            logger.error(f"Failed to generate payment link: {e}")
+            raise HTTPException(status_code=500, detail=f"Failed to generate link: {str(e)}")
 
     opened = False
     if request.auto_open and link:
@@ -103,9 +103,9 @@ def generate_payment_link(request: GenerateLinkRequest):
 
 @router.post("/open-incognito")
 def open_browser_incognito(request: OpenIncognitoRequest):
-    """后端以无痕模式打开指定 URL，可注入账号 cookie"""
+    """The backend opens the specified URL in incognito mode and can inject account cookies"""
     if not request.url:
-        raise HTTPException(status_code=400, detail="URL 不能为空")
+        raise HTTPException(status_code=400, detail="URL cannot be empty")
 
     cookies_str = None
     if request.account_id:
@@ -116,15 +116,15 @@ def open_browser_incognito(request: OpenIncognitoRequest):
 
     success = open_url_incognito(request.url, cookies_str)
     if success:
-        return {"success": True, "message": "已在无痕模式打开浏览器"}
-    return {"success": False, "message": "未找到可用的浏览器，请手动复制链接"}
+        return {"success": True, "message": "Browser opened in incognito mode"}
+    return {"success": False, "message": "No available browser found, please copy the link manually"}
 
 
-# ============== 订阅状态 ==============
+# ============== Subscription status ==============
 
 @router.post("/accounts/batch-check-subscription")
 def batch_check_subscription(request: BatchCheckSubscriptionRequest):
-    """批量检测账号订阅状态"""
+    """Batch check account subscription status"""
     proxy = request.proxy or get_settings().proxy_url
 
     results = {"success_count": 0, "failed_count": 0, "details": []}
@@ -139,7 +139,7 @@ def batch_check_subscription(request: BatchCheckSubscriptionRequest):
             if not account:
                 results["failed_count"] += 1
                 results["details"].append(
-                    {"id": account_id, "email": None, "success": False, "error": "账号不存在"}
+                    {"id": account_id, "email": None, "success": False, "error": "Account does not exist"}
                 )
                 continue
 
@@ -163,15 +163,15 @@ def batch_check_subscription(request: BatchCheckSubscriptionRequest):
 
 @router.post("/accounts/{account_id}/mark-subscription")
 def mark_subscription(account_id: int, request: MarkSubscriptionRequest):
-    """手动标记账号订阅类型"""
+    """Manually mark account subscription type"""
     allowed = ("free", "plus", "team")
     if request.subscription_type not in allowed:
-        raise HTTPException(status_code=400, detail=f"subscription_type 必须为 {allowed}")
+        raise HTTPException(status_code=400, detail=f"subscription_type must be {allowed}")
 
     with get_db() as db:
         account = db.query(Account).filter(Account.id == account_id).first()
         if not account:
-            raise HTTPException(status_code=404, detail="账号不存在")
+            raise HTTPException(status_code=404, detail="Account does not exist")
 
         account.subscription_type = None if request.subscription_type == "free" else request.subscription_type
         account.subscription_at = datetime.utcnow() if request.subscription_type != "free" else None

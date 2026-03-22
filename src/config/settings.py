@@ -1,6 +1,6 @@
 """
-配置管理 - 完全基于数据库存储
-所有配置都从数据库读取，不再使用环境变量或 .env 文件
+Configuration management - completely based on database storage
+All configuration is read from the database, no more environment variables or .env files are used
 """
 
 import os
@@ -12,7 +12,7 @@ from dataclasses import dataclass
 
 
 class SettingCategory(str, Enum):
-    """设置分类"""
+    """Set categories"""
     GENERAL = "general"
     DATABASE = "database"
     WEBUI = "webui"
@@ -29,7 +29,7 @@ class SettingCategory(str, Enum):
 
 @dataclass
 class SettingDefinition:
-    """设置定义"""
+    """Setting definition"""
     db_key: str
     default_value: Any
     category: SettingCategory
@@ -37,96 +37,96 @@ class SettingDefinition:
     is_secret: bool = False
 
 
-# 所有配置项定义（包含数据库键名、默认值、分类、描述）
+# Definition of all configuration items (including database key name, default value, classification, description)
 SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
-    # 应用信息
+    # Application information
     "app_name": SettingDefinition(
         db_key="app.name",
-        default_value="OpenAI/Codex CLI 自动注册系统",
+        default_value="OpenAI/Codex CLI automatic registration system",
         category=SettingCategory.GENERAL,
-        description="应用名称"
+        description="Application name"
     ),
     "app_version": SettingDefinition(
         db_key="app.version",
         default_value="2.0.0",
         category=SettingCategory.GENERAL,
-        description="应用版本"
+        description="Application version"
     ),
     "debug": SettingDefinition(
         db_key="app.debug",
         default_value=False,
         category=SettingCategory.GENERAL,
-        description="调试模式"
+        description="Debug mode"
     ),
 
-    # 数据库配置
+    # Database configuration
     "database_url": SettingDefinition(
         db_key="database.url",
         default_value="data/database.db",
         category=SettingCategory.DATABASE,
-        description="数据库路径或连接字符串"
+        description="Database path or connection string"
     ),
 
-    # Web UI 配置
+    # Web UI configuration
     "webui_host": SettingDefinition(
         db_key="webui.host",
         default_value="0.0.0.0",
         category=SettingCategory.WEBUI,
-        description="Web UI 监听地址"
+        description="Web UI listening address"
     ),
     "webui_port": SettingDefinition(
         db_key="webui.port",
         default_value=8000,
         category=SettingCategory.WEBUI,
-        description="Web UI 监听端口"
+        description="Web UI listening port"
     ),
     "webui_secret_key": SettingDefinition(
         db_key="webui.secret_key",
         default_value="your-secret-key-change-in-production",
         category=SettingCategory.WEBUI,
-        description="Web UI 密钥",
+        description="Web UI Key",
         is_secret=True
     ),
     "webui_access_password": SettingDefinition(
         db_key="webui.access_password",
         default_value="admin123",
         category=SettingCategory.WEBUI,
-        description="Web UI 访问密码",
+        description="Web UI access password",
         is_secret=True
     ),
 
-    # 日志配置
+    # Log configuration
     "log_level": SettingDefinition(
         db_key="log.level",
         default_value="INFO",
         category=SettingCategory.LOG,
-        description="日志级别"
+        description="Log level"
     ),
     "log_file": SettingDefinition(
         db_key="log.file",
         default_value="logs/app.log",
         category=SettingCategory.LOG,
-        description="日志文件路径"
+        description="Log file path"
     ),
     "log_retention_days": SettingDefinition(
         db_key="log.retention_days",
         default_value=30,
         category=SettingCategory.LOG,
-        description="日志保留天数"
+        description="Number of days to retain logs"
     ),
 
-    # OpenAI 配置
+    # OpenAI configuration
     "openai_client_id": SettingDefinition(
         db_key="openai.client_id",
         default_value="app_EMoamEEZ73f0CkXaXp7hrann",
         category=SettingCategory.OPENAI,
-        description="OpenAI OAuth 客户端 ID"
+        description="OpenAI OAuth client ID"
     ),
     "openai_auth_url": SettingDefinition(
         db_key="openai.auth_url",
         default_value="https://auth.openai.com/oauth/authorize",
         category=SettingCategory.OPENAI,
-        description="OpenAI OAuth 授权 URL"
+        description="OpenAI OAuth authorization URL"
     ),
     "openai_token_url": SettingDefinition(
         db_key="openai.token_url",
@@ -138,181 +138,181 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         db_key="openai.redirect_uri",
         default_value="http://localhost:1455/auth/callback",
         category=SettingCategory.OPENAI,
-        description="OpenAI OAuth 回调 URI"
+        description="OpenAI OAuth callback URI"
     ),
     "openai_scope": SettingDefinition(
         db_key="openai.scope",
         default_value="openid email profile offline_access",
         category=SettingCategory.OPENAI,
-        description="OpenAI OAuth 权限范围"
+        description="OpenAI OAuth permission scope"
     ),
 
-    # 代理配置
+    #Agent configuration
     "proxy_enabled": SettingDefinition(
         db_key="proxy.enabled",
         default_value=False,
         category=SettingCategory.PROXY,
-        description="是否启用代理"
+        description="Whether to enable proxy"
     ),
     "proxy_type": SettingDefinition(
         db_key="proxy.type",
         default_value="http",
         category=SettingCategory.PROXY,
-        description="代理类型 (http/socks5)"
+        description="Proxy type (http/socks5)"
     ),
     "proxy_host": SettingDefinition(
         db_key="proxy.host",
         default_value="127.0.0.1",
         category=SettingCategory.PROXY,
-        description="代理服务器地址"
+        description="Proxy server address"
     ),
     "proxy_port": SettingDefinition(
         db_key="proxy.port",
         default_value=7890,
         category=SettingCategory.PROXY,
-        description="代理服务器端口"
+        description="Proxy server port"
     ),
     "proxy_username": SettingDefinition(
         db_key="proxy.username",
         default_value="",
         category=SettingCategory.PROXY,
-        description="代理用户名"
+        description="Agent username"
     ),
     "proxy_password": SettingDefinition(
         db_key="proxy.password",
         default_value="",
         category=SettingCategory.PROXY,
-        description="代理密码",
+        description="Agent password",
         is_secret=True
     ),
     "proxy_dynamic_enabled": SettingDefinition(
         db_key="proxy.dynamic_enabled",
         default_value=False,
         category=SettingCategory.PROXY,
-        description="是否启用动态代理"
+        description="Whether to enable dynamic proxy"
     ),
     "proxy_dynamic_api_url": SettingDefinition(
         db_key="proxy.dynamic_api_url",
         default_value="",
         category=SettingCategory.PROXY,
-        description="动态代理 API 地址，返回代理 URL 字符串"
+        description="Dynamic proxy API address, return proxy URL string"
     ),
     "proxy_dynamic_api_key": SettingDefinition(
         db_key="proxy.dynamic_api_key",
         default_value="",
         category=SettingCategory.PROXY,
-        description="动态代理 API 密钥（可选）",
+        description="Dynamic proxy API key (optional)",
         is_secret=True
     ),
     "proxy_dynamic_api_key_header": SettingDefinition(
         db_key="proxy.dynamic_api_key_header",
         default_value="X-API-Key",
         category=SettingCategory.PROXY,
-        description="动态代理 API 密钥请求头名称"
+        description="Dynamic Proxy API Key Request Header Name"
     ),
     "proxy_dynamic_result_field": SettingDefinition(
         db_key="proxy.dynamic_result_field",
         default_value="",
         category=SettingCategory.PROXY,
-        description="从 JSON 响应中提取代理 URL 的字段路径（留空则使用响应原文）"
+        description="Extract the field path of the proxy URL from the JSON response (leave blank to use the original response text)"
     ),
 
-    # 注册配置
+    #Register configuration
     "registration_max_retries": SettingDefinition(
         db_key="registration.max_retries",
         default_value=3,
         category=SettingCategory.REGISTRATION,
-        description="注册最大重试次数"
+        description="Maximum number of registration retries"
     ),
     "registration_timeout": SettingDefinition(
         db_key="registration.timeout",
         default_value=120,
         category=SettingCategory.REGISTRATION,
-        description="注册超时时间（秒）"
+        description="Registration timeout (seconds)"
     ),
     "registration_default_password_length": SettingDefinition(
         db_key="registration.default_password_length",
         default_value=12,
         category=SettingCategory.REGISTRATION,
-        description="默认密码长度"
+        description="Default password length"
     ),
     "registration_sleep_min": SettingDefinition(
         db_key="registration.sleep_min",
         default_value=5,
         category=SettingCategory.REGISTRATION,
-        description="注册间隔最小值（秒）"
+        description="Minimum registration interval (seconds)"
     ),
     "registration_sleep_max": SettingDefinition(
         db_key="registration.sleep_max",
         default_value=30,
         category=SettingCategory.REGISTRATION,
-        description="注册间隔最大值（秒）"
+        description="Maximum registration interval (seconds)"
     ),
 
-    # 邮箱服务配置
+    # Email service configuration
     "email_service_priority": SettingDefinition(
         db_key="email.service_priority",
         default_value={"tempmail": 0, "outlook": 1, "moe_mail": 2},
         category=SettingCategory.EMAIL,
-        description="邮箱服务优先级"
+        description="Mailbox service priority"
     ),
 
-    # Tempmail.lol 配置
+    # Tempmail.lol configuration
     "tempmail_base_url": SettingDefinition(
         db_key="tempmail.base_url",
         default_value="https://api.tempmail.lol/v2",
         category=SettingCategory.TEMPMAIL,
-        description="Tempmail API 地址"
+        description="Tempmail API address"
     ),
     "tempmail_timeout": SettingDefinition(
         db_key="tempmail.timeout",
         default_value=30,
         category=SettingCategory.TEMPMAIL,
-        description="Tempmail 超时时间（秒）"
+        description="Tempmail timeout (seconds)"
     ),
     "tempmail_max_retries": SettingDefinition(
         db_key="tempmail.max_retries",
         default_value=3,
         category=SettingCategory.TEMPMAIL,
-        description="Tempmail 最大重试次数"
+        description="Tempmail maximum retries"
     ),
 
-    # 自定义域名邮箱配置
+    # Custom domain name email configuration
     "custom_domain_base_url": SettingDefinition(
         db_key="custom_domain.base_url",
         default_value="",
         category=SettingCategory.CUSTOM_DOMAIN,
-        description="自定义域名 API 地址"
+        description="Custom domain name API address"
     ),
     "custom_domain_api_key": SettingDefinition(
         db_key="custom_domain.api_key",
         default_value="",
         category=SettingCategory.CUSTOM_DOMAIN,
-        description="自定义域名 API 密钥",
+        description="Custom domain name API key",
         is_secret=True
     ),
 
-    # 安全配置
+    # Security configuration
     "encryption_key": SettingDefinition(
         db_key="security.encryption_key",
         default_value="your-encryption-key-change-in-production",
         category=SettingCategory.SECURITY,
-        description="加密密钥",
+        description="Encryption key",
         is_secret=True
     ),
 
-    # Team Manager 配置
+    # Team Manager configuration
     "tm_enabled": SettingDefinition(
         db_key="tm.enabled",
         default_value=False,
         category=SettingCategory.GENERAL,
-        description="是否启用 Team Manager 上传"
+        description="Whether to enable Team Manager upload"
     ),
     "tm_api_url": SettingDefinition(
         db_key="tm.api_url",
         default_value="",
         category=SettingCategory.GENERAL,
-        description="Team Manager API 地址"
+        description="Team Manager API address"
     ),
     "tm_api_key": SettingDefinition(
         db_key="tm.api_key",
@@ -322,18 +322,18 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         is_secret=True
     ),
 
-    # CPA 上传配置
+    # CPA upload configuration
     "cpa_enabled": SettingDefinition(
         db_key="cpa.enabled",
         default_value=False,
         category=SettingCategory.CPA,
-        description="是否启用 CPA 上传"
+        description="Whether to enable CPA upload"
     ),
     "cpa_api_url": SettingDefinition(
         db_key="cpa.api_url",
         default_value="",
         category=SettingCategory.CPA,
-        description="CPA API 地址"
+        description="CPA API address"
     ),
     "cpa_api_token": SettingDefinition(
         db_key="cpa.api_token",
@@ -343,51 +343,51 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         is_secret=True
     ),
 
-    # 验证码配置
+    # Verification code configuration
     "email_code_timeout": SettingDefinition(
         db_key="email_code.timeout",
         default_value=120,
         category=SettingCategory.EMAIL,
-        description="验证码等待超时时间（秒）"
+        description="Verification code waiting timeout (seconds)"
     ),
     "email_code_poll_interval": SettingDefinition(
         db_key="email_code.poll_interval",
         default_value=3,
         category=SettingCategory.EMAIL,
-        description="验证码轮询间隔（秒）"
+        description="Verification code polling interval (seconds)"
     ),
 
-    # Outlook 配置
+    # Outlook configuration
     "outlook_provider_priority": SettingDefinition(
         db_key="outlook.provider_priority",
         default_value=["imap_old", "imap_new", "graph_api"],
         category=SettingCategory.EMAIL,
-        description="Outlook 提供者优先级"
+        description="Outlook provider priority"
     ),
     "outlook_health_failure_threshold": SettingDefinition(
         db_key="outlook.health_failure_threshold",
         default_value=5,
         category=SettingCategory.EMAIL,
-        description="Outlook 提供者连续失败次数阈值"
+        description="Outlook provider consecutive failure threshold"
     ),
     "outlook_health_disable_duration": SettingDefinition(
         db_key="outlook.health_disable_duration",
         default_value=60,
         category=SettingCategory.EMAIL,
-        description="Outlook 提供者禁用时长（秒）"
+        description="Outlook provider disabled for how long (seconds)"
     ),
     "outlook_default_client_id": SettingDefinition(
         db_key="outlook.default_client_id",
         default_value="24d9a0ed-8787-4584-883c-2fd79308940a",
         category=SettingCategory.EMAIL,
-        description="Outlook OAuth 默认 Client ID"
+        description="Outlook OAuth Default Client ID"
     ),
 }
 
-# 属性名到数据库键名的映射（用于向后兼容）
+# Mapping of attribute names to database key names (for backward compatibility)
 DB_SETTING_KEYS = {name: defn.db_key for name, defn in SETTING_DEFINITIONS.items()}
 
-# 类型定义映射
+# Type definition mapping
 SETTING_TYPES: Dict[str, Type] = {
     "debug": bool,
     "webui_port": int,
@@ -412,12 +412,12 @@ SETTING_TYPES: Dict[str, Type] = {
     "outlook_health_disable_duration": int,
 }
 
-# 需要作为 SecretStr 处理的字段
+# Fields that need to be processed as SecretStr
 SECRET_FIELDS = {name for name, defn in SETTING_DEFINITIONS.items() if defn.is_secret}
 
 
 def _convert_value(attr_name: str, value: str) -> Any:
-    """将数据库字符串值转换为正确的类型"""
+    """Convert the database string value to the correct type"""
     if attr_name in SECRET_FIELDS:
         return SecretStr(value) if value else SecretStr("")
 
@@ -472,7 +472,7 @@ def _normalize_database_url(url: str) -> str:
 
 
 def _value_to_string(value: Any) -> str:
-    """将值转换为数据库存储的字符串"""
+    """Convert the value to a string stored in the database"""
     if isinstance(value, SecretStr):
         return value.get_secret_value()
     elif isinstance(value, bool):
@@ -488,8 +488,8 @@ def _value_to_string(value: Any) -> str:
 
 def init_default_settings() -> None:
     """
-    初始化数据库中的默认设置
-    如果设置项不存在，则创建并设置默认值
+    Initialize default settings in database
+    If the setting item does not exist, create it and set the default value
     """
     try:
         from ..database.session import get_db
@@ -512,14 +512,14 @@ def init_default_settings() -> None:
                         category=defn.category.value,
                         description=defn.description
                     )
-                    print(f"[Settings] 初始化默认设置: {defn.db_key} = {default_value if not defn.is_secret else '***'}")
+                    print(f"[Settings] Initialize default settings: {defn.db_key} = {default_value if not defn.is_secret else '***'}")
     except Exception as e:
-        if "未初始化" not in str(e):
-            print(f"[Settings] 初始化默认设置失败: {e}")
+        if "not initialized" not in str(e):
+            print(f"[Settings] Failed to initialize default settings: {e}")
 
 
 def _load_settings_from_db() -> Dict[str, Any]:
-    """从数据库加载所有设置"""
+    """Load all settings from database"""
     try:
         from ..database.session import get_db
         from ..database.crud import get_setting
@@ -531,7 +531,7 @@ def _load_settings_from_db() -> Dict[str, Any]:
                 if db_setting:
                     settings_dict[attr_name] = _convert_value(attr_name, db_setting.value)
                 else:
-                    # 数据库中没有此设置，使用默认值
+                    # There is no such setting in the database, use the default value
                     settings_dict[attr_name] = _convert_value(attr_name, _value_to_string(defn.default_value))
             env_url = os.environ.get("APP_DATABASE_URL") or os.environ.get("DATABASE_URL")
             if env_url:
@@ -550,13 +550,13 @@ def _load_settings_from_db() -> Dict[str, Any]:
                 settings_dict["webui_access_password"] = env_password
         return settings_dict
     except Exception as e:
-        if "未初始化" not in str(e):
-            print(f"[Settings] 从数据库加载设置失败: {e}，使用默认值")
+        if "not initialized" not in str(e):
+            print(f"[Settings] Failed to load settings from database: {e}, use default value")
         return {name: defn.default_value for name, defn in SETTING_DEFINITIONS.items()}
 
 
 def _save_settings_to_db(**kwargs) -> None:
-    """保存设置到数据库"""
+    """Save settings to database"""
     try:
         from ..database.session import get_db
         from ..database.crud import set_setting
@@ -574,21 +574,21 @@ def _save_settings_to_db(**kwargs) -> None:
                         description=defn.description
                     )
     except Exception as e:
-        if "未初始化" not in str(e):
-            print(f"[Settings] 保存设置到数据库失败: {e}")
+        if "not initialized" not in str(e):
+            print(f"[Settings] Failed to save settings to database: {e}")
 
 
 class Settings(BaseModel):
     """
-    应用配置 - 完全基于数据库存储
+    Application configuration - completely based on database storage
     """
 
-    # 应用信息
-    app_name: str = "OpenAI/Codex CLI 自动注册系统"
+    # Application information
+    app_name: str = "OpenAI/Codex CLI automatic registration system"
     app_version: str = "2.0.0"
     debug: bool = False
 
-    # 数据库配置
+    # Database configuration
     database_url: str = "data/database.db"
 
     @field_validator('database_url', mode='before')
@@ -602,30 +602,30 @@ class Settings(BaseModel):
         if isinstance(v, str) and v.startswith("sqlite:///"):
             return v
         if isinstance(v, str) and not v.startswith(("sqlite:///", "postgresql://", "postgresql+psycopg://", "postgresql+psycopg2://", "mysql://")):
-            # 如果是文件路径，转换为 SQLite URL
+            # If it is a file path, convert it to a SQLite URL
             if os.path.isabs(v) or ":/" not in v:
                 return f"sqlite:///{v}"
         return v
 
-    # Web UI 配置
+    # Web UI configuration
     webui_host: str = "0.0.0.0"
     webui_port: int = 8000
     webui_secret_key: SecretStr = SecretStr("your-secret-key-change-in-production")
     webui_access_password: SecretStr = SecretStr("admin123")
 
-    # 日志配置
+    # Log configuration
     log_level: str = "INFO"
     log_file: str = "logs/app.log"
     log_retention_days: int = 30
 
-    # OpenAI 配置
+    # OpenAI configuration
     openai_client_id: str = "app_EMoamEEZ73f0CkXaXp7hrann"
     openai_auth_url: str = "https://auth.openai.com/oauth/authorize"
     openai_token_url: str = "https://auth.openai.com/oauth/token"
     openai_redirect_uri: str = "http://localhost:1455/auth/callback"
     openai_scope: str = "openid email profile offline_access"
 
-    # 代理配置
+    #Agent configuration
     proxy_enabled: bool = False
     proxy_type: str = "http"
     proxy_host: str = "127.0.0.1"
@@ -640,7 +640,7 @@ class Settings(BaseModel):
 
     @property
     def proxy_url(self) -> Optional[str]:
-        """获取完整的代理 URL"""
+        """Get the complete proxy URL"""
         if not self.proxy_enabled:
             return None
 
@@ -657,63 +657,63 @@ class Settings(BaseModel):
 
         return f"{scheme}://{auth}{self.proxy_host}:{self.proxy_port}"
 
-    # 注册配置
+    #Register configuration
     registration_max_retries: int = 3
     registration_timeout: int = 120
     registration_default_password_length: int = 12
     registration_sleep_min: int = 5
     registration_sleep_max: int = 30
 
-    # 邮箱服务配置
+    # Email service configuration
     email_service_priority: Dict[str, int] = {"tempmail": 0, "outlook": 1, "moe_mail": 2}
 
-    # Tempmail.lol 配置
+    # Tempmail.lol configuration
     tempmail_base_url: str = "https://api.tempmail.lol/v2"
     tempmail_timeout: int = 30
     tempmail_max_retries: int = 3
 
-    # 自定义域名邮箱配置
+    # Custom domain name email configuration
     custom_domain_base_url: str = ""
     custom_domain_api_key: Optional[SecretStr] = None
 
-    # 安全配置
+    # Security configuration
     encryption_key: SecretStr = SecretStr("your-encryption-key-change-in-production")
 
-    # Team Manager 配置
+    # Team Manager configuration
     tm_enabled: bool = False
     tm_api_url: str = ""
     tm_api_key: Optional[SecretStr] = None
 
-    # CPA 上传配置
+    # CPA upload configuration
     cpa_enabled: bool = False
     cpa_api_url: str = ""
     cpa_api_token: SecretStr = SecretStr("")
 
-    # 验证码配置
+    # Verification code configuration
     email_code_timeout: int = 120
     email_code_poll_interval: int = 3
 
-    # Outlook 配置
+    # Outlook configuration
     outlook_provider_priority: List[str] = ["imap_old", "imap_new", "graph_api"]
     outlook_health_failure_threshold: int = 5
     outlook_health_disable_duration: int = 60
     outlook_default_client_id: str = "24d9a0ed-8787-4584-883c-2fd79308940a"
 
 
-# 全局配置实例
+# Global configuration example
 _settings: Optional[Settings] = None
 
 
 def get_settings() -> Settings:
     """
-    获取全局配置实例（单例模式）
-    完全从数据库加载配置
+    Get the global configuration instance (singleton mode)
+    Load configuration entirely from database
     """
     global _settings
     if _settings is None:
-        # 先初始化默认设置（如果数据库中没有的话）
+        # Initialize the default settings first (if not found in the database)
         init_default_settings()
-        # 从数据库加载所有设置
+        # Load all settings from database
         settings_dict = _load_settings_from_db()
         _settings = Settings(**settings_dict)
     return _settings
@@ -721,18 +721,18 @@ def get_settings() -> Settings:
 
 def update_settings(**kwargs) -> Settings:
     """
-    更新配置并保存到数据库
+    Update configuration and save to database
     """
     global _settings
     if _settings is None:
         _settings = get_settings()
 
-    # 创建新的配置实例
+    #Create a new configuration instance
     updated_data = _settings.model_dump()
     updated_data.update(kwargs)
     _settings = Settings(**updated_data)
 
-    # 保存到数据库
+    # Save to database
     _save_settings_to_db(**kwargs)
 
     return _settings
@@ -740,16 +740,16 @@ def update_settings(**kwargs) -> Settings:
 
 def get_database_url() -> str:
     """
-    获取数据库 URL（处理相对路径）
+    Get database URL (handles relative paths)
     """
     settings = get_settings()
     url = settings.database_url
 
-    # 如果 URL 是相对路径，转换为绝对路径
+    # If the URL is a relative path, convert it to an absolute path
     if url.startswith("sqlite:///"):
-        path = url[10:]  # 移除 "sqlite:///"
+        path = url[10:] # Remove "sqlite:///"
         if not os.path.isabs(path):
-            # 转换为相对于项目根目录的路径
+            # Convert to a path relative to the project root directory
             project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
             abs_path = os.path.join(project_root, path)
             return f"sqlite:///{abs_path}"
@@ -758,10 +758,10 @@ def get_database_url() -> str:
 
 
 def get_setting_definition(attr_name: str) -> Optional[SettingDefinition]:
-    """获取设置项的定义信息"""
+    """Get the definition information of the setting item"""
     return SETTING_DEFINITIONS.get(attr_name)
 
 
 def get_all_setting_definitions() -> Dict[str, SettingDefinition]:
-    """获取所有设置项的定义"""
+    """Get the definitions of all setting items"""
     return SETTING_DEFINITIONS.copy()

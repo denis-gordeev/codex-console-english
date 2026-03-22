@@ -1,5 +1,5 @@
 """
-支付核心逻辑 — 生成 Plus/Team 支付链接、无痕打开浏览器、检测订阅状态
+Payment core logic - generate Plus/Team payment link, open browser without trace, detect subscription status
 """
 
 import logging
@@ -40,7 +40,7 @@ _COUNTRY_CURRENCY_MAP = {
 
 
 def _extract_oai_did(cookies_str: str) -> Optional[str]:
-    """从 cookie 字符串中提取 oai-device-id"""
+    """Extract oai-device-id from cookie string"""
     for part in cookies_str.split(";"):
         part = part.strip()
         if part.startswith("oai-did="):
@@ -49,7 +49,7 @@ def _extract_oai_did(cookies_str: str) -> Optional[str]:
 
 
 def _parse_cookie_str(cookies_str: str, domain: str) -> list:
-    """将 'key=val; key2=val2' 格式解析为 Playwright cookie 列表"""
+    """Parse 'key=val; key2=val2' format into Playwright cookie list"""
     cookies = []
     for part in cookies_str.split(";"):
         part = part.strip()
@@ -66,7 +66,7 @@ def _parse_cookie_str(cookies_str: str, domain: str) -> list:
 
 
 def _open_url_system_browser(url: str) -> bool:
-    """回退方案：调用系统浏览器以无痕模式打开"""
+    """Fallback solution: call the system browser to open in incognito mode"""
     platform = sys.platform
     try:
         if platform == "win32":
@@ -87,7 +87,7 @@ def _open_url_system_browser(url: str) -> bool:
                 except FileNotFoundError:
                     continue
     except Exception as e:
-        logger.warning(f"系统浏览器无痕打开失败: {e}")
+        logger.warning(f"Failed to open system browser incognito: {e}")
     return False
 
 
@@ -96,9 +96,9 @@ def generate_plus_link(
     proxy: Optional[str] = None,
     country: str = "SG",
 ) -> str:
-    """生成 Plus 支付链接（后端携带账号 cookie 发请求）"""
+    """Generate Plus payment link (backend carries account cookie to send request)"""
     if not account.access_token:
-        raise ValueError("账号缺少 access_token")
+        raise ValueError("Account is missing access_token")
 
     currency = _COUNTRY_CURRENCY_MAP.get(country, "USD")
     headers = {
@@ -134,7 +134,7 @@ def generate_plus_link(
     data = resp.json()
     if "checkout_session_id" in data:
         return TEAM_CHECKOUT_BASE_URL + data["checkout_session_id"]
-    raise ValueError(data.get("detail", "API 未返回 checkout_session_id"))
+    raise ValueError(data.get("detail", "API did not return checkout_session_id"))
 
 
 def generate_team_link(
@@ -145,9 +145,9 @@ def generate_team_link(
     proxy: Optional[str] = None,
     country: str = "SG",
 ) -> str:
-    """生成 Team 支付链接（后端携带账号 cookie 发请求）"""
+    """Generate Team payment link (backend carries account cookie to send request)"""
     if not account.access_token:
-        raise ValueError("账号缺少 access_token")
+        raise ValueError("Account is missing access_token")
 
     currency = _COUNTRY_CURRENCY_MAP.get(country, "USD")
     headers = {
@@ -189,16 +189,16 @@ def generate_team_link(
     data = resp.json()
     if "checkout_session_id" in data:
         return TEAM_CHECKOUT_BASE_URL + data["checkout_session_id"]
-    raise ValueError(data.get("detail", "API 未返回 checkout_session_id"))
+    raise ValueError(data.get("detail", "API did not return checkout_session_id"))
 
 
 def open_url_incognito(url: str, cookies_str: Optional[str] = None) -> bool:
-    """用 Playwright 以无痕模式打开 URL，可注入 cookie"""
+    """Use Playwright to open the URL in incognito mode and inject cookies"""
     import threading
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
-        logger.warning("playwright 未安装，回退到系统浏览器")
+        logger.warning("playwright is not installed, fall back to the system browser")
         return _open_url_system_browser(url)
 
     def _launch():
@@ -210,10 +210,10 @@ def open_url_incognito(url: str, cookies_str: Optional[str] = None) -> bool:
                     ctx.add_cookies(_parse_cookie_str(cookies_str, "chatgpt.com"))
                 page = ctx.new_page()
                 page.goto(url)
-                # 保持窗口打开直到用户关闭
-                page.wait_for_timeout(300_000)  # 最多等待 5 分钟
+                # Keep the window open until the user closes it
+                page.wait_for_timeout(300_000) # Wait up to 5 minutes
         except Exception as e:
-            logger.warning(f"Playwright 无痕打开失败: {e}")
+            logger.warning(f"Playwright private opening failed: {e}")
 
     threading.Thread(target=_launch, daemon=True).start()
     return True
@@ -221,13 +221,13 @@ def open_url_incognito(url: str, cookies_str: Optional[str] = None) -> bool:
 
 def check_subscription_status(account: Account, proxy: Optional[str] = None) -> str:
     """
-    检测账号当前订阅状态。
+    Check the current subscription status of the account.
 
     Returns:
         'free' / 'plus' / 'team'
     """
     if not account.access_token:
-        raise ValueError("账号缺少 access_token")
+        raise ValueError("Account is missing access_token")
 
     headers = {
         "Authorization": f"Bearer {account.access_token}",
@@ -244,14 +244,14 @@ def check_subscription_status(account: Account, proxy: Optional[str] = None) -> 
     resp.raise_for_status()
     data = resp.json()
 
-    # 解析订阅类型
+    # Parse subscription type
     plan = data.get("plan_type") or ""
     if "team" in plan.lower():
         return "team"
     if "plus" in plan.lower():
         return "plus"
 
-    # 尝试从 orgs 或 workspace 信息判断
+    # Try to judge from orgs or workspace information
     orgs = data.get("orgs", {}).get("data", [])
     for org in orgs:
         settings_ = org.get("settings", {})

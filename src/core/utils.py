@@ -1,5 +1,5 @@
 """
-通用工具函数
+General utility functions
 """
 
 import os
@@ -28,40 +28,40 @@ def setup_logging(
     log_format: str = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 ) -> logging.Logger:
     """
-    配置日志系统
+    Configure the logging system
 
     Args:
-        log_level: 日志级别 (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-        log_file: 日志文件路径，如果不指定则只输出到控制台
-        log_format: 日志格式
+        log_level: log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+        log_file: log file path, if not specified, it will only be output to the console
+        log_format: log format
 
     Returns:
-        根日志记录器
+        root logger
     """
-    # 设置日志级别
+    # Set log level
     numeric_level = getattr(logging, log_level.upper(), None)
     if not isinstance(numeric_level, int):
         numeric_level = logging.INFO
 
-    # 配置根日志记录器
+    # Configure root logger
     root_logger = logging.getLogger()
     root_logger.setLevel(numeric_level)
 
-    # 清除现有的处理器
+    # Clear existing processors
     root_logger.handlers.clear()
 
-    # 创建格式化器
+    #Create formatter
     formatter = logging.Formatter(log_format)
 
-    # 控制台处理器
+    #Console handler
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(formatter)
     console_handler.setLevel(numeric_level)
     root_logger.addHandler(console_handler)
 
-    # 文件处理器（如果指定了日志文件）
+    # File handler (if log file is specified)
     if log_file:
-        # 确保日志目录存在
+        # Make sure the log directory exists
         log_dir = os.path.dirname(log_file)
         if log_dir:
             os.makedirs(log_dir, exist_ok=True)
@@ -76,28 +76,28 @@ def setup_logging(
 
 def generate_password(length: int = DEFAULT_PASSWORD_LENGTH) -> str:
     """
-    生成随机密码
+    Generate random password
 
     Args:
-        length: 密码长度
+        length: password length
 
     Returns:
-        随机密码字符串
+        Random password string
     """
     if length < 4:
         length = 4
 
-    # 确保密码包含至少一个大写字母、一个小写字母和一个数字
+    # Make sure the password contains at least one uppercase letter, one lowercase letter and one number
     password = [
         secrets.choice(string.ascii_lowercase),
         secrets.choice(string.ascii_uppercase),
         secrets.choice(string.digits),
     ]
 
-    # 添加剩余字符
+    #Add remaining characters
     password.extend(secrets.choice(PASSWORD_CHARSET) for _ in range(length - 3))
 
-    # 随机打乱
+    # Randomly shuffle
     secrets.SystemRandom().shuffle(password)
 
     return ''.join(password)
@@ -105,38 +105,38 @@ def generate_password(length: int = DEFAULT_PASSWORD_LENGTH) -> str:
 
 def generate_random_string(length: int = 8) -> str:
     """
-    生成随机字符串（仅字母）
+    Generate random string (letters only)
 
     Args:
-        length: 字符串长度
+        length: string length
 
     Returns:
-        随机字符串
+        random string
     """
     chars = string.ascii_letters
     return ''.join(secrets.choice(chars) for _ in range(length))
 
 
 def generate_uuid() -> str:
-    """生成 UUID 字符串"""
+    """Generate UUID string"""
     return str(uuid.uuid4())
 
 
 def get_timestamp() -> int:
-    """获取当前时间戳（秒）"""
+    """Get the current timestamp (seconds)"""
     return int(time.time())
 
 
 def format_datetime(dt: Optional[datetime] = None, fmt: str = "%Y-%m-%d %H:%M:%S") -> str:
     """
-    格式化日期时间
+    Format date time
 
     Args:
-        dt: 日期时间对象，如果为 None 则使用当前时间
-        fmt: 格式字符串
+        dt: datetime object, if None the current time is used
+        fmt: format string
 
     Returns:
-        格式化后的字符串
+        Formatted string
     """
     if dt is None:
         dt = datetime.now()
@@ -145,14 +145,14 @@ def format_datetime(dt: Optional[datetime] = None, fmt: str = "%Y-%m-%d %H:%M:%S
 
 def parse_datetime(dt_str: str, fmt: str = "%Y-%m-%d %H:%M:%S") -> Optional[datetime]:
     """
-    解析日期时间字符串
+    Parse datetime string
 
     Args:
-        dt_str: 日期时间字符串
-        fmt: 格式字符串
+        dt_str: date and time string
+        fmt: format string
 
     Returns:
-        日期时间对象，如果解析失败返回 None
+        Datetime object, returns None if parsing fails
     """
     try:
         return datetime.strptime(dt_str, fmt)
@@ -162,13 +162,13 @@ def parse_datetime(dt_str: str, fmt: str = "%Y-%m-%d %H:%M:%S") -> Optional[date
 
 def human_readable_size(size_bytes: int) -> str:
     """
-    将字节大小转换为人类可读的格式
+    Convert byte size to human readable format
 
     Args:
-        size_bytes: 字节大小
+        size_bytes: size in bytes
 
     Returns:
-        人类可读的字符串
+        human readable string
     """
     if size_bytes < 0:
         return "0 B"
@@ -192,21 +192,21 @@ def retry_with_backoff(
     exceptions: tuple = (Exception,)
 ) -> Any:
     """
-    带有指数退避的重试装饰器/函数
+    Retry decorator/function with exponential backoff
 
     Args:
-        func: 要重试的函数
-        max_retries: 最大重试次数
-        base_delay: 基础延迟（秒）
-        max_delay: 最大延迟（秒）
-        backoff_factor: 退避因子
-        exceptions: 要捕获的异常类型
+        func: function to retry
+        max_retries: Maximum number of retries
+        base_delay: base delay (seconds)
+        max_delay: maximum delay (seconds)
+        backoff_factor: backoff factor
+        exceptions: the type of exceptions to be caught
 
     Returns:
-        函数的返回值
+        function return value
 
     Raises:
-        最后一次尝试的异常
+        Exception on last attempt
     """
     last_exception = None
 
@@ -216,31 +216,31 @@ def retry_with_backoff(
         except exceptions as e:
             last_exception = e
 
-            # 如果是最后一次尝试，直接抛出异常
+            # If it is the last attempt, throw an exception directly
             if attempt == max_retries:
                 break
 
-            # 计算延迟时间
+            # Calculate delay time
             delay = min(base_delay * (backoff_factor ** attempt), max_delay)
 
-            # 添加随机抖动
+            # Add random jitter
             delay *= (0.5 + random.random())
 
-            # 记录日志
+            # Record log
             logger = logging.getLogger(__name__)
             logger.warning(
-                f"尝试 {func.__name__} 失败 (attempt {attempt + 1}/{max_retries + 1}): {e}. "
-                f"等待 {delay:.2f} 秒后重试..."
+                f"Attempt {func.__name__} failed (attempt {attempt + 1}/{max_retries + 1}): {e}. "
+                f"Wait {delay:.2f} seconds and try again..."
             )
 
             time.sleep(delay)
 
-    # 所有重试都失败，抛出最后一个异常
+    # All retries fail and the last exception is thrown
     raise last_exception
 
 
 class RetryDecorator:
-    """重试装饰器类"""
+    """Retry the decorator class"""
 
     def __init__(
         self,
@@ -257,7 +257,7 @@ class RetryDecorator:
         self.exceptions = exceptions
 
     def __call__(self, func: Callable) -> Callable:
-        """装饰器调用"""
+        """Decorator call"""
         def wrapper(*args, **kwargs):
             def func_to_retry():
                 return func(*args, **kwargs)
@@ -276,13 +276,13 @@ class RetryDecorator:
 
 def validate_email(email: str) -> bool:
     """
-    验证邮箱地址格式
+    Verify email address format
 
     Args:
-        email: 邮箱地址
+        email: email address
 
     Returns:
-        是否有效
+        Is it valid?
     """
     pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
     return bool(re.match(pattern, email))
@@ -290,13 +290,13 @@ def validate_email(email: str) -> bool:
 
 def validate_url(url: str) -> bool:
     """
-    验证 URL 格式
+    Verify URL format
 
     Args:
         url: URL
 
     Returns:
-        是否有效
+        Is it valid?
     """
     pattern = r"^https?://[^\s/$.?#].[^\s]*$"
     return bool(re.match(pattern, url))
@@ -304,19 +304,19 @@ def validate_url(url: str) -> bool:
 
 def sanitize_filename(filename: str) -> str:
     """
-    清理文件名，移除不安全的字符
+    Clean file names to remove unsafe characters
 
     Args:
-        filename: 原始文件名
+        filename: original file name
 
     Returns:
-        清理后的文件名
+        Cleaned file name
     """
-    # 移除危险字符
+    # Remove dangerous characters
     filename = re.sub(r'[<>:"/\\|?*]', '_', filename)
-    # 移除控制字符
+    # Remove control characters
     filename = ''.join(char for char in filename if ord(char) >= 32)
-    # 限制长度
+    # Limit length
     if len(filename) > 255:
         name, ext = os.path.splitext(filename)
         filename = name[:255 - len(ext)] + ext
@@ -325,36 +325,36 @@ def sanitize_filename(filename: str) -> str:
 
 def read_json_file(filepath: str) -> Optional[Dict[str, Any]]:
     """
-    读取 JSON 文件
+    Read JSON file
 
     Args:
-        filepath: 文件路径
+        filepath: file path
 
     Returns:
-        JSON 数据，如果读取失败返回 None
+        JSON data, returns None if reading fails
     """
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
             return json.load(f)
     except (FileNotFoundError, json.JSONDecodeError, IOError) as e:
-        logging.getLogger(__name__).warning(f"读取 JSON 文件失败: {filepath} - {e}")
+        logging.getLogger(__name__).warning(f"Failed to read JSON file: {filepath} - {e}")
         return None
 
 
 def write_json_file(filepath: str, data: Dict[str, Any], indent: int = 2) -> bool:
     """
-    写入 JSON 文件
+    Write to JSON file
 
     Args:
-        filepath: 文件路径
-        data: 要写入的数据
-        indent: 缩进空格数
+        filepath: file path
+        data: data to be written
+        indent: number of indent spaces
 
     Returns:
-        是否成功
+        Is it successful?
     """
     try:
-        # 确保目录存在
+        # Make sure the directory exists
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
         with open(filepath, 'w', encoding='utf-8') as f:
@@ -362,35 +362,35 @@ def write_json_file(filepath: str, data: Dict[str, Any], indent: int = 2) -> boo
 
         return True
     except (IOError, TypeError) as e:
-        logging.getLogger(__name__).error(f"写入 JSON 文件失败: {filepath} - {e}")
+        logging.getLogger(__name__).error(f"Failed to write JSON file: {filepath} - {e}")
         return False
 
 
 def get_project_root() -> Path:
     """
-    获取项目根目录
+    Get the project root directory
 
     Returns:
-        项目根目录 Path 对象
+        Project root directory Path object
     """
-    # 当前文件所在目录
+    # Directory where the current file is located
     current_dir = Path(__file__).parent
 
-    # 向上查找直到找到项目根目录（包含 pyproject.toml 或 setup.py）
+    # Search upward until you find the project root directory (containing pyproject.toml or setup.py)
     for parent in [current_dir] + list(current_dir.parents):
         if (parent / "pyproject.toml").exists() or (parent / "setup.py").exists():
             return parent
 
-    # 如果找不到，返回当前目录的父目录
+    # If not found, return the parent directory of the current directory
     return current_dir.parent
 
 
 def get_data_dir() -> Path:
     """
-    获取数据目录
+    Get data directory
 
     Returns:
-        数据目录 Path 对象
+        Data directory Path object
     """
     settings = get_settings()
     if not settings.database_url.startswith("sqlite"):
@@ -399,12 +399,12 @@ def get_data_dir() -> Path:
         return data_dir
     data_dir = Path(settings.database_url).parent
 
-    # 如果 database_url 是 SQLite URL，提取路径
+    # If database_url is a SQLite URL, extract the path
     if settings.database_url.startswith("sqlite:///"):
-        db_path = settings.database_url[10:]  # 移除 "sqlite:///"
+        db_path = settings.database_url[10:] # Remove "sqlite:///"
         data_dir = Path(db_path).parent
 
-    # 确保目录存在
+    # Make sure the directory exists
     data_dir.mkdir(parents=True, exist_ok=True)
 
     return data_dir
@@ -412,16 +412,16 @@ def get_data_dir() -> Path:
 
 def get_logs_dir() -> Path:
     """
-    获取日志目录
+    Get log directory
 
     Returns:
-        日志目录 Path 对象
+        Log directory Path object
     """
     settings = get_settings()
     log_file = Path(settings.log_file)
     log_dir = log_file.parent
 
-    # 确保目录存在
+    # Make sure the directory exists
     log_dir.mkdir(parents=True, exist_ok=True)
 
     return log_dir
@@ -429,42 +429,42 @@ def get_logs_dir() -> Path:
 
 def format_duration(seconds: int) -> str:
     """
-    格式化持续时间
+    Format duration
 
     Args:
-        seconds: 秒数
+        seconds: number of seconds
 
     Returns:
-        格式化的持续时间字符串
+        Formatted duration string
     """
     if seconds < 60:
-        return f"{seconds}秒"
+        return f"{seconds}seconds"
 
     minutes, seconds = divmod(seconds, 60)
     if minutes < 60:
-        return f"{minutes}分{seconds}秒"
+        return f"{minutes}minutes{seconds}seconds"
 
     hours, minutes = divmod(minutes, 60)
     if hours < 24:
-        return f"{hours}小时{minutes}分"
+        return f"{hours}hours{minutes}minutes"
 
     days, hours = divmod(hours, 24)
-    return f"{days}天{hours}小时"
+    return f"{days}days{hours}hours"
 
 
 def mask_sensitive_data(data: Union[str, Dict, List], mask_char: str = "*") -> Union[str, Dict, List]:
     """
-    掩码敏感数据
+    Mask sensitive data
 
     Args:
-        data: 要掩码的数据
-        mask_char: 掩码字符
+        data: data to be masked
+        mask_char: mask character
 
     Returns:
-        掩码后的数据
+        masked data
     """
     if isinstance(data, str):
-        # 如果是邮箱，掩码中间部分
+        # If it is a mailbox, mask the middle part
         if "@" in data:
             local, domain = data.split("@", 1)
             if len(local) > 2:
@@ -473,7 +473,7 @@ def mask_sensitive_data(data: Union[str, Dict, List], mask_char: str = "*") -> U
                 masked_local = mask_char * len(local)
             return f"{masked_local}@{domain}"
 
-        # 如果是 token 或密钥，掩码大部分内容
+        # If it is a token or key, mask most of the content
         if len(data) > 10:
             return data[:4] + mask_char * (len(data) - 8) + data[-4:]
         return mask_char * len(data)
@@ -481,7 +481,7 @@ def mask_sensitive_data(data: Union[str, Dict, List], mask_char: str = "*") -> U
     elif isinstance(data, dict):
         masked_dict = {}
         for key, value in data.items():
-            # 敏感字段名
+            # Sensitive field name
             sensitive_keys = ["password", "token", "secret", "key", "auth", "credential"]
             if any(sensitive in key.lower() for sensitive in sensitive_keys):
                 masked_dict[key] = mask_sensitive_data(value, mask_char)
@@ -497,13 +497,13 @@ def mask_sensitive_data(data: Union[str, Dict, List], mask_char: str = "*") -> U
 
 def calculate_md5(data: Union[str, bytes]) -> str:
     """
-    计算 MD5 哈希
+    Calculate MD5 hash
 
     Args:
-        data: 要哈希的数据
+        data: the data to be hashed
 
     Returns:
-        MD5 哈希字符串
+        MD5 hash string
     """
     if isinstance(data, str):
         data = data.encode('utf-8')
@@ -513,13 +513,13 @@ def calculate_md5(data: Union[str, bytes]) -> str:
 
 def calculate_sha256(data: Union[str, bytes]) -> str:
     """
-    计算 SHA256 哈希
+    Calculate SHA256 hash
 
     Args:
-        data: 要哈希的数据
+        data: the data to be hashed
 
     Returns:
-        SHA256 哈希字符串
+        SHA256 hash string
     """
     if isinstance(data, str):
         data = data.encode('utf-8')
@@ -528,7 +528,7 @@ def calculate_sha256(data: Union[str, bytes]) -> str:
 
 
 def base64_encode(data: Union[str, bytes]) -> str:
-    """Base64 编码"""
+    """Base64 encoding"""
     if isinstance(data, str):
         data = data.encode('utf-8')
 
@@ -536,7 +536,7 @@ def base64_encode(data: Union[str, bytes]) -> str:
 
 
 def base64_decode(data: str) -> str:
-    """Base64 解码"""
+    """Base64 decoding"""
     try:
         decoded = base64.b64decode(data)
         return decoded.decode('utf-8')
@@ -545,9 +545,9 @@ def base64_decode(data: str) -> str:
 
 
 class Timer:
-    """计时器上下文管理器"""
+    """Timer context manager"""
 
-    def __init__(self, name: str = "操作"):
+    def __init__(self, name: str = "operation"):
         self.name = name
         self.start_time = None
         self.elapsed = None
@@ -559,10 +559,10 @@ class Timer:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.elapsed = time.time() - self.start_time
         logger = logging.getLogger(__name__)
-        logger.debug(f"{self.name} 耗时: {self.elapsed:.2f} 秒")
+        logger.debug(f"{self.name} took: {self.elapsed:.2f} seconds")
 
     def get_elapsed(self) -> float:
-        """获取经过的时间（秒）"""
+        """Get the elapsed time (seconds)"""
         if self.elapsed is not None:
             return self.elapsed
         if self.start_time is not None:

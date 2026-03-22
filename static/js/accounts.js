@@ -1,18 +1,18 @@
 /**
- * 账号管理页面 JavaScript
- * 使用 utils.js 中的工具库
+ *Account management page JavaScript
+ * Use the tool library in utils.js
  */
 
-// 状态
+// state
 let currentPage = 1;
 let pageSize = 20;
 let totalAccounts = 0;
 let selectedAccounts = new Set();
 let isLoading = false;
-let selectAllPages = false;  // 是否选中了全部页
-let currentFilters = { status: '', email_service: '', search: '' };  // 当前筛选条件
+let selectAllPages = false; // Whether all pages are selected
+let currentFilters = { status: '', email_service: '', search: '' }; // Current filter conditions
 
-// DOM 元素
+// DOM element
 const elements = {
     table: document.getElementById('accounts-table'),
     totalAccounts: document.getElementById('total-accounts'),
@@ -39,18 +39,18 @@ const elements = {
     closeModal: document.getElementById('close-modal')
 };
 
-// 初始化
+// initialization
 document.addEventListener('DOMContentLoaded', () => {
     loadStats();
     loadAccounts();
     initEventListeners();
-    updateBatchButtons();  // 初始化按钮状态
+    updateBatchButtons(); // Initialize button state
     renderSelectAllBanner();
 });
 
-// 事件监听
+//Event listening
 function initEventListeners() {
-    // 筛选
+    // filter
     elements.filterStatus.addEventListener('change', () => {
         currentPage = 1;
         resetSelectAllPages();
@@ -63,14 +63,14 @@ function initEventListeners() {
         loadAccounts();
     });
 
-    // 搜索（防抖）
+    //Search (anti-shake)
     elements.searchInput.addEventListener('input', debounce(() => {
         currentPage = 1;
         resetSelectAllPages();
         loadAccounts();
     }, 300));
 
-    // 快捷键聚焦搜索
+    // Shortcut key focus search
     elements.searchInput.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             elements.searchInput.blur();
@@ -80,23 +80,23 @@ function initEventListeners() {
         }
     });
 
-    // 刷新
+    // refresh
     elements.refreshBtn.addEventListener('click', () => {
         loadStats();
         loadAccounts();
-        toast.info('已刷新');
+        toast.info('refreshed');
     });
 
-    // 批量刷新Token
+    // Batch refresh Token
     elements.batchRefreshBtn.addEventListener('click', handleBatchRefresh);
 
-    // 批量验证Token
+    //Batch verification Token
     elements.batchValidateBtn.addEventListener('click', handleBatchValidate);
 
-    // 批量检测订阅
+    // Batch detection subscription
     elements.batchCheckSubBtn.addEventListener('click', handleBatchCheckSubscription);
 
-    // 上传下拉菜单
+    //Upload drop-down menu
     const uploadMenu = document.getElementById('upload-menu');
     elements.batchUploadBtn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -106,10 +106,10 @@ function initEventListeners() {
     document.getElementById('batch-upload-sub2api-item').addEventListener('click', (e) => { e.preventDefault(); uploadMenu.classList.remove('active'); handleBatchUploadSub2Api(); });
     document.getElementById('batch-upload-tm-item').addEventListener('click', (e) => { e.preventDefault(); uploadMenu.classList.remove('active'); handleBatchUploadTm(); });
 
-    // 批量删除
+    // Batch delete
     elements.batchDeleteBtn.addEventListener('click', handleBatchDelete);
 
-    // 全选（当前页）
+    // Select all (current page)
     elements.selectAll.addEventListener('change', (e) => {
         const checkboxes = elements.table.querySelectorAll('input[type="checkbox"][data-id]');
         checkboxes.forEach(cb => {
@@ -128,7 +128,7 @@ function initEventListeners() {
         renderSelectAllBanner();
     });
 
-    // 分页
+    // paging
     elements.prevPage.addEventListener('click', () => {
         if (currentPage > 1 && !isLoading) {
             currentPage--;
@@ -144,7 +144,7 @@ function initEventListeners() {
         }
     });
 
-    // 导出
+    //Export
     elements.exportBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         elements.exportMenu.classList.toggle('active');
@@ -157,7 +157,7 @@ function initEventListeners() {
         elements.exportMenu.classList.remove('active');
     });
 
-    // 关闭模态框
+    // Close the modal box
     elements.closeModal.addEventListener('click', () => {
         elements.detailModal.classList.remove('active');
     });
@@ -168,7 +168,7 @@ function initEventListeners() {
         }
     });
 
-    // 点击其他地方关闭下拉菜单
+    // Click elsewhere to close the drop-down menu
     document.addEventListener('click', () => {
         elements.exportMenu.classList.remove('active');
         uploadMenu.classList.remove('active');
@@ -176,7 +176,7 @@ function initEventListeners() {
     });
 }
 
-// 加载统计信息
+//Load statistics
 async function loadStats() {
     try {
         const data = await api.get('/accounts/stats/summary');
@@ -186,14 +186,14 @@ async function loadStats() {
         elements.expiredAccounts.textContent = format.number(data.by_status?.expired || 0);
         elements.failedAccounts.textContent = format.number(data.by_status?.failed || 0);
 
-        // 添加动画效果
+        //Add animation effects
         animateValue(elements.totalAccounts, data.total || 0);
     } catch (error) {
-        console.error('加载统计信息失败:', error);
+        console.error('Loading statistics failed:', error);
     }
 }
 
-// 数字动画
+// digital animation
 function animateValue(element, value) {
     element.style.transition = 'transform 0.2s ease';
     element.style.transform = 'scale(1.1)';
@@ -202,12 +202,12 @@ function animateValue(element, value) {
     }, 200);
 }
 
-// 加载账号列表
+//Load the account list
 async function loadAccounts() {
     if (isLoading) return;
     isLoading = true;
 
-    // 显示加载状态
+    //Show loading status
     elements.table.innerHTML = `
         <tr>
             <td colspan="9">
@@ -220,7 +220,7 @@ async function loadAccounts() {
         </tr>
     `;
 
-    // 记录当前筛选条件
+    //Record the current filter conditions
     currentFilters.status = elements.filterStatus.value;
     currentFilters.email_service = elements.filterService.value;
     currentFilters.search = elements.searchInput.value.trim();
@@ -248,14 +248,14 @@ async function loadAccounts() {
         renderAccounts(data.accounts);
         updatePagination();
     } catch (error) {
-        console.error('加载账号列表失败:', error);
+        console.error('Failed to load account list:', error);
         elements.table.innerHTML = `
             <tr>
                 <td colspan="9">
                     <div class="empty-state">
                         <div class="empty-state-icon">❌</div>
-                        <div class="empty-state-title">加载失败</div>
-                        <div class="empty-state-description">请检查网络连接后重试</div>
+                        <div class="empty-state-title">Loading failed</div>
+                        <div class="empty-state-description">Please check the network connection and try again</div>
                     </div>
                 </td>
             </tr>
@@ -265,7 +265,7 @@ async function loadAccounts() {
     }
 }
 
-// 渲染账号列表
+// Render account list
 function renderAccounts(accounts) {
     if (accounts.length === 0) {
         elements.table.innerHTML = `
@@ -273,8 +273,8 @@ function renderAccounts(accounts) {
                 <td colspan="9">
                     <div class="empty-state">
                         <div class="empty-state-icon">📭</div>
-                        <div class="empty-state-title">暂无数据</div>
-                        <div class="empty-state-description">没有找到符合条件的账号记录</div>
+                        <div class="empty-state-title">No data</div>
+                        <div class="empty-state-description">No matching account record found</div>
                     </div>
                 </td>
             </tr>
@@ -292,14 +292,14 @@ function renderAccounts(accounts) {
             <td>
                 <span style="display:inline-flex;align-items:center;gap:4px;">
                     <span class="email-cell" title="${escapeHtml(account.email)}">${escapeHtml(account.email)}</span>
-                    <button class="btn-copy-icon copy-email-btn" data-email="${escapeHtml(account.email)}" title="复制邮箱">📋</button>
+                    <button class="btn-copy-icon copy-email-btn" data-email="${escapeHtml(account.email)}" title="Copy Email">📋</button>
                 </span>
             </td>
             <td class="password-cell">
                 ${account.password
                     ? `<span style="display:inline-flex;align-items:center;gap:4px;">
-                        <span class="password-hidden" data-pwd="${escapeHtml(account.password)}" onclick="togglePassword(this, this.dataset.pwd)" title="点击查看">${escapeHtml(account.password.substring(0, 4) + '****')}</span>
-                        <button class="btn-copy-icon copy-pwd-btn" data-pwd="${escapeHtml(account.password)}" title="复制密码">📋</button>
+                        <span class="password-hidden" data-pwd="${escapeHtml(account.password)}" onclick="togglePassword(this, this.dataset.pwd)" title="Click to view">${escapeHtml(account.password.substring(0, 4) + '****')}</span>
+                        <button class="btn-copy-icon copy-pwd-btn" data-pwd="${escapeHtml(account.password)}" title="Copy password">📋</button>
                        </span>`
                     : '-'}
             </td>
@@ -308,7 +308,7 @@ function renderAccounts(accounts) {
             <td>
                 <div class="cpa-status">
                     ${account.cpa_uploaded
-                        ? `<span class="badge uploaded" title="已上传于 ${format.date(account.cpa_uploaded_at)}">✓</span>`
+                        ? `<span class="badge uploaded" title="Uploaded on ${format.date(account.cpa_uploaded_at)}">✓</span>`
                         : `<span class="badge pending">-</span>`}
                 </div>
             </td>
@@ -322,23 +322,23 @@ function renderAccounts(accounts) {
             <td>${format.date(account.last_refresh) || '-'}</td>
             <td>
                 <div style="display:flex;gap:4px;align-items:center;white-space:nowrap;">
-                    <button class="btn btn-secondary btn-sm" onclick="viewAccount(${account.id})">详情</button>
+                    <button class="btn btn-secondary btn-sm" onclick="viewAccount(${account.id})">Details</button>
                     <div class="dropdown" style="position:relative;">
-                        <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();toggleMoreMenu(this)">更多</button>
+                        <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();toggleMoreMenu(this)">More</button>
                         <div class="dropdown-menu" style="min-width:100px;">
-                            <a href="#" class="dropdown-item" onclick="event.preventDefault();closeMoreMenu(this);refreshToken(${account.id})">刷新</a>
-                            <a href="#" class="dropdown-item" onclick="event.preventDefault();closeMoreMenu(this);uploadAccount(${account.id})">上传</a>
-                            <a href="#" class="dropdown-item" onclick="event.preventDefault();closeMoreMenu(this);markSubscription(${account.id})">标记</a>
-                            <a href="#" class="dropdown-item" onclick="event.preventDefault();closeMoreMenu(this);checkInboxCode(${account.id})">收件箱</a>
+                            <a href="#" class="dropdown-item" onclick="event.preventDefault();closeMoreMenu(this);refreshToken(${account.id})">Refresh</a>
+                            <a href="#" class="dropdown-item" onclick="event.preventDefault();closeMoreMenu(this);uploadAccount(${account.id})">Upload</a>
+                            <a href="#" class="dropdown-item" onclick="event.preventDefault();closeMoreMenu(this);markSubscription(${account.id})">mark</a>
+                            <a href="#" class="dropdown-item" onclick="event.preventDefault();closeMoreMenu(this);checkInboxCode(${account.id})">Inbox</a>
                         </div>
                     </div>
-                    <button class="btn btn-danger btn-sm" onclick="deleteAccount(${account.id}, '${escapeHtml(account.email)}')">删除</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteAccount(${account.id}, '${escapeHtml(account.email)}')">Delete</button>
                 </div>
             </td>
         </tr>
     `).join('');
 
-    // 绑定复选框事件
+    //Bind checkbox event
     elements.table.querySelectorAll('input[type="checkbox"][data-id]').forEach(cb => {
         cb.addEventListener('change', (e) => {
             const id = parseInt(e.target.dataset.id);
@@ -348,7 +348,7 @@ function renderAccounts(accounts) {
                 selectedAccounts.delete(id);
                 selectAllPages = false;
             }
-            // 同步全选框状态
+            //Synchronize all selection box status
             const allChecked = elements.table.querySelectorAll('input[type="checkbox"][data-id]');
             const checkedCount = elements.table.querySelectorAll('input[type="checkbox"][data-id]:checked').length;
             elements.selectAll.checked = allChecked.length > 0 && checkedCount === allChecked.length;
@@ -358,7 +358,7 @@ function renderAccounts(accounts) {
         });
     });
 
-    // 绑定复制邮箱按钮
+    // Bind the copy mailbox button
     elements.table.querySelectorAll('.copy-email-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -366,7 +366,7 @@ function renderAccounts(accounts) {
         });
     });
 
-    // 绑定复制密码按钮
+    // Bind the copy password button
     elements.table.querySelectorAll('.copy-pwd-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -374,7 +374,7 @@ function renderAccounts(accounts) {
         });
     });
 
-    // 渲染后同步全选框状态
+    //Synchronize the full selection box state after rendering
     const allCbs = elements.table.querySelectorAll('input[type="checkbox"][data-id]');
     const checkedCbs = elements.table.querySelectorAll('input[type="checkbox"][data-id]:checked');
     elements.selectAll.checked = allCbs.length > 0 && checkedCbs.length === allCbs.length;
@@ -382,7 +382,7 @@ function renderAccounts(accounts) {
     renderSelectAllBanner();
 }
 
-// 切换密码显示
+//Switch password display
 function togglePassword(element, password) {
     if (element.dataset.revealed === 'true') {
         element.textContent = password.substring(0, 4) + '****';
@@ -395,17 +395,17 @@ function togglePassword(element, password) {
     }
 }
 
-// 更新分页
+//Update pagination
 function updatePagination() {
     const totalPages = Math.max(1, Math.ceil(totalAccounts / pageSize));
 
     elements.prevPage.disabled = currentPage <= 1;
     elements.nextPage.disabled = currentPage >= totalPages;
 
-    elements.pageInfo.textContent = `第 ${currentPage} 页 / 共 ${totalPages} 页`;
+    elements.pageInfo.textContent = `Page ${currentPage} / Total Page ${totalPages}`;
 }
 
-// 重置全选所有页状态
+//Reset the status of all selected pages
 function resetSelectAllPages() {
     selectAllPages = false;
     selectedAccounts.clear();
@@ -413,7 +413,7 @@ function resetSelectAllPages() {
     renderSelectAllBanner();
 }
 
-// 构建批量请求体（含 select_all 和筛选参数）
+// Build a batch request body (including select_all and filter parameters)
 function buildBatchPayload(extraFields = {}) {
     if (selectAllPages) {
         return {
@@ -428,12 +428,12 @@ function buildBatchPayload(extraFields = {}) {
     return { ids: Array.from(selectedAccounts), ...extraFields };
 }
 
-// 获取有效选中数量（select_all 时用总数）
+// Get the effective number of selections (use the total number when selecting_all)
 function getEffectiveCount() {
     return selectAllPages ? totalAccounts : selectedAccounts.size;
 }
 
-// 渲染全选横幅
+//Render the select all banner
 function renderSelectAllBanner() {
     let banner = document.getElementById('select-all-banner');
     const totalPages = Math.ceil(totalAccounts / pageSize);
@@ -441,7 +441,7 @@ function renderSelectAllBanner() {
     const checkedOnPage = elements.table.querySelectorAll('input[type="checkbox"][data-id]:checked').length;
     const allPageSelected = currentPageSize > 0 && checkedOnPage === currentPageSize;
 
-    // 只在全选了当前页且有多页时显示横幅
+    // Only display the banner when the current page is fully selected and there are multiple pages
     if (!allPageSelected || totalPages <= 1 || totalAccounts <= pageSize) {
         if (banner) banner.remove();
         return;
@@ -456,20 +456,20 @@ function renderSelectAllBanner() {
     }
 
     if (selectAllPages) {
-        banner.innerHTML = `已选中全部 <strong>${totalAccounts}</strong> 条记录。<button onclick="resetSelectAllPages()" style="margin-left:8px;color:var(--primary-color,#1a73e8);background:none;border:none;cursor:pointer;text-decoration:underline;">取消全选</button>`;
+        banner.innerHTML = `All <strong>${totalAccounts}</strong> records selected. <button onclick="resetSelectAllPages()" style="margin-left:8px;color:var(--primary-color,#1a73e8);background:none;border:none;cursor:pointer;text-decoration:underline;">Cancel all selection</button>`;
     } else {
-        banner.innerHTML = `当前页已全选 <strong>${checkedOnPage}</strong> 条。<button onclick="selectAllPagesAction()" style="margin-left:8px;color:var(--primary-color,#1a73e8);background:none;border:none;cursor:pointer;text-decoration:underline;">选择全部 ${totalAccounts} 条</button>`;
+        banner.innerHTML = `All <strong>${checkedOnPage}</strong> items on the current page have been selected. <button onclick="selectAllPagesAction()" style="margin-left:8px;color:var(--primary-color,#1a73e8);background:none;border:none;cursor:pointer;text-decoration:underline;">Select all ${totalAccounts} items</button>`;
     }
 }
 
-// 选中所有页
+// Select all pages
 function selectAllPagesAction() {
     selectAllPages = true;
     updateBatchButtons();
     renderSelectAllBanner();
 }
 
-// 更新批量操作按钮
+//Update batch operation button
 function updateBatchButtons() {
     const count = getEffectiveCount();
     elements.batchDeleteBtn.disabled = count === 0;
@@ -479,71 +479,71 @@ function updateBatchButtons() {
     elements.batchCheckSubBtn.disabled = count === 0;
     elements.exportBtn.disabled = count === 0;
 
-    elements.batchDeleteBtn.textContent = count > 0 ? `🗑️ 删除 (${count})` : '🗑️ 批量删除';
-    elements.batchRefreshBtn.textContent = count > 0 ? `🔄 刷新 (${count})` : '🔄 刷新Token';
-    elements.batchValidateBtn.textContent = count > 0 ? `✅ 验证 (${count})` : '✅ 验证Token';
-    elements.batchUploadBtn.textContent = count > 0 ? `☁️ 上传 (${count})` : '☁️ 上传';
-    elements.batchCheckSubBtn.textContent = count > 0 ? `🔍 检测 (${count})` : '🔍 检测订阅';
+    elements.batchDeleteBtn.textContent = count > 0 ? `🗑️ Delete (${count})` : '🗑️ Batch delete';
+    elements.batchRefreshBtn.textContent = count > 0 ? `🔄 Refresh (${count})` : '🔄 Refresh Token';
+    elements.batchValidateBtn.textContent = count > 0 ? `✅ Validation (${count})` : '✅ Validation Token';
+    elements.batchUploadBtn.textContent = count > 0 ? `☁️ Upload (${count})` : '☁️ Upload';
+    elements.batchCheckSubBtn.textContent = count > 0 ? `🔍 detection (${count})` : '🔍 detection subscription';
 }
 
-// 刷新单个账号Token
+// Refresh a single account Token
 async function refreshToken(id) {
     try {
-        toast.info('正在刷新Token...');
+        toast.info('Refreshing Token...');
         const result = await api.post(`/accounts/${id}/refresh`);
 
         if (result.success) {
-            toast.success('Token刷新成功');
+            toast.success('Token refreshed successfully');
             loadAccounts();
         } else {
-            toast.error('刷新失败: ' + (result.error || '未知错误'));
+            toast.error('Refresh failed: ' + (result.error || 'Unknown error'));
         }
     } catch (error) {
-        toast.error('刷新失败: ' + error.message);
+        toast.error('Refresh failed: ' + error.message);
     }
 }
 
-// 批量刷新Token
+// Batch refresh Token
 async function handleBatchRefresh() {
     const count = getEffectiveCount();
     if (count === 0) return;
 
-    const confirmed = await confirm(`确定要刷新选中的 ${count} 个账号的Token吗？`);
+    const confirmed = await confirm(`Are you sure you want to refresh the Tokens of the selected ${count} accounts?`);
     if (!confirmed) return;
 
     elements.batchRefreshBtn.disabled = true;
-    elements.batchRefreshBtn.textContent = '刷新中...';
+    elements.batchRefreshBtn.textContent = 'Refreshing...';
 
     try {
         const result = await api.post('/accounts/batch-refresh', buildBatchPayload());
-        toast.success(`成功刷新 ${result.success_count} 个，失败 ${result.failed_count} 个`);
+        toast.success(`Successfully refreshed ${result.success_count} items, failed ${result.failed_count} items`);
         loadAccounts();
     } catch (error) {
-        toast.error('批量刷新失败: ' + error.message);
+        toast.error('Batch refresh failed: ' + error.message);
     } finally {
         updateBatchButtons();
     }
 }
 
-// 批量验证Token
+//Batch verification Token
 async function handleBatchValidate() {
     if (getEffectiveCount() === 0) return;
 
     elements.batchValidateBtn.disabled = true;
-    elements.batchValidateBtn.textContent = '验证中...';
+    elements.batchValidateBtn.textContent = 'Validating...';
 
     try {
         const result = await api.post('/accounts/batch-validate', buildBatchPayload());
-        toast.info(`有效: ${result.valid_count}，无效: ${result.invalid_count}`);
+        toast.info(`Valid: ${result.valid_count}, invalid: ${result.invalid_count}`);
         loadAccounts();
     } catch (error) {
-        toast.error('批量验证失败: ' + error.message);
+        toast.error('Batch verification failed: ' + error.message);
     } finally {
         updateBatchButtons();
     }
 }
 
-// 查看账号详情
+// View account details
 async function viewAccount(id) {
     try {
         const account = await api.get(`/accounts/${id}`);
@@ -552,29 +552,29 @@ async function viewAccount(id) {
         elements.modalBody.innerHTML = `
             <div class="info-grid">
                 <div class="info-item">
-                    <span class="label">邮箱</span>
+                    <span class="label">Email</span>
                     <span class="value">
                         ${escapeHtml(account.email)}
-                        <button class="btn btn-ghost btn-sm" onclick="copyToClipboard('${escapeHtml(account.email)}')" title="复制">
+                        <button class="btn btn-ghost btn-sm" onclick="copyToClipboard('${escapeHtml(account.email)}')" title="Copy">
                             📋
                         </button>
                     </span>
                 </div>
                 <div class="info-item">
-                    <span class="label">密码</span>
+                    <span class="label">Password</span>
                     <span class="value">
                         ${account.password
                             ? `<code style="font-size: 0.75rem;">${escapeHtml(account.password)}</code>
-                               <button class="btn btn-ghost btn-sm" onclick="copyToClipboard('${escapeHtml(account.password)}')" title="复制">📋</button>`
+                               <button class="btn btn-ghost btn-sm" onclick="copyToClipboard('${escapeHtml(account.password)}')" title="Copy">📋</button>`
                             : '-'}
                     </span>
                 </div>
                 <div class="info-item">
-                    <span class="label">邮箱服务</span>
+                    <span class="label">Mailbox service</span>
                     <span class="value">${getServiceTypeText(account.email_service)}</span>
                 </div>
                 <div class="info-item">
-                    <span class="label">状态</span>
+                    <span class="label">Status</span>
                     <span class="value">
                         <span class="status-badge ${getStatusClass('account', account.status)}">
                             ${getStatusText('account', account.status)}
@@ -582,11 +582,11 @@ async function viewAccount(id) {
                     </span>
                 </div>
                 <div class="info-item">
-                    <span class="label">注册时间</span>
+                    <span class="label">Registration time</span>
                     <span class="value">${format.date(account.registered_at)}</span>
                 </div>
                 <div class="info-item">
-                    <span class="label">最后刷新</span>
+                    <span class="label">Last refresh</span>
                     <span class="value">${format.date(account.last_refresh) || '-'}</span>
                 </div>
                 <div class="info-item" style="grid-column: span 2;">
@@ -622,80 +622,80 @@ async function viewAccount(id) {
                     </div>
                 </div>
                 <div class="info-item" style="grid-column: span 2;">
-                    <span class="label">Cookies（支付用）</span>
+                    <span class="label">Cookies (for payment)</span>
                     <div class="value">
                         <textarea id="cookies-input-${id}" rows="3"
                             style="width:100%;font-size:0.7rem;font-family:var(--font-mono);background:var(--surface-hover);border:1px solid var(--border);border-radius:4px;padding:6px;color:var(--text-primary);resize:vertical;"
-                            placeholder="粘贴完整 cookie 字符串，留空则清除">${escapeHtml(account.cookies || '')}</textarea>
+                            placeholder="Paste complete cookie string, leave blank to clear">${escapeHtml(account.cookies || '')}</textarea>
                         <button class="btn btn-secondary btn-sm" style="margin-top:4px" onclick="saveCookies(${id})">
-                            保存 Cookies
+                            Save Cookies
                         </button>
                     </div>
                 </div>
             </div>
             <div style="margin-top: var(--spacing-lg); display: flex; gap: var(--spacing-sm);">
                 <button class="btn btn-primary" onclick="refreshToken(${id}); elements.detailModal.classList.remove('active');">
-                    🔄 刷新Token
+                    🔄 Refresh Token
                 </button>
             </div>
         `;
 
         elements.detailModal.classList.add('active');
     } catch (error) {
-        toast.error('加载账号详情失败: ' + error.message);
+        toast.error('Failed to load account details: ' + error.message);
     }
 }
 
-// 复制邮箱
+//Copy email
 function copyEmail(email) {
     copyToClipboard(email);
 }
 
-// 删除账号
+// Delete account
 async function deleteAccount(id, email) {
-    const confirmed = await confirm(`确定要删除账号 ${email} 吗？此操作不可恢复。`);
+    const confirmed = await confirm(`Are you sure you want to delete account ${email}? This operation is irreversible.`);
     if (!confirmed) return;
 
     try {
         await api.delete(`/accounts/${id}`);
-        toast.success('账号已删除');
+        toast.success('Account has been deleted');
         selectedAccounts.delete(id);
         loadStats();
         loadAccounts();
     } catch (error) {
-        toast.error('删除失败: ' + error.message);
+        toast.error('Deletion failed: ' + error.message);
     }
 }
 
-// 批量删除
+// Batch delete
 async function handleBatchDelete() {
     const count = getEffectiveCount();
     if (count === 0) return;
 
-    const confirmed = await confirm(`确定要删除选中的 ${count} 个账号吗？此操作不可恢复。`);
+    const confirmed = await confirm(`Are you sure you want to delete the selected ${count} accounts? This operation is irreversible.`);
     if (!confirmed) return;
 
     try {
         const result = await api.post('/accounts/batch-delete', buildBatchPayload());
-        toast.success(`成功删除 ${result.deleted_count} 个账号`);
+        toast.success(`Successfully deleted ${result.deleted_count} accounts`);
         selectedAccounts.clear();
         selectAllPages = false;
         loadStats();
         loadAccounts();
     } catch (error) {
-        toast.error('删除失败: ' + error.message);
+        toast.error('Deletion failed: ' + error.message);
     }
 }
 
-// 导出账号
+//Export account
 async function exportAccounts(format) {
     const count = getEffectiveCount();
     if (count === 0) {
-        toast.warning('请先选择要导出的账号');
+        toast.warning('Please select the account to export first');
         return;
     }
 
-    toast.info(`正在导出 ${count} 个账号...`);
+    toast.info(`Exporting ${count} accounts...`);
 
     try {
         const response = await fetch('/api/accounts/export/' + format, {
@@ -707,13 +707,13 @@ async function exportAccounts(format) {
         });
 
         if (!response.ok) {
-            throw new Error(`导出失败: HTTP ${response.status}`);
+            throw new Error(`Export failed: HTTP ${response.status}`);
         }
 
-        // 获取文件内容
+        // Get file content
         const blob = await response.blob();
 
-        // 从 Content-Disposition 获取文件名
+        // Get the file name from Content-Disposition
         const disposition = response.headers.get('Content-Disposition');
         let filename = `accounts_${Date.now()}.${(format === 'cpa' || format === 'sub2api') ? 'json' : format}`;
         if (disposition) {
@@ -723,7 +723,7 @@ async function exportAccounts(format) {
             }
         }
 
-        // 创建下载链接
+        //Create download link
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -733,14 +733,14 @@ async function exportAccounts(format) {
         window.URL.revokeObjectURL(url);
         a.remove();
 
-        toast.success('导出成功');
+        toast.success('Export successful');
     } catch (error) {
-        console.error('导出失败:', error);
-        toast.error('导出失败: ' + error.message);
+        console.error('Export failed:', error);
+        toast.error('Export failed: ' + error.message);
     }
 }
 
-// HTML 转义
+//HTML escaping
 function escapeHtml(text) {
     if (!text) return '';
     const div = document.createElement('div');
@@ -748,10 +748,10 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// ============== CPA 服务选择 ==============
+// ============== CPA Service Selection ==============
 
-// 弹出 CPA 服务选择框，返回 Promise<{cpa_service_id: number|null}|null>
-// null 表示用户取消，{cpa_service_id: null} 表示使用全局配置
+// Pop up the CPA service selection box and return Promise<{cpa_service_id: number|null}|null>
+// null means user cancellation, {cpa_service_id: null} means use global configuration
 function selectCpaService() {
     return new Promise(async (resolve) => {
         const modal = document.getElementById('cpa-service-modal');
@@ -760,8 +760,8 @@ function selectCpaService() {
         const cancelBtn = document.getElementById('cancel-cpa-modal-btn');
         const globalBtn = document.getElementById('cpa-use-global-btn');
 
-        // 加载服务列表
-        listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted)">加载中...</div>';
+        //Load service list
+        listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted)">Loading...</div>';
         modal.classList.add('active');
 
         let services = [];
@@ -772,7 +772,7 @@ function selectCpaService() {
         }
 
         if (services.length === 0) {
-            listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:12px;">暂无已启用的 CPA 服务，将使用全局配置</div>';
+            listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:12px;">There is currently no enabled CPA service, global configuration will be used</div>';
         } else {
             listEl.innerHTML = services.map(s => `
                 <div class="cpa-service-item" data-id="${s.id}" style="
@@ -789,7 +789,7 @@ function selectCpaService() {
                         <div style="font-weight:500;">${escapeHtml(s.name)}</div>
                         <div style="font-size:0.8rem;color:var(--text-muted);">${escapeHtml(s.api_url)}</div>
                     </div>
-                    <span class="badge" style="background:var(--success-color);color:#fff;font-size:0.7rem;padding:2px 8px;border-radius:10px;">选择</span>
+                    <span class="badge" style="background:var(--success-color);color:#fff;font-size:0.7rem;padding:2px 8px;border-radius:10px;">Select</span>
                 </div>
             `).join('');
 
@@ -818,12 +818,12 @@ function selectCpaService() {
     });
 }
 
-// 统一上传入口：弹出目标选择
+//Unified upload entrance: popup target selection
 async function uploadAccount(id) {
     const targets = [
-        { label: '☁️ 上传到 CPA', value: 'cpa' },
-        { label: '🔗 上传到 Sub2API', value: 'sub2api' },
-        { label: '🚀 上传到 Team Manager', value: 'tm' },
+        { label: '☁️ Upload to CPA', value: 'cpa' },
+        { label: '🔗 Upload to Sub2API', value: 'sub2api' },
+        { label: '🚀 Upload to Team Manager', value: 'tm' },
     ];
 
     const choice = await new Promise((resolve) => {
@@ -832,7 +832,7 @@ async function uploadAccount(id) {
         modal.innerHTML = `
             <div class="modal-content" style="max-width:360px;">
                 <div class="modal-header">
-                    <h3>☁️ 选择上传目标</h3>
+                    <h3>☁️ Select upload target</h3>
                     <button class="modal-close" id="_upload-close">&times;</button>
                 </div>
                 <div class="modal-body" style="display:flex;flex-direction:column;gap:8px;">
@@ -855,108 +855,108 @@ async function uploadAccount(id) {
     if (choice === 'tm') return uploadToTm(id);
 }
 
-// 上传单个账号到CPA
+// Upload a single account to CPA
 async function uploadToCpa(id) {
     const choice = await selectCpaService();
-    if (choice === null) return;  // 用户取消
+    if (choice === null) return; // User cancels
 
     try {
-        toast.info('正在上传到CPA...');
+        toast.info('Uploading to CPA...');
         const payload = {};
         if (choice.cpa_service_id != null) payload.cpa_service_id = choice.cpa_service_id;
         const result = await api.post(`/accounts/${id}/upload-cpa`, payload);
 
         if (result.success) {
-            toast.success('上传成功');
+            toast.success('Upload successful');
             loadAccounts();
         } else {
-            toast.error('上传失败: ' + (result.error || '未知错误'));
+            toast.error('Upload failed: ' + (result.error || 'Unknown error'));
         }
     } catch (error) {
-        toast.error('上传失败: ' + error.message);
+        toast.error('Upload failed: ' + error.message);
     }
 }
 
-// 批量上传到CPA
+//Batch upload to CPA
 async function handleBatchUploadCpa() {
     const count = getEffectiveCount();
     if (count === 0) return;
 
     const choice = await selectCpaService();
-    if (choice === null) return;  // 用户取消
+    if (choice === null) return; // User cancels
 
-    const confirmed = await confirm(`确定要将选中的 ${count} 个账号上传到CPA吗？`);
+    const confirmed = await confirm(`Are you sure you want to upload the selected ${count} accounts to CPA?`);
     if (!confirmed) return;
 
     elements.batchUploadBtn.disabled = true;
-    elements.batchUploadBtn.textContent = '上传中...';
+    elements.batchUploadBtn.textContent = 'Uploading...';
 
     try {
         const payload = buildBatchPayload();
         if (choice.cpa_service_id != null) payload.cpa_service_id = choice.cpa_service_id;
         const result = await api.post('/accounts/batch-upload-cpa', payload);
 
-        let message = `成功: ${result.success_count}`;
-        if (result.failed_count > 0) message += `, 失败: ${result.failed_count}`;
-        if (result.skipped_count > 0) message += `, 跳过: ${result.skipped_count}`;
+        let message = `Success: ${result.success_count}`;
+        if (result.failed_count > 0) message += `, failed: ${result.failed_count}`;
+        if (result.skipped_count > 0) message += `, skip: ${result.skipped_count}`;
 
         toast.success(message);
         loadAccounts();
     } catch (error) {
-        toast.error('批量上传失败: ' + error.message);
+        toast.error('Batch upload failed: ' + error.message);
     } finally {
         updateBatchButtons();
     }
 }
 
-// ============== 订阅状态 ==============
+// ============== Subscription status ==============
 
-// 手动标记订阅类型
+// Manually mark subscription type
 async function markSubscription(id) {
-    const type = prompt('请输入订阅类型 (plus / team / free):', 'plus');
+    const type = prompt('Please enter the subscription type (plus / team / free):', 'plus');
     if (!type) return;
     if (!['plus', 'team', 'free'].includes(type.trim().toLowerCase())) {
-        toast.error('无效的订阅类型，请输入 plus、team 或 free');
+        toast.error('Invalid subscription type, please enter plus, team or free');
         return;
     }
     try {
         await api.post(`/payment/accounts/${id}/mark-subscription`, {
             subscription_type: type.trim().toLowerCase()
         });
-        toast.success('订阅状态已更新');
+        toast.success('Subscription status has been updated');
         loadAccounts();
     } catch (e) {
-        toast.error('标记失败: ' + e.message);
+        toast.error('Mark failed: ' + e.message);
     }
 }
 
-// 批量检测订阅状态
+// Check subscription status in batches
 async function handleBatchCheckSubscription() {
     const count = getEffectiveCount();
     if (count === 0) return;
-    const confirmed = await confirm(`确定要检测选中的 ${count} 个账号的订阅状态吗？`);
+    const confirmed = await confirm(`Are you sure you want to check the subscription status of the selected ${count} accounts?`);
     if (!confirmed) return;
 
     elements.batchCheckSubBtn.disabled = true;
-    elements.batchCheckSubBtn.textContent = '检测中...';
+    elements.batchCheckSubBtn.textContent = 'Checking...';
 
     try {
         const result = await api.post('/payment/accounts/batch-check-subscription', buildBatchPayload());
-        let message = `成功: ${result.success_count}`;
-        if (result.failed_count > 0) message += `, 失败: ${result.failed_count}`;
+        let message = `Success: ${result.success_count}`;
+        if (result.failed_count > 0) message += `, failed: ${result.failed_count}`;
         toast.success(message);
         loadAccounts();
     } catch (e) {
-        toast.error('批量检测失败: ' + e.message);
+        toast.error('Batch detection failed: ' + e.message);
     } finally {
         updateBatchButtons();
     }
 }
 
-// ============== Sub2API 上传 ==============
+// ============== Sub2API upload ==============
 
-// 弹出 Sub2API 服务选择框，返回 Promise<{service_id: number|null}|null>
-// null 表示用户取消，{service_id: null} 表示自动选择
+// Pop up the Sub2API service selection box and return Promise<{service_id: number|null}|null>
+// null means user cancellation, {service_id: null} means automatic selection
 function selectSub2ApiService() {
     return new Promise(async (resolve) => {
         const modal = document.getElementById('sub2api-service-modal');
@@ -965,7 +965,7 @@ function selectSub2ApiService() {
         const cancelBtn = document.getElementById('cancel-sub2api-modal-btn');
         const autoBtn = document.getElementById('sub2api-use-auto-btn');
 
-        listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted)">加载中...</div>';
+        listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted)">Loading...</div>';
         modal.classList.add('active');
 
         let services = [];
@@ -976,7 +976,7 @@ function selectSub2ApiService() {
         }
 
         if (services.length === 0) {
-            listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:12px;">暂无已启用的 Sub2API 服务，将自动选择第一个</div>';
+            listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:12px;">There is currently no enabled Sub2API service, the first one will be automatically selected</div>';
         } else {
             listEl.innerHTML = services.map(s => `
                 <div class="sub2api-service-item" data-id="${s.id}" style="
@@ -993,7 +993,7 @@ function selectSub2ApiService() {
                         <div style="font-weight:500;">${escapeHtml(s.name)}</div>
                         <div style="font-size:0.8rem;color:var(--text-muted);">${escapeHtml(s.api_url)}</div>
                     </div>
-                    <span class="badge" style="background:var(--primary);color:#fff;font-size:0.7rem;padding:2px 8px;border-radius:10px;">选择</span>
+                    <span class="badge" style="background:var(--primary);color:#fff;font-size:0.7rem;padding:2px 8px;border-radius:10px;">Select</span>
                 </div>
             `).join('');
 
@@ -1022,62 +1022,62 @@ function selectSub2ApiService() {
     });
 }
 
-// 批量上传到 Sub2API
+//Batch upload to Sub2API
 async function handleBatchUploadSub2Api() {
     const count = getEffectiveCount();
     if (count === 0) return;
 
     const choice = await selectSub2ApiService();
-    if (choice === null) return;  // 用户取消
+    if (choice === null) return; // User cancels
 
-    const confirmed = await confirm(`确定要将选中的 ${count} 个账号上传到 Sub2API 吗？`);
+    const confirmed = await confirm(`Are you sure you want to upload the selected ${count} accounts to Sub2API?`);
     if (!confirmed) return;
 
     elements.batchUploadBtn.disabled = true;
-    elements.batchUploadBtn.textContent = '上传中...';
+    elements.batchUploadBtn.textContent = 'Uploading...';
 
     try {
         const payload = buildBatchPayload();
         if (choice.service_id != null) payload.service_id = choice.service_id;
         const result = await api.post('/accounts/batch-upload-sub2api', payload);
 
-        let message = `成功: ${result.success_count}`;
-        if (result.failed_count > 0) message += `, 失败: ${result.failed_count}`;
-        if (result.skipped_count > 0) message += `, 跳过: ${result.skipped_count}`;
+        let message = `Success: ${result.success_count}`;
+        if (result.failed_count > 0) message += `, failed: ${result.failed_count}`;
+        if (result.skipped_count > 0) message += `, skip: ${result.skipped_count}`;
 
         toast.success(message);
         loadAccounts();
     } catch (error) {
-        toast.error('批量上传失败: ' + error.message);
+        toast.error('Batch upload failed: ' + error.message);
     } finally {
         updateBatchButtons();
     }
 }
 
-// ============== Team Manager 上传 ==============
+// ============== Team Manager upload ==============
 
-// 上传单账号到 Sub2API
+// Upload a single account to Sub2API
 async function uploadToSub2Api(id) {
     const choice = await selectSub2ApiService();
     if (choice === null) return;
     try {
-        toast.info('正在上传到 Sub2API...');
+        toast.info('Uploading to Sub2API...');
         const payload = {};
         if (choice.service_id != null) payload.service_id = choice.service_id;
         const result = await api.post(`/accounts/${id}/upload-sub2api`, payload);
         if (result.success) {
-            toast.success('上传成功');
+            toast.success('Upload successful');
             loadAccounts();
         } else {
-            toast.error('上传失败: ' + (result.error || result.message || '未知错误'));
+            toast.error('Upload failed: ' + (result.error || result.message || 'Unknown error'));
         }
     } catch (e) {
-        toast.error('上传失败: ' + e.message);
+        toast.error('Upload failed: ' + e.message);
     }
 }
 
-// 弹出 Team Manager 服务选择框，返回 Promise<{service_id: number|null}|null>
-// null 表示用户取消，{service_id: null} 表示自动选择
+// Pop up the Team Manager service selection box and return Promise<{service_id: number|null}|null>
+// null means user cancellation, {service_id: null} means automatic selection
 function selectTmService() {
     return new Promise(async (resolve) => {
         const modal = document.getElementById('tm-service-modal');
@@ -1086,7 +1086,7 @@ function selectTmService() {
         const cancelBtn = document.getElementById('cancel-tm-modal-btn');
         const autoBtn = document.getElementById('tm-use-auto-btn');
 
-        listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted)">加载中...</div>';
+        listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted)">Loading...</div>';
         modal.classList.add('active');
 
         let services = [];
@@ -1097,7 +1097,7 @@ function selectTmService() {
         }
 
         if (services.length === 0) {
-            listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:12px;">暂无已启用的 Team Manager 服务，将自动选择第一个</div>';
+            listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:12px;">There is no enabled Team Manager service, the first one will be automatically selected</div>';
         } else {
             listEl.innerHTML = services.map(s => `
                 <div class="tm-service-item" data-id="${s.id}" style="
@@ -1114,7 +1114,7 @@ function selectTmService() {
                         <div style="font-weight:500;">${escapeHtml(s.name)}</div>
                         <div style="font-size:0.8rem;color:var(--text-muted);">${escapeHtml(s.api_url)}</div>
                     </div>
-                    <span class="badge" style="background:var(--primary);color:#fff;font-size:0.7rem;padding:2px 8px;border-radius:10px;">选择</span>
+                    <span class="badge" style="background:var(--primary);color:#fff;font-size:0.7rem;padding:2px 8px;border-radius:10px;">Select</span>
                 </div>
             `).join('');
 
@@ -1143,60 +1143,60 @@ function selectTmService() {
     });
 }
 
-// 上传单账号到 Team Manager
+// Upload a single account to Team Manager
 async function uploadToTm(id) {
     const choice = await selectTmService();
     if (choice === null) return;
     try {
-        toast.info('正在上传到 Team Manager...');
+        toast.info('Uploading to Team Manager...');
         const payload = {};
         if (choice.service_id != null) payload.service_id = choice.service_id;
         const result = await api.post(`/accounts/${id}/upload-tm`, payload);
         if (result.success) {
-            toast.success('上传成功');
+            toast.success('Upload successful');
         } else {
-            toast.error('上传失败: ' + (result.message || '未知错误'));
+            toast.error('Upload failed: ' + (result.message || 'Unknown error'));
         }
     } catch (e) {
-        toast.error('上传失败: ' + e.message);
+        toast.error('Upload failed: ' + e.message);
     }
 }
 
-// 批量上传到 Team Manager
+//Batch upload to Team Manager
 async function handleBatchUploadTm() {
     const count = getEffectiveCount();
     if (count === 0) return;
 
     const choice = await selectTmService();
-    if (choice === null) return;  // 用户取消
+    if (choice === null) return; // User cancels
 
-    const confirmed = await confirm(`确定要将选中的 ${count} 个账号上传到 Team Manager 吗？`);
+    const confirmed = await confirm(`Are you sure you want to upload the selected ${count} accounts to Team Manager?`);
     if (!confirmed) return;
 
     elements.batchUploadBtn.disabled = true;
-    elements.batchUploadBtn.textContent = '上传中...';
+    elements.batchUploadBtn.textContent = 'Uploading...';
 
     try {
         const payload = buildBatchPayload();
         if (choice.service_id != null) payload.service_id = choice.service_id;
         const result = await api.post('/accounts/batch-upload-tm', payload);
-        let message = `成功: ${result.success_count}`;
-        if (result.failed_count > 0) message += `, 失败: ${result.failed_count}`;
-        if (result.skipped_count > 0) message += `, 跳过: ${result.skipped_count}`;
+        let message = `Success: ${result.success_count}`;
+        if (result.failed_count > 0) message += `, failed: ${result.failed_count}`;
+        if (result.skipped_count > 0) message += `, skip: ${result.skipped_count}`;
         toast.success(message);
         loadAccounts();
     } catch (e) {
-        toast.error('批量上传失败: ' + e.message);
+        toast.error('Batch upload failed: ' + e.message);
     } finally {
         updateBatchButtons();
     }
 }
 
-// 更多菜单切换
+//More menu switches
 function toggleMoreMenu(btn) {
     const menu = btn.nextElementSibling;
     const isActive = menu.classList.contains('active');
-    // 关闭所有其他更多菜单
+    // Close all other more menus
     document.querySelectorAll('.dropdown-menu.active').forEach(m => m.classList.remove('active'));
     if (!isActive) menu.classList.add('active');
 }
@@ -1206,31 +1206,31 @@ function closeMoreMenu(el) {
     if (menu) menu.classList.remove('active');
 }
 
-// 保存账号 Cookies
+//Save account Cookies
 async function saveCookies(id) {
     const textarea = document.getElementById(`cookies-input-${id}`);
     if (!textarea) return;
     const cookiesValue = textarea.value.trim();
     try {
         await api.patch(`/accounts/${id}`, { cookies: cookiesValue });
-        toast.success('Cookies 已保存');
+        toast.success('Cookies saved');
     } catch (e) {
-        toast.error('保存 Cookies 失败: ' + e.message);
+        toast.error('Failed to save Cookies: ' + e.message);
     }
 }
 
-// 查询收件箱验证码
+// Query the inbox verification code
 async function checkInboxCode(id) {
-    toast.info('正在查询收件箱...');
+    toast.info('Querying inbox...');
     try {
         const result = await api.post(`/accounts/${id}/inbox-code`);
         if (result.success) {
             showInboxCodeResult(result.code, result.email);
         } else {
-            toast.error('查询失败: ' + (result.error || '未收到验证码'));
+            toast.error('Query failed: ' + (result.error || 'Verification code not received'));
         }
     } catch (error) {
-        toast.error('查询失败: ' + error.message);
+        toast.error('Query failed: ' + error.message);
     }
 }
 
@@ -1238,13 +1238,13 @@ function showInboxCodeResult(code, email) {
     elements.modalBody.innerHTML = `
         <div style="text-align:center; padding:24px 16px;">
             <div style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">
-                ${escapeHtml(email)} 最新验证码
+                ${escapeHtml(email)} latest verification code
             </div>
             <div style="font-size:36px;font-weight:700;letter-spacing:8px;
                         color:var(--primary);font-family:monospace;margin-bottom:20px;">
                 ${escapeHtml(code)}
             </div>
-            <button class="btn btn-primary" onclick="copyToClipboard('${escapeHtml(code)}')">复制验证码</button>
+            <button class="btn btn-primary" onclick="copyToClipboard('${escapeHtml(code)}')">Copy verification code</button>
         </div>
     `;
     elements.detailModal.classList.add('active');

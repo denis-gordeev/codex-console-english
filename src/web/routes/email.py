@@ -1,5 +1,5 @@
 """
-邮箱服务配置 API 路由
+Email service configuration API routing
 """
 
 import logging
@@ -20,7 +20,7 @@ router = APIRouter()
 # ============== Pydantic Models ==============
 
 class EmailServiceCreate(BaseModel):
-    """创建邮箱服务请求"""
+    """Create mailbox service request"""
     service_type: str
     name: str
     config: Dict[str, Any]
@@ -29,7 +29,7 @@ class EmailServiceCreate(BaseModel):
 
 
 class EmailServiceUpdate(BaseModel):
-    """更新邮箱服务请求"""
+    """Update Mailbox Service Request"""
     name: Optional[str] = None
     config: Optional[Dict[str, Any]] = None
     enabled: Optional[bool] = None
@@ -37,13 +37,13 @@ class EmailServiceUpdate(BaseModel):
 
 
 class EmailServiceResponse(BaseModel):
-    """邮箱服务响应"""
+    """Mailbox service response"""
     id: int
     service_type: str
     name: str
     enabled: bool
     priority: int
-    config: Optional[Dict[str, Any]] = None  # 过滤敏感信息后的配置
+    config: Optional[Dict[str, Any]] = None # Configuration after filtering sensitive information
     last_used: Optional[str] = None
     created_at: Optional[str] = None
     updated_at: Optional[str] = None
@@ -53,27 +53,27 @@ class EmailServiceResponse(BaseModel):
 
 
 class EmailServiceListResponse(BaseModel):
-    """邮箱服务列表响应"""
+    """Mailbox service list response"""
     total: int
     services: List[EmailServiceResponse]
 
 
 class ServiceTestResult(BaseModel):
-    """服务测试结果"""
+    """Service test results"""
     success: bool
     message: str
     details: Optional[Dict[str, Any]] = None
 
 
 class OutlookBatchImportRequest(BaseModel):
-    """Outlook 批量导入请求"""
-    data: str  # 多行数据，每行格式: 邮箱----密码 或 邮箱----密码----client_id----refresh_token
+    """Outlook bulk import request"""
+    data: str #Multiple lines of data, each line format: email----password or email----password----client_id----refresh_token
     enabled: bool = True
     priority: int = 0
 
 
 class OutlookBatchImportResponse(BaseModel):
-    """Outlook 批量导入响应"""
+    """Outlook batch import response"""
     total: int
     success: int
     failed: int
@@ -83,23 +83,23 @@ class OutlookBatchImportResponse(BaseModel):
 
 # ============== Helper Functions ==============
 
-# 敏感字段列表，返回响应时需要过滤
+# List of sensitive fields, which need to be filtered when returning the response
 SENSITIVE_FIELDS = {'password', 'api_key', 'refresh_token', 'access_token', 'admin_token'}
 
 def filter_sensitive_config(config: Dict[str, Any]) -> Dict[str, Any]:
-    """过滤敏感配置信息"""
+    """Filter sensitive configuration information"""
     if not config:
         return {}
 
     filtered = {}
     for key, value in config.items():
         if key in SENSITIVE_FIELDS:
-            # 敏感字段不返回，但标记是否存在
+            # Sensitive fields are not returned, but whether the tag exists
             filtered[f"has_{key}"] = bool(value)
         else:
             filtered[key] = value
 
-    # 为 Outlook 计算是否有 OAuth
+    # Calculate whether there is OAuth for Outlook
     if config.get('client_id') and config.get('refresh_token'):
         filtered['has_oauth'] = True
 
@@ -107,7 +107,7 @@ def filter_sensitive_config(config: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def service_to_response(service: EmailServiceModel) -> EmailServiceResponse:
-    """转换服务模型为响应"""
+    """Convert service model to response"""
     return EmailServiceResponse(
         id=service.id,
         service_type=service.service_type,
@@ -125,17 +125,17 @@ def service_to_response(service: EmailServiceModel) -> EmailServiceResponse:
 
 @router.get("/stats")
 async def get_email_services_stats():
-    """获取邮箱服务统计信息"""
+    """Get mailbox service statistics"""
     with get_db() as db:
         from sqlalchemy import func
 
-        # 按类型统计
+        # Statistics by type
         type_stats = db.query(
             EmailServiceModel.service_type,
             func.count(EmailServiceModel.id)
         ).group_by(EmailServiceModel.service_type).all()
 
-        # 启用数量
+        # enable quantity
         enabled_count = db.query(func.count(EmailServiceModel.id)).filter(
             EmailServiceModel.enabled == True
         ).scalar()
@@ -147,7 +147,7 @@ async def get_email_services_stats():
             'duck_mail_count': 0,
             'freemail_count': 0,
             'imap_mail_count': 0,
-            'tempmail_available': True,  # 临时邮箱始终可用
+            'tempmail_available': True, # Temporary mailbox is always available
             'enabled_count': enabled_count
         }
 
@@ -170,25 +170,25 @@ async def get_email_services_stats():
 
 @router.get("/types")
 async def get_service_types():
-    """获取支持的邮箱服务类型"""
+    """Get supported email service types"""
     return {
         "types": [
             {
                 "value": "tempmail",
                 "label": "Tempmail.lol",
-                "description": "临时邮箱服务，无需配置",
+                "description": "Temporary mailbox service, no configuration required",
                 "config_fields": [
-                    {"name": "base_url", "label": "API 地址", "default": "https://api.tempmail.lol/v2", "required": False},
-                    {"name": "timeout", "label": "超时时间", "default": 30, "required": False},
+                    {"name": "base_url", "label": "API address", "default": "https://api.tempmail.lol/v2", "required": False},
+                    {"name": "timeout", "label": "timeout", "default": 30, "required": False},
                 ]
             },
             {
                 "value": "outlook",
                 "label": "Outlook",
-                "description": "Outlook 邮箱，需要配置账户信息",
+                "description": "Outlook mailbox, account information needs to be configured",
                 "config_fields": [
-                    {"name": "email", "label": "邮箱地址", "required": True},
-                    {"name": "password", "label": "密码", "required": True},
+                    {"name": "email", "label": "Email address", "required": True},
+                    {"name": "password", "label": "password", "required": True},
                     {"name": "client_id", "label": "OAuth Client ID", "required": False},
                     {"name": "refresh_token", "label": "OAuth Refresh Token", "required": False},
                 ]
@@ -196,55 +196,55 @@ async def get_service_types():
             {
                 "value": "moe_mail",
                 "label": "MoeMail",
-                "description": "自定义域名邮箱服务",
+                "description": "Customized domain name email service",
                 "config_fields": [
-                    {"name": "base_url", "label": "API 地址", "required": True},
+                    {"name": "base_url", "label": "API address", "required": True},
                     {"name": "api_key", "label": "API Key", "required": True},
-                    {"name": "default_domain", "label": "默认域名", "required": False},
+                    {"name": "default_domain", "label": "Default domain name", "required": False},
                 ]
             },
             {
                 "value": "temp_mail",
-                "label": "Temp-Mail（自部署）",
-                "description": "自部署 Cloudflare Worker 临时邮箱，admin 模式管理",
+                "label": "Temp-Mail (self-deployment)",
+                "description": "Self-deployed Cloudflare Worker temporary mailbox, admin mode management",
                 "config_fields": [
-                    {"name": "base_url", "label": "Worker 地址", "required": True, "placeholder": "https://mail.example.com"},
-                    {"name": "admin_password", "label": "Admin 密码", "required": True, "secret": True},
-                    {"name": "domain", "label": "邮箱域名", "required": True, "placeholder": "example.com"},
-                    {"name": "enable_prefix", "label": "启用前缀", "required": False, "default": True},
+                    {"name": "base_url", "label": "Worker address", "required": True, "placeholder": "https://mail.example.com"},
+                    {"name": "admin_password", "label": "Admin password", "required": True, "secret": True},
+                    {"name": "domain", "label": "Email domain name", "required": True, "placeholder": "example.com"},
+                    {"name": "enable_prefix", "label": "Enable prefix", "required": False, "default": True},
                 ]
             },
             {
                 "value": "duck_mail",
                 "label": "DuckMail",
-                "description": "DuckMail 接口邮箱服务，支持 API Key 私有域名访问",
+                "description": "DuckMail interface email service, supports API Key private domain name access",
                 "config_fields": [
-                    {"name": "base_url", "label": "API 地址", "required": True, "placeholder": "https://api.duckmail.sbs"},
-                    {"name": "default_domain", "label": "默认域名", "required": True, "placeholder": "duckmail.sbs"},
+                    {"name": "base_url", "label": "API address", "required": True, "placeholder": "https://api.duckmail.sbs"},
+                    {"name": "default_domain", "label": "Default domain name", "required": True, "placeholder": "duckmail.sbs"},
                     {"name": "api_key", "label": "API Key", "required": False, "secret": True},
-                    {"name": "password_length", "label": "随机密码长度", "required": False, "default": 12},
+                    {"name": "password_length", "label": "Random password length", "required": False, "default": 12},
                 ]
             },
             {
                 "value": "freemail",
                 "label": "Freemail",
-                "description": "Freemail 自部署 Cloudflare Worker 临时邮箱服务",
+                "description": "Freemail self-deployed Cloudflare Worker temporary mailbox service",
                 "config_fields": [
-                    {"name": "base_url", "label": "API 地址", "required": True, "placeholder": "https://freemail.example.com"},
+                    {"name": "base_url", "label": "API address", "required": True, "placeholder": "https://freemail.example.com"},
                     {"name": "admin_token", "label": "Admin Token", "required": True, "secret": True},
-                    {"name": "domain", "label": "邮箱域名", "required": False, "placeholder": "example.com"},
+                    {"name": "domain", "label": "Email domain name", "required": False, "placeholder": "example.com"},
                 ]
             },
             {
                 "value": "imap_mail",
-                "label": "IMAP 邮箱",
-                "description": "标准 IMAP 协议邮箱（Gmail/QQ/163等），仅用于接收验证码，强制直连",
+                "label": "IMAP mailbox",
+                "description": "Standard IMAP protocol email (Gmail/QQ/163, etc.), only used to receive verification codes, forced direct connection",
                 "config_fields": [
-                    {"name": "host", "label": "IMAP 服务器", "required": True, "placeholder": "imap.gmail.com"},
-                    {"name": "port", "label": "端口", "required": False, "default": 993},
-                    {"name": "use_ssl", "label": "使用 SSL", "required": False, "default": True},
-                    {"name": "email", "label": "邮箱地址", "required": True},
-                    {"name": "password", "label": "密码/授权码", "required": True, "secret": True},
+                    {"name": "host", "label": "IMAP Server", "required": True, "placeholder": "imap.gmail.com"},
+                    {"name": "port", "label": "port", "required": False, "default": 993},
+                    {"name": "use_ssl", "label": "Use SSL", "required": False, "default": True},
+                    {"name": "email", "label": "Email address", "required": True},
+                    {"name": "password", "label": "Password/Authorization Code", "required": True, "secret": True},
                 ]
             }
         ]
@@ -253,10 +253,10 @@ async def get_service_types():
 
 @router.get("", response_model=EmailServiceListResponse)
 async def list_email_services(
-    service_type: Optional[str] = Query(None, description="服务类型筛选"),
-    enabled_only: bool = Query(False, description="只显示启用的服务"),
+    service_type: Optional[str] = Query(None, description="Service type filtering"),
+    enabled_only: bool = Query(False, description="Only show enabled services"),
 ):
-    """获取邮箱服务列表"""
+    """Get email service list"""
     with get_db() as db:
         query = db.query(EmailServiceModel)
 
@@ -276,21 +276,21 @@ async def list_email_services(
 
 @router.get("/{service_id}", response_model=EmailServiceResponse)
 async def get_email_service(service_id: int):
-    """获取单个邮箱服务详情"""
+    """Get individual email service details"""
     with get_db() as db:
         service = db.query(EmailServiceModel).filter(EmailServiceModel.id == service_id).first()
         if not service:
-            raise HTTPException(status_code=404, detail="服务不存在")
+            raise HTTPException(status_code=404, detail="Service does not exist")
         return service_to_response(service)
 
 
 @router.get("/{service_id}/full")
 async def get_email_service_full(service_id: int):
-    """获取单个邮箱服务完整详情（包含敏感字段，用于编辑）"""
+    """Get complete details of a single email service (including sensitive fields for editing)"""
     with get_db() as db:
         service = db.query(EmailServiceModel).filter(EmailServiceModel.id == service_id).first()
         if not service:
-            raise HTTPException(status_code=404, detail="服务不存在")
+            raise HTTPException(status_code=404, detail="Service does not exist")
 
         return {
             "id": service.id,
@@ -298,7 +298,7 @@ async def get_email_service_full(service_id: int):
             "name": service.name,
             "enabled": service.enabled,
             "priority": service.priority,
-            "config": service.config or {},  # 返回完整配置
+            "config": service.config or {}, # Return the complete configuration
             "last_used": service.last_used.isoformat() if service.last_used else None,
             "created_at": service.created_at.isoformat() if service.created_at else None,
             "updated_at": service.updated_at.isoformat() if service.updated_at else None,
@@ -307,18 +307,18 @@ async def get_email_service_full(service_id: int):
 
 @router.post("", response_model=EmailServiceResponse)
 async def create_email_service(request: EmailServiceCreate):
-    """创建邮箱服务配置"""
-    # 验证服务类型
+    """Create mailbox service configuration"""
+    # Verify service type
     try:
         EmailServiceType(request.service_type)
     except ValueError:
-        raise HTTPException(status_code=400, detail=f"无效的服务类型: {request.service_type}")
+        raise HTTPException(status_code=400, detail=f"Invalid service type: {request.service_type}")
 
     with get_db() as db:
-        # 检查名称是否重复
+        # Check if the name is duplicated
         existing = db.query(EmailServiceModel).filter(EmailServiceModel.name == request.name).first()
         if existing:
-            raise HTTPException(status_code=400, detail="服务名称已存在")
+            raise HTTPException(status_code=400, detail="Service name already exists")
 
         service = EmailServiceModel(
             service_type=request.service_type,
@@ -336,20 +336,20 @@ async def create_email_service(request: EmailServiceCreate):
 
 @router.patch("/{service_id}", response_model=EmailServiceResponse)
 async def update_email_service(service_id: int, request: EmailServiceUpdate):
-    """更新邮箱服务配置"""
+    """Update mailbox service configuration"""
     with get_db() as db:
         service = db.query(EmailServiceModel).filter(EmailServiceModel.id == service_id).first()
         if not service:
-            raise HTTPException(status_code=404, detail="服务不存在")
+            raise HTTPException(status_code=404, detail="Service does not exist")
 
         update_data = {}
         if request.name is not None:
             update_data["name"] = request.name
         if request.config is not None:
-            # 合并配置而不是替换
+            # Merge configuration instead of replacing
             current_config = service.config or {}
             merged_config = {**current_config, **request.config}
-            # 移除空值
+            # Remove null values
             merged_config = {k: v for k, v in merged_config.items() if v}
             update_data["config"] = merged_config
         if request.enabled is not None:
@@ -368,25 +368,25 @@ async def update_email_service(service_id: int, request: EmailServiceUpdate):
 
 @router.delete("/{service_id}")
 async def delete_email_service(service_id: int):
-    """删除邮箱服务配置"""
+    """Delete mailbox service configuration"""
     with get_db() as db:
         service = db.query(EmailServiceModel).filter(EmailServiceModel.id == service_id).first()
         if not service:
-            raise HTTPException(status_code=404, detail="服务不存在")
+            raise HTTPException(status_code=404, detail="Service does not exist")
 
         db.delete(service)
         db.commit()
 
-        return {"success": True, "message": f"服务 {service.name} 已删除"}
+        return {"success": True, "message": f"Service {service.name} has been deleted"}
 
 
 @router.post("/{service_id}/test", response_model=ServiceTestResult)
 async def test_email_service(service_id: int):
-    """测试邮箱服务是否可用"""
+    """Test whether the email service is available"""
     with get_db() as db:
         service = db.query(EmailServiceModel).filter(EmailServiceModel.id == service_id).first()
         if not service:
-            raise HTTPException(status_code=404, detail="服务不存在")
+            raise HTTPException(status_code=404, detail="Service does not exist")
 
         try:
             service_type = EmailServiceType(service.service_type)
@@ -397,54 +397,54 @@ async def test_email_service(service_id: int):
             if health:
                 return ServiceTestResult(
                     success=True,
-                    message="服务连接正常",
+                    message="Service connection is normal",
                     details=email_service.get_service_info() if hasattr(email_service, 'get_service_info') else None
                 )
             else:
                 return ServiceTestResult(
                     success=False,
-                    message="服务连接失败"
+                    message="Service connection failed"
                 )
 
         except Exception as e:
-            logger.error(f"测试邮箱服务失败: {e}")
+            logger.error(f"Test mailbox service failed: {e}")
             return ServiceTestResult(
                 success=False,
-                message=f"测试失败: {str(e)}"
+                message=f"Test failed: {str(e)}"
             )
 
 
 @router.post("/{service_id}/enable")
 async def enable_email_service(service_id: int):
-    """启用邮箱服务"""
+    """Enable mailbox service"""
     with get_db() as db:
         service = db.query(EmailServiceModel).filter(EmailServiceModel.id == service_id).first()
         if not service:
-            raise HTTPException(status_code=404, detail="服务不存在")
+            raise HTTPException(status_code=404, detail="Service does not exist")
 
         service.enabled = True
         db.commit()
 
-        return {"success": True, "message": f"服务 {service.name} 已启用"}
+        return {"success": True, "message": f"Service {service.name} is enabled"}
 
 
 @router.post("/{service_id}/disable")
 async def disable_email_service(service_id: int):
-    """禁用邮箱服务"""
+    """Disable mailbox service"""
     with get_db() as db:
         service = db.query(EmailServiceModel).filter(EmailServiceModel.id == service_id).first()
         if not service:
-            raise HTTPException(status_code=404, detail="服务不存在")
+            raise HTTPException(status_code=404, detail="Service does not exist")
 
         service.enabled = False
         db.commit()
 
-        return {"success": True, "message": f"服务 {service.name} 已禁用"}
+        return {"success": True, "message": f"Service {service.name} is disabled"}
 
 
 @router.post("/reorder")
 async def reorder_services(service_ids: List[int]):
-    """重新排序邮箱服务优先级"""
+    """Reorder mailbox service priority"""
     with get_db() as db:
         for index, service_id in enumerate(service_ids):
             service = db.query(EmailServiceModel).filter(EmailServiceModel.id == service_id).first()
@@ -453,19 +453,19 @@ async def reorder_services(service_ids: List[int]):
 
         db.commit()
 
-        return {"success": True, "message": "优先级已更新"}
+        return {"success": True, "message": "Priority has been updated"}
 
 
 @router.post("/outlook/batch-import", response_model=OutlookBatchImportResponse)
 async def batch_import_outlook(request: OutlookBatchImportRequest):
     """
-    批量导入 Outlook 邮箱账户
+    Batch import Outlook email accounts
 
-    支持两种格式：
-    - 格式一（密码认证）：邮箱----密码
-    - 格式二（XOAUTH2 认证）：邮箱----密码----client_id----refresh_token
+    Two formats are supported:
+    - Format 1 (password authentication): Email ---- Password
+    - Format 2 (XOAUTH2 authentication): Email----Password----client_id----refresh_token
 
-    每行一个账户，使用四个连字符（----）分隔字段
+    One account per line, using four hyphens (----) to separate fields
     """
     lines = request.data.strip().split("\n")
     total = len(lines)
@@ -478,28 +478,28 @@ async def batch_import_outlook(request: OutlookBatchImportRequest):
         for i, line in enumerate(lines):
             line = line.strip()
 
-            # 跳过空行和注释
+            # Skip empty lines and comments
             if not line or line.startswith("#"):
                 continue
 
             parts = line.split("----")
 
-            # 验证格式
+            # Verify format
             if len(parts) < 2:
                 failed += 1
-                errors.append(f"行 {i+1}: 格式错误，至少需要邮箱和密码")
+                errors.append(f"Line {i+1}: format error, at least email and password required")
                 continue
 
             email = parts[0].strip()
             password = parts[1].strip()
 
-            # 验证邮箱格式
+            # Verify email format
             if "@" not in email:
                 failed += 1
-                errors.append(f"行 {i+1}: 无效的邮箱地址: {email}")
+                errors.append(f"Line {i+1}: Invalid email address: {email}")
                 continue
 
-            # 检查是否已存在
+            # Check if it already exists
             existing = db.query(EmailServiceModel).filter(
                 EmailServiceModel.service_type == "outlook",
                 EmailServiceModel.name == email
@@ -507,16 +507,16 @@ async def batch_import_outlook(request: OutlookBatchImportRequest):
 
             if existing:
                 failed += 1
-                errors.append(f"行 {i+1}: 邮箱已存在: {email}")
+                errors.append(f"Line {i+1}: Email already exists: {email}")
                 continue
 
-            # 构建配置
+            # Build configuration
             config = {
                 "email": email,
                 "password": password
             }
 
-            # 检查是否有 OAuth 信息（格式二）
+            # Check if there is OAuth information (format 2)
             if len(parts) >= 4:
                 client_id = parts[2].strip()
                 refresh_token = parts[3].strip()
@@ -524,7 +524,7 @@ async def batch_import_outlook(request: OutlookBatchImportRequest):
                     config["client_id"] = client_id
                     config["refresh_token"] = refresh_token
 
-            # 创建服务记录
+            #Create service record
             try:
                 service = EmailServiceModel(
                     service_type="outlook",
@@ -547,7 +547,7 @@ async def batch_import_outlook(request: OutlookBatchImportRequest):
 
             except Exception as e:
                 failed += 1
-                errors.append(f"行 {i+1}: 创建失败: {str(e)}")
+                errors.append(f"Line {i+1}: Creation failed: {str(e)}")
                 db.rollback()
 
     return OutlookBatchImportResponse(
@@ -561,7 +561,7 @@ async def batch_import_outlook(request: OutlookBatchImportRequest):
 
 @router.delete("/outlook/batch")
 async def batch_delete_outlook(service_ids: List[int]):
-    """批量删除 Outlook 邮箱服务"""
+    """Delete Outlook mailbox services in batches"""
     deleted = 0
     with get_db() as db:
         for service_id in service_ids:
@@ -574,19 +574,19 @@ async def batch_delete_outlook(service_ids: List[int]):
                 deleted += 1
         db.commit()
 
-    return {"success": True, "deleted": deleted, "message": f"已删除 {deleted} 个服务"}
+    return {"success": True, "deleted": deleted, "message": f"{deleted} services have been deleted"}
 
 
-# ============== 临时邮箱测试 ==============
+# ============== Temporary mailbox test ==============
 
 class TempmailTestRequest(BaseModel):
-    """临时邮箱测试请求"""
+    """Temporary mailbox test request"""
     api_url: Optional[str] = None
 
 
 @router.post("/test-tempmail")
 async def test_tempmail_service(request: TempmailTestRequest):
-    """测试临时邮箱服务是否可用"""
+    """Test whether the temporary mailbox service is available"""
     try:
         from ...services import EmailServiceFactory, EmailServiceType
         from ...config.settings import get_settings
@@ -597,14 +597,14 @@ async def test_tempmail_service(request: TempmailTestRequest):
         config = {"base_url": base_url}
         tempmail = EmailServiceFactory.create(EmailServiceType.TEMPMAIL, config)
 
-        # 检查服务健康状态
+        # Check service health status
         health = tempmail.check_health()
 
         if health:
-            return {"success": True, "message": "临时邮箱连接正常"}
+            return {"success": True, "message": "The temporary mailbox connection is normal"}
         else:
-            return {"success": False, "message": "临时邮箱连接失败"}
+            return {"success": False, "message": "Temporary mailbox connection failed"}
 
     except Exception as e:
-        logger.error(f"测试临时邮箱失败: {e}")
-        return {"success": False, "message": f"测试失败: {str(e)}"}
+        logger.error(f"Failed to test temporary mailbox: {e}")
+        return {"success": False, "message": f"Test failed: {str(e)}"}

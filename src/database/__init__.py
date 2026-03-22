@@ -1,6 +1,4 @@
-"""
-数据库模块
-"""
+"""Database module"""
 
 from .models import Base, Account, EmailService, RegistrationTask, Setting
 from .session import get_db, init_database, get_session_manager, DatabaseSessionManager

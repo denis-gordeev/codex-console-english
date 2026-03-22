@@ -1,36 +1,36 @@
-# 使用官方 Python 基础镜像 (使用 slim 版本减小体积)
+# Use the official Python base image (use the slim version to reduce the size)
 FROM python:3.11-slim
 
-# 设置工作目录
+# Set working directory
 WORKDIR /app
 
-# 设置环境变量
+# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    # WebUI 默认配置
+    # WebUI default configuration
     WEBUI_HOST=0.0.0.0 \
     WEBUI_PORT=1455 \
     LOG_LEVEL=info \
     DEBUG=0
 
-# 安装系统依赖
-# (curl_cffi 等库可能需要编译工具)
+# Install system dependencies
+# (curl_cffi and other libraries may require compilation tools)
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         gcc \
         python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# 复制依赖文件并安装
+# Copy dependency files and install
 COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
 
-# 复制项目代码
+# Copy project code
 COPY . .
 
-# 暴露端口
+# exposed port
 EXPOSE 1455
 
-# 启动 WebUI
+# Start WebUI
 CMD ["python", "webui.py"]

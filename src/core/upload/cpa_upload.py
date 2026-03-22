@@ -1,6 +1,4 @@
-"""
-CPA (Codex Protocol API) 上传功能
-"""
+"""CPA (Codex Protocol API) upload function"""
 
 import json
 import logging
@@ -19,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 def _normalize_cpa_auth_files_url(api_url: str) -> str:
-    """将用户填写的 CPA 地址规范化为 auth-files 接口地址。"""
+    """Normalize the CPA address filled in by the user to the auth-files interface address."""
     normalized = (api_url or "").strip().rstrip("/")
     lower_url = normalized.lower()
 
@@ -48,7 +46,7 @@ def _build_cpa_headers(api_token: str, content_type: Optional[str] = None) -> di
 
 
 def _extract_cpa_error(response) -> str:
-    error_msg = f"上传失败: HTTP {response.status_code}"
+    error_msg = f"Upload failed: HTTP {response.status_code}"
     try:
         error_detail = response.json()
         if isinstance(error_detail, dict):
@@ -90,15 +88,13 @@ def _post_cpa_auth_file_raw_json(upload_url: str, filename: str, file_content: b
 
 
 def generate_token_json(account: Account) -> dict:
-    """
-    生成 CPA 格式的 Token JSON
+    """Generate Token JSON in CPA format
 
     Args:
-        account: 账号模型实例
+        account: account model instance
 
     Returns:
-        CPA 格式的 Token 字典
-    """
+        Token dictionary in CPA format"""
     return {
         "type": "codex",
         "email": account.email,
@@ -117,33 +113,31 @@ def upload_to_cpa(
     api_url: str = None,
     api_token: str = None,
 ) -> Tuple[bool, str]:
-    """
-    上传单个账号到 CPA 管理平台（不走代理）
+    """Upload a single account to the CPA management platform (without using an agent)
 
     Args:
-        token_data: Token JSON 数据
-        proxy: 保留参数，不使用（CPA 上传始终直连）
-        api_url: 指定 CPA API URL（优先于全局配置）
-        api_token: 指定 CPA API Token（优先于全局配置）
+        token_data: Token JSON data
+        proxy: reserved parameter, not used (CPA upload is always directly connected)
+        api_url: Specify CPA API URL (takes precedence over global configuration)
+        api_token: Specify CPA API Token (takes precedence over global configuration)
 
     Returns:
-        (成功标志, 消息或错误信息)
-    """
+        (success sign, message or error message)"""
     settings = get_settings()
 
-    # 优先使用传入的参数，否则退回全局配置
+    # Priority is given to using the parameters passed in, otherwise it returns to the global configuration.
     effective_url = api_url or settings.cpa_api_url
     effective_token = api_token or (settings.cpa_api_token.get_secret_value() if settings.cpa_api_token else "")
 
-    # 仅当未指定服务时才检查全局启用开关
+    # Check global enable switch only if no service is specified
     if not api_url and not settings.cpa_enabled:
-        return False, "CPA 上传未启用"
+        return False, "CPA upload is not enabled"
 
     if not effective_url:
-        return False, "CPA API URL 未配置"
+        return False, "CPA API URL not configured"
 
     if not effective_token:
-        return False, "CPA API Token 未配置"
+        return False, "CPA API Token is not configured"
 
     upload_url = _normalize_cpa_auth_files_url(effective_url)
 
@@ -159,10 +153,10 @@ def upload_to_cpa(
         )
 
         if response.status_code in (200, 201):
-            return True, "上传成功"
+            return True, "Upload successful"
 
         if response.status_code in (404, 405, 415):
-            logger.warning("CPA multipart 上传失败，尝试原始 JSON 回退: %s", response.status_code)
+            logger.warning("CPA multipart upload failed, try original JSON fallback: %s", response.status_code)
             fallback_response = _post_cpa_auth_file_raw_json(
                 upload_url,
                 filename,
@@ -170,14 +164,14 @@ def upload_to_cpa(
                 effective_token,
             )
             if fallback_response.status_code in (200, 201):
-                return True, "上传成功"
+                return True, "Upload successful"
             response = fallback_response
 
         return False, _extract_cpa_error(response)
 
     except Exception as e:
-        logger.error(f"CPA 上传异常: {e}")
-        return False, f"上传异常: {str(e)}"
+        logger.error(f"CPA upload exception: {e}")
+        return False, f"Upload exception: {str(e)}"
 
 
 def batch_upload_to_cpa(
@@ -186,18 +180,16 @@ def batch_upload_to_cpa(
     api_url: str = None,
     api_token: str = None,
 ) -> dict:
-    """
-    批量上传账号到 CPA 管理平台
+    """Batch upload accounts to CPA management platform
 
     Args:
-        account_ids: 账号 ID 列表
-        proxy: 可选的代理 URL
-        api_url: 指定 CPA API URL（优先于全局配置）
-        api_token: 指定 CPA API Token（优先于全局配置）
+        account_ids: Account ID list
+        proxy: optional proxy URL
+        api_url: Specify CPA API URL (takes precedence over global configuration)
+        api_token: Specify CPA API Token (takes precedence over global configuration)
 
     Returns:
-        包含成功/失败统计和详情的字典
-    """
+        Dictionary containing success/failure statistics and details"""
     results = {
         "success_count": 0,
         "failed_count": 0,
@@ -215,29 +207,29 @@ def batch_upload_to_cpa(
                     "id": account_id,
                     "email": None,
                     "success": False,
-                    "error": "账号不存在"
+                    "error": "Account does not exist"
                 })
                 continue
 
-            # 检查是否已有 Token
+            # Check if there is already a Token
             if not account.access_token:
                 results["skipped_count"] += 1
                 results["details"].append({
                     "id": account_id,
                     "email": account.email,
                     "success": False,
-                    "error": "缺少 Token"
+                    "error": "Missing Token"
                 })
                 continue
 
-            # 生成 Token JSON
+            # Generate Token JSON
             token_data = generate_token_json(account)
 
-            # 上传
+            # upload
             success, message = upload_to_cpa(token_data, proxy, api_url=api_url, api_token=api_token)
 
             if success:
-                # 更新数据库状态
+                # Update database status
                 account.cpa_uploaded = True
                 account.cpa_uploaded_at = datetime.utcnow()
                 db.commit()
@@ -262,22 +254,20 @@ def batch_upload_to_cpa(
 
 
 def test_cpa_connection(api_url: str, api_token: str, proxy: str = None) -> Tuple[bool, str]:
-    """
-    测试 CPA 连接（不走代理）
+    """Test CPA connection (without proxy)
 
     Args:
         api_url: CPA API URL
         api_token: CPA API Token
-        proxy: 保留参数，不使用（CPA 始终直连）
+        proxy: reserved parameter, not used (CPA is always directly connected)
 
     Returns:
-        (成功标志, 消息)
-    """
+        (success sign, message)"""
     if not api_url:
-        return False, "API URL 不能为空"
+        return False, "API URL cannot be empty"
 
     if not api_token:
-        return False, "API Token 不能为空"
+        return False, "API Token cannot be empty"
 
     test_url = _normalize_cpa_auth_files_url(api_url)
     headers = _build_cpa_headers(api_token)
@@ -292,21 +282,21 @@ def test_cpa_connection(api_url: str, api_token: str, proxy: str = None) -> Tupl
         )
 
         if response.status_code == 200:
-            return True, "CPA 连接测试成功"
+            return True, "CPA connection test successful"
         if response.status_code == 401:
-            return False, "连接成功，但 API Token 无效"
+            return False, "Connection successful, but API Token is invalid"
         if response.status_code == 403:
-            return False, "连接成功，但服务端未启用远程管理或当前 Token 无权限"
+            return False, "The connection is successful, but remote management is not enabled on the server or the current Token has no permissions."
         if response.status_code == 404:
-            return False, "未找到 CPA auth-files 接口，请检查 API URL 是否填写为根地址、/v0/management 或完整 auth-files 地址"
+            return False, "CPA auth-files interface not found, please check whether the API URL is filled in as the root address, /v0/management or the complete auth-files address"
         if response.status_code == 503:
-            return False, "连接成功，但服务端认证管理器不可用"
+            return False, "Connection successful, but server authentication manager is unavailable"
 
-        return False, f"服务器返回异常状态码: {response.status_code}"
+        return False, f"The server returns exception status code: {response.status_code}"
 
     except cffi_requests.exceptions.ConnectionError as e:
-        return False, f"无法连接到服务器: {str(e)}"
+        return False, f"Unable to connect to server: {str(e)}"
     except cffi_requests.exceptions.Timeout:
-        return False, "连接超时，请检查网络配置"
+        return False, "Connection timed out, please check network configuration"
     except Exception as e:
-        return False, f"连接测试失败: {str(e)}"
+        return False, f"Connection test failed: {str(e)}"

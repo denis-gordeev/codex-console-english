@@ -1,6 +1,6 @@
 """
-Sub2API 账号上传功能
-将账号以 sub2api-data 格式批量导入到 Sub2API 平台
+Sub2API account upload function
+Batch import accounts into the Sub2API platform in sub2api-data format
 """
 
 import json
@@ -24,26 +24,26 @@ def upload_to_sub2api(
     priority: int = 50,
 ) -> Tuple[bool, str]:
     """
-    上传账号列表到 Sub2API 平台（不走代理）
+    Upload the account list to the Sub2API platform (without using an agent)
 
     Args:
-        accounts: 账号模型实例列表
-        api_url: Sub2API 地址，如 http://host
-        api_key: Admin API Key（x-api-key header）
-        concurrency: 账号并发数，默认 3
-        priority: 账号优先级，默认 50
+        accounts: list of account model instances
+        api_url: Sub2API address, such as http://host
+        api_key: Admin API Key (x-api-key header)
+        concurrency: number of concurrent accounts, default 3
+        priority: account priority, default 50
 
     Returns:
-        (成功标志, 消息)
+        (success sign, message)
     """
     if not accounts:
-        return False, "无可上传的账号"
+        return False, "No account to upload"
 
     if not api_url:
-        return False, "Sub2API URL 未配置"
+        return False, "Sub2API URL is not configured"
 
     if not api_key:
-        return False, "Sub2API API Key 未配置"
+        return False, "Sub2API API Key is not configured"
 
     exported_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -85,7 +85,7 @@ def upload_to_sub2api(
         })
 
     if not account_items:
-        return False, "所有账号均缺少 access_token，无法上传"
+        return False, "All accounts lack access_token and cannot be uploaded"
 
     payload = {
         "data": {
@@ -116,9 +116,9 @@ def upload_to_sub2api(
         )
 
         if response.status_code in (200, 201):
-            return True, f"成功上传 {len(account_items)} 个账号"
+            return True, f"Successfully uploaded {len(account_items)} accounts"
 
-        error_msg = f"上传失败: HTTP {response.status_code}"
+        error_msg = f"Upload failed: HTTP {response.status_code}"
         try:
             detail = response.json()
             if isinstance(detail, dict):
@@ -128,8 +128,8 @@ def upload_to_sub2api(
         return False, error_msg
 
     except Exception as e:
-        logger.error(f"Sub2API 上传异常: {e}")
-        return False, f"上传异常: {str(e)}"
+        logger.error(f"Sub2API upload exception: {e}")
+        return False, f"Upload exception: {str(e)}"
 
 
 def batch_upload_to_sub2api(
@@ -140,10 +140,10 @@ def batch_upload_to_sub2api(
     priority: int = 50,
 ) -> dict:
     """
-    批量上传指定 ID 的账号到 Sub2API 平台
+    Batch upload accounts with specified IDs to the Sub2API platform
 
     Returns:
-        包含成功/失败/跳过统计和详情的字典
+        Dictionary containing success/failure/skip statistics and details
     """
     results = {
         "success_count": 0,
@@ -158,11 +158,11 @@ def batch_upload_to_sub2api(
             acc = db.query(Account).filter(Account.id == account_id).first()
             if not acc:
                 results["failed_count"] += 1
-                results["details"].append({"id": account_id, "email": None, "success": False, "error": "账号不存在"})
+                results["details"].append({"id": account_id, "email": None, "success": False, "error": "Account does not exist"})
                 continue
             if not acc.access_token:
                 results["skipped_count"] += 1
-                results["details"].append({"id": account_id, "email": acc.email, "success": False, "error": "缺少 access_token"})
+                results["details"].append({"id": account_id, "email": acc.email, "success": False, "error": "Missing access_token"})
                 continue
             accounts.append(acc)
 
@@ -185,15 +185,15 @@ def batch_upload_to_sub2api(
 
 def test_sub2api_connection(api_url: str, api_key: str) -> Tuple[bool, str]:
     """
-    测试 Sub2API 连接（GET /api/v1/admin/accounts/data 探活）
+    Test Sub2API connection (GET /api/v1/admin/accounts/data test)
 
     Returns:
-        (成功标志, 消息)
+        (success sign, message)
     """
     if not api_url:
-        return False, "API URL 不能为空"
+        return False, "API URL cannot be empty"
     if not api_key:
-        return False, "API Key 不能为空"
+        return False, "API Key cannot be empty"
 
     url = api_url.rstrip("/") + "/api/v1/admin/accounts/data"
     headers = {"x-api-key": api_key}
@@ -208,17 +208,17 @@ def test_sub2api_connection(api_url: str, api_key: str) -> Tuple[bool, str]:
         )
 
         if response.status_code in (200, 201, 204, 405):
-            return True, "Sub2API 连接测试成功"
+            return True, "Sub2API connection test successful"
         if response.status_code == 401:
-            return False, "连接成功，但 API Key 无效"
+            return False, "Connection successful, but API Key is invalid"
         if response.status_code == 403:
-            return False, "连接成功，但权限不足"
+            return False, "Connection successful, but insufficient permissions"
 
-        return False, f"服务器返回异常状态码: {response.status_code}"
+        return False, f"The server returned an exception status code: {response.status_code}"
 
     except cffi_requests.exceptions.ConnectionError as e:
-        return False, f"无法连接到服务器: {str(e)}"
+        return False, f"Unable to connect to server: {str(e)}"
     except cffi_requests.exceptions.Timeout:
-        return False, "连接超时，请检查网络配置"
+        return False, "Connection timed out, please check network configuration"
     except Exception as e:
-        return False, f"连接测试失败: {str(e)}"
+        return False, f"Connection test failed: {str(e)}"

@@ -1,6 +1,4 @@
-"""
-OpenAI/Codex CLI 自动注册系统
-"""
+"""OpenAI/Codex CLI automatic registration system"""
 
 from .config import get_settings, EmailServiceType
 from .database import get_db, Account, EmailService, RegistrationTask

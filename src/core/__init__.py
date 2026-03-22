@@ -1,6 +1,4 @@
-"""
-核心功能模块
-"""
+"""Core functional modules"""
 
 from .openai.oauth import OAuthManager, OAuthStart, generate_oauth_url, submit_callback_url
 from .http_client import (

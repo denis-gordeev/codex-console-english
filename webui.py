@@ -1,5 +1,5 @@
 """
-Web UI 启动入口
+Web UI startup portal
 """
 
 import uvicorn
@@ -7,11 +7,11 @@ import logging
 import sys
 from pathlib import Path
 
-# 添加项目根目录到 Python 路径
-# PyInstaller 打包后 __file__ 在临时解压目录，需要用 sys.executable 所在目录作为数据目录
+# Add the project root directory to the Python path
+# After PyInstaller is packaged, __file__ is in the temporary decompression directory, and the directory where sys.executable is located needs to be used as the data directory.
 import os
 if getattr(sys, 'frozen', False):
-    # 打包后：使用可执行文件所在目录
+    # After packaging: use the directory where the executable file is located
     project_root = Path(sys.executable).parent
     _src_root = Path(sys._MEIPASS)
 else:
@@ -25,7 +25,7 @@ from src.config.settings import get_settings
 
 
 def _load_dotenv():
-    """加载 .env 文件（可执行文件同目录或项目根目录）"""
+    """Load the .env file (the same directory as the executable file or the project root directory)"""
     env_path = project_root / ".env"
     if not env_path.exists():
         return
@@ -42,31 +42,31 @@ def _load_dotenv():
 
 
 def setup_application():
-    """设置应用程序"""
-    # 加载 .env 文件（优先级低于已有环境变量）
+    """Settings Application"""
+    # Load .env file (lower priority than existing environment variables)
     _load_dotenv()
 
-    # 确保数据目录和日志目录在可执行文件所在目录（打包后也适用）
+    # Make sure the data directory and log directory are in the directory where the executable file is located (also applicable after packaging)
     data_dir = project_root / "data"
     logs_dir = project_root / "logs"
     data_dir.mkdir(exist_ok=True)
     logs_dir.mkdir(exist_ok=True)
 
-    # 将数据目录路径注入环境变量，供数据库配置使用
+    # Inject the data directory path into the environment variable for database configuration use
     os.environ.setdefault("APP_DATA_DIR", str(data_dir))
     os.environ.setdefault("APP_LOGS_DIR", str(logs_dir))
 
-    # 初始化数据库（必须先于获取设置）
+    # Initialize the database (must be obtained before getting settings)
     try:
         initialize_database()
     except Exception as e:
-        print(f"数据库初始化失败: {e}")
+        print(f"Database initialization failed: {e}")
         raise
 
-    # 获取配置（需要数据库已初始化）
+    # Get the configuration (the database needs to be initialized)
     settings = get_settings()
 
-    # 配置日志（日志文件写到实际 logs 目录）
+    # Configure logs (log files are written to the actual logs directory)
     log_file = str(logs_dir / Path(settings.log_file).name)
     setup_logging(
         log_level=settings.log_level,
@@ -74,23 +74,23 @@ def setup_application():
     )
 
     logger = logging.getLogger(__name__)
-    logger.info("数据库初始化完成，地基已经打好")
-    logger.info(f"数据目录已安顿好: {data_dir}")
-    logger.info(f"日志目录也已就位: {logs_dir}")
+    logger.info("Database initialization is completed and the foundation has been laid")
+    logger.info(f"The data directory has been installed: {data_dir}")
+    logger.info(f"The log directory is also in place: {logs_dir}")
 
-    logger.info("应用程序设置完成，齿轮已经咔哒一声卡上了")
+    logger.info("Application setup is complete and the gears have clicked into place")
     return settings
 
 
 def start_webui():
-    """启动 Web UI"""
-    # 设置应用程序
+    """Start Web UI"""
+    # Setup application
     settings = setup_application()
 
-    # 导入 FastAPI 应用（延迟导入以避免循环依赖）
+    # Import FastAPI application (delayed import to avoid circular dependencies)
     from src.web.app import app
 
-    # 配置 uvicorn
+    # Configure uvicorn
     uvicorn_config = {
         "app": "src.web.app:app",
         "host": settings.webui_host,
@@ -102,33 +102,33 @@ def start_webui():
     }
 
     logger = logging.getLogger(__name__)
-    logger.info(f"Web UI 已就位，请走这边: http://{settings.webui_host}:{settings.webui_port}")
-    logger.info(f"调试模式: {settings.debug}")
+    logger.info(f"Web UI is in place, please go here: http://{settings.webui_host}:{settings.webui_port}")
+    logger.info(f"Debug mode: {settings.debug}")
 
-    # 启动服务器
+    # Start the server
     uvicorn.run(**uvicorn_config)
 
 
 def main():
-    """主函数"""
+    """Main function"""
     import argparse
     import os
 
-    parser = argparse.ArgumentParser(description="OpenAI/Codex CLI 自动注册系统 Web UI")
-    parser.add_argument("--host", help="监听主机 (也可通过 WEBUI_HOST 环境变量设置)")
-    parser.add_argument("--port", type=int, help="监听端口 (也可通过 WEBUI_PORT 环境变量设置)")
-    parser.add_argument("--debug", action="store_true", help="启用调试模式 (也可通过 DEBUG=1 环境变量设置)")
-    parser.add_argument("--reload", action="store_true", help="启用热重载")
-    parser.add_argument("--log-level", help="日志级别 (也可通过 LOG_LEVEL 环境变量设置)")
-    parser.add_argument("--access-password", help="Web UI 访问密钥 (也可通过 WEBUI_ACCESS_PASSWORD 环境变量设置)")
+    parser = argparse.ArgumentParser(description="OpenAI/Codex CLI automatic registration system Web UI")
+    parser.add_argument("--host", help="Listening host (can also be set through the WEBUI_HOST environment variable)")
+    parser.add_argument("--port", type=int, help="Listening port (can also be set through the WEBUI_PORT environment variable)")
+    parser.add_argument("--debug", action="store_true", help="Enable debug mode (can also be set via the DEBUG=1 environment variable)")
+    parser.add_argument("--reload", action="store_true", help="enable hot reload")
+    parser.add_argument("--log-level", help="Log level (can also be set through the LOG_LEVEL environment variable)")
+    parser.add_argument("--access-password", help="Web UI access key (can also be set via the WEBUI_ACCESS_PASSWORD environment variable)")
     args = parser.parse_args()
 
-    # 更新配置
+    # Update configuration
     from src.config.settings import update_settings
 
     updates = {}
     
-    # 优先使用命令行参数，如果没有则尝试从环境变量获取
+    # Use command line parameters first, if not, try to get them from environment variables
     host = args.host or os.environ.get("WEBUI_HOST")
     if host:
         updates["webui_host"] = host
@@ -152,7 +152,7 @@ def main():
     if updates:
         update_settings(**updates)
 
-    # 启动 Web UI
+    # Start Web UI
     start_webui()
 
 

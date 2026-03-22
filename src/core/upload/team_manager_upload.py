@@ -1,6 +1,6 @@
 """
-Team Manager 上传功能
-参照 CPA 上传模式，直连不走代理
+Team Manager upload function
+Refer to the CPA upload mode, direct connection without proxy
 """
 
 import logging
@@ -20,17 +20,17 @@ def upload_to_team_manager(
     api_key: str,
 ) -> Tuple[bool, str]:
     """
-    上传单账号到 Team Manager（直连，不走代理）
+    Upload your account to Team Manager (direct connection, no proxy)
 
     Returns:
-        (成功标志, 消息)
+        (success sign, message)
     """
     if not api_url:
-        return False, "Team Manager API URL 未配置"
+        return False, "Team Manager API URL is not configured"
     if not api_key:
-        return False, "Team Manager API Key 未配置"
+        return False, "Team Manager API Key is not configured"
     if not account.access_token:
-        return False, "账号缺少 access_token"
+        return False, "Account lacks access_token"
 
     url = api_url.rstrip("/") + "/admin/teams/import"
     headers = {
@@ -56,8 +56,8 @@ def upload_to_team_manager(
             timeout=30
         )
         if resp.status_code in (200, 201):
-            return True, "上传成功"
-        error_msg = f"上传失败: HTTP {resp.status_code}"
+            return True, "Upload successful"
+        error_msg = f"Upload failed: HTTP {resp.status_code}"
         try:
             detail = resp.json()
             if isinstance(detail, dict):
@@ -66,8 +66,8 @@ def upload_to_team_manager(
             error_msg = f"{error_msg} - {resp.text[:200]}"
         return False, error_msg
     except Exception as e:
-        logger.error(f"Team Manager 上传异常: {e}")
-        return False, f"上传异常: {str(e)}"
+        logger.error(f"Team Manager upload exception: {e}")
+        return False, f"Upload exception: {str(e)}"
 
 
 def batch_upload_to_team_manager(
@@ -76,10 +76,10 @@ def batch_upload_to_team_manager(
     api_key: str,
 ) -> dict:
     """
-    批量上传账号到 Team Manager（使用 batch 模式，一次请求提交所有账号）
+    Batch upload accounts to Team Manager (use batch mode to submit all accounts in one request)
 
     Returns:
-        包含成功/失败统计和详情的字典
+        Dictionary containing success/failure statistics and details
     """
     results = {
         "success_count": 0,
@@ -96,16 +96,16 @@ def batch_upload_to_team_manager(
             if not account:
                 results["failed_count"] += 1
                 results["details"].append(
-                    {"id": account_id, "email": None, "success": False, "error": "账号不存在"}
+                    {"id": account_id, "email": None, "success": False, "error": "Account does not exist"}
                 )
                 continue
             if not account.access_token:
                 results["skipped_count"] += 1
                 results["details"].append(
-                    {"id": account_id, "email": account.email, "success": False, "error": "缺少 Token"}
+                    {"id": account_id, "email": account.email, "success": False, "error": "Missing Token"}
                 )
                 continue
-            # 格式：邮箱,AT,RT,ST,ClientID
+            # Format: Email,AT,RT,ST,ClientID
             lines.append(",".join([
                 account.email or "",
                 account.access_token or "",
@@ -141,10 +141,10 @@ def batch_upload_to_team_manager(
                 for account in valid_accounts:
                     results["success_count"] += 1
                     results["details"].append(
-                        {"id": account.id, "email": account.email, "success": True, "message": "批量上传成功"}
+                        {"id": account.id, "email": account.email, "success": True, "message": "Batch upload successful"}
                     )
             else:
-                error_msg = f"批量上传失败: HTTP {resp.status_code}"
+                error_msg = f"Batch upload failed: HTTP {resp.status_code}"
                 try:
                     detail = resp.json()
                     if isinstance(detail, dict):
@@ -157,8 +157,8 @@ def batch_upload_to_team_manager(
                         {"id": account.id, "email": account.email, "success": False, "error": error_msg}
                     )
         except Exception as e:
-            logger.error(f"Team Manager 批量上传异常: {e}")
-            error_msg = f"上传异常: {str(e)}"
+            logger.error(f"Team Manager batch upload exception: {e}")
+            error_msg = f"Upload exception: {str(e)}"
             for account in valid_accounts:
                 results["failed_count"] += 1
                 results["details"].append(
@@ -170,15 +170,15 @@ def batch_upload_to_team_manager(
 
 def test_team_manager_connection(api_url: str, api_key: str) -> Tuple[bool, str]:
     """
-    测试 Team Manager 连接（直连）
+    Test Team Manager connection (direct connection)
 
     Returns:
-        (成功标志, 消息)
+        (success sign, message)
     """
     if not api_url:
-        return False, "API URL 不能为空"
+        return False, "API URL cannot be empty"
     if not api_key:
-        return False, "API Key 不能为空"
+        return False, "API Key cannot be empty"
 
     url = api_url.rstrip("/") + "/admin/teams/import"
     headers = {"X-API-Key": api_key}
@@ -193,12 +193,12 @@ def test_team_manager_connection(api_url: str, api_key: str) -> Tuple[bool, str]
         )
         if resp.status_code in (200, 204, 401, 403, 405):
             if resp.status_code == 401:
-                return False, "连接成功，但 API Key 无效"
-            return True, "Team Manager 连接测试成功"
-        return False, f"服务器返回异常状态码: {resp.status_code}"
+                return False, "Connection successful, but API Key is invalid"
+            return True, "Team Manager connection test successful"
+        return False, f"The server returned an exception status code: {resp.status_code}"
     except cffi_requests.exceptions.ConnectionError as e:
-        return False, f"无法连接到服务器: {str(e)}"
+        return False, f"Unable to connect to server: {str(e)}"
     except cffi_requests.exceptions.Timeout:
-        return False, "连接超时，请检查网络配置"
+        return False, "Connection timed out, please check network configuration"
     except Exception as e:
-        return False, f"连接测试失败: {str(e)}"
+        return False, f"Connection test failed: {str(e)}"

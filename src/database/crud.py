@@ -1,5 +1,5 @@
 """
-数据库 CRUD 操作
+Database CRUD operations
 """
 
 from typing import List, Optional, Dict, Any, Union
@@ -11,7 +11,7 @@ from .models import Account, EmailService, RegistrationTask, Setting, Proxy, Cpa
 
 
 # ============================================================================
-# 账户 CRUD
+# Account CRUD
 # ============================================================================
 
 def create_account(
@@ -33,7 +33,7 @@ def create_account(
     status: Optional[str] = None,
     source: Optional[str] = None
 ) -> Account:
-    """创建新账户"""
+    """Create new account"""
     db_account = Account(
         email=email,
         password=password,
@@ -60,12 +60,12 @@ def create_account(
 
 
 def get_account_by_id(db: Session, account_id: int) -> Optional[Account]:
-    """根据 ID 获取账户"""
+    """Get account based on ID"""
     return db.query(Account).filter(Account.id == account_id).first()
 
 
 def get_account_by_email(db: Session, email: str) -> Optional[Account]:
-    """根据邮箱获取账户"""
+    """Get an account based on email address"""
     return db.query(Account).filter(Account.email == email).first()
 
 
@@ -77,7 +77,7 @@ def get_accounts(
     status: Optional[str] = None,
     search: Optional[str] = None
 ) -> List[Account]:
-    """获取账户列表（支持分页、筛选）"""
+    """Get the account list (supports paging and filtering)"""
     query = db.query(Account)
 
     if email_service:
@@ -103,7 +103,7 @@ def update_account(
     account_id: int,
     **kwargs
 ) -> Optional[Account]:
-    """更新账户信息"""
+    """Update account information"""
     db_account = get_account_by_id(db, account_id)
     if not db_account:
         return None
@@ -118,7 +118,7 @@ def update_account(
 
 
 def delete_account(db: Session, account_id: int) -> bool:
-    """删除账户"""
+    """Delete account"""
     db_account = get_account_by_id(db, account_id)
     if not db_account:
         return False
@@ -129,7 +129,7 @@ def delete_account(db: Session, account_id: int) -> bool:
 
 
 def delete_accounts_batch(db: Session, account_ids: List[int]) -> int:
-    """批量删除账户"""
+    """Delete accounts in batches"""
     result = db.query(Account).filter(Account.id.in_(account_ids)).delete(synchronize_session=False)
     db.commit()
     return result
@@ -140,7 +140,7 @@ def get_accounts_count(
     email_service: Optional[str] = None,
     status: Optional[str] = None
 ) -> int:
-    """获取账户数量"""
+    """Get the number of accounts"""
     query = db.query(func.count(Account.id))
 
     if email_service:
@@ -153,7 +153,7 @@ def get_accounts_count(
 
 
 # ============================================================================
-# 邮箱服务 CRUD
+# Email service CRUD
 # ============================================================================
 
 def create_email_service(
@@ -164,7 +164,7 @@ def create_email_service(
     enabled: bool = True,
     priority: int = 0
 ) -> EmailService:
-    """创建邮箱服务配置"""
+    """Create mailbox service configuration"""
     db_service = EmailService(
         service_type=service_type,
         name=name,
@@ -179,7 +179,7 @@ def create_email_service(
 
 
 def get_email_service_by_id(db: Session, service_id: int) -> Optional[EmailService]:
-    """根据 ID 获取邮箱服务"""
+    """Get email service based on ID"""
     return db.query(EmailService).filter(EmailService.id == service_id).first()
 
 
@@ -190,7 +190,7 @@ def get_email_services(
     skip: int = 0,
     limit: int = 100
 ) -> List[EmailService]:
-    """获取邮箱服务列表"""
+    """Get email service list"""
     query = db.query(EmailService)
 
     if service_type:
@@ -212,7 +212,7 @@ def update_email_service(
     service_id: int,
     **kwargs
 ) -> Optional[EmailService]:
-    """更新邮箱服务配置"""
+    """Update mailbox service configuration"""
     db_service = get_email_service_by_id(db, service_id)
     if not db_service:
         return None
@@ -227,7 +227,7 @@ def update_email_service(
 
 
 def delete_email_service(db: Session, service_id: int) -> bool:
-    """删除邮箱服务配置"""
+    """Delete mailbox service configuration"""
     db_service = get_email_service_by_id(db, service_id)
     if not db_service:
         return False
@@ -238,7 +238,7 @@ def delete_email_service(db: Session, service_id: int) -> bool:
 
 
 # ============================================================================
-# 注册任务 CRUD
+# Register task CRUD
 # ============================================================================
 
 def create_registration_task(
@@ -247,7 +247,7 @@ def create_registration_task(
     email_service_id: Optional[int] = None,
     proxy: Optional[str] = None
 ) -> RegistrationTask:
-    """创建注册任务"""
+    """Create registration task"""
     db_task = RegistrationTask(
         task_uuid=task_uuid,
         email_service_id=email_service_id,
@@ -261,7 +261,7 @@ def create_registration_task(
 
 
 def get_registration_task_by_uuid(db: Session, task_uuid: str) -> Optional[RegistrationTask]:
-    """根据 UUID 获取注册任务"""
+    """Get the registration task based on UUID"""
     return db.query(RegistrationTask).filter(RegistrationTask.task_uuid == task_uuid).first()
 
 
@@ -271,7 +271,7 @@ def get_registration_tasks(
     skip: int = 0,
     limit: int = 100
 ) -> List[RegistrationTask]:
-    """获取注册任务列表"""
+    """Get the registration task list"""
     query = db.query(RegistrationTask)
 
     if status:
@@ -286,7 +286,7 @@ def update_registration_task(
     task_uuid: str,
     **kwargs
 ) -> Optional[RegistrationTask]:
-    """更新注册任务状态"""
+    """Update registration task status"""
     db_task = get_registration_task_by_uuid(db, task_uuid)
     if not db_task:
         return None
@@ -301,7 +301,7 @@ def update_registration_task(
 
 
 def append_task_log(db: Session, task_uuid: str, log_message: str) -> bool:
-    """追加任务日志"""
+    """Append task log"""
     db_task = get_registration_task_by_uuid(db, task_uuid)
     if not db_task:
         return False
@@ -316,7 +316,7 @@ def append_task_log(db: Session, task_uuid: str, log_message: str) -> bool:
 
 
 def delete_registration_task(db: Session, task_uuid: str) -> bool:
-    """删除注册任务"""
+    """Delete registration task"""
     db_task = get_registration_task_by_uuid(db, task_uuid)
     if not db_task:
         return False
@@ -326,22 +326,22 @@ def delete_registration_task(db: Session, task_uuid: str) -> bool:
     return True
 
 
-# 为 API 路由添加别名
+# Add alias for API route
 get_account = get_account_by_id
 get_registration_task = get_registration_task_by_uuid
 
 
 # ============================================================================
-# 设置 CRUD
+# Set CRUD
 # ============================================================================
 
 def get_setting(db: Session, key: str) -> Optional[Setting]:
-    """获取设置"""
+    """Get settings"""
     return db.query(Setting).filter(Setting.key == key).first()
 
 
 def get_settings_by_category(db: Session, category: str) -> List[Setting]:
-    """根据分类获取设置"""
+    """Get settings based on category"""
     return db.query(Setting).filter(Setting.category == category).all()
 
 
@@ -352,7 +352,7 @@ def set_setting(
     description: Optional[str] = None,
     category: str = 'general'
 ) -> Setting:
-    """设置或更新配置项"""
+    """Set or update configuration items"""
     db_setting = get_setting(db, key)
     if db_setting:
         db_setting.value = value
@@ -374,7 +374,7 @@ def set_setting(
 
 
 def delete_setting(db: Session, key: str) -> bool:
-    """删除设置"""
+    """Delete settings"""
     db_setting = get_setting(db, key)
     if not db_setting:
         return False
@@ -385,7 +385,7 @@ def delete_setting(db: Session, key: str) -> bool:
 
 
 # ============================================================================
-# 代理 CRUD
+# Agent CRUD
 # ============================================================================
 
 def create_proxy(
@@ -399,7 +399,7 @@ def create_proxy(
     enabled: bool = True,
     priority: int = 0
 ) -> Proxy:
-    """创建代理配置"""
+    """Create proxy configuration"""
     db_proxy = Proxy(
         name=name,
         type=type,
@@ -417,7 +417,7 @@ def create_proxy(
 
 
 def get_proxy_by_id(db: Session, proxy_id: int) -> Optional[Proxy]:
-    """根据 ID 获取代理"""
+    """Get proxy based on ID"""
     return db.query(Proxy).filter(Proxy.id == proxy_id).first()
 
 
@@ -427,7 +427,7 @@ def get_proxies(
     skip: int = 0,
     limit: int = 100
 ) -> List[Proxy]:
-    """获取代理列表"""
+    """Get proxy list"""
     query = db.query(Proxy)
 
     if enabled is not None:
@@ -438,7 +438,7 @@ def get_proxies(
 
 
 def get_enabled_proxies(db: Session) -> List[Proxy]:
-    """获取所有启用的代理"""
+    """Get all enabled proxies"""
     return db.query(Proxy).filter(Proxy.enabled == True).all()
 
 
@@ -447,7 +447,7 @@ def update_proxy(
     proxy_id: int,
     **kwargs
 ) -> Optional[Proxy]:
-    """更新代理配置"""
+    """Update agent configuration"""
     db_proxy = get_proxy_by_id(db, proxy_id)
     if not db_proxy:
         return None
@@ -462,7 +462,7 @@ def update_proxy(
 
 
 def delete_proxy(db: Session, proxy_id: int) -> bool:
-    """删除代理配置"""
+    """Delete proxy configuration"""
     db_proxy = get_proxy_by_id(db, proxy_id)
     if not db_proxy:
         return False
@@ -473,7 +473,7 @@ def delete_proxy(db: Session, proxy_id: int) -> bool:
 
 
 def update_proxy_last_used(db: Session, proxy_id: int) -> bool:
-    """更新代理最后使用时间"""
+    """Update agent last usage time"""
     db_proxy = get_proxy_by_id(db, proxy_id)
     if not db_proxy:
         return False
@@ -484,9 +484,9 @@ def update_proxy_last_used(db: Session, proxy_id: int) -> bool:
 
 
 def get_random_proxy(db: Session) -> Optional[Proxy]:
-    """随机获取一个启用的代理，优先返回 is_default=True 的代理"""
+    """Get an enabled proxy randomly, and return the proxy with is_default=True first"""
     import random
-    # 优先返回默认代理
+    # Return to the default proxy first
     default_proxy = db.query(Proxy).filter(Proxy.enabled == True, Proxy.is_default == True).first()
     if default_proxy:
         return default_proxy
@@ -497,10 +497,10 @@ def get_random_proxy(db: Session) -> Optional[Proxy]:
 
 
 def set_proxy_default(db: Session, proxy_id: int) -> Optional[Proxy]:
-    """将指定代理设为默认，同时清除其他代理的默认标记"""
-    # 清除所有默认标记
+    """Set the specified proxy as the default and clear the default flags of other proxies"""
+    # Clear all default tags
     db.query(Proxy).filter(Proxy.is_default == True).update({"is_default": False})
-    # 设置新的默认代理
+    # Set new default proxy
     proxy = db.query(Proxy).filter(Proxy.id == proxy_id).first()
     if proxy:
         proxy.is_default = True
@@ -510,7 +510,7 @@ def set_proxy_default(db: Session, proxy_id: int) -> Optional[Proxy]:
 
 
 def get_proxies_count(db: Session, enabled: Optional[bool] = None) -> int:
-    """获取代理数量"""
+    """Get the number of agents"""
     query = db.query(func.count(Proxy.id))
     if enabled is not None:
         query = query.filter(Proxy.enabled == enabled)
@@ -518,7 +518,7 @@ def get_proxies_count(db: Session, enabled: Optional[bool] = None) -> int:
 
 
 # ============================================================================
-# CPA 服务 CRUD
+# CPA SERVICE CRUD
 # ============================================================================
 
 def create_cpa_service(
@@ -529,7 +529,7 @@ def create_cpa_service(
     enabled: bool = True,
     priority: int = 0
 ) -> CpaService:
-    """创建 CPA 服务配置"""
+    """Create CPA service configuration"""
     db_service = CpaService(
         name=name,
         api_url=api_url,
@@ -544,7 +544,7 @@ def create_cpa_service(
 
 
 def get_cpa_service_by_id(db: Session, service_id: int) -> Optional[CpaService]:
-    """根据 ID 获取 CPA 服务"""
+    """Get CPA service based on ID"""
     return db.query(CpaService).filter(CpaService.id == service_id).first()
 
 
@@ -552,7 +552,7 @@ def get_cpa_services(
     db: Session,
     enabled: Optional[bool] = None
 ) -> List[CpaService]:
-    """获取 CPA 服务列表"""
+    """Get CPA service list"""
     query = db.query(CpaService)
     if enabled is not None:
         query = query.filter(CpaService.enabled == enabled)
@@ -564,7 +564,7 @@ def update_cpa_service(
     service_id: int,
     **kwargs
 ) -> Optional[CpaService]:
-    """更新 CPA 服务配置"""
+    """Update CPA service configuration"""
     db_service = get_cpa_service_by_id(db, service_id)
     if not db_service:
         return None
@@ -577,7 +577,7 @@ def update_cpa_service(
 
 
 def delete_cpa_service(db: Session, service_id: int) -> bool:
-    """删除 CPA 服务配置"""
+    """Delete CPA service configuration"""
     db_service = get_cpa_service_by_id(db, service_id)
     if not db_service:
         return False
@@ -587,7 +587,7 @@ def delete_cpa_service(db: Session, service_id: int) -> bool:
 
 
 # ============================================================================
-# Sub2API 服务 CRUD
+# Sub2API Service CRUD
 # ============================================================================
 
 def create_sub2api_service(
@@ -598,7 +598,7 @@ def create_sub2api_service(
     enabled: bool = True,
     priority: int = 0
 ) -> Sub2ApiService:
-    """创建 Sub2API 服务配置"""
+    """Create Sub2API service configuration"""
     svc = Sub2ApiService(
         name=name,
         api_url=api_url,
@@ -613,7 +613,7 @@ def create_sub2api_service(
 
 
 def get_sub2api_service_by_id(db: Session, service_id: int) -> Optional[Sub2ApiService]:
-    """按 ID 获取 Sub2API 服务"""
+    """Get Sub2API service by ID"""
     return db.query(Sub2ApiService).filter(Sub2ApiService.id == service_id).first()
 
 
@@ -621,7 +621,7 @@ def get_sub2api_services(
     db: Session,
     enabled: Optional[bool] = None
 ) -> List[Sub2ApiService]:
-    """获取 Sub2API 服务列表"""
+    """Get Sub2API service list"""
     query = db.query(Sub2ApiService)
     if enabled is not None:
         query = query.filter(Sub2ApiService.enabled == enabled)
@@ -629,7 +629,7 @@ def get_sub2api_services(
 
 
 def update_sub2api_service(db: Session, service_id: int, **kwargs) -> Optional[Sub2ApiService]:
-    """更新 Sub2API 服务配置"""
+    """Update Sub2API service configuration"""
     svc = get_sub2api_service_by_id(db, service_id)
     if not svc:
         return None
@@ -641,7 +641,7 @@ def update_sub2api_service(db: Session, service_id: int, **kwargs) -> Optional[S
 
 
 def delete_sub2api_service(db: Session, service_id: int) -> bool:
-    """删除 Sub2API 服务配置"""
+    """Delete Sub2API service configuration"""
     svc = get_sub2api_service_by_id(db, service_id)
     if not svc:
         return False
@@ -651,7 +651,7 @@ def delete_sub2api_service(db: Session, service_id: int) -> bool:
 
 
 # ============================================================================
-# Team Manager 服务 CRUD
+# Team Manager Service CRUD
 # ============================================================================
 
 def create_tm_service(
@@ -662,7 +662,7 @@ def create_tm_service(
     enabled: bool = True,
     priority: int = 0,
 ):
-    """创建 Team Manager 服务配置"""
+    """Create Team Manager service configuration"""
     from .models import TeamManagerService
     svc = TeamManagerService(
         name=name,
@@ -678,13 +678,13 @@ def create_tm_service(
 
 
 def get_tm_service_by_id(db: Session, service_id: int):
-    """按 ID 获取 Team Manager 服务"""
+    """Get Team Manager service by ID"""
     from .models import TeamManagerService
     return db.query(TeamManagerService).filter(TeamManagerService.id == service_id).first()
 
 
 def get_tm_services(db: Session, enabled=None):
-    """获取 Team Manager 服务列表"""
+    """Get Team Manager service list"""
     from .models import TeamManagerService
     q = db.query(TeamManagerService)
     if enabled is not None:
@@ -693,7 +693,7 @@ def get_tm_services(db: Session, enabled=None):
 
 
 def update_tm_service(db: Session, service_id: int, **kwargs):
-    """更新 Team Manager 服务配置"""
+    """Update Team Manager service configuration"""
     svc = get_tm_service_by_id(db, service_id)
     if not svc:
         return None
@@ -705,7 +705,7 @@ def update_tm_service(db: Session, service_id: int, **kwargs):
 
 
 def delete_tm_service(db: Session, service_id: int) -> bool:
-    """删除 Team Manager 服务配置"""
+    """Delete Team Manager service configuration"""
     svc = get_tm_service_by_id(db, service_id)
     if not svc:
         return False

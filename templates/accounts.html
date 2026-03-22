@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>账号管理 - OpenAI 注册系统</title>
+    <title>Account Management - OpenAI Registration System</title>
     <link rel="stylesheet" href="/static/css/style.css?v={{ static_version }}">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
     <style>
@@ -48,115 +48,115 @@
 </head>
 <body>
     <div class="container">
-        <!-- 导航栏 -->
+        <!-- Navigation bar -->
         <nav class="navbar">
             <div class="nav-brand">
-                <h1>OpenAI 注册系统</h1>
+                <h1>OpenAI registration system</h1>
             </div>
             <div class="nav-links">
-                <a href="/" class="nav-link">注册</a>
-                <a href="/accounts" class="nav-link active">账号管理</a>
-                <a href="/email-services" class="nav-link">邮箱服务</a>
-                <a href="/payment" class="nav-link">支付</a>
-                <a href="/settings" class="nav-link">设置</a>
-                <a href="/logout" class="nav-link">退出</a>
+                <a href="/" class="nav-link">Register</a>
+                <a href="/accounts" class="nav-link active">Account management</a>
+                <a href="/email-services" class="nav-link">Email Services</a>
+                <a href="/payment" class="nav-link">Payment</a>
+                <a href="/settings" class="nav-link">Settings</a>
+                <a href="/logout" class="nav-link">Logout</a>
             </div>
-            <button class="theme-toggle" onclick="theme.toggle()" title="切换主题">
+            <button class="theme-toggle" onclick="theme.toggle()" title="Toggle theme">
                 🌙
             </button>
         </nav>
 
-        <!-- 主内容区 -->
+        <!-- Main content area -->
         <main class="main-content">
             <div class="page-header">
-                <h2>账号管理</h2>
-                <p class="subtitle">查看和管理已注册的 OpenAI 账号</p>
+                <h2>Account management</h2>
+                <p class="subtitle">View and manage registered OpenAI accounts</p>
             </div>
 
-            <!-- 统计卡片 -->
+            <!-- Statistical Card -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-value" id="total-accounts">0</div>
-                    <div class="stat-label">总账号数</div>
+                    <div class="stat-label">Total number of accounts</div>
                 </div>
                 <div class="stat-card success">
                     <div class="stat-value" id="active-accounts">0</div>
-                    <div class="stat-label">活跃账号</div>
+                    <div class="stat-label">Active account</div>
                 </div>
                 <div class="stat-card warning">
                     <div class="stat-value" id="expired-accounts">0</div>
-                    <div class="stat-label">过期账号</div>
+                    <div class="stat-label">Expired account</div>
                 </div>
                 <div class="stat-card danger">
                     <div class="stat-value" id="failed-accounts">0</div>
-                    <div class="stat-label">失败账号</div>
+                    <div class="stat-label">Failed account</div>
                 </div>
             </div>
 
-            <!-- 工具栏 -->
+            <!-- Toolbar -->
             <div class="card toolbar-card">
                 <div class="card-body toolbar">
                     <div class="toolbar-left">
                         <select id="filter-status" class="form-select">
-                            <option value="">全部状态</option>
-                            <option value="active">活跃</option>
-                            <option value="expired">过期</option>
-                            <option value="banned">封禁</option>
-                            <option value="failed">失败</option>
+                            <option value="">All status</option>
+                            <option value="active">Active</option>
+                            <option value="expired">Expired</option>
+                            <option value="banned">Ban</option>
+                            <option value="failed">failed</option>
                         </select>
 
                         <select id="filter-service" class="form-select">
-                            <option value="">全部邮箱服务</option>
+                            <option value="">All email services</option>
                             <option value="tempmail">Tempmail</option>
                             <option value="outlook">Outlook</option>
                             <option value="moe_mail">MoeMail</option>
                         </select>
 
-                        <input type="text" id="search-input" class="form-input" placeholder="🔍 搜索邮箱..." style="min-width: 200px;">
+                        <input type="text" id="search-input" class="form-input" placeholder="🔍 Search email..." style="min-width: 200px;">
                     </div>
 
                     <div class="toolbar-right">
-                        <button class="btn btn-ghost" id="refresh-btn" title="刷新">
-                            🔄 刷新
+                        <button class="btn btn-ghost" id="refresh-btn" title="Refresh">
+                            🔄 Refresh
                         </button>
-                        <button class="btn btn-warning" id="batch-refresh-btn" disabled title="批量刷新Token">
-                            🔄 刷新Token
+                        <button class="btn btn-warning" id="batch-refresh-btn" disabled title="Batch refresh Token">
+                            🔄 Refresh Token
                         </button>
-                        <button class="btn btn-info" id="batch-validate-btn" disabled title="批量验证Token">
-                            ✅ 验证Token
+                        <button class="btn btn-info" id="batch-validate-btn" disabled title="Batch Verification Token">
+                            ✅ Verify Token
                         </button>
-                        <button class="btn btn-info" id="batch-check-sub-btn" disabled title="批量检测订阅状态">
-                            🔍 检测订阅
+                        <button class="btn btn-info" id="batch-check-sub-btn" disabled title="Batch check subscription status">
+                            🔍 Check subscription
                         </button>
                         <div class="dropdown">
                             <button class="btn btn-success" id="batch-upload-btn" disabled>
-                                ☁️ 上传
+                                ☁️ Upload
                             </button>
                             <div class="dropdown-menu" id="upload-menu">
-                                <a href="#" class="dropdown-item" id="batch-upload-cpa-item">☁️ 上传到 CPA</a>
-                                <a href="#" class="dropdown-item" id="batch-upload-sub2api-item">🔗 上传到 Sub2API</a>
-                                <a href="#" class="dropdown-item" id="batch-upload-tm-item">🚀 上传到 Team Manager</a>
+                                <a href="#" class="dropdown-item" id="batch-upload-cpa-item">☁️ Upload to CPA</a>
+                                <a href="#" class="dropdown-item" id="batch-upload-sub2api-item">🔗 Upload to Sub2API</a>
+                                <a href="#" class="dropdown-item" id="batch-upload-tm-item">🚀 Upload to Team Manager</a>
                             </div>
                         </div>
                         <button class="btn btn-danger" id="batch-delete-btn" disabled>
-                            🗑️ 批量删除
+                            🗑️ Batch delete
                         </button>
                         <div class="dropdown">
                             <button class="btn btn-primary" id="export-btn">
-                                📥 导出
+                                📥 Export
                             </button>
                             <div class="dropdown-menu" id="export-menu">
-                                <a href="#" class="dropdown-item" data-format="json">导出 JSON</a>
-                                <a href="#" class="dropdown-item" data-format="csv">导出 CSV</a>
-                                <a href="#" class="dropdown-item" data-format="cpa">导出 CPA 格式</a>
-                                <a href="#" class="dropdown-item" data-format="sub2api">导出 Sub2Api 格式</a>
+                                <a href="#" class="dropdown-item" data-format="json">Export JSON</a>
+                                <a href="#" class="dropdown-item" data-format="csv">Export CSV</a>
+                                <a href="#" class="dropdown-item" data-format="cpa">Export CPA format</a>
+                                <a href="#" class="dropdown-item" data-format="sub2api">Export Sub2Api format</a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 账号列表 -->
+            <!-- Account list -->
             <div class="card">
                 <div class="card-body" style="padding: 0;">
                     <div class="table-container">
@@ -165,14 +165,14 @@
                                 <tr>
                                     <th style="width: 40px;"><input type="checkbox" id="select-all"></th>
                                     <th style="width: 60px;">ID</th>
-                                    <th>邮箱</th>
-                                    <th style="width: 100px;">密码</th>
-                                    <th style="width: 120px;">邮箱服务</th>
-                                    <th style="width: 80px;">状态</th>
+                                    <th>Email</th>
+                                    <th style="width: 100px;">Password</th>
+                                    <th style="width: 120px;">Mailbox service</th>
+                                    <th style="width: 80px;">Status</th>
                                     <th style="width: 80px;">CPA</th>
-                                    <th style="width: 80px;">订阅</th>
-                                    <th style="width: 140px;">最后刷新</th>
-                                    <th style="width: 160px;">操作</th>
+                                    <th style="width: 80px;">Subscribe</th>
+                                    <th style="width: 140px;">Last refresh</th>
+                                    <th style="width: 160px;">Operation</th>
                                 </tr>
                             </thead>
                             <tbody id="accounts-table">
@@ -189,14 +189,14 @@
                         </table>
                     </div>
 
-                    <!-- 分页 -->
+                    <!-- Paging -->
                     <div class="pagination" id="pagination">
                         <button class="btn btn-secondary btn-sm" id="prev-page" disabled>
-                            ← 上一页
+                            ← Previous page
                         </button>
-                        <span id="page-info">第 1 页 / 共 1 页</span>
+                        <span id="page-info">Page 1 of 1</span>
                         <button class="btn btn-secondary btn-sm" id="next-page">
-                            下一页 →
+                            Next page →
                         </button>
                     </div>
                 </div>
@@ -204,75 +204,75 @@
         </main>
     </div>
 
-    <!-- 详情模态框 -->
+    <!-- Details modal box -->
     <div class="modal" id="detail-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>📋 账号详情</h3>
+                <h3>📋Account details</h3>
                 <button class="modal-close" id="close-modal">&times;</button>
             </div>
             <div class="modal-body" id="modal-body">
-                <!-- 动态加载 -->
+                <!-- Dynamic loading -->
             </div>
         </div>
     </div>
 
-    <!-- CPA 服务选择模态框 -->
+    <!-- CPA service selection modal box -->
     <div class="modal" id="cpa-service-modal">
         <div class="modal-content" style="max-width: 480px;">
             <div class="modal-header">
-                <h3>☁️ 选择 CPA 服务</h3>
+                <h3>☁️ Choose CPA service</h3>
                 <button class="modal-close" id="close-cpa-modal">&times;</button>
             </div>
             <div class="modal-body">
-                <p style="color: var(--text-muted); margin-bottom: 12px; font-size: 0.9rem;">选择要上传到的 CPA 服务，或使用全局配置。</p>
+                <p style="color: var(--text-muted); margin-bottom: 12px; font-size: 0.9rem;">Select a CPA service to upload to, or use a global configuration. </p>
                 <div id="cpa-service-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto;">
-                    <div style="text-align: center; color: var(--text-muted);">加载中...</div>
+                    <div style="text-align: center; color: var(--text-muted);">Loading...</div>
                 </div>
             </div>
             <div class="modal-footer" style="padding: 12px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end;">
-                <button class="btn btn-secondary" id="cpa-use-global-btn">使用全局配置</button>
-                <button class="btn btn-secondary" id="cancel-cpa-modal-btn">取消</button>
+                <button class="btn btn-secondary" id="cpa-use-global-btn">Use global configuration</button>
+                <button class="btn btn-secondary" id="cancel-cpa-modal-btn">Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- Team Manager 服务选择模态框 -->
+    <!-- Team Manager service selection modal box -->
     <div class="modal" id="tm-service-modal">
         <div class="modal-content" style="max-width: 480px;">
             <div class="modal-header">
-                <h3>🚀 选择 Team Manager 服务</h3>
+                <h3>🚀 Select Team Manager service</h3>
                 <button class="modal-close" id="close-tm-modal">&times;</button>
             </div>
             <div class="modal-body">
-                <p style="color: var(--text-muted); margin-bottom: 12px; font-size: 0.9rem;">选择要上传到的 Team Manager 服务，或自动选择第一个启用的服务。</p>
+                <p style="color: var(--text-muted); margin-bottom: 12px; font-size: 0.9rem;">Select the Team Manager service to upload to, or automatically select the first enabled service. </p>
                 <div id="tm-service-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto;">
-                    <div style="text-align: center; color: var(--text-muted);">加载中...</div>
+                    <div style="text-align: center; color: var(--text-muted);">Loading...</div>
                 </div>
             </div>
             <div class="modal-footer" style="padding: 12px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end;">
-                <button class="btn btn-secondary" id="tm-use-auto-btn">自动选择</button>
-                <button class="btn btn-secondary" id="cancel-tm-modal-btn">取消</button>
+                <button class="btn btn-secondary" id="tm-use-auto-btn">Auto select</button>
+                <button class="btn btn-secondary" id="cancel-tm-modal-btn">Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- Sub2API 服务选择模态框 -->
+    <!-- Sub2API service selection modal box -->
     <div class="modal" id="sub2api-service-modal">
         <div class="modal-content" style="max-width: 480px;">
             <div class="modal-header">
-                <h3>🔗 选择 Sub2API 服务</h3>
+                <h3>🔗 Choose Sub2API service</h3>
                 <button class="modal-close" id="close-sub2api-modal">&times;</button>
             </div>
             <div class="modal-body">
-                <p style="color: var(--text-muted); margin-bottom: 12px; font-size: 0.9rem;">选择要上传到的 Sub2API 服务，或自动选择第一个启用的服务。</p>
+                <p style="color: var(--text-muted); margin-bottom: 12px; font-size: 0.9rem;">Select the Sub2API service to upload to, or automatically select the first enabled service. </p>
                 <div id="sub2api-service-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto;">
-                    <div style="text-align: center; color: var(--text-muted);">加载中...</div>
+                    <div style="text-align: center; color: var(--text-muted);">Loading...</div>
                 </div>
             </div>
             <div class="modal-footer" style="padding: 12px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end;">
-                <button class="btn btn-secondary" id="sub2api-use-auto-btn">自动选择</button>
-                <button class="btn btn-secondary" id="cancel-sub2api-modal-btn">取消</button>
+                <button class="btn btn-secondary" id="sub2api-use-auto-btn">Auto select</button>
+                <button class="btn btn-secondary" id="cancel-sub2api-modal-btn">Cancel</button>
             </div>
         </div>
     </div>

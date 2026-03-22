@@ -1,136 +1,116 @@
 # codex-console
 
-基于 [cnlimiter/codex-manager](https://github.com/cnlimiter/codex-manager) 持续修复和维护的增强版本。
+An enhanced version based on continuous fixes and maintenance from [cnlimiter/codex-manager](https://github.com/cnlimiter/codex-manager).
 
-这个版本的目标很直接: 把近期 OpenAI 注册链路里那些“昨天还能跑，今天突然翻车”的坑补上，让注册、登录、拿 token、打包运行都更稳一点。
+The goal of this version is very straightforward: to make up for the pitfalls in the recent OpenAI registration link that "it was still running yesterday, but suddenly crashed today", making registration, login, token acquisition, and packaged operation more stable.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 
-## QQ群
+##QQGroup
 
-- 交流群: https://qm.qq.com/q/ZTCKxawxeo
+- Communication group: https://qm.qq.com/q/ZTCKxawxeo
 
-## 致谢
+## Acknowledgments
 
-首先感谢上游项目作者 [cnlimiter](https://github.com/cnlimiter) 提供的优秀基础工程。
+First of all, I would like to thank the upstream project author [cnlimiter](https://github.com/cnlimiter) for providing excellent basic projects.
 
-本仓库是在原项目思路和结构之上进行兼容性修复、流程调整和体验优化，适合作为一个“当前可用的修复维护版”继续使用。
+This warehouse is based on the original project ideas and structure for compatibility repair, process adjustment and experience optimization, and is suitable for continued use as a "currently available repair and maintenance version".
 
-## 这个分支修了什么
+## What is fixed in this branch?
 
-为适配当前注册链路，这个分支重点补了下面几个问题:
+In order to adapt to the current registration link, this branch focuses on the following issues:
 
-1. 新增 Sentinel POW 求解逻辑  
-   OpenAI 现在会强制校验 Sentinel POW，原先直接传空值已经不行了，这里补上了实际求解流程。
+1. Added Sentinel POW solution logic
+OpenAI will now forcefully verify Sentinel POW. It is no longer possible to pass null values ​​​​directly. The actual solution process is supplemented here.
 
-2. 注册和登录拆成两段  
-   现在注册完成后通常不会直接返回可用 token，而是跳转到绑定手机或后续页面。  
-   本分支改成“先注册成功，再单独走一次登录流程拿 token”，避免卡死在旧逻辑里。
+2. Split registration and login into two sections
+Now after the registration is completed, the available token is usually not returned directly, but jumps to the bound mobile phone or subsequent page.
+This branch is changed to "Successfully register first, then go through the login process separately to get the token" to avoid getting stuck in the old logic.
 
-3. 去掉重复发送验证码  
-   登录流程里服务端本身会自动发送验证码邮件，旧逻辑再手动发一次，容易让新旧验证码打架。  
-   现在改成直接等待系统自动发来的那封验证码邮件。
+3. Remove repeated sending of verification codes
+During the login process, the server itself will automatically send a verification code email, and the old logic will be sent manually again, which can easily lead to conflicts between the old and new verification codes.
+Now change it to waiting for the verification code email automatically sent by the system.
 
-4. 修复重新登录流程的页面判断问题  
-   针对重新登录时页面流转变化，调整了登录入口和密码提交逻辑，减少卡在错误页面的情况。
+4. Fix the page judgment problem in the re-login process
+In response to changes in page flow when logging in again, the login entrance and password submission logic have been adjusted to reduce the situation of being stuck on the wrong page.
 
-5. 优化终端和 Web UI 提示文案  
-   保留可读性的前提下，把一些提示改得更友好一点，出错时至少不至于像在挨骂。
+5. Optimize terminal and Web UI prompt copywriting
+While retaining readability, change some prompts to be more friendly, so that at least you won't feel like you are being scolded when you make a mistake.
 
-## 核心能力
+##Core competencies
 
-- Web UI 管理注册任务和账号数据
-- 支持批量注册、日志实时查看、基础任务管理
-- 支持多种邮箱服务接码
-- 支持 SQLite 和远程 PostgreSQL
-- 支持打包为 Windows/Linux/macOS 可执行文件
-- 更适配当前 OpenAI 注册与登录链路
+- Web UI manages registration tasks and account data
+- Supports batch registration, real-time log viewing, and basic task management
+- Support multiple email services to receive codes
+- Supports SQLite and remote PostgreSQL
+- Supports packaging into Windows/Linux/macOS executable files
+- More adapted to the current OpenAI registration and login links
 
-## 环境要求
+##Environmental requirements
 
 - Python 3.10+
-- `uv`（推荐）或 `pip`
+- `uv` (recommended) or `pip`
 
-## 安装依赖
+## Install dependencies
 
 ```bash
-# 使用 uv（推荐）
+# Use uv (recommended)
 uv sync
 
-# 或使用 pip
+# or use pip
 pip install -r requirements.txt
-```
+```## Environment variable configuration
 
-## 环境变量配置
-
-可选。复制 `.env.example` 为 `.env` 后按需修改:
-
-```bash
+Optional. copy`.env.example`for`.env`Modify as needed:```bash
 cp .env.example .env
-```
+```Commonly used variables are as follows:
 
-常用变量如下:
-
-| 变量 | 说明 | 默认值 |
+| variable | description | default value |
 | --- | --- | --- |
-| `APP_HOST` | 监听主机 | `0.0.0.0` |
-| `APP_PORT` | 监听端口 | `8000` |
-| `APP_ACCESS_PASSWORD` | Web UI 访问密钥 | `admin123` |
-| `APP_DATABASE_URL` | 数据库连接字符串 | `data/database.db` |
+|`APP_HOST`| Listening host |`0.0.0.0` |
+| `APP_PORT`| Listening port |`8000` |
+| `APP_ACCESS_PASSWORD`| Web UI Access Key |`admin123` |
+| `APP_DATABASE_URL`| Database connection string |`data/database.db`|
 
-优先级:
+Priority:`Command line parameters > Environment variables (.env) > Database settings >Default value`
 
-`命令行参数 > 环境变量(.env) > 数据库设置 > 默认值`
-
-## 启动 Web UI
+## Start Web UI
 
 ```bash
-# 默认启动（127.0.0.1:8000）
-python webui.py
+# Start by default (127.0.0.1:8000)
+pythonwebui.py
 
-# 指定地址和端口
+# Specify address and port
 python webui.py --host 0.0.0.0 --port 8080
 
-# 调试模式（热重载）
+# Debug mode (hot reload)
 python webui.py --debug
 
-# 设置 Web UI 访问密钥
+# Set Web UI access key
 python webui.py --access-password mypassword
 
-# 组合参数
+# Combination parameters
 python webui.py --host 0.0.0.0 --port 8080 --access-password mypassword
-```
+```illustrate:
 
-说明:
+-`--access-password`takes precedence over key settings in the database
+- This parameter only takes effect for this startup
+- Packaged exe also supports this parameter
 
-- `--access-password` 的优先级高于数据库中的密钥设置
-- 该参数只对本次启动生效
-- 打包后的 exe 也支持这个参数
-
-例如:
-
-```bash
+For example:```bash
 codex-console.exe --access-password mypassword
-```
-
-启动后访问:
+```After startup visit:
 
 [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
-## Docker 部署
+## Docker deployment
 
-### 使用 docker-compose
-
-```bash
+### Use docker-compose```bash
 docker-compose up -d
-```
+```you can`docker-compose.yml`Modify environment variables, such as ports and access passwords.
 
-你可以在 `docker-compose.yml` 中修改环境变量，比如端口和访问密码。
-
-### 使用 docker run
-
-```bash
+### Use docker run```bash
 docker run -d \
   -p 1455:1455 \
   -e WEBUI_HOST=0.0.0.0 \
@@ -139,74 +119,50 @@ docker run -d \
   -v $(pwd)/data:/app/data \
   --name codex-console \
   ghcr.io/<yourname>/codex-console:latest
-```
+```illustrate:
 
-说明:
+-`WEBUI_HOST`: Listening host, default`0.0.0.0`
+- `WEBUI_PORT`: Listening port, default`1455`
+- `WEBUI_ACCESS_PASSWORD`: Web UI access password
+-`DEBUG`: set to`1`or`true`Debug mode can be enabled
+-`LOG_LEVEL`: Log level, for example`info`,`debug`Notice:`-v $(pwd)/data:/app/data`Very important, this will persist the database and account data to the host machine. Otherwise, the data may disappear as soon as the container is restarted.
 
-- `WEBUI_HOST`: 监听主机，默认 `0.0.0.0`
-- `WEBUI_PORT`: 监听端口，默认 `1455`
-- `WEBUI_ACCESS_PASSWORD`: Web UI 访问密码
-- `DEBUG`: 设为 `1` 或 `true` 可开启调试模式
-- `LOG_LEVEL`: 日志级别，例如 `info`、`debug`
-
-注意:
-
-`-v $(pwd)/data:/app/data` 很重要，这会把数据库和账号数据持久化到宿主机。否则容器一重启，数据也可能跟着表演消失术。
-
-## 使用远程 PostgreSQL
-
-```bash
+## Use remote PostgreSQL```bash
 export APP_DATABASE_URL="postgresql://user:password@host:5432/dbname"
 python webui.py
-```
+```Also supports`DATABASE_URL`, but with a lower priority than`APP_DATABASE_URL`.
 
-也支持 `DATABASE_URL`，但优先级低于 `APP_DATABASE_URL`。
-
-## 打包为可执行文件
-
-```bash
+##Package into executable file```bash
 # Windows
 build.bat
 
 # Linux/macOS
 bash build.sh
-```
-
-Windows 打包完成后，默认会在 `dist/` 目录生成类似下面的文件:
-
-```text
+```After Windows packaging is completed, it will be in`dist/`The directory generates files similar to the following:```text
 dist/codex-console-windows-X64.exe
-```
+```If packaging fails, check first:
 
-如果打包失败，优先检查:
+- Whether Python has been added to PATH
+- Whether the dependencies are installed completely
+- Whether the anti-virus software blocks the PyInstaller product
+- Is there a more specific error log in the terminal?
 
-- Python 是否已加入 PATH
-- 依赖是否安装完整
-- 杀毒软件是否拦截了 PyInstaller 产物
-- 终端里是否有更具体的报错日志
+##Project positioning
 
-## 项目定位
+This repository is better suited as:
 
-这个仓库更适合作为:
+- A restored and enhanced version of the original project
+- Compatible maintenance version of the current registered link
+-Basic version developed by myself
 
-- 原项目的修复增强版
-- 当前注册链路的兼容维护版
-- 自己二次开发的基础版本
+If you plan to release it publicly, it is recommended to explicitly write in the repository description:`Forked and fixed from cnlimiter/codex-manager`This not only makes it easier for others to understand the source, but also gives more respect to the upstream author.
 
-如果你准备公开发布，建议在仓库描述里明确写上:
+## Warehouse naming
 
-`Forked and fixed from cnlimiter/codex-manager`
+Current warehouse name:`codex-console`
 
-这样既方便别人理解来源，也对上游作者更尊重。
+## Disclaimer
 
-## 仓库命名
+This project is only for learning, research and technical exchange. Please abide by the relevant platform and service terms and do not use it for illegal, abusive or illegal purposes.
 
-当前仓库名:
-
-`codex-console`
-
-## 免责声明
-
-本项目仅供学习、研究和技术交流使用，请遵守相关平台和服务条款，不要用于违规、滥用或非法用途。
-
-因使用本项目产生的任何风险和后果，由使用者自行承担。
+Any risks and consequences arising from the use of this project are borne by the user.
