@@ -1,7 +1,5 @@
-"""
-Token 管理器
-支持多个 Microsoft Token 端点，自动选择合适的端点
-"""
+"""Token Manager
+Supports multiple Microsoft Token endpoints, automatically selecting the appropriate endpoint"""
 
 import json
 import logging
@@ -18,14 +16,14 @@ from .account import OutlookAccount
 logger = logging.getLogger(__name__)
 
 
-# 各提供者的 Scope 配置
+# Scope configuration for each provider
 PROVIDER_SCOPES = {
-    ProviderType.IMAP_OLD: "",  # 旧版 IMAP 不需要特定 scope
+    ProviderType.IMAP_OLD: "",  # Older versions of IMAP do not require a specific scope
     ProviderType.IMAP_NEW: "https://outlook.office.com/IMAP.AccessAsUser.All offline_access",
     ProviderType.GRAPH_API: "https://graph.microsoft.com/.default",
 }
 
-# 各提供者的 Token 端点
+# Token endpoints for each provider
 PROVIDER_TOKEN_URLS = {
     ProviderType.IMAP_OLD: TokenEndpoint.LIVE.value,
     ProviderType.IMAP_NEW: TokenEndpoint.CONSUMERS.value,
@@ -34,18 +32,16 @@ PROVIDER_TOKEN_URLS = {
 
 
 class TokenManager:
-    """
-    Token 管理器
-    支持多端点 Token 获取和缓存
-    """
+    """Token Manager
+    Support multi-endpoint Token acquisition and caching"""
 
-    # Token 缓存: key = (email, provider_type) -> TokenInfo
+    # Token cache: key = (email, provider_type) -> TokenInfo
     _token_cache: Dict[tuple, TokenInfo] = {}
     _cache_lock = threading.Lock()
 
-    # 默认超时时间
+    # Default timeout
     DEFAULT_TIMEOUT = 30
-    # Token 刷新提前时间（秒）
+    # Token refresh advance time (seconds)
     REFRESH_BUFFER = 120
 
     def __init__(
@@ -55,26 +51,24 @@ class TokenManager:
         proxy_url: Optional[str] = None,
         timeout: int = DEFAULT_TIMEOUT,
     ):
-        """
-        初始化 Token 管理器
+        """Initialize Token Manager
 
         Args:
-            account: Outlook 账户
-            provider_type: 提供者类型
-            proxy_url: 代理 URL（可选）
-            timeout: 请求超时时间
-        """
+            account: Outlook account
+            provider_type: provider type
+            proxy_url: proxy URL (optional)
+            timeout: request timeout"""
         self.account = account
         self.provider_type = provider_type
         self.proxy_url = proxy_url
         self.timeout = timeout
 
-        # 获取端点和 Scope
+        # Get endpoint and scope
         self.token_url = PROVIDER_TOKEN_URLS.get(provider_type, TokenEndpoint.LIVE.value)
         self.scope = PROVIDER_SCOPES.get(provider_type, "")
 
     def get_cached_token(self) -> Optional[TokenInfo]:
-        """获取缓存的 Token"""
+        """Get cached token"""
         cache_key = (self.account.email.lower(), self.provider_type)
         with self._cache_lock:
             token = self._token_cache.get(cache_key)
@@ -83,66 +77,62 @@ class TokenManager:
         return None
 
     def set_cached_token(self, token: TokenInfo):
-        """缓存 Token"""
+        """cache token"""
         cache_key = (self.account.email.lower(), self.provider_type)
         with self._cache_lock:
             self._token_cache[cache_key] = token
 
     def clear_cache(self):
-        """清除缓存"""
+        """clear cache"""
         cache_key = (self.account.email.lower(), self.provider_type)
         with self._cache_lock:
             self._token_cache.pop(cache_key, None)
 
     def get_access_token(self, force_refresh: bool = False) -> Optional[str]:
-        """
-        获取 Access Token
+        """Get Access Token
 
         Args:
-            force_refresh: 是否强制刷新
+            force_refresh: whether to force refresh
 
         Returns:
-            Access Token 字符串，失败返回 None
-        """
-        # 检查缓存
+            Access Token string, returns None on failure"""
+        # Check cache
         if not force_refresh:
             cached = self.get_cached_token()
             if cached:
-                logger.debug(f"[{self.account.email}] 使用缓存的 Token ({self.provider_type.value})")
+                logger.debug(f"[{self.account.email}] Use cached Token ({self.provider_type.value})")
                 return cached.access_token
 
-        # 刷新 Token
+        # Refresh Token
         try:
             token = self._refresh_token()
             if token:
                 self.set_cached_token(token)
                 return token.access_token
         except Exception as e:
-            logger.error(f"[{self.account.email}] 获取 Token 失败 ({self.provider_type.value}): {e}")
+            logger.error(f"[{self.account.email}] Failed to obtain Token ({self.provider_type.value}): {e}")
 
         return None
 
     def _refresh_token(self) -> Optional[TokenInfo]:
-        """
-        刷新 Token
+        """Refresh Token
 
         Returns:
-            TokenInfo 对象，失败返回 None
-        """
+            TokenInfo object, returns None on failure"""
         if not self.account.client_id or not self.account.refresh_token:
-            raise ValueError("缺少 client_id 或 refresh_token")
+            raise ValueError("Missing client_id or refresh_token")
 
-        logger.debug(f"[{self.account.email}] 正在刷新 Token ({self.provider_type.value})...")
+        logger.debug(f"[{self.account.email}] Refreshing Token ({self.provider_type.value})...")
         logger.debug(f"[{self.account.email}] Token URL: {self.token_url}")
 
-        # 构建请求体
+        # Build request body
         data = {
             "client_id": self.account.client_id,
             "refresh_token": self.account.refresh_token,
             "grant_type": "refresh_token",
         }
 
-        # 添加 Scope（如果需要）
+        # Add Scope (if needed)
         if self.scope:
             data["scope"] = self.scope
 
@@ -167,44 +157,44 @@ class TokenManager:
 
             if resp.status_code != 200:
                 error_body = resp.text
-                logger.error(f"[{self.account.email}] Token 刷新失败: HTTP {resp.status_code}")
-                logger.debug(f"[{self.account.email}] 错误响应: {error_body[:500]}")
+                logger.error(f"[{self.account.email}] Token refresh failed: HTTP {resp.status_code}")
+                logger.debug(f"[{self.account.email}] Error response: {error_body[:500]}")
 
                 if "service abuse" in error_body.lower():
-                    logger.warning(f"[{self.account.email}] 账号可能被封禁")
+                    logger.warning(f"[{self.account.email}] Account may be banned")
                 elif "invalid_grant" in error_body.lower():
-                    logger.warning(f"[{self.account.email}] Refresh Token 已失效")
+                    logger.warning(f"[{self.account.email}] Refresh Token has expired")
 
                 return None
 
             response_data = resp.json()
 
-            # 解析响应
+            # Parse response
             token = TokenInfo.from_response(response_data, self.scope)
             logger.info(
-                f"[{self.account.email}] Token 刷新成功 ({self.provider_type.value}), "
-                f"有效期 {int(token.expires_at - time.time())} 秒"
+                f"[{self.account.email}] Token refreshed successfully ({self.provider_type.value}),"
+                f"Validity period {int(token.expires_at - time.time())} seconds"
             )
             return token
 
         except json.JSONDecodeError as e:
-            logger.error(f"[{self.account.email}] JSON 解析错误: {e}")
+            logger.error(f"[{self.account.email}] JSON parsing error: {e}")
             return None
 
         except Exception as e:
-            logger.error(f"[{self.account.email}] 未知错误: {e}")
+            logger.error(f"[{self.account.email}] Unknown error: {e}")
             return None
 
     @classmethod
     def clear_all_cache(cls):
-        """清除所有 Token 缓存"""
+        """Clear all token cache"""
         with cls._cache_lock:
             cls._token_cache.clear()
-            logger.info("已清除所有 Token 缓存")
+            logger.info("All token caches cleared")
 
     @classmethod
     def get_cache_stats(cls) -> Dict[str, Any]:
-        """获取缓存统计"""
+        """Get cache statistics"""
         with cls._cache_lock:
             return {
                 "cache_size": len(cls._token_cache),
@@ -224,16 +214,14 @@ def create_token_manager(
     proxy_url: Optional[str] = None,
     timeout: int = TokenManager.DEFAULT_TIMEOUT,
 ) -> TokenManager:
-    """
-    创建 Token 管理器的工厂函数
+    """Factory function to create Token manager
 
     Args:
-        account: Outlook 账户
-        provider_type: 提供者类型
-        proxy_url: 代理 URL
-        timeout: 超时时间
+        account: Outlook account
+        provider_type: provider type
+        proxy_url: proxy URL
+        timeout: timeout time
 
     Returns:
-        TokenManager 实例
-    """
+        TokenManager instance"""
     return TokenManager(account, provider_type, proxy_url, timeout)

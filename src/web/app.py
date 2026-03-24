@@ -1,6 +1,6 @@
 """
-FastAPI 应用主文件
-轻量级 Web UI，支持注册、账号管理、设置
+FastAPI application master file
+Lightweight Web UI supports registration, account management, and settings
 """
 
 import logging
@@ -24,20 +24,20 @@ from .task_manager import task_manager
 
 logger = logging.getLogger(__name__)
 
-# 获取项目根目录
-# PyInstaller 打包后静态资源在 sys._MEIPASS，开发时在源码根目录
+# Get the project root directory
+# PyInstaller static resources are in sys._MEIPASS after packaging, and in the source code root directory during development
 if getattr(sys, 'frozen', False):
     _RESOURCE_ROOT = Path(sys._MEIPASS)
 else:
     _RESOURCE_ROOT = Path(__file__).parent.parent.parent
 
-# 静态文件和模板目录
+#Static files and template directories
 STATIC_DIR = _RESOURCE_ROOT / "static"
 TEMPLATES_DIR = _RESOURCE_ROOT / "templates"
 
 
 def _build_static_asset_version(static_dir: Path) -> str:
-    """基于静态文件最后修改时间生成版本号，避免部署后浏览器继续使用旧缓存。"""
+    """Generate the version number based on the last modification time of the static file to prevent the browser from continuing to use the old cache after deployment."""
     latest_mtime = 0
     if static_dir.exists():
         for path in static_dir.rglob("*"):
@@ -47,18 +47,18 @@ def _build_static_asset_version(static_dir: Path) -> str:
 
 
 def create_app() -> FastAPI:
-    """创建 FastAPI 应用实例"""
+    """Create a FastAPI application instance"""
     settings = get_settings()
 
     app = FastAPI(
         title=settings.app_name,
         version=settings.app_version,
-        description="OpenAI/Codex CLI 自动注册系统 Web UI",
+        description="OpenAI/Codex CLI automatic registration system Web UI",
         docs_url="/api/docs" if settings.debug else None,
         redoc_url="/api/redoc" if settings.debug else None,
     )
 
-    # CORS 中间件
+    #CORS middleware
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
@@ -67,28 +67,28 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    # 挂载静态文件
+    #Mount static files
     if STATIC_DIR.exists():
         app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
-        logger.info(f"静态文件目录: {STATIC_DIR}")
+        logger.info(f"Static file directory: {STATIC_DIR}")
     else:
-        # 创建静态目录
+        #Create static directory
         STATIC_DIR.mkdir(parents=True, exist_ok=True)
         app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
-        logger.info(f"创建静态文件目录: {STATIC_DIR}")
+        logger.info(f"Create static file directory: {STATIC_DIR}")
 
-    # 创建模板目录
+    #Create template directory
     if not TEMPLATES_DIR.exists():
         TEMPLATES_DIR.mkdir(parents=True, exist_ok=True)
-        logger.info(f"创建模板目录: {TEMPLATES_DIR}")
+        logger.info(f"Create template directory: {TEMPLATES_DIR}")
 
-    # 注册 API 路由
+    # Register API route
     app.include_router(api_router, prefix="/api")
 
-    # 注册 WebSocket 路由
+    # Register WebSocket routing
     app.include_router(ws_router, prefix="/api")
 
-    # 模板引擎
+    # Template engine
     templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
     templates.env.globals["static_version"] = _build_static_asset_version(STATIC_DIR)
 
@@ -106,7 +106,7 @@ def create_app() -> FastAPI:
 
     @app.get("/login", response_class=HTMLResponse)
     async def login_page(request: Request, next: Optional[str] = "/"):
-        """登录页面"""
+        """Login page"""
         return templates.TemplateResponse(
             "login.html",
             {"request": request, "error": "", "next": next or "/"}
@@ -114,12 +114,12 @@ def create_app() -> FastAPI:
 
     @app.post("/login")
     async def login_submit(request: Request, password: str = Form(...), next: Optional[str] = "/"):
-        """处理登录提交"""
+        """Processing login submission"""
         expected = get_settings().webui_access_password.get_secret_value()
         if not secrets.compare_digest(password, expected):
             return templates.TemplateResponse(
                 "login.html",
-                {"request": request, "error": "密码错误", "next": next or "/"},
+                {"request": request, "error": "Wrong password", "next": next or "/"},
                 status_code=401
             )
 
@@ -129,73 +129,73 @@ def create_app() -> FastAPI:
 
     @app.get("/logout")
     async def logout(request: Request, next: Optional[str] = "/login"):
-        """退出登录"""
+        """Log out"""
         response = RedirectResponse(url=next or "/login", status_code=302)
         response.delete_cookie("webui_auth")
         return response
 
     @app.get("/", response_class=HTMLResponse)
     async def index(request: Request):
-        """首页 - 注册页面"""
+        """Home - Registration Page"""
         if not _is_authenticated(request):
             return _redirect_to_login(request)
         return templates.TemplateResponse("index.html", {"request": request})
 
     @app.get("/accounts", response_class=HTMLResponse)
     async def accounts_page(request: Request):
-        """账号管理页面"""
+        """Account management page"""
         if not _is_authenticated(request):
             return _redirect_to_login(request)
         return templates.TemplateResponse("accounts.html", {"request": request})
 
     @app.get("/email-services", response_class=HTMLResponse)
     async def email_services_page(request: Request):
-        """邮箱服务管理页面"""
+        """Mailbox service management page"""
         if not _is_authenticated(request):
             return _redirect_to_login(request)
         return templates.TemplateResponse("email_services.html", {"request": request})
 
     @app.get("/settings", response_class=HTMLResponse)
     async def settings_page(request: Request):
-        """设置页面"""
+        """Settings page"""
         if not _is_authenticated(request):
             return _redirect_to_login(request)
         return templates.TemplateResponse("settings.html", {"request": request})
 
     @app.get("/payment", response_class=HTMLResponse)
     async def payment_page(request: Request):
-        """支付页面"""
+        """Payment page"""
         return templates.TemplateResponse("payment.html", {"request": request})
 
     @app.on_event("startup")
     async def startup_event():
-        """应用启动事件"""
+        """Application startup event"""
         import asyncio
         from ..database.init_db import initialize_database
 
-        # 确保数据库已初始化（reload 模式下子进程也需要初始化）
+        # Make sure the database has been initialized (the child process also needs to be initialized in reload mode)
         try:
             initialize_database()
         except Exception as e:
-            logger.warning(f"数据库初始化: {e}")
+            logger.warning(f"Database initialization: {e}")
 
-        # 设置 TaskManager 的事件循环
+        # Set up the event loop of TaskManager
         loop = asyncio.get_event_loop()
         task_manager.set_loop(loop)
 
         logger.info("=" * 50)
-        logger.info(f"{settings.app_name} v{settings.app_version} 启动中，程序正在伸懒腰...")
-        logger.info(f"调试模式: {settings.debug}")
-        logger.info(f"数据库连接已接好线: {settings.database_url}")
+        logger.info(f"{settings.app_name} v{settings.app_version} is starting, the program is stretching...")
+        logger.info(f"Debug mode: {settings.debug}")
+        logger.info(f"The database connection has been connected: {settings.database_url}")
         logger.info("=" * 50)
 
     @app.on_event("shutdown")
     async def shutdown_event():
-        """应用关闭事件"""
-        logger.info("应用关闭，今天先收摊啦")
+        """App close event"""
+        logger.info("The application is closed, let's close it today")
 
     return app
 
 
-# 创建全局应用实例
+# Create a global application instance
 app = create_app()

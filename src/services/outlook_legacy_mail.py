@@ -1,6 +1,6 @@
 """
-Outlook 邮箱服务实现
-支持 IMAP 协议，XOAUTH2 和密码认证
+Outlook mailbox service implementation
+Supports IMAP protocol, XOAUTH2 and password authentication
 """
 
 import imaplib
@@ -33,10 +33,10 @@ from ..config.settings import get_settings
 
 def get_email_code_settings() -> dict:
     """
-    获取验证码等待配置
+    Get verification code and wait for configuration
 
     Returns:
-        dict: 包含 timeout 和 poll_interval 的字典
+        dict: Dictionary containing timeout and poll_interval
     """
     settings = get_settings()
     return {
@@ -49,7 +49,7 @@ logger = logging.getLogger(__name__)
 
 
 class OutlookAccount:
-    """Outlook 账户信息"""
+    """Outlook account information"""
 
     def __init__(
         self,
@@ -65,7 +65,7 @@ class OutlookAccount:
 
     @classmethod
     def from_config(cls, config: Dict[str, Any]) -> "OutlookAccount":
-        """从配置创建账户"""
+        """Create account from configuration"""
         return cls(
             email=config.get("email", ""),
             password=config.get("password", ""),
@@ -74,21 +74,21 @@ class OutlookAccount:
         )
 
     def has_oauth(self) -> bool:
-        """是否支持 OAuth2"""
+        """Does OAuth2 support"""
         return bool(self.client_id and self.refresh_token)
 
     def validate(self) -> bool:
-        """验证账户信息是否有效"""
+        """Verify whether the account information is valid"""
         return bool(self.email and self.password) or self.has_oauth()
 
 
 class OutlookIMAPClient:
     """
-    Outlook IMAP 客户端
-    支持 XOAUTH2 和密码认证
+    Outlook IMAP client
+    Supports XOAUTH2 and password authentication
     """
 
-    # Microsoft OAuth2 Token 缓存
+    #Microsoft OAuth2 Token cache
     _token_cache: Dict[str, tuple] = {}
     _cache_lock = threading.Lock()
 
@@ -107,9 +107,9 @@ class OutlookIMAPClient:
 
     @staticmethod
     def refresh_ms_token(account: OutlookAccount, timeout: int = 15) -> str:
-        """刷新 Microsoft access token"""
+        """Refresh Microsoft access token"""
         if not account.client_id or not account.refresh_token:
-            raise RuntimeError("缺少 client_id 或 refresh_token")
+            raise RuntimeError("Missing client_id or refresh_token")
 
         key = account.email.lower()
         with OutlookIMAPClient._cache_lock:
@@ -134,11 +134,11 @@ class OutlookIMAPClient:
             with urllib.request.urlopen(req, timeout=timeout) as resp:
                 data = json.loads(resp.read())
         except HTTPError as e:
-            raise RuntimeError(f"MS OAuth 刷新失败: {e.code}") from e
+            raise RuntimeError(f"MS OAuth refresh failed: {e.code}") from e
 
         token = data.get("access_token")
         if not token:
-            raise RuntimeError("MS OAuth 响应无 access_token")
+            raise RuntimeError("MS OAuth response no access_token")
 
         ttl = int(data.get("expires_in", 3600))
         with OutlookIMAPClient._cache_lock:
@@ -148,14 +148,14 @@ class OutlookIMAPClient:
 
     @staticmethod
     def _build_xoauth2(email_addr: str, token: str) -> bytes:
-        """构建 XOAUTH2 认证字符串"""
+        """Build XOAUTH2 authentication string"""
         return f"user={email_addr}\x01auth=Bearer {token}\x01\x01".encode()
 
     def connect(self):
-        """连接到 IMAP 服务器"""
+        """Connect to IMAP server"""
         self._conn = imaplib.IMAP4_SSL(self.host, self.port, timeout=self.timeout)
 
-        # 优先使用 XOAUTH2 认证
+        # Prioritize using XOAUTH2 authentication
         if self.account.has_oauth():
             try:
                 token = self.refresh_ms_token(self.account)
@@ -163,17 +163,17 @@ class OutlookIMAPClient:
                     "XOAUTH2",
                     lambda _: self._build_xoauth2(self.account.email, token)
                 )
-                logger.debug(f"使用 XOAUTH2 认证连接: {self.account.email}")
+                logger.debug(f"Use XOAUTH2 authentication connection: {self.account.email}")
                 return
             except Exception as e:
-                logger.warning(f"XOAUTH2 认证失败，回退密码认证: {e}")
+                logger.warning(f"XOAUTH2 authentication failed, fallback password authentication: {e}")
 
-        # 回退到密码认证
+        # Fall back to password authentication
         self._conn.login(self.account.email, self.account.password)
-        logger.debug(f"使用密码认证连接: {self.account.email}")
+        logger.debug(f"Use password authentication to connect: {self.account.email}")
 
     def _ensure_connection(self):
-        """确保连接有效"""
+        """Make sure the connection is valid"""
         if self._conn:
             try:
                 self._conn.noop()
@@ -190,15 +190,15 @@ class OutlookIMAPClient:
         timeout: int = 30
     ) -> List[Dict[str, Any]]:
         """
-        获取最近的邮件
+        Get recent emails
 
         Args:
-            count: 获取的邮件数量
-            only_unseen: 是否只获取未读邮件
-            timeout: 超时时间
+            count: the number of emails obtained
+            only_unseen: whether to get only unread emails
+            timeout: timeout time
 
         Returns:
-            邮件列表
+            mailing list
         """
         self._ensure_connection()
 
@@ -209,7 +209,7 @@ class OutlookIMAPClient:
         if not data or not data[0]:
             return []
 
-        # 获取最新的邮件
+        # Get the latest email
         ids = data[0].split()[-count:]
         result = []
 
@@ -228,20 +228,20 @@ class OutlookIMAPClient:
                 if raw:
                     result.append(self._parse_email(raw))
             except Exception as e:
-                logger.warning(f"解析邮件失败 (ID: {mid}): {e}")
+                logger.warning(f"Failed to parse email (ID: {mid}): {e}")
 
         return result
 
     @staticmethod
     def _parse_email(raw: bytes) -> Dict[str, Any]:
-        """解析邮件内容"""
-        # 移除可能的 BOM
+        """Parse the email content"""
+        # Remove possible BOM
         if raw.startswith(b"\xef\xbb\xbf"):
             raw = raw[3:]
 
         msg = email.message_from_bytes(raw)
 
-        # 解析邮件头
+        # Parse email headers
         subject = OutlookIMAPClient._decode_header(msg.get("Subject", ""))
         sender = OutlookIMAPClient._decode_header(msg.get("From", ""))
         date_str = OutlookIMAPClient._decode_header(msg.get("Date", ""))
@@ -249,10 +249,10 @@ class OutlookIMAPClient:
         delivered_to = OutlookIMAPClient._decode_header(msg.get("Delivered-To", ""))
         x_original_to = OutlookIMAPClient._decode_header(msg.get("X-Original-To", ""))
 
-        # 提取邮件正文
+        # Extract email body
         body = OutlookIMAPClient._extract_body(msg)
 
-        # 解析日期
+        # Parse date
         date_timestamp = 0
         try:
             if date_str:
@@ -270,12 +270,12 @@ class OutlookIMAPClient:
             "delivered_to": delivered_to,
             "x_original_to": x_original_to,
             "body": body,
-            "raw": raw.hex()[:100]  # 存储原始数据的部分哈希用于调试
+            "raw": raw.hex()[:100] # Store a partial hash of the original data for debugging
         }
 
     @staticmethod
     def _decode_header(header: str) -> str:
-        """解码邮件头"""
+        """Decoding email headers"""
         if not header:
             return ""
 
@@ -294,7 +294,7 @@ class OutlookIMAPClient:
 
     @staticmethod
     def _extract_body(msg) -> str:
-        """提取邮件正文"""
+        """Extract email text"""
         import html as html_module
 
         texts = []
@@ -315,13 +315,13 @@ class OutlookIMAPClient:
             except LookupError:
                 text = payload.decode("utf-8", errors="replace")
 
-            # 如果是 HTML，移除标签
+            # If it's HTML, remove tags
             if "<html" in text.lower():
                 text = re.sub(r"<[^>]+>", " ", text)
 
             texts.append(text)
 
-        # 合并并清理文本
+        # Merge and clean text
         combined = " ".join(texts)
         combined = html_module.unescape(combined)
         combined = re.sub(r"\s+", " ", combined).strip()
@@ -329,7 +329,7 @@ class OutlookIMAPClient:
         return combined
 
     def close(self):
-        """关闭连接"""
+        """Close connection"""
         if self._conn:
             try:
                 self._conn.close()
@@ -351,30 +351,30 @@ class OutlookIMAPClient:
 
 class OutlookService(BaseEmailService):
     """
-    Outlook 邮箱服务
-    支持多个 Outlook 账户的轮询和验证码获取
+    Outlook mailbox service
+    Supports polling and verification code acquisition for multiple Outlook accounts
     """
 
     def __init__(self, config: Dict[str, Any] = None, name: str = None):
         """
-        初始化 Outlook 服务
+        Initialize the Outlook service
 
         Args:
-            config: 配置字典，支持以下键:
-                - accounts: Outlook 账户列表，每个账户包含:
-                  - email: 邮箱地址
-                  - password: 密码
-                  - client_id: OAuth2 client_id (可选)
-                  - refresh_token: OAuth2 refresh_token (可选)
-                - imap_host: IMAP 服务器 (默认: outlook.office365.com)
-                - imap_port: IMAP 端口 (默认: 993)
-                - timeout: 超时时间 (默认: 30)
-                - max_retries: 最大重试次数 (默认: 3)
-            name: 服务名称
+            config: configuration dictionary, supports the following keys:
+                - accounts: Outlook account list, each account contains:
+                  - email: email address
+                  - password: password
+                  - client_id: OAuth2 client_id (optional)
+                  - refresh_token: OAuth2 refresh_token (optional)
+                - imap_host: IMAP server (default: outlook.office365.com)
+                - imap_port: IMAP port (default: 993)
+                - timeout: timeout (default: 30)
+                - max_retries: Maximum number of retries (default: 3)
+            name: service name
         """
         super().__init__(EmailServiceType.OUTLOOK, name)
 
-        # 默认配置
+        #Default configuration
         default_config = {
             "accounts": [],
             "imap_host": "outlook.office365.com",
@@ -386,73 +386,73 @@ class OutlookService(BaseEmailService):
 
         self.config = {**default_config, **(config or {})}
 
-        # 解析账户
+        # Parse account
         self.accounts: List[OutlookAccount] = []
         self._current_account_index = 0
         self._account_locks: Dict[str, threading.Lock] = {}
 
-        # 支持两种配置格式：
-        # 1. 单个账户格式：{"email": "xxx", "password": "xxx"}
-        # 2. 多账户格式：{"accounts": [{"email": "xxx", "password": "xxx"}]}
+        # Supports two configuration formats:
+        # 1. Single account format: {"email": "xxx", "password": "xxx"}
+        # 2. Multiple account format: {"accounts": [{"email": "xxx", "password": "xxx"}]}
         if "email" in self.config and "password" in self.config:
-            # 单个账户格式
+            # Single account format
             account = OutlookAccount.from_config(self.config)
             if account.validate():
                 self.accounts.append(account)
                 self._account_locks[account.email] = threading.Lock()
             else:
-                logger.warning(f"无效的 Outlook 账户配置: {self.config}")
+                logger.warning(f"Invalid Outlook account configuration: {self.config}")
         else:
-            # 多账户格式
+            #Multiple account format
             for account_config in self.config.get("accounts", []):
                 account = OutlookAccount.from_config(account_config)
                 if account.validate():
                     self.accounts.append(account)
                     self._account_locks[account.email] = threading.Lock()
                 else:
-                    logger.warning(f"无效的 Outlook 账户配置: {account_config}")
+                    logger.warning(f"Invalid Outlook account configuration: {account_config}")
 
         if not self.accounts:
-            logger.warning("未配置有效的 Outlook 账户")
+            logger.warning("No valid Outlook account configured")
 
-        # IMAP 连接限制（防止限流）
+        # IMAP connection limit (prevent current limiting)
         self._imap_semaphore = threading.Semaphore(5)
 
-        # 验证码去重机制：email -> set of used codes
+        # Verification code deduplication mechanism: email -> set of used codes
         self._used_codes: Dict[str, set] = {}
 
     def create_email(self, config: Dict[str, Any] = None) -> Dict[str, Any]:
         """
-        选择可用的 Outlook 账户
+        Select an available Outlook account
 
         Args:
-            config: 配置参数（目前未使用）
+            config: Configuration parameters (currently not used)
 
         Returns:
-            包含邮箱信息的字典:
-            - email: 邮箱地址
-            - service_id: 账户邮箱（同 email）
-            - account: 账户信息
+            Dictionary containing email information:
+            - email: email address
+            - service_id: account email (same as email)
+            - account: account information
         """
         if not self.accounts:
-            self.update_status(False, EmailServiceError("没有可用的 Outlook 账户"))
-            raise EmailServiceError("没有可用的 Outlook 账户")
+            self.update_status(False, EmailServiceError("No Outlook account available"))
+            raise EmailServiceError("No Outlook account available")
 
-        # 轮询选择账户
+        # Poll to select account
         with threading.Lock():
             account = self.accounts[self._current_account_index]
             self._current_account_index = (self._current_account_index + 1) % len(self.accounts)
 
         email_info = {
             "email": account.email,
-            "service_id": account.email,  # 对于 Outlook，service_id 就是邮箱地址
+            "service_id": account.email, # For Outlook, service_id is the email address
             "account": {
                 "email": account.email,
                 "has_oauth": account.has_oauth()
             }
         }
 
-        logger.info(f"选择 Outlook 账户: {account.email}")
+        logger.info(f"Select Outlook account: {account.email}")
         self.update_status(True)
         return email_info
 
@@ -465,19 +465,19 @@ class OutlookService(BaseEmailService):
         otp_sent_at: Optional[float] = None,
     ) -> Optional[str]:
         """
-        从 Outlook 邮箱获取验证码
+        Get verification code from Outlook mailbox
 
         Args:
-            email: 邮箱地址
-            email_id: 未使用（对于 Outlook，email 就是标识）
-            timeout: 超时时间（秒），默认使用配置值
-            pattern: 验证码正则表达式
-            otp_sent_at: OTP 发送时间戳，用于过滤旧邮件
+            email: email address
+            email_id: Not used (for Outlook, email is the ID)
+            timeout: timeout time (seconds), the configuration value is used by default
+            pattern: verification code regular expression
+            otp_sent_at: OTP sending timestamp, used to filter old emails
 
         Returns:
-            验证码字符串，如果超时或未找到返回 None
+            Verification code string, returns None if timeout or not found
         """
-        # 查找对应的账户
+        # Find the corresponding account
         account = None
         for acc in self.accounts:
             if acc.email.lower() == email.lower():
@@ -485,22 +485,22 @@ class OutlookService(BaseEmailService):
                 break
 
         if not account:
-            self.update_status(False, EmailServiceError(f"未找到邮箱对应的账户: {email}"))
+            self.update_status(False, EmailServiceError(f"The account corresponding to the email address was not found: {email}"))
             return None
 
-        # 从数据库获取验证码等待配置
+        # Get the verification code from the database and wait for configuration
         code_settings = get_email_code_settings()
         actual_timeout = timeout or code_settings["timeout"]
         poll_interval = code_settings["poll_interval"]
 
-        logger.info(f"[{email}] 开始获取验证码，超时 {actual_timeout}s，OTP发送时间: {otp_sent_at}")
+        logger.info(f"[{email}] starts to obtain the verification code, timeout {actual_timeout}s, OTP sending time: {otp_sent_at}")
 
-        # 初始化验证码去重集合
+        # Initialize verification code deduplication collection
         if email not in self._used_codes:
             self._used_codes[email] = set()
         used_codes = self._used_codes[email]
 
-        # 计算最小时间戳（留出 60 秒时钟偏差）
+        # Calculate minimum timestamp (allow 60 seconds clock offset)
         min_timestamp = (otp_sent_at - 60) if otp_sent_at else 0
 
         start_time = time.time()
@@ -510,7 +510,7 @@ class OutlookService(BaseEmailService):
             poll_count += 1
             loop_start = time.time()
 
-            # 渐进式邮件检查：前 3 次只检查未读，之后检查全部
+            # Progressive email checking: only check unread messages for the first 3 times, then check all
             only_unseen = poll_count <= 3
 
             try:
@@ -523,56 +523,56 @@ class OutlookService(BaseEmailService):
                         timeout=10
                     ) as client:
                         connect_elapsed = time.time() - connect_start
-                        logger.debug(f"[{email}] IMAP 连接耗时 {connect_elapsed:.2f}s")
+                        logger.debug(f"[{email}] IMAP connection took {connect_elapsed:.2f}s")
 
-                        # 搜索邮件
+                        # Search mail
                         search_start = time.time()
                         emails = client.get_recent_emails(count=15, only_unseen=only_unseen)
                         search_elapsed = time.time() - search_start
-                        logger.debug(f"[{email}] 搜索到 {len(emails)} 封邮件（未读={only_unseen}），耗时 {search_elapsed:.2f}s")
+                        logger.debug(f"[{email}] searched {len(emails)} emails (unread={only_unseen}), which took {search_elapsed:.2f}s")
 
                         for mail in emails:
-                            # 时间戳过滤
+                            # Timestamp filtering
                             mail_ts = mail.get("date_timestamp", 0)
                             if min_timestamp > 0 and mail_ts > 0 and mail_ts < min_timestamp:
-                                logger.debug(f"[{email}] 跳过旧邮件: {mail.get('subject', '')[:50]}")
+                                logger.debug(f"[{email}] Skip old emails: {mail.get('subject', '')[:50]}")
                                 continue
 
-                            # 检查是否是 OpenAI 验证邮件
+                            # Check if it is an OpenAI verification email
                             if not self._is_openai_verification_mail(mail, email):
                                 continue
 
-                            # 提取验证码
+                            # Extract verification code
                             code = self._extract_code_from_mail(mail, pattern)
                             if code:
-                                # 去重检查
+                                # Deduplication check
                                 if code in used_codes:
-                                    logger.debug(f"[{email}] 跳过已使用的验证码: {code}")
+                                    logger.debug(f"[{email}] Skip the used verification code: {code}")
                                     continue
 
                                 used_codes.add(code)
                                 elapsed = int(time.time() - start_time)
-                                logger.info(f"[{email}] 找到验证码: {code}，总耗时 {elapsed}s，轮询 {poll_count} 次")
+                                logger.info(f"[{email}] found verification code: {code}, total time spent {elapsed}s, polling {poll_count} times")
                                 self.update_status(True)
                                 return code
 
             except Exception as e:
                 loop_elapsed = time.time() - loop_start
-                logger.warning(f"[{email}] 检查出错: {e}，循环耗时 {loop_elapsed:.2f}s")
+                logger.warning(f"[{email}] check error: {e}, loop takes {loop_elapsed:.2f}s")
 
-            # 等待下次轮询
+            # Wait for next polling
             time.sleep(poll_interval)
 
         elapsed = int(time.time() - start_time)
-        logger.warning(f"[{email}] 验证码超时 ({actual_timeout}s)，共轮询 {poll_count} 次")
+        logger.warning(f"[{email}] verification code timeout ({actual_timeout}s), total polling {poll_count} times")
         return None
 
     def list_emails(self, **kwargs) -> List[Dict[str, Any]]:
         """
-        列出所有可用的 Outlook 账户
+        List all available Outlook accounts
 
         Returns:
-            账户列表
+            Account list
         """
         return [
             {
@@ -586,24 +586,24 @@ class OutlookService(BaseEmailService):
 
     def delete_email(self, email_id: str) -> bool:
         """
-        删除邮箱（对于 Outlook，不支持删除账户）
+        Delete a mailbox (for Outlook, deleting an account is not supported)
 
         Args:
-            email_id: 邮箱地址
+            email_id: email address
 
         Returns:
-            False（Outlook 不支持删除账户）
+            False (Outlook does not support deleting accounts)
         """
-        logger.warning(f"Outlook 服务不支持删除账户: {email_id}")
+        logger.warning(f"Outlook service does not support deletion of account: {email_id}")
         return False
 
     def check_health(self) -> bool:
-        """检查 Outlook 服务是否可用"""
+        """Check whether the Outlook service is available"""
         if not self.accounts:
-            self.update_status(False, EmailServiceError("没有配置的账户"))
+            self.update_status(False, EmailServiceError("No account configured"))
             return False
 
-        # 测试第一个账户的连接
+        # Test the connection of the first account
         test_account = self.accounts[0]
         try:
             with self._imap_semaphore:
@@ -613,19 +613,19 @@ class OutlookService(BaseEmailService):
                     port=self.config["imap_port"],
                     timeout=10
                 ) as client:
-                    # 尝试列出邮箱（快速测试）
+                    # Try listing mailboxes (quick test)
                     client._conn.select("INBOX", readonly=True)
                     self.update_status(True)
                     return True
         except Exception as e:
-            logger.warning(f"Outlook 健康检查失败 ({test_account.email}): {e}")
+            logger.warning(f"Outlook health check failed ({test_account.email}): {e}")
             self.update_status(False, e)
             return False
 
     def _is_oai_mail(self, mail: Dict[str, Any]) -> bool:
-        """判断是否为 OpenAI 相关邮件（旧方法，保留兼容）"""
+        """Determine whether it is an OpenAI related email (old method, retained for compatibility)"""
         combined = f"{mail.get('from', '')} {mail.get('subject', '')} {mail.get('body', '')}".lower()
-        keywords = ["openai", "chatgpt", "verification", "验证码", "code"]
+        keywords = ["openai", "chatgpt", "verification", "verification code", "code"]
         return any(keyword in combined for keyword in keywords)
 
     def _is_openai_verification_mail(
@@ -634,40 +634,40 @@ class OutlookService(BaseEmailService):
         target_email: str = None
     ) -> bool:
         """
-        严格判断是否为 OpenAI 验证邮件
+        Strictly judge whether it is an OpenAI verification email
 
         Args:
-            mail: 邮件信息字典
-            target_email: 目标邮箱地址（用于验证收件人）
+            mail: mail information dictionary
+            target_email: target email address (used to verify recipients)
 
         Returns:
-            是否为 OpenAI 验证邮件
+            Whether to verify email for OpenAI
         """
         sender = mail.get("from", "").lower()
 
-        # 1. 发件人必须是 OpenAI
+        # 1. The sender must be OpenAI
         valid_senders = OPENAI_EMAIL_SENDERS
         if not any(s in sender for s in valid_senders):
-            logger.debug(f"邮件发件人非 OpenAI: {sender}")
+            logger.debug(f"The email sender is not OpenAI: {sender}")
             return False
 
-        # 2. 主题或正文包含验证关键词
+        # 2. The subject or text contains verification keywords
         subject = mail.get("subject", "").lower()
         body = mail.get("body", "").lower()
         verification_keywords = OPENAI_VERIFICATION_KEYWORDS
         combined = f"{subject} {body}"
         if not any(kw in combined for kw in verification_keywords):
-            logger.debug(f"邮件未包含验证关键词: {subject[:50]}")
+            logger.debug(f"The email does not contain the verification keyword: {subject[:50]}")
             return False
 
-        # 3. 验证收件人（可选）
+        # 3. Verify recipient (optional)
         if target_email:
             recipients = f"{mail.get('to', '')} {mail.get('delivered_to', '')} {mail.get('x_original_to', '')}".lower()
             if target_email.lower() not in recipients:
-                logger.debug(f"邮件收件人不匹配: {recipients[:50]}")
+                logger.debug(f"Mail recipient does not match: {recipients[:50]}")
                 return False
 
-        logger.debug(f"识别为 OpenAI 验证邮件: {subject[:50]}")
+        logger.debug(f"Identified as OpenAI verification email: {subject[:50]}")
         return True
 
     def _extract_code_from_mail(
@@ -676,51 +676,51 @@ class OutlookService(BaseEmailService):
         fallback_pattern: str = OTP_CODE_PATTERN
     ) -> Optional[str]:
         """
-        从邮件中提取验证码
+        Extract verification code from email
 
-        优先级：
-        1. 从主题提取（6位数字）
-        2. 从正文用语义正则提取（如 "code is 123456"）
-        3. 兜底：任意 6 位数字
+        Priority:
+        1. Extract from topic (6 digits)
+        2. Use semantic regular extraction from the text (such as "code is 123456")
+        3. Guarantee: any 6-digit number
 
         Args:
-            mail: 邮件信息字典
-            fallback_pattern: 兜底正则表达式
+            mail: mail information dictionary
+            fallback_pattern: back-up regular expression
 
         Returns:
-            验证码字符串，如果未找到返回 None
+            Verification code string, returns None if not found
         """
-        # 编译正则
+        #Compile regular
         re_simple = re.compile(OTP_CODE_SIMPLE_PATTERN)
         re_semantic = re.compile(OTP_CODE_SEMANTIC_PATTERN, re.IGNORECASE)
 
-        # 1. 主题优先
+        # 1. Topic priority
         subject = mail.get("subject", "")
         match = re_simple.search(subject)
         if match:
             code = match.group(1)
-            logger.debug(f"从主题提取验证码: {code}")
+            logger.debug(f"Extract verification code from topic: {code}")
             return code
 
-        # 2. 正文语义匹配
+        # 2. Text semantic matching
         body = mail.get("body", "")
         match = re_semantic.search(body)
         if match:
             code = match.group(1)
-            logger.debug(f"从正文语义提取验证码: {code}")
+            logger.debug(f"Extract verification code from text semantics: {code}")
             return code
 
-        # 3. 兜底：任意 6 位数字
+        # 3. Guarantee: any 6-digit number
         match = re_simple.search(body)
         if match:
             code = match.group(1)
-            logger.debug(f"从正文兜底提取验证码: {code}")
+            logger.debug(f"Extract the verification code from the bottom of the text: {code}")
             return code
 
         return None
 
     def get_account_stats(self) -> Dict[str, Any]:
-        """获取账户统计信息"""
+        """Get account statistics"""
         total = len(self.accounts)
         oauth_count = sum(1 for acc in self.accounts if acc.has_oauth())
 
@@ -738,7 +738,7 @@ class OutlookService(BaseEmailService):
         }
 
     def add_account(self, account_config: Dict[str, Any]) -> bool:
-        """添加新的 Outlook 账户"""
+        """Add new Outlook account"""
         try:
             account = OutlookAccount.from_config(account_config)
             if not account.validate():
@@ -746,18 +746,18 @@ class OutlookService(BaseEmailService):
 
             self.accounts.append(account)
             self._account_locks[account.email] = threading.Lock()
-            logger.info(f"添加 Outlook 账户: {account.email}")
+            logger.info(f"Add Outlook account: {account.email}")
             return True
         except Exception as e:
-            logger.error(f"添加 Outlook 账户失败: {e}")
+            logger.error(f"Failed to add Outlook account: {e}")
             return False
 
     def remove_account(self, email: str) -> bool:
-        """移除 Outlook 账户"""
+        """Remove Outlook account"""
         for i, acc in enumerate(self.accounts):
             if acc.email.lower() == email.lower():
                 self.accounts.pop(i)
                 self._account_locks.pop(email, None)
-                logger.info(f"移除 Outlook 账户: {email}")
+                logger.info(f"Remove Outlook account: {email}")
                 return True
         return False

@@ -60,7 +60,7 @@ def test_registration_available_services_include_duck_mail(monkeypatch):
         session.add(
             EmailService(
                 service_type="duck_mail",
-                name="DuckMail 主服务",
+                name="DuckMail primary service",
                 config={
                     "base_url": "https://api.duckmail.test",
                     "default_domain": "duckmail.sbs",
@@ -89,6 +89,6 @@ def test_registration_available_services_include_duck_mail(monkeypatch):
 
     assert result["duck_mail"]["available"] is True
     assert result["duck_mail"]["count"] == 1
-    assert result["duck_mail"]["services"][0]["name"] == "DuckMail 主服务"
+    assert result["duck_mail"]["services"][0]["name"] == "DuckMail primary service"
     assert result["duck_mail"]["services"][0]["type"] == "duck_mail"
     assert result["duck_mail"]["services"][0]["default_domain"] == "duckmail.sbs"

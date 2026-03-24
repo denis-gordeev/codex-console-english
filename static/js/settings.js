@@ -1,9 +1,9 @@
 /**
- * 设置页面 JavaScript
- * 使用 utils.js 中的工具库
+ * Set page JavaScript
+ * Use the tool library in utils.js
  */
 
-// DOM 元素
+// DOM element
 const elements = {
     tabs: document.querySelectorAll('.tab-btn'),
     tabContents: document.querySelectorAll('.tab-content'),
@@ -18,16 +18,16 @@ const elements = {
     serviceType: document.getElementById('service-type'),
     serviceConfigFields: document.getElementById('service-config-fields'),
     emailServicesTable: document.getElementById('email-services-table'),
-    // Outlook 导入
+    // Outlook import
     toggleImportBtn: document.getElementById('toggle-import-btn'),
     outlookImportBody: document.getElementById('outlook-import-body'),
     outlookImportBtn: document.getElementById('outlook-import-btn'),
     clearImportBtn: document.getElementById('clear-import-btn'),
     outlookImportData: document.getElementById('outlook-import-data'),
     importResult: document.getElementById('import-result'),
-    // 批量操作
+    // batch operation
     selectAllServices: document.getElementById('select-all-services'),
-    // 代理列表
+    // proxy list
     proxiesTable: document.getElementById('proxies-table'),
     addProxyBtn: document.getElementById('add-proxy-btn'),
     testAllProxiesBtn: document.getElementById('test-all-proxies-btn'),
@@ -36,10 +36,10 @@ const elements = {
     closeProxyModal: document.getElementById('close-proxy-modal'),
     cancelProxyBtn: document.getElementById('cancel-proxy-btn'),
     proxyModalTitle: document.getElementById('proxy-modal-title'),
-    // 动态代理设置
+    //Dynamic proxy settings
     dynamicProxyForm: document.getElementById('dynamic-proxy-form'),
     testDynamicProxyBtn: document.getElementById('test-dynamic-proxy-btn'),
-    // CPA 服务管理
+    // CPA service management
     addCpaServiceBtn: document.getElementById('add-cpa-service-btn'),
     cpaServicesTable: document.getElementById('cpa-services-table'),
     cpaServiceEditModal: document.getElementById('cpa-service-edit-modal'),
@@ -48,7 +48,7 @@ const elements = {
     cpaServiceForm: document.getElementById('cpa-service-form'),
     cpaServiceModalTitle: document.getElementById('cpa-service-modal-title'),
     testCpaServiceBtn: document.getElementById('test-cpa-service-btn'),
-    // Sub2API 服务管理
+    // Sub2API service management
     addSub2ApiServiceBtn: document.getElementById('add-sub2api-service-btn'),
     sub2ApiServicesTable: document.getElementById('sub2api-services-table'),
     sub2ApiServiceEditModal: document.getElementById('sub2api-service-edit-modal'),
@@ -57,7 +57,7 @@ const elements = {
     sub2ApiServiceForm: document.getElementById('sub2api-service-form'),
     sub2ApiServiceModalTitle: document.getElementById('sub2api-service-modal-title'),
     testSub2ApiServiceBtn: document.getElementById('test-sub2api-service-btn'),
-    // Team Manager 服务管理
+    // Team Manager service management
     addTmServiceBtn: document.getElementById('add-tm-service-btn'),
     tmServicesTable: document.getElementById('tm-services-table'),
     tmServiceEditModal: document.getElementById('tm-service-edit-modal'),
@@ -66,18 +66,18 @@ const elements = {
     tmServiceForm: document.getElementById('tm-service-form'),
     tmServiceModalTitle: document.getElementById('tm-service-modal-title'),
     testTmServiceBtn: document.getElementById('test-tm-service-btn'),
-    // 验证码设置
+    // Verification code settings
     emailCodeForm: document.getElementById('email-code-form'),
-    // Outlook 设置
+    // Outlook settings
     outlookSettingsForm: document.getElementById('outlook-settings-form'),
-    // Web UI 访问控制
+    // Web UI access control
     webuiSettingsForm: document.getElementById('webui-settings-form')
 };
 
-// 选中的服务 ID
+// Selected service ID
 let selectedServiceIds = new Set();
 
-// 初始化
+// initialization
 document.addEventListener('DOMContentLoaded', () => {
     initTabs();
     loadSettings();
@@ -94,7 +94,7 @@ document.addEventListener('click', () => {
     document.querySelectorAll('.dropdown-menu.active').forEach(m => m.classList.remove('active'));
 });
 
-// 初始化标签页
+//Initialize tab page
 function initTabs() {
     elements.tabs.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -109,24 +109,24 @@ function initTabs() {
     });
 }
 
-// 事件监听
+//Event listening
 function initEventListeners() {
-    // 注册配置表单
+    //Registration configuration form
     if (elements.registrationForm) {
         elements.registrationForm.addEventListener('submit', handleSaveRegistration);
     }
 
-    // 备份数据库
+    // Back up database
     if (elements.backupBtn) {
         elements.backupBtn.addEventListener('click', handleBackup);
     }
 
-    // 清理数据
+    // clean data
     if (elements.cleanupBtn) {
         elements.cleanupBtn.addEventListener('click', handleCleanup);
     }
 
-    // 添加邮箱服务
+    //Add email service
     if (elements.addEmailServiceBtn) {
         elements.addEmailServiceBtn.addEventListener('click', () => {
             elements.addServiceModal.classList.add('active');
@@ -154,33 +154,33 @@ function initEventListeners() {
         });
     }
 
-    // 服务类型切换
+    // Service type switching
     if (elements.serviceType) {
         elements.serviceType.addEventListener('change', (e) => {
             loadServiceConfigFields(e.target.value);
         });
     }
 
-    // 添加服务表单
+    //Add service form
     if (elements.addServiceForm) {
         elements.addServiceForm.addEventListener('submit', handleAddService);
     }
 
-    // Outlook 批量导入展开/折叠
+    // Outlook batch import expand/collapse
     if (elements.toggleImportBtn) {
         elements.toggleImportBtn.addEventListener('click', () => {
             const isHidden = elements.outlookImportBody.style.display === 'none';
             elements.outlookImportBody.style.display = isHidden ? 'block' : 'none';
-            elements.toggleImportBtn.textContent = isHidden ? '收起' : '展开';
+            elements.toggleImportBtn.textContent = isHidden ? 'Collapse' : 'Expand';
         });
     }
 
-    // Outlook 批量导入
+    // Outlook batch import
     if (elements.outlookImportBtn) {
         elements.outlookImportBtn.addEventListener('click', handleOutlookBatchImport);
     }
 
-    // 清空导入数据
+    // Clear imported data
     if (elements.clearImportBtn) {
         elements.clearImportBtn.addEventListener('click', () => {
             elements.outlookImportData.value = '';
@@ -188,7 +188,7 @@ function initEventListeners() {
         });
     }
 
-    // 全选/取消全选
+    // Select all/Deselect all
     if (elements.selectAllServices) {
         elements.selectAllServices.addEventListener('change', (e) => {
             const checkboxes = document.querySelectorAll('.service-checkbox');
@@ -197,7 +197,7 @@ function initEventListeners() {
         });
     }
 
-    // 代理列表相关
+    //Related to proxy list
     if (elements.addProxyBtn) {
         elements.addProxyBtn.addEventListener('click', () => openProxyModal());
     }
@@ -226,7 +226,7 @@ function initEventListeners() {
         elements.proxyItemForm.addEventListener('submit', handleSaveProxyItem);
     }
 
-    // 动态代理设置
+    //Dynamic proxy settings
     if (elements.dynamicProxyForm) {
         elements.dynamicProxyForm.addEventListener('submit', handleSaveDynamicProxy);
     }
@@ -234,12 +234,12 @@ function initEventListeners() {
         elements.testDynamicProxyBtn.addEventListener('click', handleTestDynamicProxy);
     }
 
-    // 验证码设置
+    // Verification code settings
     if (elements.emailCodeForm) {
         elements.emailCodeForm.addEventListener('submit', handleSaveEmailCode);
     }
 
-    // Outlook 设置
+    // Outlook settings
     if (elements.outlookSettingsForm) {
         elements.outlookSettingsForm.addEventListener('submit', handleSaveOutlookSettings);
     }
@@ -247,7 +247,7 @@ function initEventListeners() {
     if (elements.webuiSettingsForm) {
         elements.webuiSettingsForm.addEventListener('submit', handleSaveWebuiSettings);
     }
-    // Team Manager 服务管理
+    // Team Manager service management
     if (elements.addTmServiceBtn) {
         elements.addTmServiceBtn.addEventListener('click', () => openTmServiceModal());
     }
@@ -269,7 +269,7 @@ function initEventListeners() {
         elements.testTmServiceBtn.addEventListener('click', handleTestTmService);
     }
 
-    // CPA 服务管理
+    // CPA service management
     if (elements.addCpaServiceBtn) {
         elements.addCpaServiceBtn.addEventListener('click', () => openCpaServiceModal());
     }
@@ -291,7 +291,7 @@ function initEventListeners() {
         elements.testCpaServiceBtn.addEventListener('click', handleTestCpaService);
     }
 
-    // Sub2API 服务管理
+    // Sub2API service management
     if (elements.addSub2ApiServiceBtn) {
         elements.addSub2ApiServiceBtn.addEventListener('click', () => openSub2ApiServiceModal());
     }
@@ -314,49 +314,49 @@ function initEventListeners() {
     }
 }
 
-// 加载设置
+//Load settings
 async function loadSettings() {
     try {
         const data = await api.get('/settings');
 
-        // 动态代理设置
+        //Dynamic proxy settings
         document.getElementById('dynamic-proxy-enabled').checked = data.proxy?.dynamic_enabled || false;
         document.getElementById('dynamic-proxy-api-url').value = data.proxy?.dynamic_api_url || '';
         document.getElementById('dynamic-proxy-api-key-header').value = data.proxy?.dynamic_api_key_header || 'X-API-Key';
         document.getElementById('dynamic-proxy-result-field').value = data.proxy?.dynamic_result_field || '';
 
-        // 注册配置
+        //Register configuration
         document.getElementById('max-retries').value = data.registration?.max_retries || 3;
         document.getElementById('timeout').value = data.registration?.timeout || 120;
         document.getElementById('password-length').value = data.registration?.default_password_length || 12;
         document.getElementById('sleep-min').value = data.registration?.sleep_min || 5;
         document.getElementById('sleep-max').value = data.registration?.sleep_max || 30;
 
-        // 验证码等待配置
+        //Verification code waiting for configuration
         if (data.email_code) {
             document.getElementById('email-code-timeout').value = data.email_code.timeout || 120;
             document.getElementById('email-code-poll-interval').value = data.email_code.poll_interval || 3;
         }
 
-        // 加载 Outlook 设置
+        // Load Outlook settings
         loadOutlookSettings();
 
-        // Web UI 访问密码提示
+        // Web UI access password prompt
         if (data.webui?.has_access_password) {
             const input = document.getElementById('webui-access-password');
             if (input) {
                 input.value = '';
-                input.placeholder = '已配置，留空保持不变';
+                input.placeholder = 'Configured, leave blank to remain unchanged';
             }
         }
 
     } catch (error) {
-        console.error('加载设置失败:', error);
-        toast.error('加载设置失败');
+        console.error('Loading settings failed:', error);
+        toast.error('Loading settings failed');
     }
 }
 
-// 保存 Web UI 设置
+//Save Web UI settings
 async function handleSaveWebuiSettings(e) {
     e.preventDefault();
 
@@ -367,31 +367,31 @@ async function handleSaveWebuiSettings(e) {
 
     try {
         await api.post('/settings/webui', payload);
-        toast.success('Web UI 设置已更新');
+        toast.success('Web UI settings updated');
         document.getElementById('webui-access-password').value = '';
     } catch (error) {
-        console.error('保存 Web UI 设置失败:', error);
-        toast.error('保存 Web UI 设置失败');
+        console.error('Failed to save Web UI settings:', error);
+        toast.error('Failed to save Web UI settings');
     }
 }
 
-// 加载邮箱服务
+//Load the mailbox service
 async function loadEmailServices() {
-    // 检查元素是否存在
+    // Check if the element exists
     if (!elements.emailServicesTable) return;
 
     try {
         const data = await api.get('/email-services');
         renderEmailServices(data.services);
     } catch (error) {
-        console.error('加载邮箱服务失败:', error);
+        console.error('Failed to load email service:', error);
         if (elements.emailServicesTable) {
             elements.emailServicesTable.innerHTML = `
                 <tr>
                     <td colspan="7">
                         <div class="empty-state">
                             <div class="empty-state-icon">❌</div>
-                            <div class="empty-state-title">加载失败</div>
+                            <div class="empty-state-title">Loading failed</div>
                         </div>
                     </td>
                 </tr>
@@ -400,9 +400,9 @@ async function loadEmailServices() {
     }
 }
 
-// 渲染邮箱服务
+// Render mailbox service
 function renderEmailServices(services) {
-    // 检查元素是否存在
+    // Check if the element exists
     if (!elements.emailServicesTable) return;
 
     if (services.length === 0) {
@@ -411,8 +411,8 @@ function renderEmailServices(services) {
                 <td colspan="7">
                     <div class="empty-state">
                         <div class="empty-state-icon">📭</div>
-                        <div class="empty-state-title">暂无配置</div>
-                        <div class="empty-state-description">点击上方"添加服务"按钮添加邮箱服务</div>
+                        <div class="empty-state-title">No configuration yet</div>
+                        <div class="empty-state-description">Click the "Add Service" button above to add an email service</div>
                     </div>
                 </td>
             </tr>
@@ -428,18 +428,18 @@ function renderEmailServices(services) {
             </td>
             <td>${escapeHtml(service.name)}</td>
             <td>${getServiceTypeText(service.service_type)}</td>
-            <td title="${service.enabled ? '已启用' : '已禁用'}">${service.enabled ? '✅' : '⭕'}</td>
+            <td title="${service.enabled ? 'Enabled' : 'Disabled'}">${service.enabled ? '✅' : '⭕'}</td>
             <td>${service.priority}</td>
             <td>${format.date(service.last_used)}</td>
             <td>
                 <div class="action-buttons">
-                    <button class="btn btn-ghost btn-sm" onclick="testService(${service.id})" title="测试">
+                    <button class="btn btn-ghost btn-sm" onclick="testService(${service.id})" title="Test">
                         🔌
                     </button>
-                    <button class="btn btn-ghost btn-sm" onclick="toggleService(${service.id}, ${!service.enabled})" title="${service.enabled ? '禁用' : '启用'}">
+                    <button class="btn btn-ghost btn-sm" onclick="toggleService(${service.id}, ${!service.enabled})" title="${service.enabled ? 'Disable' : 'Enable'}">
                         ${service.enabled ? '🔒' : '🔓'}
                     </button>
-                    <button class="btn btn-ghost btn-sm" onclick="deleteService(${service.id})" title="删除">
+                    <button class="btn btn-ghost btn-sm" onclick="deleteService(${service.id})" title="Delete">
                         🗑️
                     </button>
                 </div>
@@ -448,7 +448,7 @@ function renderEmailServices(services) {
     `).join('');
 }
 
-// 加载数据库信息
+//Load database information
 async function loadDatabaseInfo() {
     try {
         const data = await api.get('/settings/database');
@@ -459,11 +459,11 @@ async function loadDatabaseInfo() {
         document.getElementById('db-tasks').textContent = format.number(data.tasks_count);
 
     } catch (error) {
-        console.error('加载数据库信息失败:', error);
+        console.error('Failed to load database information:', error);
     }
 }
 
-// 保存注册配置
+//Save registration configuration
 async function handleSaveRegistration(e) {
     e.preventDefault();
 
@@ -477,26 +477,26 @@ async function handleSaveRegistration(e) {
 
     try {
         await api.post('/settings/registration', data);
-        toast.success('注册配置已保存');
+        toast.success('Registration configuration has been saved');
     } catch (error) {
-        toast.error('保存失败: ' + error.message);
+        toast.error('Save failed: ' + error.message);
     }
 }
 
-// 保存验证码等待配置
+//Save the verification code and wait for configuration
 async function handleSaveEmailCode(e) {
     e.preventDefault();
 
     const timeout = parseInt(document.getElementById('email-code-timeout').value);
     const pollInterval = parseInt(document.getElementById('email-code-poll-interval').value);
 
-    // 客户端验证
+    // Client verification
     if (timeout < 30 || timeout > 600) {
-        toast.error('等待超时必须在 30-600 秒之间');
+        toast.error('Waiting timeout must be between 30-600 seconds');
         return;
     }
     if (pollInterval < 1 || pollInterval > 30) {
-        toast.error('轮询间隔必须在 1-30 秒之间');
+        toast.error('Polling interval must be between 1-30 seconds');
         return;
     }
 
@@ -507,49 +507,49 @@ async function handleSaveEmailCode(e) {
 
     try {
         await api.post('/settings/email-code', data);
-        toast.success('验证码配置已保存');
+        toast.success('Verification code configuration has been saved');
     } catch (error) {
-        toast.error('保存失败: ' + error.message);
+        toast.error('Save failed: ' + error.message);
     }
 }
 
-// 备份数据库
+// Back up database
 async function handleBackup() {
     elements.backupBtn.disabled = true;
-    elements.backupBtn.innerHTML = '<span class="loading-spinner"></span> 备份中...';
+    elements.backupBtn.innerHTML = '<span class="loading-spinner"></span> Backing up...';
 
     try {
         const data = await api.post('/settings/database/backup');
-        toast.success(`备份成功: ${data.backup_path}`);
+        toast.success(`Backup successful: ${data.backup_path}`);
     } catch (error) {
-        toast.error('备份失败: ' + error.message);
+        toast.error('Backup failed: ' + error.message);
     } finally {
         elements.backupBtn.disabled = false;
-        elements.backupBtn.textContent = '💾 备份数据库';
+        elements.backupBtn.textContent = '💾 Backup database';
     }
 }
 
-// 清理数据
+// clean data
 async function handleCleanup() {
-    const confirmed = await confirm('确定要清理过期数据吗？此操作不可恢复。');
+    const confirmed = await confirm('Are you sure you want to clean up expired data? This operation is not reversible.');
     if (!confirmed) return;
 
     elements.cleanupBtn.disabled = true;
-    elements.cleanupBtn.innerHTML = '<span class="loading-spinner"></span> 清理中...';
+    elements.cleanupBtn.innerHTML = '<span class="loading-spinner"></span> Cleaning...';
 
     try {
         const data = await api.post('/settings/database/cleanup?days=30');
         toast.success(data.message);
         loadDatabaseInfo();
     } catch (error) {
-        toast.error('清理失败: ' + error.message);
+        toast.error('Cleaning failed: ' + error.message);
     } finally {
         elements.cleanupBtn.disabled = false;
-        elements.cleanupBtn.textContent = '🧹 清理过期数据';
+        elements.cleanupBtn.textContent = '🧹 Clean up expired data';
     }
 }
 
-// 加载服务配置字段
+//Load service configuration fields
 async function loadServiceConfigFields(serviceType) {
     try {
         const data = await api.get('/email-services/types');
@@ -573,11 +573,11 @@ async function loadServiceConfigFields(serviceType) {
         `).join('');
 
     } catch (error) {
-        console.error('加载配置字段失败:', error);
+        console.error('Failed to load configuration fields:', error);
     }
 }
 
-// 添加邮箱服务
+//Add email service
 async function handleAddService(e) {
     e.preventDefault();
 
@@ -598,56 +598,56 @@ async function handleAddService(e) {
 
     try {
         await api.post('/email-services', data);
-        toast.success('邮箱服务已添加');
+        toast.success('Mailbox service has been added');
         elements.addServiceModal.classList.remove('active');
         elements.addServiceForm.reset();
         loadEmailServices();
     } catch (error) {
-        toast.error('添加失败: ' + error.message);
+        toast.error('Add failed: ' + error.message);
     }
 }
 
-// 测试服务
+// test service
 async function testService(id) {
     try {
         const data = await api.post(`/email-services/${id}/test`);
         if (data.success) {
-            toast.success('服务连接正常');
+            toast.success('Service connection is normal');
         } else {
-            toast.warning('服务连接失败: ' + data.message);
+            toast.warning('Service connection failed: ' + data.message);
         }
     } catch (error) {
-        toast.error('测试失败: ' + error.message);
+        toast.error('Test failed: ' + error.message);
     }
 }
 
-// 切换服务状态
+//Switch service status
 async function toggleService(id, enabled) {
     try {
         const endpoint = enabled ? 'enable' : 'disable';
         await api.post(`/email-services/${id}/${endpoint}`);
-        toast.success(enabled ? '服务已启用' : '服务已禁用');
+        toast.success(enabled ? 'Service is enabled' : 'Service is disabled');
         loadEmailServices();
     } catch (error) {
-        toast.error('操作失败: ' + error.message);
+        toast.error('Operation failed: ' + error.message);
     }
 }
 
-// 删除服务
+// Delete service
 async function deleteService(id) {
-    const confirmed = await confirm('确定要删除此邮箱服务配置吗？');
+    const confirmed = await confirm('Are you sure you want to delete this email service configuration?');
     if (!confirmed) return;
 
     try {
         await api.delete(`/email-services/${id}`);
-        toast.success('服务已删除');
+        toast.success('Service has been deleted');
         loadEmailServices();
     } catch (error) {
-        toast.error('删除失败: ' + error.message);
+        toast.error('Deletion failed: ' + error.message);
     }
 }
 
-// 更新选中的服务
+//Update the selected service
 function updateSelectedServices() {
     selectedServiceIds.clear();
     document.querySelectorAll('.service-checkbox:checked').forEach(cb => {
@@ -655,18 +655,18 @@ function updateSelectedServices() {
     });
 }
 
-// Outlook 批量导入
+// Outlook batch import
 async function handleOutlookBatchImport() {
     const data = elements.outlookImportData.value.trim();
     if (!data) {
-        toast.warning('请输入要导入的数据');
+        toast.warning('Please enter the data to be imported');
         return;
     }
 
     const enabled = document.getElementById('outlook-import-enabled').checked;
     const priority = parseInt(document.getElementById('outlook-import-priority').value) || 0;
 
-    // 解析数据
+    // parse data
     const lines = data.split('\n').filter(line => line.trim() && !line.trim().startsWith('#'));
     const accounts = [];
     const errors = [];
@@ -674,7 +674,7 @@ async function handleOutlookBatchImport() {
     lines.forEach((line, index) => {
         const parts = line.split('----').map(p => p.trim());
         if (parts.length < 2) {
-            errors.push(`第 ${index + 1} 行格式错误`);
+            errors.push(`Line ${index + 1} is formatted incorrectly`);
             return;
         }
 
@@ -688,7 +688,7 @@ async function handleOutlookBatchImport() {
         };
 
         if (!account.email.includes('@')) {
-            errors.push(`第 ${index + 1} 行邮箱格式错误: ${account.email}`);
+            errors.push(`Email format error in line ${index + 1}: ${account.email}`);
             return;
         }
 
@@ -704,7 +704,7 @@ async function handleOutlookBatchImport() {
     }
 
     elements.outlookImportBtn.disabled = true;
-    elements.outlookImportBtn.innerHTML = '<span class="loading-spinner"></span> 导入中...';
+    elements.outlookImportBtn.innerHTML = '<span class="loading-spinner"></span> Importing...';
 
     let successCount = 0;
     let failCount = 0;
@@ -733,23 +733,23 @@ async function handleOutlookBatchImport() {
         elements.importResult.style.display = 'block';
         elements.importResult.innerHTML = `
             <div class="import-stats">
-                <span>✅ 成功: ${successCount}</span>
-                <span>❌ 失败: ${failCount}</span>
+                <span>✅ Success: ${successCount}</span>
+                <span>❌ Failed: ${failCount}</span>
             </div>
         `;
 
-        toast.success(`导入完成，成功 ${successCount} 个`);
+        toast.success(`Import completed, ${successCount} successful`);
         loadEmailServices();
 
     } catch (error) {
-        toast.error('导入失败: ' + error.message);
+        toast.error('Import failed: ' + error.message);
     } finally {
         elements.outlookImportBtn.disabled = false;
-        elements.outlookImportBtn.textContent = '📥 开始导入';
+        elements.outlookImportBtn.textContent = '📥 Start importing';
     }
 }
 
-// HTML 转义
+//HTML escaping
 function escapeHtml(text) {
     if (!text) return '';
     const div = document.createElement('div');
@@ -759,22 +759,22 @@ function escapeHtml(text) {
 
 
 // ============================================================================
-// 代理列表管理
+//Agent list management
 // ============================================================================
 
-// 加载代理列表
+//Load proxy list
 async function loadProxies() {
     try {
         const data = await api.get('/settings/proxies');
         renderProxies(data.proxies);
     } catch (error) {
-        console.error('加载代理列表失败:', error);
+        console.error('Failed to load proxy list:', error);
         elements.proxiesTable.innerHTML = `
             <tr>
                 <td colspan="7">
                     <div class="empty-state">
                         <div class="empty-state-icon">❌</div>
-                        <div class="empty-state-title">加载失败</div>
+                        <div class="empty-state-title">Loading failed</div>
                     </div>
                 </td>
             </tr>
@@ -782,7 +782,7 @@ async function loadProxies() {
     }
 }
 
-// 渲染代理列表
+// Render proxy list
 function renderProxies(proxies) {
     if (!proxies || proxies.length === 0) {
         elements.proxiesTable.innerHTML = `
@@ -790,8 +790,8 @@ function renderProxies(proxies) {
                 <td colspan="7">
                     <div class="empty-state">
                         <div class="empty-state-icon">🌐</div>
-                        <div class="empty-state-title">暂无代理</div>
-                        <div class="empty-state-description">点击"添加代理"按钮添加代理服务器</div>
+                        <div class="empty-state-title">No agent yet</div>
+                        <div class="empty-state-description">Click the "Add Proxy" button to add a proxy server</div>
                     </div>
                 </td>
             </tr>
@@ -807,24 +807,24 @@ function renderProxies(proxies) {
             <td><code>${escapeHtml(proxy.host)}:${proxy.port}</code></td>
             <td>
                 ${proxy.is_default
-                    ? '<span class="status-badge active">默认</span>'
-                    : `<button class="btn btn-ghost btn-sm" onclick="handleSetProxyDefault(${proxy.id})" title="设为默认">设默认</button>`
+                    ? '<span class="status-badge active">Default</span>'
+                    : `<button class="btn btn-ghost btn-sm" onclick="handleSetProxyDefault(${proxy.id})" title="Set as default">Set as default</button>`
                 }
             </td>
-            <td title="${proxy.enabled ? '已启用' : '已禁用'}">${proxy.enabled ? '✅' : '⭕'}</td>
+            <td title="${proxy.enabled ? 'Enabled' : 'Disabled'}">${proxy.enabled ? '✅' : '⭕'}</td>
             <td>${format.date(proxy.last_used)}</td>
             <td>
                 <div style="display:flex;gap:4px;align-items:center;white-space:nowrap;">
-                    <button class="btn btn-secondary btn-sm" onclick="editProxyItem(${proxy.id})">编辑</button>
+                    <button class="btn btn-secondary btn-sm" onclick="editProxyItem(${proxy.id})">Edit</button>
                     <div class="dropdown" style="position:relative;">
-                        <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();toggleSettingsMoreMenu(this)">更多</button>
+                        <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();toggleSettingsMoreMenu(this)">More</button>
                         <div class="dropdown-menu" style="min-width:80px;">
-                            <a href="#" class="dropdown-item" onclick="event.preventDefault();closeSettingsMoreMenu(this);testProxyItem(${proxy.id})">测试</a>
-                            <a href="#" class="dropdown-item" onclick="event.preventDefault();closeSettingsMoreMenu(this);toggleProxyItem(${proxy.id}, ${!proxy.enabled})">${proxy.enabled ? '禁用' : '启用'}</a>
-                            ${!proxy.is_default ? `<a href="#" class="dropdown-item" onclick="event.preventDefault();closeSettingsMoreMenu(this);handleSetProxyDefault(${proxy.id})">设为默认</a>` : ''}
+                            <a href="#" class="dropdown-item" onclick="event.preventDefault();closeSettingsMoreMenu(this);testProxyItem(${proxy.id})">Test</a>
+                            <a href="#" class="dropdown-item" onclick="event.preventDefault();closeSettingsMoreMenu(this);toggleProxyItem(${proxy.id}, ${!proxy.enabled})">${proxy.enabled ? 'Disable' : 'Enable'}</a>
+                            ${!proxy.is_default ? `<a href="#" class="dropdown-item" onclick="event.preventDefault();closeSettingsMoreMenu(this);handleSetProxyDefault(${proxy.id})">Set as default</a>` : ''}
                         </div>
                     </div>
-                    <button class="btn btn-danger btn-sm" onclick="deleteProxyItem(${proxy.id})">删除</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteProxyItem(${proxy.id})">Delete</button>
                 </div>
             </td>
         </tr>
@@ -843,20 +843,20 @@ function closeSettingsMoreMenu(el) {
     if (menu) menu.classList.remove('active');
 }
 
-// 设为默认代理
+//Set as default proxy
 async function handleSetProxyDefault(id) {
     try {
         await api.post(`/settings/proxies/${id}/set-default`);
-        toast.success('已设为默认代理');
+        toast.success('set as default proxy');
         loadProxies();
     } catch (error) {
-        toast.error('操作失败: ' + error.message);
+        toast.error('Operation failed: ' + error.message);
     }
 }
 
-// 打开代理模态框
+//Open the agent modal box
 function openProxyModal(proxy = null) {
-    elements.proxyModalTitle.textContent = proxy ? '编辑代理' : '添加代理';
+    elements.proxyModalTitle.textContent = proxy ? 'Edit proxy' : 'Add proxy';
     elements.proxyItemForm.reset();
 
     document.getElementById('proxy-item-id').value = proxy ? proxy.id : '';
@@ -873,13 +873,13 @@ function openProxyModal(proxy = null) {
     elements.addProxyModal.classList.add('active');
 }
 
-// 关闭代理模态框
+// Close the agent modal box
 function closeProxyModal() {
     elements.addProxyModal.classList.remove('active');
     elements.proxyItemForm.reset();
 }
 
-// 保存代理
+// save proxy
 async function handleSaveProxyItem(e) {
     e.preventDefault();
 
@@ -897,29 +897,29 @@ async function handleSaveProxyItem(e) {
     try {
         if (proxyId) {
             await api.patch(`/settings/proxies/${proxyId}`, data);
-            toast.success('代理已更新');
+            toast.success('Agent has been updated');
         } else {
             await api.post('/settings/proxies', data);
-            toast.success('代理已添加');
+            toast.success('Agent has been added');
         }
         closeProxyModal();
         loadProxies();
     } catch (error) {
-        toast.error('保存失败: ' + error.message);
+        toast.error('Save failed: ' + error.message);
     }
 }
 
-// 编辑代理
+//edit agent
 async function editProxyItem(id) {
     try {
         const proxy = await api.get(`/settings/proxies/${id}`);
         openProxyModal(proxy);
     } catch (error) {
-        toast.error('获取代理信息失败');
+        toast.error('Failed to obtain agent information');
     }
 }
 
-// 测试单个代理
+//Test a single agent
 async function testProxyItem(id) {
     try {
         const result = await api.post(`/settings/proxies/${id}/test`);
@@ -929,70 +929,70 @@ async function testProxyItem(id) {
             toast.error(result.message);
         }
     } catch (error) {
-        toast.error('测试失败: ' + error.message);
+        toast.error('Test failed: ' + error.message);
     }
 }
 
-// 切换代理状态
+//Switch agent status
 async function toggleProxyItem(id, enabled) {
     try {
         const endpoint = enabled ? 'enable' : 'disable';
         await api.post(`/settings/proxies/${id}/${endpoint}`);
-        toast.success(enabled ? '代理已启用' : '代理已禁用');
+        toast.success(enabled ? 'Agent is enabled' : 'Agent is disabled');
         loadProxies();
     } catch (error) {
-        toast.error('操作失败: ' + error.message);
+        toast.error('Operation failed: ' + error.message);
     }
 }
 
-// 删除代理
+// Delete proxy
 async function deleteProxyItem(id) {
-    const confirmed = await confirm('确定要删除此代理吗？');
+    const confirmed = await confirm('Are you sure you want to delete this agent?');
     if (!confirmed) return;
 
     try {
         await api.delete(`/settings/proxies/${id}`);
-        toast.success('代理已删除');
+        toast.success('Agent has been deleted');
         loadProxies();
     } catch (error) {
-        toast.error('删除失败: ' + error.message);
+        toast.error('Deletion failed: ' + error.message);
     }
 }
 
-// 测试所有代理
+// Test all proxies
 async function handleTestAllProxies() {
     elements.testAllProxiesBtn.disabled = true;
-    elements.testAllProxiesBtn.innerHTML = '<span class="loading-spinner"></span> 测试中...';
+    elements.testAllProxiesBtn.innerHTML = '<span class="loading-spinner"></span> Testing...';
 
     try {
         const result = await api.post('/settings/proxies/test-all');
-        toast.info(`测试完成: 成功 ${result.success}, 失败 ${result.failed}`);
+        toast.info(`Test completed: successful ${result.success}, failed ${result.failed}`);
         loadProxies();
     } catch (error) {
-        toast.error('测试失败: ' + error.message);
+        toast.error('Test failed: ' + error.message);
     } finally {
         elements.testAllProxiesBtn.disabled = false;
-        elements.testAllProxiesBtn.textContent = '🔌 测试全部';
+        elements.testAllProxiesBtn.textContent = '🔌 Test all';
     }
 }
 
 
 // ============================================================================
-// Outlook 设置管理
+// Outlook settings management
 // ============================================================================
 
-// 加载 Outlook 设置
+// Load Outlook settings
 async function loadOutlookSettings() {
     try {
         const data = await api.get('/settings/outlook');
         const el = document.getElementById('outlook-default-client-id');
         if (el) el.value = data.default_client_id || '';
     } catch (error) {
-        console.error('加载 Outlook 设置失败:', error);
+        console.error('Failed to load Outlook settings:', error);
     }
 }
 
-// 保存 Outlook 设置
+//Save Outlook settings
 async function handleSaveOutlookSettings(e) {
     e.preventDefault();
     const data = {
@@ -1000,13 +1000,13 @@ async function handleSaveOutlookSettings(e) {
     };
     try {
         await api.post('/settings/outlook', data);
-        toast.success('Outlook 设置已保存');
+        toast.success('Outlook settings saved');
     } catch (error) {
-        toast.error('保存失败: ' + error.message);
+        toast.error('Save failed: ' + error.message);
     }
 }
 
-// ============== 动态代理设置 ==============
+// ============== Dynamic proxy settings ==============
 
 async function handleSaveDynamicProxy(e) {
     e.preventDefault();
@@ -1019,22 +1019,22 @@ async function handleSaveDynamicProxy(e) {
     };
     try {
         await api.post('/settings/proxy/dynamic', data);
-        toast.success('动态代理设置已保存');
+        toast.success('Dynamic proxy settings saved');
         document.getElementById('dynamic-proxy-api-key').value = '';
     } catch (error) {
-        toast.error('保存失败: ' + error.message);
+        toast.error('Save failed: ' + error.message);
     }
 }
 
 async function handleTestDynamicProxy() {
     const apiUrl = document.getElementById('dynamic-proxy-api-url').value.trim();
     if (!apiUrl) {
-        toast.warning('请先填写动态代理 API 地址');
+        toast.warning('Please fill in the dynamic proxy API address first');
         return;
     }
     const btn = elements.testDynamicProxyBtn;
     btn.disabled = true;
-    btn.textContent = '测试中...';
+    btn.textContent = 'Testing...';
     try {
         const result = await api.post('/settings/proxy/dynamic/test', {
             api_url: apiUrl,
@@ -1048,14 +1048,14 @@ async function handleTestDynamicProxy() {
             toast.error(result.message);
         }
     } catch (error) {
-        toast.error('测试失败: ' + error.message);
+        toast.error('Test failed: ' + error.message);
     } finally {
         btn.disabled = false;
-        btn.textContent = '🔌 测试动态代理';
+        btn.textContent = '🔌 Test dynamic proxy';
     }
 }
 
-// ============== Team Manager 服务管理 ==============
+// ============== Team Manager Service Management ==============
 
 async function loadTmServices() {
     if (!elements.tmServicesTable) return;
@@ -1069,19 +1069,19 @@ async function loadTmServices() {
 
 function renderTmServicesTable(services) {
     if (!services || services.length === 0) {
-        elements.tmServicesTable.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">暂无 Team Manager 服务，点击「添加服务」新增</td></tr>';
+        elements.tmServicesTable.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">There is currently no Team Manager service, click "Add Service" to add one</td></tr>';
         return;
     }
     elements.tmServicesTable.innerHTML = services.map(s => `
         <tr>
             <td>${escapeHtml(s.name)}</td>
             <td style="font-size:0.85rem;color:var(--text-muted);">${escapeHtml(s.api_url)}</td>
-            <td style="text-align:center;" title="${s.enabled ? '已启用' : '已禁用'}">${s.enabled ? '✅' : '⭕'}</td>
+            <td style="text-align:center;" title="${s.enabled ? 'Enabled' : 'Disabled'}">${s.enabled ? '✅' : '⭕'}</td>
             <td style="text-align:center;">${s.priority}</td>
             <td style="white-space:nowrap;">
-                <button class="btn btn-secondary btn-sm" onclick="editTmService(${s.id})">编辑</button>
-                <button class="btn btn-secondary btn-sm" onclick="testTmServiceById(${s.id})">测试</button>
-                <button class="btn btn-danger btn-sm" onclick="deleteTmService(${s.id}, '${escapeHtml(s.name)}')">删除</button>
+                <button class="btn btn-secondary btn-sm" onclick="editTmService(${s.id})">Edit</button>
+                <button class="btn btn-secondary btn-sm" onclick="testTmServiceById(${s.id})">Test</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteTmService(${s.id}, '${escapeHtml(s.name)}')">Delete</button>
             </td>
         </tr>
     `).join('');
@@ -1095,11 +1095,11 @@ function openTmServiceModal(service = null) {
     document.getElementById('tm-service-priority').value = service ? service.priority : 0;
     document.getElementById('tm-service-enabled').checked = service ? service.enabled : true;
     if (service) {
-        document.getElementById('tm-service-key').placeholder = service.has_key ? '已配置，留空保持不变' : '请输入 API Key';
+        document.getElementById('tm-service-key').placeholder = service.has_key ? 'Configured, leave blank to remain unchanged' : 'Please enter API Key';
     } else {
-        document.getElementById('tm-service-key').placeholder = '请输入 API Key';
+        document.getElementById('tm-service-key').placeholder = 'Please enter API Key';
     }
-    elements.tmServiceModalTitle.textContent = service ? '编辑 Team Manager 服务' : '添加 Team Manager 服务';
+    elements.tmServiceModalTitle.textContent = service ? 'Edit Team Manager service' : 'Add Team Manager service';
     elements.tmServiceEditModal.classList.add('active');
 }
 
@@ -1112,7 +1112,7 @@ async function editTmService(id) {
         const service = await api.get(`/tm-services/${id}`);
         openTmServiceModal(service);
     } catch (e) {
-        toast.error('获取服务信息失败: ' + e.message);
+        toast.error('Failed to obtain service information: ' + e.message);
     }
 }
 
@@ -1126,11 +1126,11 @@ async function handleSaveTmService(e) {
     const enabled = document.getElementById('tm-service-enabled').checked;
 
     if (!name || !apiUrl) {
-        toast.error('名称和 API URL 不能为空');
+        toast.error('Name and API URL cannot be empty');
         return;
     }
     if (!id && !apiKey) {
-        toast.error('新增服务时 API Key 不能为空');
+        toast.error('API Key cannot be empty when adding a service');
         return;
     }
 
@@ -1140,28 +1140,28 @@ async function handleSaveTmService(e) {
 
         if (id) {
             await api.patch(`/tm-services/${id}`, payload);
-            toast.success('服务已更新');
+            toast.success('Service has been updated');
         } else {
             payload.api_key = apiKey;
             await api.post('/tm-services', payload);
-            toast.success('服务已添加');
+            toast.success('Service has been added');
         }
         closeTmServiceModal();
         loadTmServices();
     } catch (e) {
-        toast.error('保存失败: ' + e.message);
+        toast.error('Save failed: ' + e.message);
     }
 }
 
 async function deleteTmService(id, name) {
-    const confirmed = await confirm(`确定要删除 Team Manager 服务「${name}」吗？`);
+    const confirmed = await confirm(`Are you sure you want to delete the Team Manager service "${name}"?`);
     if (!confirmed) return;
     try {
         await api.delete(`/tm-services/${id}`);
-        toast.success('已删除');
+        toast.success('deleted');
         loadTmServices();
     } catch (e) {
-        toast.error('删除失败: ' + e.message);
+        toast.error('Deletion failed: ' + e.message);
     }
 }
 
@@ -1174,7 +1174,7 @@ async function testTmServiceById(id) {
             toast.error(result.message);
         }
     } catch (e) {
-        toast.error('测试失败: ' + e.message);
+        toast.error('Test failed: ' + e.message);
     }
 }
 
@@ -1184,16 +1184,16 @@ async function handleTestTmService() {
     const id = document.getElementById('tm-service-id').value;
 
     if (!apiUrl) {
-        toast.error('请先填写 API URL');
+        toast.error('Please fill in the API URL first');
         return;
     }
     if (!id && !apiKey) {
-        toast.error('请先填写 API Key');
+        toast.error('Please fill in the API Key first');
         return;
     }
 
     elements.testTmServiceBtn.disabled = true;
-    elements.testTmServiceBtn.textContent = '测试中...';
+    elements.testTmServiceBtn.textContent = 'Testing...';
 
     try {
         let result;
@@ -1208,15 +1208,15 @@ async function handleTestTmService() {
             toast.error(result.message);
         }
     } catch (e) {
-        toast.error('测试失败: ' + e.message);
+        toast.error('Test failed: ' + e.message);
     } finally {
         elements.testTmServiceBtn.disabled = false;
-        elements.testTmServiceBtn.textContent = '🔌 测试连接';
+        elements.testTmServiceBtn.textContent = '🔌 Test connection';
     }
 }
 
 
-// ============== CPA 服务管理 ==============
+// ============== CPA Service Management ==============
 
 async function loadCpaServices() {
     if (!elements.cpaServicesTable) return;
@@ -1230,19 +1230,19 @@ async function loadCpaServices() {
 
 function renderCpaServicesTable(services) {
     if (!services || services.length === 0) {
-        elements.cpaServicesTable.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">暂无 CPA 服务，点击「添加服务」新增</td></tr>';
+        elements.cpaServicesTable.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">There is currently no CPA service, click "Add Service" to add one</td></tr>';
         return;
     }
     elements.cpaServicesTable.innerHTML = services.map(s => `
         <tr>
             <td>${escapeHtml(s.name)}</td>
             <td style="font-size:0.85rem;color:var(--text-muted);">${escapeHtml(s.api_url)}</td>
-            <td style="text-align:center;" title="${s.enabled ? '已启用' : '已禁用'}">${s.enabled ? '✅' : '⭕'}</td>
+            <td style="text-align:center;" title="${s.enabled ? 'Enabled' : 'Disabled'}">${s.enabled ? '✅' : '⭕'}</td>
             <td style="text-align:center;">${s.priority}</td>
             <td style="white-space:nowrap;">
-                <button class="btn btn-secondary btn-sm" onclick="editCpaService(${s.id})">编辑</button>
-                <button class="btn btn-secondary btn-sm" onclick="testCpaServiceById(${s.id})">测试</button>
-                <button class="btn btn-danger btn-sm" onclick="deleteCpaService(${s.id}, '${escapeHtml(s.name)}')">删除</button>
+                <button class="btn btn-secondary btn-sm" onclick="editCpaService(${s.id})">Edit</button>
+                <button class="btn btn-secondary btn-sm" onclick="testCpaServiceById(${s.id})">Test</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteCpaService(${s.id}, '${escapeHtml(s.name)}')">Delete</button>
             </td>
         </tr>
     `).join('');
@@ -1255,7 +1255,7 @@ function openCpaServiceModal(service = null) {
     document.getElementById('cpa-service-token').value = '';
     document.getElementById('cpa-service-priority').value = service ? service.priority : 0;
     document.getElementById('cpa-service-enabled').checked = service ? service.enabled : true;
-    elements.cpaServiceModalTitle.textContent = service ? '编辑 CPA 服务' : '添加 CPA 服务';
+    elements.cpaServiceModalTitle.textContent = service ? 'Edit CPA service' : 'Add CPA service';
     elements.cpaServiceEditModal.classList.add('active');
 }
 
@@ -1268,7 +1268,7 @@ async function editCpaService(id) {
         const service = await api.get(`/cpa-services/${id}`);
         openCpaServiceModal(service);
     } catch (e) {
-        toast.error('获取服务信息失败: ' + e.message);
+        toast.error('Failed to obtain service information: ' + e.message);
     }
 }
 
@@ -1282,11 +1282,11 @@ async function handleSaveCpaService(e) {
     const enabled = document.getElementById('cpa-service-enabled').checked;
 
     if (!name || !apiUrl) {
-        toast.error('名称和 API URL 不能为空');
+        toast.error('Name and API URL cannot be empty');
         return;
     }
     if (!id && !apiToken) {
-        toast.error('新增服务时 API Token 不能为空');
+        toast.error('API Token cannot be empty when adding a service');
         return;
     }
 
@@ -1296,28 +1296,28 @@ async function handleSaveCpaService(e) {
 
         if (id) {
             await api.patch(`/cpa-services/${id}`, payload);
-            toast.success('服务已更新');
+            toast.success('Service has been updated');
         } else {
             payload.api_token = apiToken;
             await api.post('/cpa-services', payload);
-            toast.success('服务已添加');
+            toast.success('Service has been added');
         }
         closeCpaServiceModal();
         loadCpaServices();
     } catch (e) {
-        toast.error('保存失败: ' + e.message);
+        toast.error('Save failed: ' + e.message);
     }
 }
 
 async function deleteCpaService(id, name) {
-    const confirmed = await confirm(`确定要删除 CPA 服务「${name}」吗？`);
+    const confirmed = await confirm(`Are you sure you want to delete the CPA service "${name}"?`);
     if (!confirmed) return;
     try {
         await api.delete(`/cpa-services/${id}`);
-        toast.success('已删除');
+        toast.success('deleted');
         loadCpaServices();
     } catch (e) {
-        toast.error('删除失败: ' + e.message);
+        toast.error('Deletion failed: ' + e.message);
     }
 }
 
@@ -1330,7 +1330,7 @@ async function testCpaServiceById(id) {
             toast.error(result.message);
         }
     } catch (e) {
-        toast.error('测试失败: ' + e.message);
+        toast.error('Test failed: ' + e.message);
     }
 }
 
@@ -1340,22 +1340,22 @@ async function handleTestCpaService() {
     const id = document.getElementById('cpa-service-id').value;
 
     if (!apiUrl) {
-        toast.error('请先填写 API URL');
+        toast.error('Please fill in the API URL first');
         return;
     }
-    // 新增时必须有 token，编辑时 token 可为空（用已保存的）
+    // There must be a token when adding a new one, and the token can be empty when editing (use the saved one)
     if (!id && !apiToken) {
-        toast.error('请先填写 API Token');
+        toast.error('Please fill in the API Token first');
         return;
     }
 
     elements.testCpaServiceBtn.disabled = true;
-    elements.testCpaServiceBtn.textContent = '测试中...';
+    elements.testCpaServiceBtn.textContent = 'Testing...';
 
     try {
         let result;
         if (id && !apiToken) {
-            // 编辑时未填 token，直接测试已保存的服务
+            // If the token is not filled in when editing, test the saved service directly.
             result = await api.post(`/cpa-services/${id}/test`);
         } else {
             result = await api.post('/cpa-services/test-connection', { api_url: apiUrl, api_token: apiToken });
@@ -1366,15 +1366,15 @@ async function handleTestCpaService() {
             toast.error(result.message);
         }
     } catch (e) {
-        toast.error('测试失败: ' + e.message);
+        toast.error('Test failed: ' + e.message);
     } finally {
         elements.testCpaServiceBtn.disabled = false;
-        elements.testCpaServiceBtn.textContent = '🔌 测试连接';
+        elements.testCpaServiceBtn.textContent = '🔌 Test connection';
     }
 }
 
 // ============================================================================
-// Sub2API 服务管理
+// Sub2API service management
 // ============================================================================
 
 let _sub2apiEditingId = null;
@@ -1385,7 +1385,7 @@ async function loadSub2ApiServices() {
         renderSub2ApiServices(services);
     } catch (e) {
         if (elements.sub2ApiServicesTable) {
-            elements.sub2ApiServicesTable.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">加载失败</td></tr>';
+            elements.sub2ApiServicesTable.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">Loading failed</td></tr>';
         }
     }
 }
@@ -1393,19 +1393,19 @@ async function loadSub2ApiServices() {
 function renderSub2ApiServices(services) {
     if (!elements.sub2ApiServicesTable) return;
     if (!services || services.length === 0) {
-        elements.sub2ApiServicesTable.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">暂无 Sub2API 服务，点击「添加服务」新增</td></tr>';
+        elements.sub2ApiServicesTable.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">There is currently no Sub2API service, click "Add Service" to add one</td></tr>';
         return;
     }
     elements.sub2ApiServicesTable.innerHTML = services.map(s => `
         <tr>
             <td>${escapeHtml(s.name)}</td>
             <td style="font-size:0.85rem;color:var(--text-muted);">${escapeHtml(s.api_url)}</td>
-            <td style="text-align:center;" title="${s.enabled ? '已启用' : '已禁用'}">${s.enabled ? '✅' : '⭕'}</td>
+            <td style="text-align:center;" title="${s.enabled ? 'Enabled' : 'Disabled'}">${s.enabled ? '✅' : '⭕'}</td>
             <td style="text-align:center;">${s.priority}</td>
             <td style="white-space:nowrap;">
-                <button class="btn btn-secondary btn-sm" onclick="editSub2ApiService(${s.id})">编辑</button>
-                <button class="btn btn-secondary btn-sm" onclick="testSub2ApiServiceById(${s.id})">测试</button>
-                <button class="btn btn-danger btn-sm" onclick="deleteSub2ApiService(${s.id}, '${escapeHtml(s.name)}')">删除</button>
+                <button class="btn btn-secondary btn-sm" onclick="editSub2ApiService(${s.id})">Edit</button>
+                <button class="btn btn-secondary btn-sm" onclick="testSub2ApiServiceById(${s.id})">Test</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteSub2ApiService(${s.id}, '${escapeHtml(s.name)}')">Delete</button>
             </td>
         </tr>
     `).join('');
@@ -1413,7 +1413,7 @@ function renderSub2ApiServices(services) {
 
 function openSub2ApiServiceModal(svc = null) {
     _sub2apiEditingId = svc ? svc.id : null;
-    elements.sub2ApiServiceModalTitle.textContent = svc ? '编辑 Sub2API 服务' : '添加 Sub2API 服务';
+    elements.sub2ApiServiceModalTitle.textContent = svc ? 'Edit Sub2API service' : 'Add Sub2API service';
     elements.sub2ApiServiceForm.reset();
     document.getElementById('sub2api-service-id').value = svc ? svc.id : '';
     if (svc) {
@@ -1421,7 +1421,7 @@ function openSub2ApiServiceModal(svc = null) {
         document.getElementById('sub2api-service-url').value = svc.api_url || '';
         document.getElementById('sub2api-service-priority').value = svc.priority ?? 0;
         document.getElementById('sub2api-service-enabled').checked = svc.enabled !== false;
-        document.getElementById('sub2api-service-key').placeholder = svc.has_key ? '已配置，留空保持不变' : '请输入 API Key';
+        document.getElementById('sub2api-service-key').placeholder = svc.has_key ? 'Already configured, leave blank to remain unchanged' : 'Please enter API Key';
     }
     elements.sub2ApiServiceEditModal.classList.add('active');
 }
@@ -1437,18 +1437,18 @@ async function editSub2ApiService(id) {
         const svc = await api.get(`/sub2api-services/${id}`);
         openSub2ApiServiceModal(svc);
     } catch (e) {
-        toast.error('加载失败: ' + e.message);
+        toast.error('Loading failed: ' + e.message);
     }
 }
 
 async function deleteSub2ApiService(id, name) {
-    if (!confirm(`确认删除 Sub2API 服务「${name}」？`)) return;
+    if (!confirm(`Confirm to delete Sub2API service "${name}"?`)) return;
     try {
         await api.delete(`/sub2api-services/${id}`);
-        toast.success('服务已删除');
+        toast.success('Service has been deleted');
         loadSub2ApiServices();
     } catch (e) {
-        toast.error('删除失败: ' + e.message);
+        toast.error('Deletion failed: ' + e.message);
     }
 }
 
@@ -1463,7 +1463,7 @@ async function handleSaveSub2ApiService(e) {
         enabled: document.getElementById('sub2api-service-enabled').checked,
     };
     if (!id && !data.api_key) {
-        toast.error('请填写 API Key');
+        toast.error('Please fill in the API Key');
         return;
     }
     if (!data.api_key) delete data.api_key;
@@ -1471,15 +1471,15 @@ async function handleSaveSub2ApiService(e) {
     try {
         if (id) {
             await api.patch(`/sub2api-services/${id}`, data);
-            toast.success('服务已更新');
+            toast.success('Service has been updated');
         } else {
             await api.post('/sub2api-services', data);
-            toast.success('服务已添加');
+            toast.success('Service has been added');
         }
         closeSub2ApiServiceModal();
         loadSub2ApiServices();
     } catch (e) {
-        toast.error('保存失败: ' + e.message);
+        toast.error('Save failed: ' + e.message);
     }
 }
 
@@ -1492,7 +1492,7 @@ async function testSub2ApiServiceById(id) {
             toast.error(result.message);
         }
     } catch (e) {
-        toast.error('测试失败: ' + e.message);
+        toast.error('Test failed: ' + e.message);
     }
 }
 
@@ -1502,16 +1502,16 @@ async function handleTestSub2ApiService() {
     const id = document.getElementById('sub2api-service-id').value;
 
     if (!apiUrl) {
-        toast.error('请先填写 API URL');
+        toast.error('Please fill in the API URL first');
         return;
     }
     if (!id && !apiKey) {
-        toast.error('请先填写 API Key');
+        toast.error('Please fill in the API Key first');
         return;
     }
 
     elements.testSub2ApiServiceBtn.disabled = true;
-    elements.testSub2ApiServiceBtn.textContent = '测试中...';
+    elements.testSub2ApiServiceBtn.textContent = 'Testing...';
 
     try {
         let result;
@@ -1526,10 +1526,10 @@ async function handleTestSub2ApiService() {
             toast.error(result.message);
         }
     } catch (e) {
-        toast.error('测试失败: ' + e.message);
+        toast.error('Test failed: ' + e.message);
     } finally {
         elements.testSub2ApiServiceBtn.disabled = false;
-        elements.testSub2ApiServiceBtn.textContent = '🔌 测试连接';
+        elements.testSub2ApiServiceBtn.textContent = '🔌 Test connection';
     }
 }
 

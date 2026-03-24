@@ -1,7 +1,5 @@
-"""
-新版 IMAP 提供者
-使用 outlook.live.com 服务器和 login.microsoftonline.com/consumers Token 端点
-"""
+"""New IMAP provider
+Using the outlook.live.com server and the login.microsoftonline.com/consumers Token endpoint"""
 
 import email
 import imaplib
@@ -21,13 +19,11 @@ logger = logging.getLogger(__name__)
 
 
 class IMAPNewProvider(OutlookProvider):
-    """
-    新版 IMAP 提供者
-    使用 outlook.live.com:993 和 login.microsoftonline.com/consumers Token 端点
-    需要 IMAP.AccessAsUser.All scope
-    """
+    """New IMAP provider
+    Use outlook.live.com:993 and login.microsoftonline.com/consumers Token endpoints
+    Requires IMAP.AccessAsUser.All scope"""
 
-    # IMAP 服务器配置
+    # IMAP server configuration
     IMAP_HOST = "outlook.live.com"
     IMAP_PORT = 993
 
@@ -42,26 +38,24 @@ class IMAPNewProvider(OutlookProvider):
     ):
         super().__init__(account, config)
 
-        # IMAP 连接
+        # IMAP connection
         self._conn: Optional[imaplib.IMAP4_SSL] = None
 
-        # Token 管理器
+        # Token Manager
         self._token_manager: Optional[TokenManager] = None
 
-        # 注意：新版 IMAP 必须使用 OAuth2
+        # Note: New versions of IMAP must use OAuth2
         if not account.has_oauth():
             logger.warning(
-                f"[{self.account.email}] 新版 IMAP 提供者需要 OAuth2 配置 "
+                f"[{self.account.email}] New IMAP provider requires OAuth2 configuration"
                 f"(client_id + refresh_token)"
             )
 
     def connect(self) -> bool:
-        """
-        连接到 IMAP 服务器
+        """Connect to IMAP server
 
         Returns:
-            是否连接成功
-        """
+            Is the connection successful?"""
         if self._connected and self._conn:
             try:
                 self._conn.noop()
@@ -69,26 +63,26 @@ class IMAPNewProvider(OutlookProvider):
             except Exception:
                 self.disconnect()
 
-        # 新版 IMAP 必须使用 OAuth2，无 OAuth 时静默跳过，不记录健康失败
+        # The new version of IMAP must use OAuth2. If there is no OAuth, it will be skipped silently and health failures will not be recorded.
         if not self.account.has_oauth():
-            logger.debug(f"[{self.account.email}] 跳过 IMAP_NEW（无 OAuth）")
+            logger.debug(f"[{self.account.email}] Skip IMAP_NEW (no OAuth)")
             return False
 
         try:
-            logger.debug(f"[{self.account.email}] 正在连接 IMAP ({self.IMAP_HOST})...")
+            logger.debug(f"[{self.account.email}] Connecting to IMAP ({self.IMAP_HOST})...")
 
-            # 创建连接
+            # Create connection
             self._conn = imaplib.IMAP4_SSL(
                 self.IMAP_HOST,
                 self.IMAP_PORT,
                 timeout=self.config.timeout,
             )
 
-            # XOAUTH2 认证
+            # XOAUTH2 certification
             if self._authenticate_xoauth2():
                 self._connected = True
                 self.record_success()
-                logger.info(f"[{self.account.email}] 新版 IMAP 连接成功 (XOAUTH2)")
+                logger.info(f"[{self.account.email}] New version of IMAP connection successful (XOAUTH2)")
                 return True
 
             return False
@@ -96,16 +90,14 @@ class IMAPNewProvider(OutlookProvider):
         except Exception as e:
             self.disconnect()
             self.record_failure(str(e))
-            logger.error(f"[{self.account.email}] 新版 IMAP 连接失败: {e}")
+            logger.error(f"[{self.account.email}] New version of IMAP connection failed: {e}")
             return False
 
     def _authenticate_xoauth2(self) -> bool:
-        """
-        使用 XOAUTH2 认证
+        """Use XOAUTH2 authentication
 
         Returns:
-            是否认证成功
-        """
+            Whether the authentication is successful"""
         if not self._token_manager:
             self._token_manager = TokenManager(
                 self.account,
@@ -114,25 +106,25 @@ class IMAPNewProvider(OutlookProvider):
                 self.config.timeout,
             )
 
-        # 获取 Access Token
+        # Get Access Token
         token = self._token_manager.get_access_token()
         if not token:
-            logger.error(f"[{self.account.email}] 获取 IMAP Token 失败")
+            logger.error(f"[{self.account.email}] Failed to obtain IMAP Token")
             return False
 
         try:
-            # 构建 XOAUTH2 认证字符串
+            # Building the XOAUTH2 authentication string
             auth_string = f"user={self.account.email}\x01auth=Bearer {token}\x01\x01"
             self._conn.authenticate("XOAUTH2", lambda _: auth_string.encode("utf-8"))
             return True
         except Exception as e:
-            logger.error(f"[{self.account.email}] XOAUTH2 认证异常: {e}")
-            # 清除缓存的 Token
+            logger.error(f"[{self.account.email}] XOAUTH2 authentication exception: {e}")
+            # Clear cached tokens
             self._token_manager.clear_cache()
             return False
 
     def disconnect(self):
-        """断开 IMAP 连接"""
+        """Disconnect IMAP"""
         if self._conn:
             try:
                 self._conn.close()
@@ -151,32 +143,30 @@ class IMAPNewProvider(OutlookProvider):
         count: int = 20,
         only_unseen: bool = True,
     ) -> List[EmailMessage]:
-        """
-        获取最近的邮件
+        """Get recent emails
 
         Args:
-            count: 获取数量
-            only_unseen: 是否只获取未读
+            count: Get the quantity
+            only_unseen: whether to only get unread
 
         Returns:
-            邮件列表
-        """
+            mailing list"""
         if not self._connected:
             if not self.connect():
                 return []
 
         try:
-            # 选择收件箱
+            # Select inbox
             self._conn.select("INBOX", readonly=True)
 
-            # 搜索邮件
+            # Search mail
             flag = "UNSEEN" if only_unseen else "ALL"
             status, data = self._conn.search(None, flag)
 
             if status != "OK" or not data or not data[0]:
                 return []
 
-            # 获取最新的邮件 ID
+            # Get latest email id
             ids = data[0].split()
             recent_ids = ids[-count:][::-1]
 
@@ -187,17 +177,17 @@ class IMAPNewProvider(OutlookProvider):
                     if email_msg:
                         emails.append(email_msg)
                 except Exception as e:
-                    logger.warning(f"[{self.account.email}] 解析邮件失败 (ID: {msg_id}): {e}")
+                    logger.warning(f"[{self.account.email}] Failed to parse email (ID: {msg_id}): {e}")
 
             return emails
 
         except Exception as e:
             self.record_failure(str(e))
-            logger.error(f"[{self.account.email}] 获取邮件失败: {e}")
+            logger.error(f"[{self.account.email}] Failed to get email: {e}")
             return []
 
     def _fetch_email(self, msg_id: bytes) -> Optional[EmailMessage]:
-        """获取并解析单封邮件"""
+        """Get and parse a single email"""
         status, data = self._conn.fetch(msg_id, "(RFC822)")
         if status != "OK" or not data or not data[0]:
             return None
@@ -215,17 +205,17 @@ class IMAPNewProvider(OutlookProvider):
 
     @staticmethod
     def _parse_email(raw: bytes) -> EmailMessage:
-        """解析原始邮件"""
-        # 使用旧版提供者的解析方法
+        """Parse the original email"""
+        # Use parsing methods from legacy providers
         return IMAPOldProvider._parse_email(raw)
 
     def test_connection(self) -> bool:
-        """测试 IMAP 连接"""
+        """Test IMAP connection"""
         try:
             with self:
                 self._conn.select("INBOX", readonly=True)
                 self._conn.search(None, "ALL")
             return True
         except Exception as e:
-            logger.warning(f"[{self.account.email}] 新版 IMAP 连接测试失败: {e}")
+            logger.warning(f"[{self.account.email}] New version of IMAP connection test failed: {e}")
             return False

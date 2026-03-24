@@ -1,7 +1,5 @@
-"""
-旧版 IMAP 提供者
-使用 outlook.office365.com 服务器和 login.live.com Token 端点
-"""
+"""Legacy IMAP provider
+Using outlook.office365.com server and login.live.com Token endpoint"""
 
 import email
 import imaplib
@@ -20,12 +18,10 @@ logger = logging.getLogger(__name__)
 
 
 class IMAPOldProvider(OutlookProvider):
-    """
-    旧版 IMAP 提供者
-    使用 outlook.office365.com:993 和 login.live.com Token 端点
-    """
+    """Legacy IMAP provider
+    Use outlook.office365.com:993 and login.live.com Token endpoints"""
 
-    # IMAP 服务器配置
+    # IMAP server configuration
     IMAP_HOST = "outlook.office365.com"
     IMAP_PORT = 993
 
@@ -40,21 +36,19 @@ class IMAPOldProvider(OutlookProvider):
     ):
         super().__init__(account, config)
 
-        # IMAP 连接
+        # IMAP connection
         self._conn: Optional[imaplib.IMAP4_SSL] = None
 
-        # Token 管理器
+        # Token Manager
         self._token_manager: Optional[TokenManager] = None
 
     def connect(self) -> bool:
-        """
-        连接到 IMAP 服务器
+        """Connect to IMAP server
 
         Returns:
-            是否连接成功
-        """
+            Is the connection successful?"""
         if self._connected and self._conn:
-            # 检查现有连接
+            # Check existing connections
             try:
                 self._conn.noop()
                 return True
@@ -62,48 +56,46 @@ class IMAPOldProvider(OutlookProvider):
                 self.disconnect()
 
         try:
-            logger.debug(f"[{self.account.email}] 正在连接 IMAP ({self.IMAP_HOST})...")
+            logger.debug(f"[{self.account.email}] Connecting to IMAP ({self.IMAP_HOST})...")
 
-            # 创建连接
+            # Create connection
             self._conn = imaplib.IMAP4_SSL(
                 self.IMAP_HOST,
                 self.IMAP_PORT,
                 timeout=self.config.timeout,
             )
 
-            # 尝试 XOAUTH2 认证
+            # Try XOAUTH2 authentication
             if self.account.has_oauth():
                 if self._authenticate_xoauth2():
                     self._connected = True
                     self.record_success()
-                    logger.info(f"[{self.account.email}] IMAP 连接成功 (XOAUTH2)")
+                    logger.info(f"[{self.account.email}] IMAP connection successful (XOAUTH2)")
                     return True
                 else:
-                    logger.warning(f"[{self.account.email}] XOAUTH2 认证失败，尝试密码认证")
+                    logger.warning(f"[{self.account.email}] XOAUTH2 authentication failed, try password authentication")
 
-            # 密码认证
+            # Password authentication
             if self.account.password:
                 self._conn.login(self.account.email, self.account.password)
                 self._connected = True
                 self.record_success()
-                logger.info(f"[{self.account.email}] IMAP 连接成功 (密码认证)")
+                logger.info(f"[{self.account.email}] IMAP connection successful (password authentication)")
                 return True
 
-            raise ValueError("没有可用的认证方式")
+            raise ValueError("No authentication method available")
 
         except Exception as e:
             self.disconnect()
             self.record_failure(str(e))
-            logger.error(f"[{self.account.email}] IMAP 连接失败: {e}")
+            logger.error(f"[{self.account.email}] IMAP connection failed: {e}")
             return False
 
     def _authenticate_xoauth2(self) -> bool:
-        """
-        使用 XOAUTH2 认证
+        """Use XOAUTH2 authentication
 
         Returns:
-            是否认证成功
-        """
+            Whether the authentication is successful"""
         if not self._token_manager:
             self._token_manager = TokenManager(
                 self.account,
@@ -112,24 +104,24 @@ class IMAPOldProvider(OutlookProvider):
                 self.config.timeout,
             )
 
-        # 获取 Access Token
+        # Get Access Token
         token = self._token_manager.get_access_token()
         if not token:
             return False
 
         try:
-            # 构建 XOAUTH2 认证字符串
+            # Building the XOAUTH2 authentication string
             auth_string = f"user={self.account.email}\x01auth=Bearer {token}\x01\x01"
             self._conn.authenticate("XOAUTH2", lambda _: auth_string.encode("utf-8"))
             return True
         except Exception as e:
-            logger.debug(f"[{self.account.email}] XOAUTH2 认证异常: {e}")
-            # 清除缓存的 Token
+            logger.debug(f"[{self.account.email}] XOAUTH2 authentication exception: {e}")
+            # Clear cached tokens
             self._token_manager.clear_cache()
             return False
 
     def disconnect(self):
-        """断开 IMAP 连接"""
+        """Disconnect IMAP"""
         if self._conn:
             try:
                 self._conn.close()
@@ -148,34 +140,32 @@ class IMAPOldProvider(OutlookProvider):
         count: int = 20,
         only_unseen: bool = True,
     ) -> List[EmailMessage]:
-        """
-        获取最近的邮件
+        """Get recent emails
 
         Args:
-            count: 获取数量
-            only_unseen: 是否只获取未读
+            count: Get the quantity
+            only_unseen: whether to only get unread
 
         Returns:
-            邮件列表
-        """
+            mailing list"""
         if not self._connected:
             if not self.connect():
                 return []
 
         try:
-            # 选择收件箱
+            # Select inbox
             self._conn.select("INBOX", readonly=True)
 
-            # 搜索邮件
+            # Search mail
             flag = "UNSEEN" if only_unseen else "ALL"
             status, data = self._conn.search(None, flag)
 
             if status != "OK" or not data or not data[0]:
                 return []
 
-            # 获取最新的邮件 ID
+            # Get latest email id
             ids = data[0].split()
-            recent_ids = ids[-count:][::-1]  # 倒序，最新的在前
+            recent_ids = ids[-count:][::-1]  # Reverse order, newest first
 
             emails = []
             for msg_id in recent_ids:
@@ -184,30 +174,28 @@ class IMAPOldProvider(OutlookProvider):
                     if email_msg:
                         emails.append(email_msg)
                 except Exception as e:
-                    logger.warning(f"[{self.account.email}] 解析邮件失败 (ID: {msg_id}): {e}")
+                    logger.warning(f"[{self.account.email}] Failed to parse email (ID: {msg_id}): {e}")
 
             return emails
 
         except Exception as e:
             self.record_failure(str(e))
-            logger.error(f"[{self.account.email}] 获取邮件失败: {e}")
+            logger.error(f"[{self.account.email}] Failed to get email: {e}")
             return []
 
     def _fetch_email(self, msg_id: bytes) -> Optional[EmailMessage]:
-        """
-        获取并解析单封邮件
+        """Get and parse a single email
 
         Args:
-            msg_id: 邮件 ID
+            msg_id: Email ID
 
         Returns:
-            EmailMessage 对象，失败返回 None
-        """
+            EmailMessage object, returns None on failure"""
         status, data = self._conn.fetch(msg_id, "(RFC822)")
         if status != "OK" or not data or not data[0]:
             return None
 
-        # 获取原始邮件内容
+        # Get original email content
         raw = b""
         for part in data:
             if isinstance(part, tuple) and len(part) > 1:
@@ -221,22 +209,20 @@ class IMAPOldProvider(OutlookProvider):
 
     @staticmethod
     def _parse_email(raw: bytes) -> EmailMessage:
-        """
-        解析原始邮件
+        """Parse the original email
 
         Args:
-            raw: 原始邮件数据
+            raw: raw email data
 
         Returns:
-            EmailMessage 对象
-        """
-        # 移除 BOM
+            EmailMessage object"""
+        # Remove BOM
         if raw.startswith(b"\xef\xbb\xbf"):
             raw = raw[3:]
 
         msg = email.message_from_bytes(raw)
 
-        # 解析邮件头
+        # Parse email headers
         subject = IMAPOldProvider._decode_header(msg.get("Subject", ""))
         sender = IMAPOldProvider._decode_header(msg.get("From", ""))
         to = IMAPOldProvider._decode_header(msg.get("To", ""))
@@ -244,10 +230,10 @@ class IMAPOldProvider(OutlookProvider):
         x_original_to = IMAPOldProvider._decode_header(msg.get("X-Original-To", ""))
         date_str = IMAPOldProvider._decode_header(msg.get("Date", ""))
 
-        # 提取正文
+        # Extract text
         body = IMAPOldProvider._extract_body(msg)
 
-        # 解析日期
+        # parse date
         received_timestamp = 0
         received_at = None
         try:
@@ -257,7 +243,7 @@ class IMAPOldProvider(OutlookProvider):
         except Exception:
             pass
 
-        # 构建收件人列表
+        # Build a recipient list
         recipients = [r for r in [to, delivered_to, x_original_to] if r]
 
         return EmailMessage(
@@ -268,13 +254,13 @@ class IMAPOldProvider(OutlookProvider):
             body=body,
             received_at=received_at,
             received_timestamp=received_timestamp,
-            is_read=False,  # 搜索的是未读邮件
+            is_read=False,  # Searching for unread emails
             raw_data=raw[:500] if len(raw) > 500 else raw,
         )
 
     @staticmethod
     def _decode_header(header: str) -> str:
-        """解码邮件头"""
+        """Decode email headers"""
         if not header:
             return ""
 
@@ -293,7 +279,7 @@ class IMAPOldProvider(OutlookProvider):
 
     @staticmethod
     def _extract_body(msg) -> str:
-        """提取邮件正文"""
+        """Extract email body"""
         import html as html_module
         import re
 
@@ -315,13 +301,13 @@ class IMAPOldProvider(OutlookProvider):
             except LookupError:
                 text = payload.decode("utf-8", errors="replace")
 
-            # 如果是 HTML，移除标签
+            # If it's HTML, remove tags
             if "<html" in text.lower():
                 text = re.sub(r"<[^>]+>", " ", text)
 
             texts.append(text)
 
-        # 合并并清理文本
+        # Merge and clean text
         combined = " ".join(texts)
         combined = html_module.unescape(combined)
         combined = re.sub(r"\s+", " ", combined).strip()
@@ -329,17 +315,15 @@ class IMAPOldProvider(OutlookProvider):
         return combined
 
     def test_connection(self) -> bool:
-        """
-        测试 IMAP 连接
+        """Test IMAP connection
 
         Returns:
-            连接是否正常
-        """
+            Is the connection normal?"""
         try:
             with self:
                 self._conn.select("INBOX", readonly=True)
                 self._conn.search(None, "ALL")
             return True
         except Exception as e:
-            logger.warning(f"[{self.account.email}] IMAP 连接测试失败: {e}")
+            logger.warning(f"[{self.account.email}] IMAP connection test failed: {e}")
             return False

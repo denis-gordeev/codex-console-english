@@ -1,5 +1,5 @@
 """
-健康检查和故障切换管理
+Health check and failover management
 """
 
 import logging
@@ -17,8 +17,8 @@ logger = logging.getLogger(__name__)
 
 class HealthChecker:
     """
-    健康检查管理器
-    跟踪各提供者的健康状态，管理故障切换
+    Health Check Manager
+    Track the health status of each provider and manage failover
     """
 
     def __init__(
@@ -28,72 +28,72 @@ class HealthChecker:
         recovery_check_interval: int = 60,
     ):
         """
-        初始化健康检查器
+        Initialize health checker
 
         Args:
-            failure_threshold: 连续失败次数阈值，超过后禁用
-            disable_duration: 禁用时长（秒）
-            recovery_check_interval: 恢复检查间隔（秒）
+            failure_threshold: Threshold for the number of consecutive failures, disabled after exceeding
+            disable_duration: disable duration (seconds)
+            recovery_check_interval: Recovery check interval (seconds)
         """
         self.failure_threshold = failure_threshold
         self.disable_duration = disable_duration
         self.recovery_check_interval = recovery_check_interval
 
-        # 提供者健康状态: ProviderType -> ProviderHealth
+        # Provider health status: ProviderType -> ProviderHealth
         self._health_status: Dict[ProviderType, ProviderHealth] = {}
         self._lock = threading.Lock()
 
-        # 初始化所有提供者的健康状态
+        # Initialize the health status of all providers
         for provider_type in ProviderType:
             self._health_status[provider_type] = ProviderHealth(
                 provider_type=provider_type
             )
 
     def get_health(self, provider_type: ProviderType) -> ProviderHealth:
-        """获取提供者的健康状态"""
+        """Get the provider's health status"""
         with self._lock:
             return self._health_status.get(provider_type, ProviderHealth(provider_type=provider_type))
 
     def record_success(self, provider_type: ProviderType):
-        """记录成功操作"""
+        """Record successful operations"""
         with self._lock:
             health = self._health_status.get(provider_type)
             if health:
                 health.record_success()
-                logger.debug(f"{provider_type.value} 记录成功")
+                logger.debug(f"{provider_type.value} recorded successfully")
 
     def record_failure(self, provider_type: ProviderType, error: str):
-        """记录失败操作"""
+        """Record failed operations"""
         with self._lock:
             health = self._health_status.get(provider_type)
             if health:
                 health.record_failure(error)
 
-                # 检查是否需要禁用
+                # Check if it needs to be disabled
                 if health.should_disable(self.failure_threshold):
                     health.disable(self.disable_duration)
                     logger.warning(
-                        f"{provider_type.value} 已禁用 {self.disable_duration} 秒，"
-                        f"原因: {error}"
+                        f"{provider_type.value} has been disabled for {self.disable_duration} seconds,"
+                        f"Reason: {error}"
                     )
 
     def is_available(self, provider_type: ProviderType) -> bool:
         """
-        检查提供者是否可用
+        Check if the provider is available
 
         Args:
-            provider_type: 提供者类型
+            provider_type: provider type
 
         Returns:
-            是否可用
+            Is it available
         """
         health = self.get_health(provider_type)
 
-        # 检查是否被禁用
+        # Check if disabled
         if health.is_disabled():
             remaining = (health.disabled_until - datetime.now()).total_seconds()
             logger.debug(
-                f"{provider_type.value} 已被禁用，剩余 {int(remaining)} 秒"
+                f"{provider_type.value} has been disabled with {int(remaining)} seconds remaining"
             )
             return False
 
@@ -104,13 +104,13 @@ class HealthChecker:
         priority_order: Optional[List[ProviderType]] = None,
     ) -> List[ProviderType]:
         """
-        获取可用的提供者列表
+        Get a list of available providers
 
         Args:
-            priority_order: 优先级顺序，默认为 [IMAP_NEW, IMAP_OLD, GRAPH_API]
+            priority_order: priority order, default is [IMAP_NEW, IMAP_OLD, GRAPH_API]
 
         Returns:
-            可用的提供者列表
+            List of available providers
         """
         if priority_order is None:
             priority_order = [
@@ -131,50 +131,50 @@ class HealthChecker:
         priority_order: Optional[List[ProviderType]] = None,
     ) -> Optional[ProviderType]:
         """
-        获取下一个可用的提供者
+        Get the next available provider
 
         Args:
-            priority_order: 优先级顺序
+            priority_order: priority order
 
         Returns:
-            可用的提供者类型，如果没有返回 None
+            Available provider types, or None if none
         """
         available = self.get_available_providers(priority_order)
         return available[0] if available else None
 
     def force_disable(self, provider_type: ProviderType, duration: Optional[int] = None):
         """
-        强制禁用提供者
+        Force disabling of provider
 
         Args:
-            provider_type: 提供者类型
-            duration: 禁用时长（秒），默认使用配置值
+            provider_type: provider type
+            duration: Disable duration (seconds), the configured value is used by default
         """
         with self._lock:
             health = self._health_status.get(provider_type)
             if health:
                 health.disable(duration or self.disable_duration)
-                logger.warning(f"{provider_type.value} 已强制禁用")
+                logger.warning(f"{provider_type.value} has been forcibly disabled")
 
     def force_enable(self, provider_type: ProviderType):
         """
-        强制启用提供者
+        Force provider to be enabled
 
         Args:
-            provider_type: 提供者类型
+            provider_type: provider type
         """
         with self._lock:
             health = self._health_status.get(provider_type)
             if health:
                 health.enable()
-                logger.info(f"{provider_type.value} 已启用")
+                logger.info(f"{provider_type.value} is enabled")
 
     def get_all_health_status(self) -> Dict[str, Any]:
         """
-        获取所有提供者的健康状态
+        Get the health status of all providers
 
         Returns:
-            健康状态字典
+            health status dictionary
         """
         with self._lock:
             return {
@@ -184,32 +184,32 @@ class HealthChecker:
 
     def check_and_recover(self):
         """
-        检查并恢复被禁用的提供者
+        Check and restore disabled providers
 
-        如果禁用时间已过，自动恢复提供者
+        Automatically resume provider if disabled time has elapsed
         """
         with self._lock:
             for provider_type, health in self._health_status.items():
                 if health.is_disabled():
-                    # 检查是否可以恢复
+                    # Check if it can be restored
                     if health.disabled_until and datetime.now() >= health.disabled_until:
                         health.enable()
-                        logger.info(f"{provider_type.value} 已自动恢复")
+                        logger.info(f"{provider_type.value} has been automatically restored")
 
     def reset_all(self):
-        """重置所有提供者的健康状态"""
+        """Reset the health status of all providers"""
         with self._lock:
             for provider_type in ProviderType:
                 self._health_status[provider_type] = ProviderHealth(
                     provider_type=provider_type
                 )
-            logger.info("已重置所有提供者的健康状态")
+            logger.info("Health status of all providers has been reset")
 
 
 class FailoverManager:
     """
-    故障切换管理器
-    管理提供者之间的自动切换
+    failover manager
+    Manage automatic switching between providers
     """
 
     def __init__(
@@ -218,11 +218,11 @@ class FailoverManager:
         priority_order: Optional[List[ProviderType]] = None,
     ):
         """
-        初始化故障切换管理器
+        Initialize the failover manager
 
         Args:
-            health_checker: 健康检查器
-            priority_order: 提供者优先级顺序
+            health_checker: health checker
+            priority_order: provider priority order
         """
         self.health_checker = health_checker
         self.priority_order = priority_order or [
@@ -231,33 +231,33 @@ class FailoverManager:
             ProviderType.GRAPH_API,
         ]
 
-        # 当前使用的提供者索引
+        # Currently used provider index
         self._current_index = 0
         self._lock = threading.Lock()
 
     def get_current_provider(self) -> Optional[ProviderType]:
         """
-        获取当前提供者
+        Get current provider
 
         Returns:
-            当前提供者类型，如果没有可用的返回 None
+            The current provider type, or None if no one is available
         """
         available = self.health_checker.get_available_providers(self.priority_order)
         if not available:
             return None
 
         with self._lock:
-            # 尝试使用当前索引
+            # Try to use the current index
             if self._current_index < len(available):
                 return available[self._current_index]
             return available[0]
 
     def switch_to_next(self) -> Optional[ProviderType]:
         """
-        切换到下一个提供者
+        Switch to next provider
 
         Returns:
-            下一个提供者类型，如果没有可用的返回 None
+            Next provider type, returns None if none are available
         """
         available = self.health_checker.get_available_providers(self.priority_order)
         if not available:
@@ -266,19 +266,19 @@ class FailoverManager:
         with self._lock:
             self._current_index = (self._current_index + 1) % len(available)
             next_provider = available[self._current_index]
-            logger.info(f"切换到提供者: {next_provider.value}")
+            logger.info(f"Switch to provider: {next_provider.value}")
             return next_provider
 
     def on_provider_success(self, provider_type: ProviderType):
         """
-        提供者成功时调用
+        Called when the provider is successful
 
         Args:
-            provider_type: 提供者类型
+            provider_type: provider type
         """
         self.health_checker.record_success(provider_type)
 
-        # 重置索引到成功的提供者
+        # Reset index to successful provider
         with self._lock:
             available = self.health_checker.get_available_providers(self.priority_order)
             if provider_type in available:
@@ -286,20 +286,20 @@ class FailoverManager:
 
     def on_provider_failure(self, provider_type: ProviderType, error: str):
         """
-        提供者失败时调用
+        Called when the provider fails
 
         Args:
-            provider_type: 提供者类型
-            error: 错误信息
+            provider_type: provider type
+            error: error message
         """
         self.health_checker.record_failure(provider_type, error)
 
     def get_status(self) -> Dict[str, Any]:
         """
-        获取故障切换状态
+        Get failover status
 
         Returns:
-            状态字典
+            status dictionary
         """
         current = self.get_current_provider()
         return {

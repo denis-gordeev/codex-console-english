@@ -1,6 +1,6 @@
 """
-Outlook 邮箱服务主类
-支持多种 IMAP/API 连接方式，自动故障切换
+Outlook mailbox service main class
+Support multiple IMAP/API connection methods, automatic failover
 """
 
 import logging
@@ -24,9 +24,9 @@ from .providers.graph_api import GraphAPIProvider
 logger = logging.getLogger(__name__)
 
 
-# 默认提供者优先级
-# IMAP_OLD 最兼容（只需 login.live.com token），IMAP_NEW 次之，Graph API 最后
-# 原因：部分 client_id 没有 Graph API 权限，但有 IMAP 权限
+#Default provider priority
+# IMAP_OLD is the most compatible (only login.live.com token is required), IMAP_NEW is second, and Graph API is last
+# Reason: Some client_ids do not have Graph API permissions, but have IMAP permissions
 DEFAULT_PROVIDER_PRIORITY = [
     ProviderType.IMAP_OLD,
     ProviderType.IMAP_NEW,
@@ -35,7 +35,7 @@ DEFAULT_PROVIDER_PRIORITY = [
 
 
 def get_email_code_settings() -> dict:
-    """获取验证码等待配置"""
+    """Get verification code and wait for configuration"""
     settings = get_settings()
     return {
         "timeout": settings.email_code_timeout,
@@ -45,27 +45,27 @@ def get_email_code_settings() -> dict:
 
 class OutlookService(BaseEmailService):
     """
-    Outlook 邮箱服务
-    支持多种 IMAP/API 连接方式，自动故障切换
+    Outlook mailbox service
+    Support multiple IMAP/API connection methods, automatic failover
     """
 
     def __init__(self, config: Dict[str, Any] = None, name: str = None):
         """
-        初始化 Outlook 服务
+        Initialize the Outlook service
 
         Args:
-            config: 配置字典，支持以下键:
-                - accounts: Outlook 账户列表
-                - provider_priority: 提供者优先级列表
-                - health_failure_threshold: 连续失败次数阈值
-                - health_disable_duration: 禁用时长（秒）
-                - timeout: 请求超时时间
-                - proxy_url: 代理 URL
-            name: 服务名称
+            config: configuration dictionary, supports the following keys:
+                - accounts: Outlook account list
+                - provider_priority: provider priority list
+                - health_failure_threshold: threshold of consecutive failures
+                - health_disable_duration: disable duration (seconds)
+                - timeout: request timeout
+                - proxy_url: proxy URL
+            name: service name
         """
         super().__init__(ServiceType.OUTLOOK, name)
 
-        # 默认配置
+        #Default configuration
         default_config = {
             "accounts": [],
             "provider_priority": [p.value for p in DEFAULT_PROVIDER_PRIORITY],
@@ -77,14 +77,14 @@ class OutlookService(BaseEmailService):
 
         self.config = {**default_config, **(config or {})}
 
-        # 解析提供者优先级
+        # Parse provider priority
         self.provider_priority = [
             ProviderType(p) for p in self.config.get("provider_priority", [])
         ]
         if not self.provider_priority:
             self.provider_priority = DEFAULT_PROVIDER_PRIORITY
 
-        # 提供者配置
+        # Provider configuration
         self.provider_config = ProviderConfig(
             timeout=self.config.get("timeout", 30),
             proxy_url=self.config.get("proxy_url"),
@@ -92,18 +92,18 @@ class OutlookService(BaseEmailService):
             health_disable_duration=self.config.get("health_disable_duration", 300),
         )
 
-        # 获取默认 client_id（供无 client_id 的账户使用）
+        # Get the default client_id (for accounts without client_id)
         try:
             _default_client_id = get_settings().outlook_default_client_id
         except Exception:
             _default_client_id = "24d9a0ed-8787-4584-883c-2fd79308940a"
 
-        # 解析账户
+        # Parse account
         self.accounts: List[OutlookAccount] = []
         self._current_account_index = 0
         self._account_lock = threading.Lock()
 
-        # 支持两种配置格式
+        # Support two configuration formats
         if "email" in self.config and "password" in self.config:
             account = OutlookAccount.from_config(self.config)
             if not account.client_id and _default_client_id:
@@ -119,9 +119,9 @@ class OutlookService(BaseEmailService):
                     self.accounts.append(account)
 
         if not self.accounts:
-            logger.warning("未配置有效的 Outlook 账户")
+            logger.warning("No valid Outlook account configured")
 
-        # 健康检查器和故障切换管理器
+        # Health Checker and Failover Manager
         self.health_checker = HealthChecker(
             failure_threshold=self.provider_config.health_failure_threshold,
             disable_duration=self.provider_config.health_disable_duration,
@@ -131,17 +131,17 @@ class OutlookService(BaseEmailService):
             priority_order=self.provider_priority,
         )
 
-        # 邮件解析器
+        # Mail parser
         self.email_parser = get_email_parser()
 
-        # 提供者实例缓存: (email, provider_type) -> OutlookProvider
+        # Provider instance cache: (email, provider_type) -> OutlookProvider
         self._providers: Dict[tuple, OutlookProvider] = {}
         self._provider_lock = threading.Lock()
 
-        # IMAP 连接限制（防止限流）
+        # IMAP connection limit (prevent current limiting)
         self._imap_semaphore = threading.Semaphore(5)
 
-        # 验证码去重机制
+        # Verification code deduplication mechanism
         self._used_codes: Dict[str, set] = {}
 
     def _get_provider(
@@ -150,14 +150,14 @@ class OutlookService(BaseEmailService):
         provider_type: ProviderType,
     ) -> OutlookProvider:
         """
-        获取或创建提供者实例
+        Get or create a provider instance
 
         Args:
-            account: Outlook 账户
-            provider_type: 提供者类型
+            account: Outlook account
+            provider_type: provider type
 
         Returns:
-            提供者实例
+            provider instance
         """
         cache_key = (account.email.lower(), provider_type)
 
@@ -174,14 +174,14 @@ class OutlookService(BaseEmailService):
         provider_type: ProviderType,
     ) -> OutlookProvider:
         """
-        创建提供者实例
+        Create provider instance
 
         Args:
-            account: Outlook 账户
-            provider_type: 提供者类型
+            account: Outlook account
+            provider_type: provider type
 
         Returns:
-            提供者实例
+            provider instance
         """
         if provider_type == ProviderType.IMAP_OLD:
             return IMAPOldProvider(account, self.provider_config)
@@ -190,14 +190,14 @@ class OutlookService(BaseEmailService):
         elif provider_type == ProviderType.GRAPH_API:
             return GraphAPIProvider(account, self.provider_config)
         else:
-            raise ValueError(f"未知的提供者类型: {provider_type}")
+            raise ValueError(f"Unknown provider type: {provider_type}")
 
     def _get_provider_priority_for_account(self, account: OutlookAccount) -> List[ProviderType]:
-        """根据账户是否有 OAuth，返回适合的提供者优先级列表"""
+        """Returns a prioritized list of suitable providers based on whether the account has OAuth"""
         if account.has_oauth():
             return self.provider_priority
         else:
-            # 无 OAuth，直接走旧版 IMAP（密码认证），跳过需要 OAuth 的提供者
+            # No OAuth, go directly to the old version of IMAP (password authentication), skip the provider that requires OAuth
             return [ProviderType.IMAP_OLD]
 
     def _try_providers_for_emails(
@@ -207,27 +207,27 @@ class OutlookService(BaseEmailService):
         only_unseen: bool = True,
     ) -> List[EmailMessage]:
         """
-        尝试多个提供者获取邮件
+        Try multiple providers to get mail
 
         Args:
-            account: Outlook 账户
-            count: 获取数量
-            only_unseen: 是否只获取未读
+            account: Outlook account
+            count: Get the quantity
+            only_unseen: whether to only get unread
 
         Returns:
-            邮件列表
+            mailing list
         """
         errors = []
 
-        # 根据账户类型选择合适的提供者优先级
+        # Select the appropriate provider priority based on account type
         priority = self._get_provider_priority_for_account(account)
 
-        # 按优先级尝试各提供者
+        # Try each provider in order of priority
         for provider_type in priority:
-            # 检查提供者是否可用
+            # Check if the provider is available
             if not self.health_checker.is_available(provider_type):
                 logger.debug(
-                    f"[{account.email}] {provider_type.value} 不可用，跳过"
+                    f"[{account.email}] {provider_type.value} is not available, skip"
                 )
                 continue
 
@@ -239,10 +239,10 @@ class OutlookService(BaseEmailService):
                         emails = provider.get_recent_emails(count, only_unseen)
 
                         if emails:
-                            # 成功获取邮件
+                            # Get email successfully
                             self.health_checker.record_success(provider_type)
                             logger.debug(
-                                f"[{account.email}] {provider_type.value} 获取到 {len(emails)} 封邮件"
+                                f"[{account.email}] {provider_type.value} got {len(emails)} emails"
                             )
                             return emails
 
@@ -251,29 +251,29 @@ class OutlookService(BaseEmailService):
                 errors.append(f"{provider_type.value}: {error_msg}")
                 self.health_checker.record_failure(provider_type, error_msg)
                 logger.warning(
-                    f"[{account.email}] {provider_type.value} 获取邮件失败: {e}"
+                    f"[{account.email}] {provider_type.value} failed to get email: {e}"
                 )
 
         logger.error(
-            f"[{account.email}] 所有提供者都失败: {'; '.join(errors)}"
+            f"[{account.email}] All providers failed: {'; '.join(errors)}"
         )
         return []
 
     def create_email(self, config: Dict[str, Any] = None) -> Dict[str, Any]:
         """
-        选择可用的 Outlook 账户
+        Select an available Outlook account
 
         Args:
-            config: 配置参数（未使用）
+            config: Configuration parameters (not used)
 
         Returns:
-            包含邮箱信息的字典
+            Dictionary containing email information
         """
         if not self.accounts:
-            self.update_status(False, EmailServiceError("没有可用的 Outlook 账户"))
-            raise EmailServiceError("没有可用的 Outlook 账户")
+            self.update_status(False, EmailServiceError("No Outlook account available"))
+            raise EmailServiceError("No Outlook account available")
 
-        # 轮询选择账户
+        # Poll to select account
         with self._account_lock:
             account = self.accounts[self._current_account_index]
             self._current_account_index = (self._current_account_index + 1) % len(self.accounts)
@@ -287,7 +287,7 @@ class OutlookService(BaseEmailService):
             }
         }
 
-        logger.info(f"选择 Outlook 账户: {account.email}")
+        logger.info(f"Select Outlook account: {account.email}")
         self.update_status(True)
         return email_info
 
@@ -300,19 +300,19 @@ class OutlookService(BaseEmailService):
         otp_sent_at: Optional[float] = None,
     ) -> Optional[str]:
         """
-        从 Outlook 邮箱获取验证码
+        Get verification code from Outlook mailbox
 
         Args:
-            email: 邮箱地址
-            email_id: 未使用
-            timeout: 超时时间（秒）
-            pattern: 验证码正则表达式（未使用）
-            otp_sent_at: OTP 发送时间戳
+            email: email address
+            email_id: Not used
+            timeout: timeout (seconds)
+            pattern: Verification code regular expression (not used)
+            otp_sent_at: OTP sending timestamp
 
         Returns:
-            验证码字符串
+            Verification code string
         """
-        # 查找对应的账户
+        # Find the corresponding account
         account = None
         for acc in self.accounts:
             if acc.email.lower() == email.lower():
@@ -320,25 +320,25 @@ class OutlookService(BaseEmailService):
                 break
 
         if not account:
-            self.update_status(False, EmailServiceError(f"未找到邮箱对应的账户: {email}"))
+            self.update_status(False, EmailServiceError(f"The account corresponding to the email address was not found: {email}"))
             return None
 
-        # 获取验证码等待配置
+        # Get the verification code and wait for configuration
         code_settings = get_email_code_settings()
         actual_timeout = timeout or code_settings["timeout"]
         poll_interval = code_settings["poll_interval"]
 
         logger.info(
-            f"[{email}] 开始获取验证码，超时 {actual_timeout}s，"
-            f"提供者优先级: {[p.value for p in self.provider_priority]}"
+            f"[{email}] starts to obtain the verification code, timeout {actual_timeout}s,"
+            f"Provider priority: {[p.value for p in self.provider_priority]}"
         )
 
-        # 初始化验证码去重集合
+        # Initialize verification code deduplication collection
         if email not in self._used_codes:
             self._used_codes[email] = set()
         used_codes = self._used_codes[email]
 
-        # 计算最小时间戳（留出 60 秒时钟偏差）
+        # Calculate minimum timestamp (allow 60 seconds clock offset)
         min_timestamp = (otp_sent_at - 60) if otp_sent_at else 0
 
         start_time = time.time()
@@ -347,11 +347,11 @@ class OutlookService(BaseEmailService):
         while time.time() - start_time < actual_timeout:
             poll_count += 1
 
-            # 渐进式邮件检查：前 3 次只检查未读
+            # Progressive email checking: only check unread items in the first 3 times
             only_unseen = poll_count <= 3
 
             try:
-                # 尝试多个提供者获取邮件
+                # Try multiple providers to get mail
                 emails = self._try_providers_for_emails(
                     account,
                     count=15,
@@ -360,10 +360,10 @@ class OutlookService(BaseEmailService):
 
                 if emails:
                     logger.debug(
-                        f"[{email}] 第 {poll_count} 次轮询获取到 {len(emails)} 封邮件"
+                        f"[{email}] obtained {len(emails)} emails in the {poll_count}th poll"
                     )
 
-                    # 从邮件中查找验证码
+                    # Find the verification code from the email
                     code = self.email_parser.find_verification_code_in_emails(
                         emails,
                         target_email=email,
@@ -375,24 +375,24 @@ class OutlookService(BaseEmailService):
                         used_codes.add(code)
                         elapsed = int(time.time() - start_time)
                         logger.info(
-                            f"[{email}] 找到验证码: {code}，"
-                            f"总耗时 {elapsed}s，轮询 {poll_count} 次"
+                            f"[{email}] found verification code: {code},"
+                            f"Total time spent {elapsed}s, polling {poll_count} times"
                         )
                         self.update_status(True)
                         return code
 
             except Exception as e:
-                logger.warning(f"[{email}] 检查出错: {e}")
+                logger.warning(f"[{email}] check error: {e}")
 
-            # 等待下次轮询
+            # Wait for next polling
             time.sleep(poll_interval)
 
         elapsed = int(time.time() - start_time)
-        logger.warning(f"[{email}] 验证码超时 ({actual_timeout}s)，共轮询 {poll_count} 次")
+        logger.warning(f"[{email}] verification code timeout ({actual_timeout}s), total polling {poll_count} times")
         return None
 
     def list_emails(self, **kwargs) -> List[Dict[str, Any]]:
-        """列出所有可用的 Outlook 账户"""
+        """List all available Outlook accounts"""
         return [
             {
                 "email": account.email,
@@ -404,20 +404,20 @@ class OutlookService(BaseEmailService):
         ]
 
     def delete_email(self, email_id: str) -> bool:
-        """删除邮箱（Outlook 不支持删除账户）"""
-        logger.warning(f"Outlook 服务不支持删除账户: {email_id}")
+        """Delete mailbox (Outlook does not support deleting accounts)"""
+        logger.warning(f"Outlook service does not support deletion of account: {email_id}")
         return False
 
     def check_health(self) -> bool:
-        """检查 Outlook 服务是否可用"""
+        """Check whether the Outlook service is available"""
         if not self.accounts:
-            self.update_status(False, EmailServiceError("没有配置的账户"))
+            self.update_status(False, EmailServiceError("No account configured"))
             return False
 
-        # 测试第一个账户的连接
+        # Test the connection of the first account
         test_account = self.accounts[0]
 
-        # 尝试任一提供者连接
+        # Try any provider connection
         for provider_type in self.provider_priority:
             try:
                 provider = self._get_provider(test_account, provider_type)
@@ -426,18 +426,18 @@ class OutlookService(BaseEmailService):
                     return True
             except Exception as e:
                 logger.warning(
-                    f"Outlook 健康检查失败 ({test_account.email}, {provider_type.value}): {e}"
+                    f"Outlook health check failed ({test_account.email}, {provider_type.value}): {e}"
                 )
 
-        self.update_status(False, EmailServiceError("健康检查失败"))
+        self.update_status(False, EmailServiceError("Health check failed"))
         return False
 
     def get_provider_status(self) -> Dict[str, Any]:
-        """获取提供者状态"""
+        """Get provider status"""
         return self.failover_manager.get_status()
 
     def get_account_stats(self) -> Dict[str, Any]:
-        """获取账户统计信息"""
+        """Get account statistics"""
         total = len(self.accounts)
         oauth_count = sum(1 for acc in self.accounts if acc.has_oauth())
 
@@ -450,38 +450,38 @@ class OutlookService(BaseEmailService):
         }
 
     def add_account(self, account_config: Dict[str, Any]) -> bool:
-        """添加新的 Outlook 账户"""
+        """Add new Outlook account"""
         try:
             account = OutlookAccount.from_config(account_config)
             if not account.validate():
                 return False
 
             self.accounts.append(account)
-            logger.info(f"添加 Outlook 账户: {account.email}")
+            logger.info(f"Add Outlook account: {account.email}")
             return True
         except Exception as e:
-            logger.error(f"添加 Outlook 账户失败: {e}")
+            logger.error(f"Failed to add Outlook account: {e}")
             return False
 
     def remove_account(self, email: str) -> bool:
-        """移除 Outlook 账户"""
+        """Remove Outlook account"""
         for i, acc in enumerate(self.accounts):
             if acc.email.lower() == email.lower():
                 self.accounts.pop(i)
-                logger.info(f"移除 Outlook 账户: {email}")
+                logger.info(f"Remove Outlook account: {email}")
                 return True
         return False
 
     def reset_provider_health(self):
-        """重置所有提供者的健康状态"""
+        """Reset the health status of all providers"""
         self.health_checker.reset_all()
-        logger.info("已重置所有提供者的健康状态")
+        logger.info("Health status of all providers has been reset")
 
     def force_provider(self, provider_type: ProviderType):
-        """强制使用指定的提供者"""
+        """Force the use of the specified provider"""
         self.health_checker.force_enable(provider_type)
-        # 禁用其他提供者
+        # Disable other providers
         for pt in ProviderType:
             if pt != provider_type:
                 self.health_checker.force_disable(pt, 60)
-        logger.info(f"已强制使用提供者: {provider_type.value}")
+        logger.info(f"Provider has been forced to use: {provider_type.value}")

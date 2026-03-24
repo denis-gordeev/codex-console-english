@@ -26,7 +26,7 @@ class FakeHTTPClient:
             "kwargs": kwargs,
         })
         if not self.responses:
-            raise AssertionError(f"未准备响应: {method} {url}")
+            raise AssertionError(f"Response not prepared: {method} {url}")
         return self.responses.pop(0)
 
 

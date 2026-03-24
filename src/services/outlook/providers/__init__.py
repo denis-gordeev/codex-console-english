@@ -1,5 +1,5 @@
 """
-Outlook 提供者模块
+Outlook provider module
 """
 
 from .base import OutlookProvider, ProviderConfig
@@ -16,7 +16,7 @@ __all__ = [
 ]
 
 
-# 提供者注册表
+# Provider registry
 PROVIDER_REGISTRY = {
     'imap_old': IMAPOldProvider,
     'imap_new': IMAPNewProvider,
@@ -25,5 +25,5 @@ PROVIDER_REGISTRY = {
 
 
 def get_provider_class(provider_type: str):
-    """获取提供者类"""
+    """Get provider class"""
     return PROVIDER_REGISTRY.get(provider_type)

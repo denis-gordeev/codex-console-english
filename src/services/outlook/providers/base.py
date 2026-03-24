@@ -1,6 +1,4 @@
-"""
-Outlook 提供者抽象基类
-"""
+"""Outlook provider abstract base class"""
 
 import abc
 import logging
@@ -16,58 +14,54 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class ProviderConfig:
-    """提供者配置"""
+    """Provider configuration"""
     timeout: int = 30
     max_retries: int = 3
     proxy_url: Optional[str] = None
 
-    # 健康检查配置
+    # Health check configuration
     health_failure_threshold: int = 3
-    health_disable_duration: int = 300  # 秒
+    health_disable_duration: int = 300  # Second
 
 
 class OutlookProvider(abc.ABC):
-    """
-    Outlook 提供者抽象基类
-    定义所有提供者必须实现的接口
-    """
+    """Outlook provider abstract base class
+    Define the interface that all providers must implement"""
 
     def __init__(
         self,
         account: OutlookAccount,
         config: Optional[ProviderConfig] = None,
     ):
-        """
-        初始化提供者
+        """initialization provider
 
         Args:
-            account: Outlook 账户
-            config: 提供者配置
-        """
+            account: Outlook account
+            config: provider configuration"""
         self.account = account
         self.config = config or ProviderConfig()
 
-        # 健康状态
+        # health status
         self._health = ProviderHealth(provider_type=self.provider_type)
 
-        # 连接状态
+        # connection status
         self._connected = False
         self._last_error: Optional[str] = None
 
     @property
     @abc.abstractmethod
     def provider_type(self) -> ProviderType:
-        """获取提供者类型"""
+        """Get provider type"""
         pass
 
     @property
     def health(self) -> ProviderHealth:
-        """获取健康状态"""
+        """Get health status"""
         return self._health
 
     @property
     def is_healthy(self) -> bool:
-        """检查是否健康"""
+        """Check if it is healthy"""
         return (
             self._health.status == ProviderStatus.HEALTHY
             and not self._health.is_disabled()
@@ -75,22 +69,20 @@ class OutlookProvider(abc.ABC):
 
     @property
     def is_connected(self) -> bool:
-        """检查是否已连接"""
+        """Check if connected"""
         return self._connected
 
     @abc.abstractmethod
     def connect(self) -> bool:
-        """
-        连接到服务
+        """Connect to service
 
         Returns:
-            是否连接成功
-        """
+            Is the connection successful?"""
         pass
 
     @abc.abstractmethod
     def disconnect(self):
-        """断开连接"""
+        """Disconnect"""
         pass
 
     @abc.abstractmethod
@@ -99,81 +91,75 @@ class OutlookProvider(abc.ABC):
         count: int = 20,
         only_unseen: bool = True,
     ) -> List[EmailMessage]:
-        """
-        获取最近的邮件
+        """Get recent emails
 
         Args:
-            count: 获取数量
-            only_unseen: 是否只获取未读
+            count: Get the quantity
+            only_unseen: whether to only get unread
 
         Returns:
-            邮件列表
-        """
+            mailing list"""
         pass
 
     @abc.abstractmethod
     def test_connection(self) -> bool:
-        """
-        测试连接是否正常
+        """Test whether the connection is normal
 
         Returns:
-            连接是否正常
-        """
+            Is the connection normal?"""
         pass
 
     def record_success(self):
-        """记录成功操作"""
+        """Record successful operations"""
         self._health.record_success()
         self._last_error = None
-        logger.debug(f"[{self.account.email}] {self.provider_type.value} 操作成功")
+        logger.debug(f"[{self.account.email}] {self.provider_type.value} Operation successful")
 
     def record_failure(self, error: str):
-        """记录失败操作"""
+        """Log failed operations"""
         self._health.record_failure(error)
         self._last_error = error
 
-        # 检查是否需要禁用
+        # Check if it needs to be disabled
         if self._health.should_disable(self.config.health_failure_threshold):
             self._health.disable(self.config.health_disable_duration)
             logger.warning(
-                f"[{self.account.email}] {self.provider_type.value} 已禁用 "
-                f"{self.config.health_disable_duration} 秒，原因: {error}"
+                f"[{self.account.email}] {self.provider_type.value} disabled"
+                f"{self.config.health_disable_duration} seconds, reason: {error}"
             )
         else:
             logger.warning(
-                f"[{self.account.email}] {self.provider_type.value} 操作失败 "
+                f"[{self.account.email}] {self.provider_type.value} Operation failed"
                 f"({self._health.failure_count}/{self.config.health_failure_threshold}): {error}"
             )
 
     def check_health(self) -> bool:
-        """
-        检查健康状态
+        """Check health status
 
         Returns:
-            是否健康可用
-        """
-        # 检查是否被禁用
+            Is it healthy and available?"""
+        # Check if disabled
         if self._health.is_disabled():
             logger.debug(
-                f"[{self.account.email}] {self.provider_type.value} 已被禁用，"
-                f"将在 {self._health.disabled_until} 后恢复"
+                f"[{self.account.email}] {self.provider_type.value} is disabled,"
+                f"Will resume after {self._health.disabled_until}"
             )
             return False
 
         return self._health.status in (ProviderStatus.HEALTHY, ProviderStatus.DEGRADED)
 
     def __enter__(self):
-        """上下文管理器入口"""
+        """Context manager entry"""
         self.connect()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """上下文管理器出口"""
+        """Context manager exit"""
         self.disconnect()
         return False
 
     def __str__(self) -> str:
-        """字符串表示"""
+        """string representation"""
         return f"{self.__class__.__name__}({self.account.email})"
 
     def __repr__(self) -> str:

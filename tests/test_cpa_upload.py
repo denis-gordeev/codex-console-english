@@ -38,7 +38,7 @@ def test_upload_to_cpa_accepts_management_root_url(monkeypatch):
     )
 
     assert success is True
-    assert message == "上传成功"
+    assert message == "Upload successful"
     assert calls[0]["url"] == "https://cpa.example.com/v0/management/auth-files"
 
 
@@ -83,7 +83,7 @@ def test_upload_to_cpa_falls_back_to_raw_json_when_multipart_returns_404(monkeyp
     )
 
     assert success is True
-    assert message == "上传成功"
+    assert message == "Upload successful"
     assert calls[0]["kwargs"]["multipart"] is not None
     assert calls[1]["url"] == "https://cpa.example.com/v0/management/auth-files?name=tester%40example.com.json"
     assert calls[1]["kwargs"]["headers"]["Content-Type"] == "application/json"
@@ -105,6 +105,6 @@ def test_test_cpa_connection_uses_get_and_normalized_url(monkeypatch):
     )
 
     assert success is True
-    assert message == "CPA 连接测试成功"
+    assert message == "CPA connection test successful"
     assert calls[0]["url"] == "https://cpa.example.com/v0/management/auth-files"
     assert calls[0]["kwargs"]["headers"]["Authorization"] == "Bearer token-123"

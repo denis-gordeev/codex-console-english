@@ -1,10 +1,10 @@
 /**
- * 通用工具库
- * 包含 Toast 通知、主题切换、工具函数等
+ * General tool library
+ * Contains Toast notifications, theme switching, tool functions, etc.
  */
 
 // ============================================
-// Toast 通知系统
+// Toast notification system
 // ============================================
 
 class ToastManager {
@@ -32,7 +32,7 @@ class ToastManager {
 
         this.container.appendChild(toast);
 
-        // 自动移除
+        // Automatically remove
         setTimeout(() => {
             toast.style.animation = 'slideOut 0.3s ease forwards';
             setTimeout(() => toast.remove(), 300);
@@ -74,11 +74,11 @@ class ToastManager {
     }
 }
 
-// 全局 Toast 实例
+//Global Toast instance
 const toast = new ToastManager();
 
 // ============================================
-// 主题管理
+// theme management
 // ============================================
 
 class ThemeManager {
@@ -116,16 +116,16 @@ class ThemeManager {
         const buttons = document.querySelectorAll('.theme-toggle');
         buttons.forEach(btn => {
             btn.innerHTML = this.theme === 'light' ? '🌙' : '☀️';
-            btn.title = this.theme === 'light' ? '切换到暗色模式' : '切换到亮色模式';
+            btn.title = this.theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode';
         });
     }
 }
 
-// 全局主题实例
+//Global theme instance
 const theme = new ThemeManager();
 
 // ============================================
-// 加载状态管理
+// Loading state management
 // ============================================
 
 class LoadingManager {
@@ -133,7 +133,7 @@ class LoadingManager {
         this.activeLoaders = new Set();
     }
 
-    show(element, text = '加载中...') {
+    show(element, text = 'Loading...') {
         if (typeof element === 'string') {
             element = document.getElementById(element);
         }
@@ -169,7 +169,7 @@ class LoadingManager {
 const loading = new LoadingManager();
 
 // ============================================
-// API 请求封装
+//API request encapsulation
 // ============================================
 
 class ApiClient {
@@ -205,9 +205,9 @@ class ApiClient {
 
             return data;
         } catch (error) {
-            // 网络错误处理
+            //Network error handling
             if (!error.response) {
-                toast.error('网络连接失败，请检查网络');
+                toast.error('Network connection failed, please check the network');
             }
             throw error;
         }
@@ -237,7 +237,7 @@ class ApiClient {
 const api = new ApiClient();
 
 // ============================================
-// 事件委托助手
+//Event delegation helper
 // ============================================
 
 function delegate(element, eventType, selector, handler) {
@@ -250,7 +250,7 @@ function delegate(element, eventType, selector, handler) {
 }
 
 // ============================================
-// 防抖和节流
+// Anti-shake and throttling
 // ============================================
 
 function debounce(func, wait) {
@@ -277,7 +277,7 @@ function throttle(func, limit) {
 }
 
 // ============================================
-// 格式化工具
+//Formatting tools
 // ============================================
 
 const format = {
@@ -309,10 +309,10 @@ const format = {
         const hours = Math.floor(minutes / 60);
         const days = Math.floor(hours / 24);
 
-        if (seconds < 60) return '刚刚';
-        if (minutes < 60) return `${minutes} 分钟前`;
-        if (hours < 24) return `${hours} 小时前`;
-        if (days < 7) return `${days} 天前`;
+        if (seconds < 60) return 'just';
+        if (minutes < 60) return `${minutes} minutes ago`;
+        if (hours < 24) return `${hours} hours ago`;
+        if (days < 7) return `${days} days ago`;
         return this.dateShort(dateStr);
     },
 
@@ -331,31 +331,31 @@ const format = {
 };
 
 // ============================================
-// 状态映射
+// state mapping
 // ============================================
 
 const statusMap = {
     account: {
-        active: { text: '活跃', class: 'active' },
-        expired: { text: '过期', class: 'expired' },
-        banned: { text: '封禁', class: 'banned' },
-        failed: { text: '失败', class: 'failed' }
+        active: { text: 'active', class: 'active' },
+        expired: { text: 'expired', class: 'expired' },
+        banned: { text: 'banned', class: 'banned' },
+        failed: { text: 'failed', class: 'failed' }
     },
     task: {
-        pending: { text: '等待中', class: 'pending' },
-        running: { text: '运行中', class: 'running' },
-        completed: { text: '已完成', class: 'completed' },
-        failed: { text: '失败', class: 'failed' },
-        cancelled: { text: '已取消', class: 'disabled' }
+        pending: { text: 'Waiting', class: 'pending' },
+        running: { text: 'running', class: 'running' },
+        completed: { text: 'Completed', class: 'completed' },
+        failed: { text: 'failed', class: 'failed' },
+        canceled: { text: 'Cancelled', class: 'disabled' }
     },
     service: {
         tempmail: 'Tempmail.lol',
         outlook: 'Outlook',
         moe_mail: 'MoeMail',
-        temp_mail: 'Temp-Mail（自部署）',
+        temp_mail: 'Temp-Mail (self-deployment)',
         duck_mail: 'DuckMail',
         freemail: 'Freemail',
-        imap_mail: 'IMAP 邮箱'
+        imap_mail: 'IMAP mailbox'
     }
 };
 
@@ -372,10 +372,10 @@ function getServiceTypeText(type) {
 }
 
 const accountStatusIconMap = {
-    active:  { icon: '🟢', title: '活跃' },
-    expired: { icon: '🟡', title: '过期' },
-    banned:  { icon: '🔴', title: '封禁' },
-    failed:  { icon: '❌', title: '失败' },
+    active: { icon: '🟢', title: 'active' },
+    expired: { icon: '🟡', title: 'Expired' },
+    banned: { icon: '🔴', title: 'banned' },
+    failed: { icon: '❌', title: 'Failed' },
 };
 
 function getStatusIcon(status) {
@@ -385,10 +385,10 @@ function getStatusIcon(status) {
 }
 
 // ============================================
-// 确认对话框
+// Confirmation dialog
 // ============================================
 
-function confirm(message, title = '确认操作') {
+function confirm(message, title = 'Confirm operation') {
     return new Promise((resolve) => {
         const modal = document.createElement('div');
         modal.className = 'modal active';
@@ -400,8 +400,8 @@ function confirm(message, title = '确认操作') {
                 <div class="modal-body">
                     <p style="margin-bottom: var(--spacing-lg);">${message}</p>
                     <div class="form-actions" style="margin-top: 0; padding-top: 0; border-top: none;">
-                        <button class="btn btn-secondary" id="confirm-cancel">取消</button>
-                        <button class="btn btn-danger" id="confirm-ok">确认</button>
+                        <button class="btn btn-secondary" id="confirm-cancel">Cancel</button>
+                        <button class="btn btn-danger" id="confirm-ok">Confirm</button>
                     </div>
                 </div>
             </div>
@@ -432,17 +432,17 @@ function confirm(message, title = '确认操作') {
 }
 
 // ============================================
-// 复制到剪贴板
+//Copy to clipboard
 // ============================================
 
 async function copyToClipboard(text) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
         try {
             await navigator.clipboard.writeText(text);
-            toast.success('已复制到剪贴板');
+            toast.success('Copied to clipboard');
             return true;
         } catch (err) {
-            // 降级到 execCommand
+            //Downgrade to execCommand
         }
     }
     try {
@@ -455,18 +455,18 @@ async function copyToClipboard(text) {
         const ok = document.execCommand('copy');
         document.body.removeChild(ta);
         if (ok) {
-            toast.success('已复制到剪贴板');
+            toast.success('Copied to clipboard');
             return true;
         }
         throw new Error('execCommand failed');
     } catch (err) {
-        toast.error('复制失败');
+        toast.error('Copy failed');
         return false;
     }
 }
 
 // ============================================
-// 本地存储助手
+//Local storage helper
 // ============================================
 
 const storage = {
@@ -494,23 +494,23 @@ const storage = {
 };
 
 // ============================================
-// 页面初始化
+// Page initialization
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 初始化主题
+    //Initialize theme
     theme.applyTheme();
 
-    // 全局键盘快捷键
+    //Global keyboard shortcuts
     document.addEventListener('keydown', (e) => {
-        // Ctrl/Cmd + K: 聚焦搜索
+        // Ctrl/Cmd + K: Focus search
         if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
             e.preventDefault();
             const searchInput = document.querySelector('#search-input, [type="search"]');
             if (searchInput) searchInput.focus();
         }
 
-        // Escape: 关闭模态框
+        // Escape: Close the modal box
         if (e.key === 'Escape') {
             const activeModal = document.querySelector('.modal.active');
             if (activeModal) activeModal.classList.remove('active');
@@ -518,7 +518,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// 导出全局对象
+//Export global object
 window.toast = toast;
 window.theme = theme;
 window.loading = loading;

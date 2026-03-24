@@ -1,17 +1,17 @@
 /*
- * OpenAI 注册系统 - 主样式表
- * 现代化、响应式设计，支持暗色模式
+ * OpenAI registration system - main style sheet
+ * Modern, responsive design, supports dark mode
  */
 
-/* CSS 变量 - 亮色主题 */
+/* CSS variables - light theme */
 :root {
-    /* 主色调 */
+    /* Main color */
     --primary-color: #10a37f;
     --primary-hover: #0d8a6a;
     --primary-light: rgba(16, 163, 127, 0.1);
     --primary-dark: #0a7d5e;
 
-    /* 语义色 */
+    /* Semantic color */
     --danger-color: #ef4444;
     --danger-hover: #dc2626;
     --danger-light: rgba(239, 68, 68, 0.1);
@@ -22,7 +22,7 @@
     --info-color: #3b82f6;
     --info-light: rgba(59, 130, 246, 0.1);
 
-    /* 中性色 */
+    /* Neutral color */
     --secondary-color: #6b7280;
     --background: #f8fafc;
     --surface: #ffffff;
@@ -30,34 +30,34 @@
     --border: #e2e8f0;
     --border-light: #f1f5f9;
 
-    /* 文字色 */
+    /* text color */
     --text-primary: #0f172a;
     --text-secondary: #64748b;
     --text-muted: #94a3b8;
 
-    /* 阴影 */
+    /* shadow */
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 
-    /* 圆角 */
+    /* rounded corners */
     --radius-sm: 4px;
     --radius: 8px;
     --radius-lg: 12px;
     --radius-xl: 16px;
     --radius-full: 9999px;
 
-    /* 动画 */
+    /* Animation */
     --transition-fast: 150ms ease;
     --transition: 200ms ease;
     --transition-slow: 300ms ease;
 
-    /* 字体 */
+    /* font */
     --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Droid Sans Mono', monospace;
 
-    /* 间距 */
+    /* spacing */
     --spacing-xs: 4px;
     --spacing-sm: 8px;
     --spacing-md: 16px;
@@ -65,7 +65,7 @@
     --spacing-xl: 32px;
 }
 
-/* 暗色主题 */
+/* dark theme */
 [data-theme="dark"] {
     --primary-color: #34d399;
     --primary-hover: #6ee7b7;
@@ -99,7 +99,7 @@
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
 }
 
-/* 重置样式 */
+/* Reset style */
 *, *::before, *::after {
     margin: 0;
     padding: 0;
@@ -122,7 +122,7 @@ body {
 }
 
 /* ============================================
-   布局
+   layout
    ============================================ */
 
 .container {
@@ -132,7 +132,7 @@ body {
 }
 
 /* ============================================
-   导航栏
+   Navigation bar
    ============================================ */
 
 .navbar {
@@ -202,7 +202,7 @@ body {
     box-shadow: var(--shadow-sm);
 }
 
-/* 主题切换按钮 */
+/* theme switching button */
 .theme-toggle {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -220,7 +220,7 @@ body {
 }
 
 /* ============================================
-   主内容区
+   Main content area
    ============================================ */
 
 .main-content {
@@ -244,7 +244,7 @@ body {
 }
 
 /* ============================================
-   卡片
+   card
    ============================================ */
 
 .card {
@@ -280,7 +280,7 @@ body {
     padding: var(--spacing-lg);
 }
 
-/* 工具栏卡片允许下拉菜单溢出 */
+/* Toolbar cards allow drop-down menus to overflow */
 .card.toolbar-card {
     overflow: visible;
 }
@@ -290,7 +290,7 @@ body {
 }
 
 /* ============================================
-   表单元素
+   form elements
    ============================================ */
 
 .form-group {
@@ -357,7 +357,7 @@ body {
     border-top: 1px solid var(--border-light);
 }
 
-/* Checkbox 样式优化 */
+/* Checkbox style optimization */
 .form-group input[type="checkbox"] {
     width: auto;
     margin-right: var(--spacing-sm);
@@ -365,7 +365,7 @@ body {
 }
 
 /* ============================================
-   按钮
+   button
    ============================================ */
 
 .btn {
@@ -484,7 +484,7 @@ body {
     height: 36px;
 }
 
-/* 加载状态 */
+/* Loading status */
 .btn.loading {
     position: relative;
     color: transparent;
@@ -508,7 +508,7 @@ body {
 }
 
 /* ============================================
-   控制台日志
+   console log
    ============================================ */
 
 .console-log {
@@ -555,14 +555,14 @@ body {
 .log-line.warning { color: #e0af68; }
 .log-line.debug { color: #565f89; }
 
-/* 时间戳样式 */
+/* timestamp style */
 .log-line .timestamp {
     color: #565f89;
     margin-right: var(--spacing-sm);
 }
 
 /* ============================================
-   状态徽章
+   status badge
    ============================================ */
 
 .status-badge {
@@ -624,7 +624,7 @@ body {
 }
 
 /* ============================================
-   统计卡片
+   Statistics cards
    ============================================ */
 
 .stats-grid {
@@ -683,7 +683,7 @@ body {
 .stat-card.info .stat-value { color: var(--info-color); }
 
 /* ============================================
-   数据表格
+   data table
    ============================================ */
 
 .table-container {
@@ -734,7 +734,7 @@ body {
 }
 
 /* ============================================
-   工具栏
+   Toolbar
    ============================================ */
 
 .toolbar {
@@ -777,7 +777,7 @@ body {
 }
 
 /* ============================================
-   分页
+   Pagination
    ============================================ */
 
 .pagination {
@@ -798,7 +798,7 @@ body {
 }
 
 /* ============================================
-   标签页
+   tab page
    ============================================ */
 
 .tabs {
@@ -845,7 +845,7 @@ body {
 }
 
 /* ============================================
-   模态框
+   modal box
    ============================================ */
 
 .modal {
@@ -927,7 +927,7 @@ body {
 }
 
 /* ============================================
-   下拉菜单
+   drop down menu
    ============================================ */
 
 .dropdown {
@@ -978,7 +978,7 @@ body {
 }
 
 /* ============================================
-   Toast 通知
+   Toast notification
    ============================================ */
 
 .toast-container {
@@ -1033,7 +1033,7 @@ body {
 }
 
 /* ============================================
-   进度条
+   progress bar
    ============================================ */
 
 .progress-bar-container {
@@ -1066,7 +1066,7 @@ body {
 }
 
 /* ============================================
-   空状态
+   Empty state
    ============================================ */
 
 .empty-state {
@@ -1095,7 +1095,7 @@ body {
 }
 
 /* ============================================
-   骨架屏
+   skeleton screen
    ============================================ */
 
 .skeleton {
@@ -1123,7 +1123,7 @@ body {
 }
 
 /* ============================================
-   信息网格
+   information grid
    ============================================ */
 
 .info-grid {
@@ -1150,7 +1150,7 @@ body {
 }
 
 /* ============================================
-   导入区域
+   import area
    ============================================ */
 
 .import-info {
@@ -1200,7 +1200,7 @@ body {
 }
 
 /* ============================================
-   批量统计
+   Batch statistics
    ============================================ */
 
 .batch-stats {
@@ -1224,7 +1224,7 @@ body {
 }
 
 /* ============================================
-   响应式设计
+   Responsive design
    ============================================ */
 
 @media (max-width: 1024px) {
@@ -1317,7 +1317,7 @@ body {
 }
 
 /* ============================================
-   滚动条样式
+   Scroll bar style
    ============================================ */
 
 ::-webkit-scrollbar {
@@ -1339,7 +1339,7 @@ body {
 }
 
 /* ============================================
-   选择样式
+   Select style
    ============================================ */
 
 ::selection {
@@ -1348,7 +1348,7 @@ body {
 }
 
 /* ============================================
-   打印样式
+   print style
    ============================================ */
 
 @media print {

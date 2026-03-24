@@ -1,116 +1,161 @@
 # codex-console
 
-An enhanced version based on continuous fixes and maintenance from [cnlimiter/codex-manager](https://github.com/cnlimiter/codex-manager).
+An actively maintained, compatibility-focused fork of [cnlimiter/codex-manager](https://github.com/cnlimiter/codex-manager).
 
-The goal of this version is very straightforward: to make up for the pitfalls in the recent OpenAI registration link that "it was still running yesterday, but suddenly crashed today", making registration, login, token acquisition, and packaged operation more stable.
+The goal of this fork is simple: fix the parts of the recent OpenAI registration flow that became unreliable, so registration, login, token retrieval, and packaged execution work more consistently.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 
-##QQGroup
+## Community
 
-- Communication group: https://qm.qq.com/q/ZTCKxawxeo
+- Group chat: https://qm.qq.com/q/ZTCKxawxeo
 
 ## Acknowledgments
 
-First of all, I would like to thank the upstream project author [cnlimiter](https://github.com/cnlimiter) for providing excellent basic projects.
+Thanks to the original author, [cnlimiter](https://github.com/cnlimiter), for the upstream project and foundation.
 
-This warehouse is based on the original project ideas and structure for compatibility repair, process adjustment and experience optimization, and is suitable for continued use as a "currently available repair and maintenance version".
+This repository keeps the original structure and overall approach, while applying compatibility fixes, flow updates, and usability improvements. It is intended to be a practical maintained fork that still works with the current flow.
 
-## What is fixed in this branch?
+## Progress Tracker
 
-In order to adapt to the current registration link, this branch focuses on the following issues:
+### Completed
 
-1. Added Sentinel POW solution logic
-OpenAI will now forcefully verify Sentinel POW. It is no longer possible to pass null values ​​​​directly. The actual solution process is supplemented here.
+- Rewrote the public `README.md` into clear English and aligned it with the current project positioning.
+- Translated the main web app surface, settings UI, task manager copy, and Outlook service/provider layers into English.
+- Normalized several user-facing success and error messages so tests and runtime behavior use the same language.
+- Added and updated tests around CPA upload URL normalization and DuckMail service wiring.
 
-2. Split registration and login into two sections
-Now after the registration is completed, the available token is usually not returned directly, but jumps to the bound mobile phone or subsequent page.
-This branch is changed to "Successfully register first, then go through the login process separately to get the token" to avoid getting stuck in the old logic.
+### Next Iterations
 
-3. Remove repeated sending of verification codes
-During the login process, the server itself will automatically send a verification code email, and the old logic will be sent manually again, which can easily lead to conflicts between the old and new verification codes.
-Now change it to waiting for the verification code email automatically sent by the system.
+- Replace remaining deprecated Pydantic class-based `Config` declarations with `ConfigDict`.
+- Migrate FastAPI startup and shutdown hooks from `@app.on_event(...)` to a lifespan handler.
+- Continue polishing wording consistency in logs, tests, and low-traffic routes as new gaps are found.
+- Expand regression coverage for translated API messages and settings flows.
 
-4. Fix the page judgment problem in the re-login process
-In response to changes in page flow when logging in again, the login entrance and password submission logic have been adjusted to reduce the situation of being stuck on the wrong page.
+## What This Branch Fixes
 
-5. Optimize terminal and Web UI prompt copywriting
-While retaining readability, change some prompts to be more friendly, so that at least you won't feel like you are being scolded when you make a mistake.
+To match the current registration flow, this branch mainly addresses the following issues:
 
-##Core competencies
+1. Sentinel POW support
 
-- Web UI manages registration tasks and account data
-- Supports batch registration, real-time log viewing, and basic task management
-- Support multiple email services to receive codes
-- Supports SQLite and remote PostgreSQL
-- Supports packaging into Windows/Linux/macOS executable files
-- More adapted to the current OpenAI registration and login links
+   OpenAI now enforces Sentinel POW validation. Passing an empty value is no longer enough, so this branch adds an actual POW solving flow.
 
-##Environmental requirements
+2. Registration and login are handled separately
+
+   Registration often no longer returns a usable token immediately. Instead, it may redirect to phone binding or another follow-up step.
+
+   This branch changes the flow to: register successfully first, then run a separate login flow to obtain the token. That avoids getting stuck in the old logic.
+
+3. Duplicate verification email sending removed
+
+   During login, the server already sends the verification email automatically. The old logic sent another one manually, which could cause code conflicts.
+
+   This branch now waits for the verification email sent by the system.
+
+4. Re-login flow page handling fixed
+
+   The login entry and password submission logic were updated to match recent page flow changes, reducing cases where the process gets stuck on the wrong page.
+
+5. Terminal and Web UI copy improved
+
+   Error and status messages were made more readable and less hostile while keeping the same operational meaning.
+
+## Core Features
+
+- Web UI for managing registration tasks and account data
+- Batch registration support
+- Real-time log viewing
+- Basic task management
+- Multiple email service integrations
+- SQLite and remote PostgreSQL support
+- Packaging for Windows, Linux, and macOS executables
+- Better compatibility with the current OpenAI registration and login flow
+
+## Requirements
 
 - Python 3.10+
 - `uv` (recommended) or `pip`
 
-## Install dependencies
+## Install Dependencies
 
 ```bash
-# Use uv (recommended)
+# Using uv (recommended)
 uv sync
 
-# or use pip
+# Or using pip
 pip install -r requirements.txt
-```## Environment variable configuration
+```
 
-Optional. copy`.env.example`for`.env`Modify as needed:```bash
-cp .env.example .env
-```Commonly used variables are as follows:
+## Environment Variables
 
-| variable | description | default value |
-| --- | --- | --- |
-|`APP_HOST`| Listening host |`0.0.0.0` |
-| `APP_PORT`| Listening port |`8000` |
-| `APP_ACCESS_PASSWORD`| Web UI Access Key |`admin123` |
-| `APP_DATABASE_URL`| Database connection string |`data/database.db`|
-
-Priority:`Command line parameters > Environment variables (.env) > Database settings >Default value`
-
-## Start Web UI
+Optional. Copy `.env.example` to `.env` and adjust as needed:
 
 ```bash
-# Start by default (127.0.0.1:8000)
-pythonwebui.py
+cp .env.example .env
+```
 
-# Specify address and port
+Common variables:
+
+| Variable | Description | Default |
+| --- | --- | --- |
+| `APP_HOST` | Bind host | `0.0.0.0` |
+| `APP_PORT` | Bind port | `8000` |
+| `APP_ACCESS_PASSWORD` | Web UI access password | `admin123` |
+| `APP_DATABASE_URL` | Database connection string | `data/database.db` |
+
+Priority order:
+
+`CLI arguments > environment variables (.env) > database settings > defaults`
+
+## Start The Web UI
+
+```bash
+# Default start (127.0.0.1:8000)
+python webui.py
+
+# Specify host and port
 python webui.py --host 0.0.0.0 --port 8080
 
 # Debug mode (hot reload)
 python webui.py --debug
 
-# Set Web UI access key
+# Set the Web UI access password
 python webui.py --access-password mypassword
 
-# Combination parameters
+# Combine options
 python webui.py --host 0.0.0.0 --port 8080 --access-password mypassword
-```illustrate:
+```
 
--`--access-password`takes precedence over key settings in the database
-- This parameter only takes effect for this startup
-- Packaged exe also supports this parameter
+Notes:
 
-For example:```bash
+- `--access-password` takes precedence over the password stored in the database
+- It only applies to the current launch
+- The packaged executable also supports this argument
+
+Example:
+
+```bash
 codex-console.exe --access-password mypassword
-```After startup visit:
+```
+
+Then open:
 
 [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
-## Docker deployment
+## Docker Deployment
 
-### Use docker-compose```bash
+### Using docker-compose
+
+```bash
 docker-compose up -d
-```you can`docker-compose.yml`Modify environment variables, such as ports and access passwords.
+```
 
-### Use docker run```bash
+You can edit environment variables in [docker-compose.yml](/Users/denis/programming/codex-console-english/docker-compose.yml), such as the port and access password.
+
+### Using docker run
+
+```bash
 docker run -d \
   -p 1455:1455 \
   -e WEBUI_HOST=0.0.0.0 \
@@ -119,50 +164,72 @@ docker run -d \
   -v $(pwd)/data:/app/data \
   --name codex-console \
   ghcr.io/<yourname>/codex-console:latest
-```illustrate:
+```
 
--`WEBUI_HOST`: Listening host, default`0.0.0.0`
-- `WEBUI_PORT`: Listening port, default`1455`
+Notes:
+
+- `WEBUI_HOST`: bind host, default `0.0.0.0`
+- `WEBUI_PORT`: bind port, default `1455`
 - `WEBUI_ACCESS_PASSWORD`: Web UI access password
--`DEBUG`: set to`1`or`true`Debug mode can be enabled
--`LOG_LEVEL`: Log level, for example`info`,`debug`Notice:`-v $(pwd)/data:/app/data`Very important, this will persist the database and account data to the host machine. Otherwise, the data may disappear as soon as the container is restarted.
+- `DEBUG`: set to `1` or `true` to enable debug mode
+- `LOG_LEVEL`: log level, for example `info` or `debug`
 
-## Use remote PostgreSQL```bash
+`-v $(pwd)/data:/app/data` is important. It persists the database and account data on the host. Without it, your data may disappear when the container restarts.
+
+## Using Remote PostgreSQL
+
+```bash
 export APP_DATABASE_URL="postgresql://user:password@host:5432/dbname"
 python webui.py
-```Also supports`DATABASE_URL`, but with a lower priority than`APP_DATABASE_URL`.
+```
 
-##Package into executable file```bash
+`DATABASE_URL` is also supported, but it has lower priority than `APP_DATABASE_URL`.
+
+## Build An Executable
+
+```bash
 # Windows
 build.bat
 
 # Linux/macOS
 bash build.sh
-```After Windows packaging is completed, it will be in`dist/`The directory generates files similar to the following:```text
+```
+
+After a successful Windows build, the output in `dist/` will look like:
+
+```text
 dist/codex-console-windows-X64.exe
-```If packaging fails, check first:
+```
 
-- Whether Python has been added to PATH
-- Whether the dependencies are installed completely
-- Whether the anti-virus software blocks the PyInstaller product
-- Is there a more specific error log in the terminal?
+If packaging fails, check:
 
-##Project positioning
+- Whether Python is in `PATH`
+- Whether all dependencies are installed
+- Whether antivirus software blocked the PyInstaller artifact
+- Whether the terminal output contains a more specific error
 
-This repository is better suited as:
+## Project Positioning
 
-- A restored and enhanced version of the original project
-- Compatible maintenance version of the current registered link
--Basic version developed by myself
+This repository is best understood as:
 
-If you plan to release it publicly, it is recommended to explicitly write in the repository description:`Forked and fixed from cnlimiter/codex-manager`This not only makes it easier for others to understand the source, but also gives more respect to the upstream author.
+- A repaired and enhanced fork of the original project
+- A compatibility-maintained version for the current registration flow
+- A practical base for your own secondary development
 
-## Warehouse naming
+If you plan to publish it publicly, it is a good idea to make the origin explicit in the repository description:
 
-Current warehouse name:`codex-console`
+`Forked and fixed from cnlimiter/codex-manager`
+
+That makes the source clearer for other users and gives proper credit to the upstream author.
+
+## Repository Name
+
+Current repository name:
+
+`codex-console`
 
 ## Disclaimer
 
-This project is only for learning, research and technical exchange. Please abide by the relevant platform and service terms and do not use it for illegal, abusive or illegal purposes.
+This project is for learning, research, and technical discussion only. Please follow the relevant platform rules and terms of service, and do not use it for abuse, violations, or illegal activity.
 
-Any risks and consequences arising from the use of this project are borne by the user.
+Any risks or consequences resulting from use of this project are the responsibility of the user.

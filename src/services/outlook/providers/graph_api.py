@@ -1,6 +1,6 @@
 """
-Graph API 提供者
-使用 Microsoft Graph REST API
+Graph API provider
+Using the Microsoft Graph REST API
 """
 
 import json
@@ -21,12 +21,12 @@ logger = logging.getLogger(__name__)
 
 class GraphAPIProvider(OutlookProvider):
     """
-    Graph API 提供者
-    使用 Microsoft Graph REST API 获取邮件
-    需要 graph.microsoft.com/.default scope
+    Graph API provider
+    Get mail using Microsoft Graph REST API
+    Requires graph.microsoft.com/.default scope
     """
 
-    # Graph API 端点
+    # Graph API endpoint
     GRAPH_API_BASE = "https://graph.microsoft.com/v1.0"
     MESSAGES_ENDPOINT = "/me/mailFolders/inbox/messages"
 
@@ -41,25 +41,25 @@ class GraphAPIProvider(OutlookProvider):
     ):
         super().__init__(account, config)
 
-        # Token 管理器
+        # Token Manager
         self._token_manager: Optional[TokenManager] = None
 
-        # 注意：Graph API 必须使用 OAuth2
+        # Note: Graph API must use OAuth2
         if not account.has_oauth():
             logger.warning(
-                f"[{self.account.email}] Graph API 提供者需要 OAuth2 配置 "
+                f"[{self.account.email}] Graph API provider requires OAuth2 configuration"
                 f"(client_id + refresh_token)"
             )
 
     def connect(self) -> bool:
         """
-        验证连接（获取 Token）
+        Verify connection (obtain Token)
 
         Returns:
-            是否连接成功
+            Is the connection successful?
         """
         if not self.account.has_oauth():
-            error = "Graph API 需要 OAuth2 配置"
+            error = "Graph API requires OAuth2 configuration"
             self.record_failure(error)
             logger.error(f"[{self.account.email}] {error}")
             return False
@@ -72,18 +72,18 @@ class GraphAPIProvider(OutlookProvider):
                 self.config.timeout,
             )
 
-        # 尝试获取 Token
+        # Try to get Token
         token = self._token_manager.get_access_token()
         if token:
             self._connected = True
             self.record_success()
-            logger.info(f"[{self.account.email}] Graph API 连接成功")
+            logger.info(f"[{self.account.email}] Graph API connection successful")
             return True
 
         return False
 
     def disconnect(self):
-        """断开连接（清除状态）"""
+        """Disconnect (clear status)"""
         self._connected = False
 
     def get_recent_emails(
@@ -92,27 +92,27 @@ class GraphAPIProvider(OutlookProvider):
         only_unseen: bool = True,
     ) -> List[EmailMessage]:
         """
-        获取最近的邮件
+        Get recent emails
 
         Args:
-            count: 获取数量
-            only_unseen: 是否只获取未读
+            count: Get the quantity
+            only_unseen: whether to only get unread
 
         Returns:
-            邮件列表
+            mailing list
         """
         if not self._connected:
             if not self.connect():
                 return []
 
         try:
-            # 获取 Access Token
+            # Get Access Token
             token = self._token_manager.get_access_token()
             if not token:
-                self.record_failure("无法获取 Access Token")
+                self.record_failure("Unable to obtain Access Token")
                 return []
 
-            # 构建 API 请求
+            # Build API request
             url = f"{self.GRAPH_API_BASE}{self.MESSAGES_ENDPOINT}"
 
             params = {
@@ -121,16 +121,16 @@ class GraphAPIProvider(OutlookProvider):
                 "$orderby": "receivedDateTime desc",
             }
 
-            # 只获取未读邮件
+            # Get only unread emails
             if only_unseen:
                 params["$filter"] = "isRead eq false"
 
-            # 构建代理配置
+            # Build proxy configuration
             proxies = None
             if self.config.proxy_url:
                 proxies = {"http": self.config.proxy_url, "https": self.config.proxy_url}
 
-            # 发送请求（curl_cffi 自动对 params 进行 URL 编码）
+            #Send request (curl_cffi automatically URL-encodes params)
             resp = _requests.get(
                 url,
                 params=params,
@@ -145,23 +145,23 @@ class GraphAPIProvider(OutlookProvider):
             )
 
             if resp.status_code == 401:
-                # Token 无 Graph 权限（client_id 未授权），清除缓存但不记录健康失败
-                # 避免因权限不足导致健康检查器禁用该提供者，影响其他账户
+                # Token has no Graph permission (client_id is not authorized), clears the cache but does not record health failures
+                # Avoid the health checker disabling the provider due to insufficient permissions and affecting other accounts
                 if self._token_manager:
                     self._token_manager.clear_cache()
                 self._connected = False
-                logger.warning(f"[{self.account.email}] Graph API 返回 401，client_id 可能无 Graph 权限，跳过")
+                logger.warning(f"[{self.account.email}] Graph API returns 401, client_id may not have Graph permission, skip")
                 return []
 
             if resp.status_code != 200:
                 error_body = resp.text[:200]
                 self.record_failure(f"HTTP {resp.status_code}: {error_body}")
-                logger.error(f"[{self.account.email}] Graph API 请求失败: HTTP {resp.status_code}")
+                logger.error(f"[{self.account.email}] Graph API request failed: HTTP {resp.status_code}")
                 return []
 
             data = resp.json()
 
-            # 解析邮件
+            # Parse emails
             messages = data.get("value", [])
             emails = []
 
@@ -171,32 +171,32 @@ class GraphAPIProvider(OutlookProvider):
                     if email_msg:
                         emails.append(email_msg)
                 except Exception as e:
-                    logger.warning(f"[{self.account.email}] 解析 Graph API 邮件失败: {e}")
+                    logger.warning(f"[{self.account.email}] failed to parse Graph API email: {e}")
 
             self.record_success()
             return emails
 
         except Exception as e:
             self.record_failure(str(e))
-            logger.error(f"[{self.account.email}] Graph API 获取邮件失败: {e}")
+            logger.error(f"[{self.account.email}] Graph API failed to get email: {e}")
             return []
 
     def _parse_graph_message(self, msg: dict) -> Optional[EmailMessage]:
         """
-        解析 Graph API 消息
+        Parse Graph API messages
 
         Args:
-            msg: Graph API 消息对象
+            msg: Graph API message object
 
         Returns:
-            EmailMessage 对象
+            EmailMessage object
         """
-        # 解析发件人
+        # Parse sender
         from_info = msg.get("from", {})
         sender_info = from_info.get("emailAddress", {})
         sender = sender_info.get("address", "")
 
-        # 解析收件人
+        # Parse the recipient
         recipients = []
         for recipient in msg.get("toRecipients", []):
             addr_info = recipient.get("emailAddress", {})
@@ -204,19 +204,19 @@ class GraphAPIProvider(OutlookProvider):
             if addr:
                 recipients.append(addr)
 
-        # 解析日期
+        # Parse date
         received_at = None
         received_timestamp = 0
         try:
             date_str = msg.get("receivedDateTime", "")
             if date_str:
-                # ISO 8601 格式
+                # ISO 8601 format
                 received_at = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
                 received_timestamp = int(received_at.timestamp())
         except Exception:
             pass
 
-        # 获取正文
+        # Get the text
         body_info = msg.get("body", {})
         body = body_info.get("content", "")
         body_preview = msg.get("bodyPreview", "")
@@ -236,15 +236,15 @@ class GraphAPIProvider(OutlookProvider):
 
     def test_connection(self) -> bool:
         """
-        测试 Graph API 连接
+        Test Graph API connection
 
         Returns:
-            连接是否正常
+            Is the connection normal?
         """
         try:
-            # 尝试获取一封邮件来测试连接
+            # Try to get an email to test the connection
             emails = self.get_recent_emails(count=1, only_unseen=False)
             return True
         except Exception as e:
-            logger.warning(f"[{self.account.email}] Graph API 连接测试失败: {e}")
+            logger.warning(f"[{self.account.email}] Graph API connection test failed: {e}")
             return False
