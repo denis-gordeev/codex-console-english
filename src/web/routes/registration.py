@@ -10,7 +10,7 @@ from datetime import datetime
 from typing import List, Optional, Dict, Tuple
 
 from fastapi import APIRouter, HTTPException, Query, BackgroundTasks
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from ...database import crud
 from ...database.session import get_db
@@ -112,8 +112,7 @@ class RegistrationTaskResponse(BaseModel):
     started_at: Optional[str] = None
     completed_at: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class BatchRegistrationResponse(BaseModel):

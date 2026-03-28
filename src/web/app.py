@@ -8,6 +8,7 @@ import sys
 import secrets
 import hmac
 import hashlib
+from contextlib import asynccontextmanager
 from typing import Optional
 from pathlib import Path
 
@@ -50,12 +51,36 @@ def create_app() -> FastAPI:
     """Create a FastAPI application instance"""
     settings = get_settings()
 
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        """Initialize shared runtime state during app startup."""
+        from ..database.init_db import initialize_database
+        import asyncio
+
+        try:
+            initialize_database()
+        except Exception as e:
+            logger.warning(f"Database initialization: {e}")
+
+        task_manager.set_loop(asyncio.get_running_loop())
+
+        logger.info("=" * 50)
+        logger.info(f"{settings.app_name} v{settings.app_version} is starting, the program is stretching...")
+        logger.info(f"Debug mode: {settings.debug}")
+        logger.info(f"The database connection has been connected: {settings.database_url}")
+        logger.info("=" * 50)
+
+        yield
+
+        logger.info("The application is closed, let's close it today")
+
     app = FastAPI(
         title=settings.app_name,
         version=settings.app_version,
         description="OpenAI/Codex CLI automatic registration system Web UI",
         docs_url="/api/docs" if settings.debug else None,
         redoc_url="/api/redoc" if settings.debug else None,
+        lifespan=lifespan,
     )
 
     #CORS middleware
@@ -166,33 +191,6 @@ def create_app() -> FastAPI:
     async def payment_page(request: Request):
         """Payment page"""
         return templates.TemplateResponse("payment.html", {"request": request})
-
-    @app.on_event("startup")
-    async def startup_event():
-        """Application startup event"""
-        import asyncio
-        from ..database.init_db import initialize_database
-
-        # Make sure the database has been initialized (the child process also needs to be initialized in reload mode)
-        try:
-            initialize_database()
-        except Exception as e:
-            logger.warning(f"Database initialization: {e}")
-
-        # Set up the event loop of TaskManager
-        loop = asyncio.get_event_loop()
-        task_manager.set_loop(loop)
-
-        logger.info("=" * 50)
-        logger.info(f"{settings.app_name} v{settings.app_version} is starting, the program is stretching...")
-        logger.info(f"Debug mode: {settings.debug}")
-        logger.info(f"The database connection has been connected: {settings.database_url}")
-        logger.info("=" * 50)
-
-    @app.on_event("shutdown")
-    async def shutdown_event():
-        """App close event"""
-        logger.info("The application is closed, let's close it today")
 
     return app
 

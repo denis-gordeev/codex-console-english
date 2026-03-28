@@ -25,13 +25,17 @@ This repository keeps the original structure and overall approach, while applyin
 - Translated the main web app surface, settings UI, task manager copy, and Outlook service/provider layers into English.
 - Normalized several user-facing success and error messages so tests and runtime behavior use the same language.
 - Added and updated tests around CPA upload URL normalization and DuckMail service wiring.
+- Migrated remaining Pydantic response models from class-based `Config` to `ConfigDict`.
+- Replaced FastAPI `@app.on_event(...)` startup and shutdown hooks with a lifespan handler.
+- Added a regression test to verify the app lifespan initializes shared runtime state on startup.
 
 ### Next Iterations
 
-- Replace remaining deprecated Pydantic class-based `Config` declarations with `ConfigDict`.
-- Migrate FastAPI startup and shutdown hooks from `@app.on_event(...)` to a lifespan handler.
 - Continue polishing wording consistency in logs, tests, and low-traffic routes as new gaps are found.
 - Expand regression coverage for translated API messages and settings flows.
+- Add API tests for the login gate and authenticated page redirects.
+- Review remaining English copy for awkward machine-translated phrasing in backend logs and route docstrings.
+- Verify Docker environment variable examples against the actual `settings` names used by the app.
 
 ## What This Branch Fixes
 
