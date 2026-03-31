@@ -1,5 +1,7 @@
-"""DuckMail mailbox service implementation
-Compatible with DuckMail’s accounts/token/messages interface model"""
+"""DuckMail mailbox service implementation.
+
+Compatible with DuckMail's accounts/token/messages API model.
+"""
 
 import logging
 import random

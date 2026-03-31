@@ -30,7 +30,10 @@ router = APIRouter()
 
 
 def _get_proxy(request_proxy: Optional[str] = None) -> Optional[str]:
-    """Get the proxy URL, the strategy is consistent with the registration process: proxy list → dynamic proxy → static configuration"""
+    """Resolve a proxy URL using the same order as registration.
+
+    Order: explicit request proxy -> proxy list -> dynamic proxy -> static config.
+    """
     if request_proxy:
         return request_proxy
     with get_db() as db:

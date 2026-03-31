@@ -892,23 +892,23 @@ class RegistrationEngine:
                 result.error_message = "Sentinel POW verification failed"
                 return result
 
-            # 4. Submit registration entrance email
-            self._log("4. Submit your mailbox and see how OpenAI catches the ball...")
+            # 4. Submit the registration email address
+            self._log("4. Submit the email address to start registration...")
             signup_result = self._submit_signup_form(did, sen_token)
             if not signup_result.success:
                 result.error_message = f"Failed to submit registration form: {signup_result.error_message}"
                 return result
 
             if self._is_existing_account:
-                self._log("Detected that this is an old friend's account, directly logged in to get the token, no detours")
+                self._log("Detected an existing account, proceeding directly to login for token retrieval")
             else:
-                self._log("5. Set a password, don't let thieves laugh...")
+                self._log("5. Set the account password...")
                 password_ok, _ = self._register_password()
                 if not password_ok:
                     result.error_message = "Registration password failed"
                     return result
 
-                self._log("6. Press the registration verification code to go out, it’s time for the postman to sprint...")
+                self._log("6. Send the registration verification code...")
                 if not self._send_verification_code():
                     result.error_message = "Failed to send verification code"
                     return result
@@ -919,12 +919,12 @@ class RegistrationEngine:
                     result.error_message = "Failed to obtain verification code"
                     return result
 
-                self._log("8. Check the verification code to see if it is me...")
+                self._log("8. Verify the email code...")
                 if not self._validate_verification_code(code):
                     result.error_message = "Failed to verify verification code"
                     return result
 
-                self._log("9. Create a formal account for the account and write the name in the file...")
+                self._log("9. Create the final user account profile...")
                 if not self._create_user_account():
                     result.error_message = "Failed to create user account"
                     return result

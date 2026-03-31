@@ -99,7 +99,7 @@ Optional. Copy `.env.example` to `.env` and adjust as needed:
 cp .env.example .env
 ```
 
-Common variables:
+Common variables for `.env`:
 
 | Variable | Description | Default |
 | --- | --- | --- |
@@ -111,6 +111,11 @@ Common variables:
 Priority order:
 
 `CLI arguments > environment variables (.env) > database settings > defaults`
+
+Additional runtime overrides:
+
+- `WEBUI_HOST`, `WEBUI_PORT`, and `WEBUI_ACCESS_PASSWORD` are also supported when they already exist in the process environment, which is useful for Docker and other container runtimes.
+- `DATABASE_URL` is also supported as a fallback alias for `APP_DATABASE_URL`.
 
 ## Start The Web UI
 
@@ -136,6 +141,7 @@ Notes:
 - `--access-password` takes precedence over the password stored in the database
 - It only applies to the current launch
 - The packaged executable also supports this argument
+- `.env` files should use `APP_*` keys; container environments may use either `APP_*` or `WEBUI_*`, but the Docker examples in this repository use `WEBUI_*`
 
 Example:
 

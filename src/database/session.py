@@ -105,7 +105,7 @@ class DatabaseSessionManager:
             ("proxies", "is_default", "BOOLEAN DEFAULT 0"),
         ]
 
-        # Make sure the new table exists (create_tables has been processed, here’s the bottom line)
+        # Make sure all current tables exist before applying column migrations.
         Base.metadata.create_all(bind=self.engine)
 
         with self.engine.connect() as conn:
