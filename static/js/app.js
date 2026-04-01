@@ -244,7 +244,7 @@ function updateEmailServiceOptions() {
     // Tempmail
     if (availableServices.tempmail.available) {
         const optgroup = document.createElement('optgroup');
-        optgroup.label = '🌐 Temporary mailbox';
+        optgroup.label = '🌐 Temporary Mailbox';
 
         availableServices.tempmail.services.forEach(service => {
             const option = document.createElement('option');
@@ -285,7 +285,7 @@ function updateEmailServiceOptions() {
 
         const option = document.createElement('option');
         option.value = '';
-        option.textContent = 'Please import the account on the email service page first';
+        option.textContent = 'Import accounts on the Email Services page first';
         option.disabled = true;
         optgroup.appendChild(option);
 
@@ -295,7 +295,7 @@ function updateEmailServiceOptions() {
     // Custom domain name
     if (availableServices.moe_mail.available) {
         const optgroup = document.createElement('optgroup');
-        optgroup.label = `🔗 Custom domain name (${availableServices.moe_mail.count} services)`;
+        optgroup.label = `🔗 Custom Domain Email (${availableServices.moe_mail.count} services)`;
 
         availableServices.moe_mail.services.forEach(service => {
             const option = document.createElement('option');
@@ -311,11 +311,11 @@ function updateEmailServiceOptions() {
         select.appendChild(optgroup);
     } else {
         const optgroup = document.createElement('optgroup');
-        optgroup.label = '🔗 Custom domain name (not configured)';
+        optgroup.label = '🔗 Custom Domain Email (not configured)';
 
         const option = document.createElement('option');
         option.value = '';
-        option.textContent = 'Please add services on the email service page first';
+        option.textContent = 'Add services on the Email Services page first';
         option.disabled = true;
         optgroup.appendChild(option);
 
@@ -325,7 +325,7 @@ function updateEmailServiceOptions() {
     // Temp-Mail (self-deployment)
     if (availableServices.temp_mail && availableServices.temp_mail.available) {
         const optgroup = document.createElement('optgroup');
-        optgroup.label = `📮 Temp-Mail self-deployment (${availableServices.temp_mail.count} services)`;
+        optgroup.label = `📮 Self-Hosted Temp-Mail (${availableServices.temp_mail.count} services)`;
 
         availableServices.temp_mail.services.forEach(service => {
             const option = document.createElement('option');

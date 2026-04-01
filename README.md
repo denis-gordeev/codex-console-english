@@ -1,4 +1,4 @@
-# codex-console
+# codex-console-english
 
 An actively maintained, compatibility-focused fork of [cnlimiter/codex-manager](https://github.com/cnlimiter/codex-manager).
 
@@ -236,7 +236,9 @@ That makes the source clearer for other users and gives proper credit to the ups
 
 Current repository name:
 
-`codex-console`
+`codex-console-english`
+
+The packaged application and container examples still use the runtime name `codex-console`.
 
 ## Disclaimer
 

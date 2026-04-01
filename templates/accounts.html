@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -51,11 +51,11 @@
         <!-- Navigation bar -->
         <nav class="navbar">
             <div class="nav-brand">
-                <h1>OpenAI registration system</h1>
+                <h1>OpenAI Registration System</h1>
             </div>
             <div class="nav-links">
                 <a href="/" class="nav-link">Register</a>
-                <a href="/accounts" class="nav-link active">Account management</a>
+                <a href="/accounts" class="nav-link active">Account Management</a>
                 <a href="/email-services" class="nav-link">Email Services</a>
                 <a href="/payment" class="nav-link">Payment</a>
                 <a href="/settings" class="nav-link">Settings</a>
@@ -69,7 +69,7 @@
         <!-- Main content area -->
         <main class="main-content">
             <div class="page-header">
-                <h2>Account management</h2>
+                <h2>Account Management</h2>
                 <p class="subtitle">View and manage registered OpenAI accounts</p>
             </div>
 
@@ -77,19 +77,19 @@
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-value" id="total-accounts">0</div>
-                    <div class="stat-label">Total number of accounts</div>
+                    <div class="stat-label">Total Accounts</div>
                 </div>
                 <div class="stat-card success">
                     <div class="stat-value" id="active-accounts">0</div>
-                    <div class="stat-label">Active account</div>
+                    <div class="stat-label">Active Accounts</div>
                 </div>
                 <div class="stat-card warning">
                     <div class="stat-value" id="expired-accounts">0</div>
-                    <div class="stat-label">Expired account</div>
+                    <div class="stat-label">Expired Accounts</div>
                 </div>
                 <div class="stat-card danger">
                     <div class="stat-value" id="failed-accounts">0</div>
-                    <div class="stat-label">Failed account</div>
+                    <div class="stat-label">Failed Accounts</div>
                 </div>
             </div>
 
@@ -101,8 +101,8 @@
                             <option value="">All status</option>
                             <option value="active">Active</option>
                             <option value="expired">Expired</option>
-                            <option value="banned">Ban</option>
-                            <option value="failed">failed</option>
+                            <option value="banned">Banned</option>
+                            <option value="failed">Failed</option>
                         </select>
 
                         <select id="filter-service" class="form-select">
@@ -119,11 +119,11 @@
                         <button class="btn btn-ghost" id="refresh-btn" title="Refresh">
                             🔄 Refresh
                         </button>
-                        <button class="btn btn-warning" id="batch-refresh-btn" disabled title="Batch refresh Token">
-                            🔄 Refresh Token
+                        <button class="btn btn-warning" id="batch-refresh-btn" disabled title="Refresh tokens for selected accounts">
+                            🔄 Refresh Tokens
                         </button>
-                        <button class="btn btn-info" id="batch-validate-btn" disabled title="Batch Verification Token">
-                            ✅ Verify Token
+                        <button class="btn btn-info" id="batch-validate-btn" disabled title="Validate tokens for selected accounts">
+                            ✅ Validate Tokens
                         </button>
                         <button class="btn btn-info" id="batch-check-sub-btn" disabled title="Batch check subscription status">
                             🔍 Check subscription
@@ -170,9 +170,9 @@
                                     <th style="width: 120px;">Mailbox service</th>
                                     <th style="width: 80px;">Status</th>
                                     <th style="width: 80px;">CPA</th>
-                                    <th style="width: 80px;">Subscribe</th>
+                                    <th style="width: 80px;">Subscription</th>
                                     <th style="width: 140px;">Last refresh</th>
-                                    <th style="width: 160px;">Operation</th>
+                                    <th style="width: 160px;">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="accounts-table">
@@ -208,7 +208,7 @@
     <div class="modal" id="detail-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>📋Account details</h3>
+                <h3>📋 Account Details</h3>
                 <button class="modal-close" id="close-modal">&times;</button>
             </div>
             <div class="modal-body" id="modal-body">
@@ -225,13 +225,13 @@
                 <button class="modal-close" id="close-cpa-modal">&times;</button>
             </div>
             <div class="modal-body">
-                <p style="color: var(--text-muted); margin-bottom: 12px; font-size: 0.9rem;">Select a CPA service to upload to, or use a global configuration. </p>
+                <p style="color: var(--text-muted); margin-bottom: 12px; font-size: 0.9rem;">Select a CPA service to upload to, or use the global configuration.</p>
                 <div id="cpa-service-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto;">
                     <div style="text-align: center; color: var(--text-muted);">Loading...</div>
                 </div>
             </div>
             <div class="modal-footer" style="padding: 12px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end;">
-                <button class="btn btn-secondary" id="cpa-use-global-btn">Use global configuration</button>
+                <button class="btn btn-secondary" id="cpa-use-global-btn">Use Global Configuration</button>
                 <button class="btn btn-secondary" id="cancel-cpa-modal-btn">Cancel</button>
             </div>
         </div>
@@ -245,13 +245,13 @@
                 <button class="modal-close" id="close-tm-modal">&times;</button>
             </div>
             <div class="modal-body">
-                <p style="color: var(--text-muted); margin-bottom: 12px; font-size: 0.9rem;">Select the Team Manager service to upload to, or automatically select the first enabled service. </p>
+                <p style="color: var(--text-muted); margin-bottom: 12px; font-size: 0.9rem;">Select the Team Manager service to upload to, or automatically use the first enabled service.</p>
                 <div id="tm-service-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto;">
                     <div style="text-align: center; color: var(--text-muted);">Loading...</div>
                 </div>
             </div>
             <div class="modal-footer" style="padding: 12px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end;">
-                <button class="btn btn-secondary" id="tm-use-auto-btn">Auto select</button>
+                <button class="btn btn-secondary" id="tm-use-auto-btn">Auto Select</button>
                 <button class="btn btn-secondary" id="cancel-tm-modal-btn">Cancel</button>
             </div>
         </div>
@@ -265,13 +265,13 @@
                 <button class="modal-close" id="close-sub2api-modal">&times;</button>
             </div>
             <div class="modal-body">
-                <p style="color: var(--text-muted); margin-bottom: 12px; font-size: 0.9rem;">Select the Sub2API service to upload to, or automatically select the first enabled service. </p>
+                <p style="color: var(--text-muted); margin-bottom: 12px; font-size: 0.9rem;">Select the Sub2API service to upload to, or automatically use the first enabled service.</p>
                 <div id="sub2api-service-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto;">
                     <div style="text-align: center; color: var(--text-muted);">Loading...</div>
                 </div>
             </div>
             <div class="modal-footer" style="padding: 12px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end;">
-                <button class="btn btn-secondary" id="sub2api-use-auto-btn">Auto select</button>
+                <button class="btn btn-secondary" id="sub2api-use-auto-btn">Auto Select</button>
                 <button class="btn btn-secondary" id="cancel-sub2api-modal-btn">Cancel</button>
             </div>
         </div>

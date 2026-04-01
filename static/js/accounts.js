@@ -480,16 +480,16 @@ function updateBatchButtons() {
     elements.exportBtn.disabled = count === 0;
 
     elements.batchDeleteBtn.textContent = count > 0 ? `🗑️ Delete (${count})` : '🗑️ Batch delete';
-    elements.batchRefreshBtn.textContent = count > 0 ? `🔄 Refresh (${count})` : '🔄 Refresh Token';
-    elements.batchValidateBtn.textContent = count > 0 ? `✅ Validation (${count})` : '✅ Validation Token';
+    elements.batchRefreshBtn.textContent = count > 0 ? `🔄 Refresh (${count})` : '🔄 Refresh Tokens';
+    elements.batchValidateBtn.textContent = count > 0 ? `✅ Validate (${count})` : '✅ Validate Tokens';
     elements.batchUploadBtn.textContent = count > 0 ? `☁️ Upload (${count})` : '☁️ Upload';
-    elements.batchCheckSubBtn.textContent = count > 0 ? `🔍 detection (${count})` : '🔍 detection subscription';
+    elements.batchCheckSubBtn.textContent = count > 0 ? `🔍 Check (${count})` : '🔍 Check Subscription';
 }
 
 // Refresh a single account Token
 async function refreshToken(id) {
     try {
-        toast.info('Refreshing Token...');
+        toast.info('Refreshing token...');
         const result = await api.post(`/accounts/${id}/refresh`);
 
         if (result.success) {
@@ -508,7 +508,7 @@ async function handleBatchRefresh() {
     const count = getEffectiveCount();
     if (count === 0) return;
 
-    const confirmed = await confirm(`Are you sure you want to refresh the Tokens of the selected ${count} accounts?`);
+    const confirmed = await confirm(`Are you sure you want to refresh the tokens for the selected ${count} accounts?`);
     if (!confirmed) return;
 
     elements.batchRefreshBtn.disabled = true;
@@ -525,7 +525,7 @@ async function handleBatchRefresh() {
     }
 }
 
-//Batch verification Token
+// Batch token validation
 async function handleBatchValidate() {
     if (getEffectiveCount() === 0) return;
 
@@ -537,7 +537,7 @@ async function handleBatchValidate() {
         toast.info(`Valid: ${result.valid_count}, invalid: ${result.invalid_count}`);
         loadAccounts();
     } catch (error) {
-        toast.error('Batch verification failed: ' + error.message);
+        toast.error('Batch validation failed: ' + error.message);
     } finally {
         updateBatchButtons();
     }
@@ -691,7 +691,7 @@ async function handleBatchDelete() {
 async function exportAccounts(format) {
     const count = getEffectiveCount();
     if (count === 0) {
-        toast.warning('Please select the account to export first');
+        toast.warning('Select at least one account to export');
         return;
     }
 
@@ -772,7 +772,7 @@ function selectCpaService() {
         }
 
         if (services.length === 0) {
-            listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:12px;">There is currently no enabled CPA service, global configuration will be used</div>';
+            listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:12px;">No enabled CPA services are available. The global configuration will be used.</div>';
         } else {
             listEl.innerHTML = services.map(s => `
                 <div class="cpa-service-item" data-id="${s.id}" style="
