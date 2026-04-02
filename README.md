@@ -161,7 +161,7 @@ Then open:
 docker-compose up -d
 ```
 
-You can edit environment variables in [docker-compose.yml](/Users/denis/programming/codex-console-english/docker-compose.yml), such as the port and access password.
+You can edit environment variables in [docker-compose.yml](/Users/denis/programming/autowork/codex-console-english/docker-compose.yml), such as the port and access password.
 
 ### Using docker run
 

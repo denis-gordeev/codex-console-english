@@ -104,7 +104,7 @@ def generate_plus_link(
     headers = {
         "Authorization": f"Bearer {account.access_token}",
         "Content-Type": "application/json",
-        "oai-language": "zh-CN",
+        "oai-language": "en-US",
     }
     if account.cookies:
         headers["cookie"] = account.cookies
@@ -153,7 +153,7 @@ def generate_team_link(
     headers = {
         "Authorization": f"Bearer {account.access_token}",
         "Content-Type": "application/json",
-        "oai-language": "zh-CN",
+        "oai-language": "en-US",
     }
     if account.cookies:
         headers["cookie"] = account.cookies

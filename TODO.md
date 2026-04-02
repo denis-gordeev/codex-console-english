@@ -2,13 +2,13 @@
 
 ## Completed In This Round
 
-- Switched the HTML `lang` attribute from `zh-CN` to `en` across the main templates.
-- Cleaned up remaining awkward English in the account management UI, including token actions, subscription checks, and modal labels.
-- Standardized several service-selection labels so the registration flow reads naturally in English.
-- Updated the README to reflect the repository name `codex-console-english` while keeping the runtime artifact name `codex-console` explicit.
+- Pulled `origin/main` and confirmed the local `main` branch was already up to date.
+- Replaced the remaining hard-coded payment checkout locale header from `zh-CN` to `en-US`.
+- Added regression tests for Plus and Team payment link generation so the checkout request headers stay English.
+- Fixed the stale absolute README link to `docker-compose.yml` so it points at this repository workspace.
 
 ## Next Actions
 
-- Continue reviewing low-traffic pages and backend log messages for remaining awkward English phrasing.
-- Add or expand frontend and API regression tests that cover translated labels and account-management flows.
+- Continue reviewing low-traffic backend comments, docstrings, and logs for awkward English that does not affect runtime behavior.
+- Expand route-level API coverage for translated payment and account-management flows.
 - Verify Docker and environment-variable documentation against the actual settings names used at runtime.
