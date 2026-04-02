@@ -6,6 +6,8 @@
 - Replaced the remaining hard-coded payment checkout locale header from `zh-CN` to `en-US`.
 - Added regression tests for Plus and Team payment link generation so the checkout request headers stay English.
 - Fixed the stale absolute README link to `docker-compose.yml` so it points at this repository workspace.
+- Replaced the remaining frontend display locales from `zh-CN` to `en-US` for timestamps, date formatting, and number formatting.
+- Added a regression test that checks the shipped frontend assets keep English locale formatting.
 
 ## Next Actions
 

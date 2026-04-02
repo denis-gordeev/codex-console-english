@@ -26,3 +26,14 @@ def test_index_template_uses_versioned_static_assets():
     assert '/static/css/style.css?v={{ static_version }}' in template
     assert '/static/js/utils.js?v={{ static_version }}' in template
     assert '/static/js/app.js?v={{ static_version }}' in template
+
+
+def test_frontend_uses_english_locales_for_display_formatting():
+    app_js = Path("static/js/app.js").read_text(encoding="utf-8")
+    utils_js = Path("static/js/utils.js").read_text(encoding="utf-8")
+
+    assert "toLocaleTimeString('en-US'" in app_js
+    assert "toLocaleString('en-US'" in utils_js
+    assert "toLocaleDateString('en-US')" in utils_js
+    assert "toLocaleString('zh-CN'" not in utils_js
+    assert "toLocaleTimeString('zh-CN'" not in app_js

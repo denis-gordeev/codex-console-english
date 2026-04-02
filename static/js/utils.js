@@ -284,7 +284,7 @@ const format = {
     date(dateStr) {
         if (!dateStr) return '-';
         const date = new Date(dateStr);
-        return date.toLocaleString('zh-CN', {
+        return date.toLocaleString('en-US', {
             year: 'numeric',
             month: '2-digit',
             day: '2-digit',
@@ -296,7 +296,7 @@ const format = {
     dateShort(dateStr) {
         if (!dateStr) return '-';
         const date = new Date(dateStr);
-        return date.toLocaleDateString('zh-CN');
+        return date.toLocaleDateString('en-US');
     },
 
     relativeTime(dateStr) {
@@ -326,7 +326,7 @@ const format = {
 
     number(num) {
         if (num === null || num === undefined) return '-';
-        return num.toLocaleString('zh-CN');
+        return num.toLocaleString('en-US');
     }
 };
 
