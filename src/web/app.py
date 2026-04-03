@@ -1,7 +1,4 @@
-"""
-FastAPI application master file
-Lightweight Web UI supports registration, account management, and settings
-"""
+"""FastAPI application entrypoint for the lightweight Web UI."""
 
 import logging
 import sys
@@ -11,6 +8,7 @@ import hashlib
 from contextlib import asynccontextmanager
 from typing import Optional
 from pathlib import Path
+from urllib.parse import urlencode
 
 from fastapi import FastAPI, Request, Form
 from fastapi.staticfiles import StaticFiles
@@ -25,20 +23,19 @@ from .task_manager import task_manager
 
 logger = logging.getLogger(__name__)
 
-# Get the project root directory
-# PyInstaller static resources are in sys._MEIPASS after packaging, and in the source code root directory during development
+# Resolve the resource root for both source and packaged runs.
 if getattr(sys, 'frozen', False):
     _RESOURCE_ROOT = Path(sys._MEIPASS)
 else:
     _RESOURCE_ROOT = Path(__file__).parent.parent.parent
 
-#Static files and template directories
+# Static assets and templates live under the resolved resource root.
 STATIC_DIR = _RESOURCE_ROOT / "static"
 TEMPLATES_DIR = _RESOURCE_ROOT / "templates"
 
 
 def _build_static_asset_version(static_dir: Path) -> str:
-    """Generate the version number based on the last modification time of the static file to prevent the browser from continuing to use the old cache after deployment."""
+    """Use the latest static-file mtime as a cache-busting version string."""
     latest_mtime = 0
     if static_dir.exists():
         for path in static_dir.rglob("*"):
@@ -47,8 +44,17 @@ def _build_static_asset_version(static_dir: Path) -> str:
     return str(latest_mtime or 1)
 
 
+def _normalize_next_path(next_path: Optional[str], default: str = "/") -> str:
+    """Allow redirects only to local absolute paths within this app."""
+    if not next_path:
+        return default
+    if not next_path.startswith("/") or next_path.startswith("//"):
+        return default
+    return next_path
+
+
 def create_app() -> FastAPI:
-    """Create a FastAPI application instance"""
+    """Create and configure the FastAPI application instance."""
     settings = get_settings()
 
     @asynccontextmanager
@@ -60,19 +66,19 @@ def create_app() -> FastAPI:
         try:
             initialize_database()
         except Exception as e:
-            logger.warning(f"Database initialization: {e}")
+            logger.warning(f"Database initialization failed: {e}")
 
         task_manager.set_loop(asyncio.get_running_loop())
 
         logger.info("=" * 50)
-        logger.info(f"{settings.app_name} v{settings.app_version} is starting, the program is stretching...")
+        logger.info(f"Starting {settings.app_name} v{settings.app_version}")
         logger.info(f"Debug mode: {settings.debug}")
-        logger.info(f"The database connection has been connected: {settings.database_url}")
+        logger.info(f"Database connection: {settings.database_url}")
         logger.info("=" * 50)
 
         yield
 
-        logger.info("The application is closed, let's close it today")
+        logger.info("Application shutdown complete")
 
     app = FastAPI(
         title=settings.app_name,
@@ -83,7 +89,7 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
-    #CORS middleware
+    # CORS middleware
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
@@ -92,25 +98,25 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    #Mount static files
+    # Mount static files
     if STATIC_DIR.exists():
         app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
-        logger.info(f"Static file directory: {STATIC_DIR}")
+        logger.info(f"Static asset directory: {STATIC_DIR}")
     else:
-        #Create static directory
+        # Create the static directory if it is missing.
         STATIC_DIR.mkdir(parents=True, exist_ok=True)
         app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
-        logger.info(f"Create static file directory: {STATIC_DIR}")
+        logger.info(f"Created static asset directory: {STATIC_DIR}")
 
-    #Create template directory
+    # Create the template directory if it is missing.
     if not TEMPLATES_DIR.exists():
         TEMPLATES_DIR.mkdir(parents=True, exist_ok=True)
-        logger.info(f"Create template directory: {TEMPLATES_DIR}")
+        logger.info(f"Created template directory: {TEMPLATES_DIR}")
 
-    # Register API route
+    # Register API routes
     app.include_router(api_router, prefix="/api")
 
-    # Register WebSocket routing
+    # Register WebSocket routes
     app.include_router(ws_router, prefix="/api")
 
     # Template engine
@@ -127,73 +133,85 @@ def create_app() -> FastAPI:
         return bool(cookie) and secrets.compare_digest(cookie, expected)
 
     def _redirect_to_login(request: Request) -> RedirectResponse:
-        return RedirectResponse(url=f"/login?next={request.url.path}", status_code=302)
+        next_path = request.url.path
+        if request.url.query:
+            next_path = f"{next_path}?{request.url.query}"
+        return RedirectResponse(
+            url=f"/login?{urlencode({'next': next_path})}",
+            status_code=302,
+        )
 
     @app.get("/login", response_class=HTMLResponse)
     async def login_page(request: Request, next: Optional[str] = "/"):
-        """Login page"""
+        """Render the Web UI login page."""
         return templates.TemplateResponse(
-            "login.html",
-            {"request": request, "error": "", "next": next or "/"}
+            request=request,
+            name="login.html",
+            context={"error": "", "next": _normalize_next_path(next)},
         )
 
     @app.post("/login")
-    async def login_submit(request: Request, password: str = Form(...), next: Optional[str] = "/"):
-        """Processing login submission"""
+    async def login_submit(
+        request: Request,
+        password: str = Form(...),
+        next: Optional[str] = Form("/"),
+    ):
+        """Validate the access password and create an auth cookie."""
         expected = get_settings().webui_access_password.get_secret_value()
         if not secrets.compare_digest(password, expected):
             return templates.TemplateResponse(
-                "login.html",
-                {"request": request, "error": "Wrong password", "next": next or "/"},
-                status_code=401
+                request=request,
+                name="login.html",
+                context={"error": "Incorrect password", "next": _normalize_next_path(next)},
+                status_code=401,
             )
 
-        response = RedirectResponse(url=next or "/", status_code=302)
+        response = RedirectResponse(url=_normalize_next_path(next), status_code=302)
         response.set_cookie("webui_auth", _auth_token(expected), httponly=True, samesite="lax")
         return response
 
     @app.get("/logout")
     async def logout(request: Request, next: Optional[str] = "/login"):
-        """Log out"""
-        response = RedirectResponse(url=next or "/login", status_code=302)
+        """Clear the auth cookie and return to the login page."""
+        response = RedirectResponse(url=_normalize_next_path(next, "/login"), status_code=302)
         response.delete_cookie("webui_auth")
         return response
 
     @app.get("/", response_class=HTMLResponse)
     async def index(request: Request):
-        """Home - Registration Page"""
+        """Render the registration dashboard."""
         if not _is_authenticated(request):
             return _redirect_to_login(request)
-        return templates.TemplateResponse("index.html", {"request": request})
+        return templates.TemplateResponse(request=request, name="index.html")
 
     @app.get("/accounts", response_class=HTMLResponse)
     async def accounts_page(request: Request):
-        """Account management page"""
+        """Render the account management page."""
         if not _is_authenticated(request):
             return _redirect_to_login(request)
-        return templates.TemplateResponse("accounts.html", {"request": request})
+        return templates.TemplateResponse(request=request, name="accounts.html")
 
     @app.get("/email-services", response_class=HTMLResponse)
     async def email_services_page(request: Request):
-        """Mailbox service management page"""
+        """Render the email service management page."""
         if not _is_authenticated(request):
             return _redirect_to_login(request)
-        return templates.TemplateResponse("email_services.html", {"request": request})
+        return templates.TemplateResponse(request=request, name="email_services.html")
 
     @app.get("/settings", response_class=HTMLResponse)
     async def settings_page(request: Request):
-        """Settings page"""
+        """Render the settings page."""
         if not _is_authenticated(request):
             return _redirect_to_login(request)
-        return templates.TemplateResponse("settings.html", {"request": request})
+        return templates.TemplateResponse(request=request, name="settings.html")
 
     @app.get("/payment", response_class=HTMLResponse)
     async def payment_page(request: Request):
-        """Payment page"""
-        return templates.TemplateResponse("payment.html", {"request": request})
+        """Render the payment page."""
+        return templates.TemplateResponse(request=request, name="payment.html")
 
     return app
 
 
-# Create a global application instance
+# Global application instance
 app = create_app()
