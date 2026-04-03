@@ -37,3 +37,10 @@ def test_frontend_uses_english_locales_for_display_formatting():
     assert "toLocaleDateString('en-US')" in utils_js
     assert "toLocaleString('zh-CN'" not in utils_js
     assert "toLocaleTimeString('zh-CN'" not in app_js
+
+
+def test_payment_template_uses_english_country_labels():
+    template = Path("templates/payment.html").read_text(encoding="utf-8")
+
+    assert "Turkey (TRY)" in template
+    assert "Türkiye (TRY)" not in template
