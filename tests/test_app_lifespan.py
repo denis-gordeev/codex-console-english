@@ -1,5 +1,6 @@
 import importlib
 
+import pytest
 from fastapi.testclient import TestClient
 from pydantic.types import SecretStr
 
@@ -99,3 +100,40 @@ def test_login_normalizes_external_next_targets(monkeypatch):
     assert 'name="next" value="/"' in login_page.text
     assert response.status_code == 302
     assert response.headers["location"] == "/"
+
+
+@pytest.mark.parametrize(
+    ("path", "expected_text"),
+    [
+        ("/accounts", "Account Management"),
+        ("/email-services", "Email Service Management"),
+        ("/settings", "System Settings"),
+    ],
+)
+def test_authenticated_pages_render_translated_content(monkeypatch, path, expected_text):
+    client = _build_test_client(monkeypatch)
+
+    login_response = client.post(
+        "/login",
+        data={"password": "letmein", "next": path},
+        follow_redirects=False,
+    )
+
+    assert login_response.status_code == 302
+    assert login_response.headers["location"] == path
+
+    response = client.get(path)
+
+    assert response.status_code == 200
+    assert expected_text in response.text
+    assert "OpenAI Registration System" in response.text
+
+
+def test_payment_page_renders_translated_content_without_auth(monkeypatch):
+    client = _build_test_client(monkeypatch)
+
+    response = client.get("/payment")
+
+    assert response.status_code == 200
+    assert "Payment upgrade" in response.text
+    assert "Billing country" in response.text
