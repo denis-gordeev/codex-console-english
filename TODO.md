@@ -3,16 +3,12 @@
 ## Completed In This Round
 
 - Pulled `origin/main` and confirmed the local `main` branch was already up to date.
-- Re-checked tracked files for remaining non-English content and confirmed the repository is now fully English in source-controlled text files.
-- Cleaned up the remaining awkward English comments, docstrings, and startup logs in the FastAPI Web UI entrypoint.
-- Fixed the Web UI login flow so the hidden `next` form field is actually honored after authentication.
-- Preserved query strings when protected pages redirect unauthenticated users to `/login`.
-- Normalized login and logout redirect targets to local app paths only.
-- Added route-level regression tests for login failures, auth-cookie creation, authenticated-page redirects, and `next` target normalization.
-- Ran the full test suite with `uv run pytest` and confirmed it passes.
+- Re-checked tracked files for remaining non-English content with `git grep` and confirmed there is no Cyrillic or Han text left in source-controlled files.
+- Confirmed the only remaining non-English matches in the working tree come from untracked automation logs, not repository content.
+- Re-validated the repository TODO markers and current docs so the task list reflects the actual remaining work after the translation sweep.
 
 ## Next Actions
 
-- Continue reviewing lower-traffic backend comments, docstrings, and logs outside `src/web/app.py` for awkward English that does not affect runtime behavior.
 - Expand route-level API coverage for translated payment and account-management flows beyond the login gate.
-- Decide whether repository-owned generated artifacts such as `tmp_app_core.js` should be normalized, regenerated, or excluded from translation sweeps.
+- Review repository-owned generated artifacts such as `tmp_app_core.js` and `tmp_redirectToPage.js` to decide whether they should be regenerated, normalized, or removed from the tracked tree.
+- Authenticate `gh` in a future round if issue and PR inspection is required, since GitHub GraphQL access is currently unavailable in this environment.
