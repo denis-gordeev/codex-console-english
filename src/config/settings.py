@@ -1,6 +1,8 @@
 """
-Configuration management - completely based on database storage
-All configuration is read from the database, no more environment variables or .env files are used
+Configuration management backed by database storage.
+
+Most settings are stored in the database, with startup-time environment
+variables still supported for deployment overrides.
 """
 
 import os

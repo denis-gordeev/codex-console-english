@@ -30,7 +30,7 @@ class DatabaseSessionManager:
             if env_url:
                 database_url = env_url
             else:
-                # Give priority to using the APP_DATA_DIR environment variable (set by webui.py after PyInstaller is packaged)
+                # Prefer APP_DATA_DIR so packaged builds keep data beside the executable.
                 data_dir = os.environ.get('APP_DATA_DIR') or os.path.join(
                     os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                     'data'

@@ -1,14 +1,13 @@
-"""
-Web UI startup portal
-"""
+"""Web UI entry point."""
 
 import uvicorn
 import logging
 import sys
 from pathlib import Path
 
-# Add the project root directory to the Python path
-# After PyInstaller is packaged, __file__ is in the temporary decompression directory, and the directory where sys.executable is located needs to be used as the data directory.
+# Add the project root directory to the Python path.
+# In a PyInstaller build, __file__ points into the temporary unpack directory,
+# so the executable directory is used as the project data directory.
 import os
 if getattr(sys, 'frozen', False):
     # After packaging: use the directory where the executable file is located
@@ -25,7 +24,7 @@ from src.config.settings import get_settings
 
 
 def _load_dotenv():
-    """Load the .env file (the same directory as the executable file or the project root directory)"""
+    """Load a .env file from the executable directory or project root."""
     env_path = project_root / ".env"
     if not env_path.exists():
         return
@@ -42,31 +41,31 @@ def _load_dotenv():
 
 
 def setup_application():
-    """Settings Application"""
-    # Load .env file (lower priority than existing environment variables)
+    """Prepare directories, settings, and logging for the Web UI."""
+    # Load .env values without overriding existing environment variables.
     _load_dotenv()
 
-    # Make sure the data directory and log directory are in the directory where the executable file is located (also applicable after packaging)
+    # Store runtime data and logs next to the executable or project root.
     data_dir = project_root / "data"
     logs_dir = project_root / "logs"
     data_dir.mkdir(exist_ok=True)
     logs_dir.mkdir(exist_ok=True)
 
-    # Inject the data directory path into the environment variable for database configuration use
+    # Expose resolved runtime paths to the settings and database layers.
     os.environ.setdefault("APP_DATA_DIR", str(data_dir))
     os.environ.setdefault("APP_LOGS_DIR", str(logs_dir))
 
-    # Initialize the database (must be obtained before getting settings)
+    # Initialize the database before loading persisted settings.
     try:
         initialize_database()
     except Exception as e:
         print(f"Database initialization failed: {e}")
         raise
 
-    # Get the configuration (the database needs to be initialized)
+    # Load application settings after the database is ready.
     settings = get_settings()
 
-    # Configure logs (log files are written to the actual logs directory)
+    # Write logs into the resolved runtime logs directory.
     log_file = str(logs_dir / Path(settings.log_file).name)
     setup_logging(
         log_level=settings.log_level,
@@ -74,23 +73,22 @@ def setup_application():
     )
 
     logger = logging.getLogger(__name__)
-    logger.info("Database initialization is completed and the foundation has been laid")
-    logger.info(f"The data directory has been installed: {data_dir}")
-    logger.info(f"The log directory is also in place: {logs_dir}")
-
-    logger.info("Application setup is complete and the gears have clicked into place")
+    logger.info("Database initialization completed successfully")
+    logger.info("Using data directory: %s", data_dir)
+    logger.info("Using log directory: %s", logs_dir)
+    logger.info("Application setup completed")
     return settings
 
 
 def start_webui():
-    """Start Web UI"""
-    # Setup application
+    """Start the Web UI server."""
+    # Prepare application state before importing the FastAPI app.
     settings = setup_application()
 
-    # Import FastAPI application (delayed import to avoid circular dependencies)
+    # Delay the import to avoid circular dependencies during setup.
     from src.web.app import app
 
-    # Configure uvicorn
+    # Configure uvicorn.
     uvicorn_config = {
         "app": "src.web.app:app",
         "host": settings.webui_host,
@@ -102,15 +100,15 @@ def start_webui():
     }
 
     logger = logging.getLogger(__name__)
-    logger.info(f"Web UI is in place, please go here: http://{settings.webui_host}:{settings.webui_port}")
-    logger.info(f"Debug mode: {settings.debug}")
+    logger.info("Web UI available at http://%s:%s", settings.webui_host, settings.webui_port)
+    logger.info("Debug mode: %s", settings.debug)
 
-    # Start the server
+    # Start the server.
     uvicorn.run(**uvicorn_config)
 
 
 def main():
-    """Main function"""
+    """Parse CLI options and launch the Web UI."""
     import argparse
     import os
 
@@ -118,17 +116,17 @@ def main():
     parser.add_argument("--host", help="Listening host (can also be set through the WEBUI_HOST environment variable)")
     parser.add_argument("--port", type=int, help="Listening port (can also be set through the WEBUI_PORT environment variable)")
     parser.add_argument("--debug", action="store_true", help="Enable debug mode (can also be set via the DEBUG=1 environment variable)")
-    parser.add_argument("--reload", action="store_true", help="enable hot reload")
+    parser.add_argument("--reload", action="store_true", help="Enable hot reload")
     parser.add_argument("--log-level", help="Log level (can also be set through the LOG_LEVEL environment variable)")
     parser.add_argument("--access-password", help="Web UI access key (can also be set via the WEBUI_ACCESS_PASSWORD environment variable)")
     args = parser.parse_args()
 
-    # Update configuration
+    # Apply CLI and environment overrides before startup.
     from src.config.settings import update_settings
 
     updates = {}
-    
-    # Use command line parameters first, if not, try to get them from environment variables
+
+    # CLI arguments take precedence over environment variables.
     host = args.host or os.environ.get("WEBUI_HOST")
     if host:
         updates["webui_host"] = host
@@ -152,7 +150,7 @@ def main():
     if updates:
         update_settings(**updates)
 
-    # Start Web UI
+    # Start the Web UI.
     start_webui()
 
 
