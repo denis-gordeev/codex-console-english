@@ -1,5 +1,4 @@
-"""Token Manager
-Supports multiple Microsoft Token endpoints, automatically selecting the appropriate endpoint"""
+"""Token manager with endpoint selection and in-memory caching."""
 
 import json
 import logging
@@ -16,14 +15,14 @@ from .account import OutlookAccount
 logger = logging.getLogger(__name__)
 
 
-# Scope configuration for each provider
+# Scope configuration for each provider.
 PROVIDER_SCOPES = {
-    ProviderType.IMAP_OLD: "",  # Older versions of IMAP do not require a specific scope
+    ProviderType.IMAP_OLD: "",  # Legacy IMAP does not require a dedicated scope
     ProviderType.IMAP_NEW: "https://outlook.office.com/IMAP.AccessAsUser.All offline_access",
     ProviderType.GRAPH_API: "https://graph.microsoft.com/.default",
 }
 
-# Token endpoints for each provider
+# Token endpoints for each provider.
 PROVIDER_TOKEN_URLS = {
     ProviderType.IMAP_OLD: TokenEndpoint.LIVE.value,
     ProviderType.IMAP_NEW: TokenEndpoint.CONSUMERS.value,
@@ -32,16 +31,15 @@ PROVIDER_TOKEN_URLS = {
 
 
 class TokenManager:
-    """Token Manager
-    Support multi-endpoint Token acquisition and caching"""
+    """Acquire and cache Outlook access tokens."""
 
     # Token cache: key = (email, provider_type) -> TokenInfo
     _token_cache: Dict[tuple, TokenInfo] = {}
     _cache_lock = threading.Lock()
 
-    # Default timeout
+    # Default timeout.
     DEFAULT_TIMEOUT = 30
-    # Token refresh advance time (seconds)
+    # Refresh slightly ahead of token expiry.
     REFRESH_BUFFER = 120
 
     def __init__(
@@ -51,24 +49,25 @@ class TokenManager:
         proxy_url: Optional[str] = None,
         timeout: int = DEFAULT_TIMEOUT,
     ):
-        """Initialize Token Manager
+        """Initialize the token manager.
 
         Args:
-            account: Outlook account
-            provider_type: provider type
-            proxy_url: proxy URL (optional)
-            timeout: request timeout"""
+            account: Outlook account configuration.
+            provider_type: Provider implementation to use.
+            proxy_url: Optional proxy URL.
+            timeout: HTTP request timeout in seconds.
+        """
         self.account = account
         self.provider_type = provider_type
         self.proxy_url = proxy_url
         self.timeout = timeout
 
-        # Get endpoint and scope
+        # Resolve the endpoint and scope for the selected provider.
         self.token_url = PROVIDER_TOKEN_URLS.get(provider_type, TokenEndpoint.LIVE.value)
         self.scope = PROVIDER_SCOPES.get(provider_type, "")
 
     def get_cached_token(self) -> Optional[TokenInfo]:
-        """Get cached token"""
+        """Return a non-expired cached token when available."""
         cache_key = (self.account.email.lower(), self.provider_type)
         with self._cache_lock:
             token = self._token_cache.get(cache_key)
@@ -77,33 +76,34 @@ class TokenManager:
         return None
 
     def set_cached_token(self, token: TokenInfo):
-        """cache token"""
+        """Store a token in the shared cache."""
         cache_key = (self.account.email.lower(), self.provider_type)
         with self._cache_lock:
             self._token_cache[cache_key] = token
 
     def clear_cache(self):
-        """clear cache"""
+        """Clear the cached token for this account and provider."""
         cache_key = (self.account.email.lower(), self.provider_type)
         with self._cache_lock:
             self._token_cache.pop(cache_key, None)
 
     def get_access_token(self, force_refresh: bool = False) -> Optional[str]:
-        """Get Access Token
+        """Return an access token.
 
         Args:
-            force_refresh: whether to force refresh
+            force_refresh: Whether to bypass the cache and refresh immediately.
 
         Returns:
-            Access Token string, returns None on failure"""
-        # Check cache
+            Access token string, or `None` on failure.
+        """
+        # Check the cache first.
         if not force_refresh:
             cached = self.get_cached_token()
             if cached:
-                logger.debug(f"[{self.account.email}] Use cached Token ({self.provider_type.value})")
+                logger.debug(f"[{self.account.email}] Using cached token ({self.provider_type.value})")
                 return cached.access_token
 
-        # Refresh Token
+        # Refresh the token when the cache misses or refresh is forced.
         try:
             token = self._refresh_token()
             if token:
@@ -115,24 +115,25 @@ class TokenManager:
         return None
 
     def _refresh_token(self) -> Optional[TokenInfo]:
-        """Refresh Token
+        """Refresh the access token using the stored refresh token.
 
         Returns:
-            TokenInfo object, returns None on failure"""
+            Token metadata, or `None` on failure.
+        """
         if not self.account.client_id or not self.account.refresh_token:
             raise ValueError("Missing client_id or refresh_token")
 
-        logger.debug(f"[{self.account.email}] Refreshing Token ({self.provider_type.value})...")
+        logger.debug(f"[{self.account.email}] Refreshing token ({self.provider_type.value})...")
         logger.debug(f"[{self.account.email}] Token URL: {self.token_url}")
 
-        # Build request body
+        # Build the request body.
         data = {
             "client_id": self.account.client_id,
             "refresh_token": self.account.refresh_token,
             "grant_type": "refresh_token",
         }
 
-        # Add Scope (if needed)
+        # Add the provider scope when required.
         if self.scope:
             data["scope"] = self.scope
 
@@ -163,17 +164,17 @@ class TokenManager:
                 if "service abuse" in error_body.lower():
                     logger.warning(f"[{self.account.email}] Account may be banned")
                 elif "invalid_grant" in error_body.lower():
-                    logger.warning(f"[{self.account.email}] Refresh Token has expired")
+                    logger.warning(f"[{self.account.email}] Refresh token has expired")
 
                 return None
 
             response_data = resp.json()
 
-            # Parse response
+            # Parse the response.
             token = TokenInfo.from_response(response_data, self.scope)
             logger.info(
-                f"[{self.account.email}] Token refreshed successfully ({self.provider_type.value}),"
-                f"Validity period {int(token.expires_at - time.time())} seconds"
+                f"[{self.account.email}] Token refreshed successfully ({self.provider_type.value}), "
+                f"valid for {int(token.expires_at - time.time())} seconds"
             )
             return token
 
@@ -187,14 +188,14 @@ class TokenManager:
 
     @classmethod
     def clear_all_cache(cls):
-        """Clear all token cache"""
+        """Clear the shared token cache."""
         with cls._cache_lock:
             cls._token_cache.clear()
             logger.info("All token caches cleared")
 
     @classmethod
     def get_cache_stats(cls) -> Dict[str, Any]:
-        """Get cache statistics"""
+        """Return token cache statistics."""
         with cls._cache_lock:
             return {
                 "cache_size": len(cls._token_cache),
@@ -214,14 +215,15 @@ def create_token_manager(
     proxy_url: Optional[str] = None,
     timeout: int = TokenManager.DEFAULT_TIMEOUT,
 ) -> TokenManager:
-    """Factory function to create Token manager
+    """Create a token manager instance.
 
     Args:
-        account: Outlook account
-        provider_type: provider type
-        proxy_url: proxy URL
-        timeout: timeout time
+        account: Outlook account configuration.
+        provider_type: Provider implementation to use.
+        proxy_url: Optional proxy URL.
+        timeout: HTTP request timeout in seconds.
 
     Returns:
-        TokenManager instance"""
+        Configured `TokenManager` instance.
+    """
     return TokenManager(account, provider_type, proxy_url, timeout)

@@ -83,7 +83,7 @@
             filter: blur(0);
         }
 
-        /* Customized multi-select drop-down */
+        /* Custom multi-select dropdown */
         .multi-select-dropdown {
             position: relative;
             width: 100%;
@@ -189,10 +189,10 @@
                                 <!-- Outlook batch registration area -->
                                 <div id="outlook-batch-section" style="display: none;">
                                     <div class="form-group">
-                                        <label>Select account</label>
+                                        <label>Select accounts</label>
                                         <div id="outlook-accounts-container" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-light); border-radius: var(--radius); padding: var(--spacing-sm);">
                                             <div class="loading-placeholder" style="text-align: center; padding: var(--spacing-md); color: var(--text-muted);">
-                                                loading...
+                                                Loading...
                                             </div>
                                         </div>
                                         <div style="margin-top: var(--spacing-sm); display: flex; gap: var(--spacing-xs); flex-wrap: wrap;">
@@ -240,7 +240,7 @@
                                 </div>
 
                                 <div class="form-group" id="batch-count-group" style="display: none;">
-                                    <label for="batch-count">Registration quantity (1-100)</label>
+                                    <label for="batch-count">Registration count (1-100)</label>
                                     <input type="number" id="batch-count" name="batch_count" min="1" max="100" value="5">
                                 </div>
 
@@ -273,7 +273,7 @@
                                 </div>
 
                                 <div class="form-group" id="auto-upload-group">
-                                    <label style="font-weight: 500; margin-bottom: var(--spacing-xs); display: block;">Automatic operation after registration</label>
+                                    <label style="font-weight: 500; margin-bottom: var(--spacing-xs); display: block;">Automatic actions after registration</label>
 
                                     <!-- CPA -->
                                     <label style="display: flex; align-items: center; gap: var(--spacing-sm); cursor: pointer;">
@@ -318,10 +318,10 @@
 
                 <!-- Right panel -->
                 <div class="right-panel">
-                    <!-- Monitoring Station -->
+                    <!-- Monitoring panel -->
                     <div class="card" id="console-card">
                         <div class="card-header">
-                            <h3>💻 Monitoring Station</h3>
+                            <h3>💻 Monitoring Panel</h3>
                             <div style="display: flex; gap: var(--spacing-sm); align-items: center;">
                                 <span id="task-status-badge" class="status-badge pending" style="display: none;">Waiting</span>
                                 <button class="btn btn-ghost btn-sm" id="clear-log-btn">Clear</button>
@@ -366,15 +366,15 @@
 
                             <!-- Console log -->
                             <div id="console-log" class="console-log">
-                                <div class="log-line info">[System] is ready, waiting to start registration...</div>
+                                <div class="log-line info">[System] Ready. Waiting to start registration...</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- List of registered accounts -->
+                    <!-- Recently registered accounts -->
                     <div class="card">
                         <div class="card-header">
-                            <h3>📋 Already registered account</h3>
+                            <h3>📋 Recently Registered Accounts</h3>
                             <div style="display: flex; gap: var(--spacing-sm);">
                                 <button class="btn btn-ghost btn-sm" id="refresh-accounts-btn">🔄 Refresh</button>
                                 <a href="/accounts" class="btn btn-secondary btn-sm">View all</a>
@@ -396,7 +396,7 @@
                                             <td colspan="5">
                                                 <div class="empty-state" style="padding: var(--spacing-md);">
                                                     <div class="empty-state-icon">📭</div>
-                                                    <div class="empty-state-title">No registered account yet</div>
+                                                    <div class="empty-state-title">No registered accounts yet</div>
                                                 </div>
                                             </td>
                                         </tr>
