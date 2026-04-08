@@ -34,13 +34,13 @@ class GenerateLinkRequest(BaseModel):
     price_interval: str = "month"
     seat_quantity: int = 5
     proxy: Optional[str] = None
-    auto_open: bool = False # Whether to automatically open without trace after generation
-    country: str = "SG" # Billing country, determines the currency # Whether to automatically open without trace after generation
+    auto_open: bool = False  # Whether to open the generated link in an incognito window
+    country: str = "SG"  # Billing country, which determines the checkout currency
 
 
 class OpenIncognitoRequest(BaseModel):
     url: str
-    account_id: Optional[int] = None # Optional, used to inject account cookie
+    account_id: Optional[int] = None  # Optional account ID used to inject cookies
 
 
 class MarkSubscriptionRequest(BaseModel):
@@ -178,5 +178,4 @@ def mark_subscription(account_id: int, request: MarkSubscriptionRequest):
         db.commit()
 
     return {"success": True, "subscription_type": request.subscription_type}
-
 

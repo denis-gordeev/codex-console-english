@@ -253,6 +253,10 @@ def test_run_registers_then_relogs_to_fetch_token():
     password_verify_body = json.loads(session_two.calls[2]["kwargs"]["data"])
     assert password_verify_body == {"password": result.password}
     assert result.metadata["token_acquired_via_relogin"] is True
+    assert any("Starting registration flow" in entry for entry in result.logs)
+    assert any("Registration completed; restarting the login flow to fetch tokens..." in entry for entry in result.logs)
+    assert any("Session token retrieved successfully" in entry for entry in result.logs)
+    assert not any("open the champagne" in entry for entry in result.logs)
 
 
 def test_existing_account_login_uses_auto_sent_otp_without_manual_send():
@@ -294,3 +298,5 @@ def test_existing_account_login_uses_auto_sent_otp_without_manual_send():
     assert len(email_service.otp_requests) == 1
     assert email_service.otp_requests[0]["otp_sent_at"] is not None
     assert result.metadata["token_acquired_via_relogin"] is False
+    assert any("Detected an existing account; switching to the login flow automatically" in entry for entry in result.logs)
+    assert any("Login successful" in entry for entry in result.logs)

@@ -81,7 +81,7 @@ class AccountUpdateRequest(BaseModel):
     """Account update request"""
     status: Optional[str] = None
     metadata: Optional[dict] = None
-    cookies: Optional[str] = None # Complete cookie string, used for payment requests
+    cookies: Optional[str] = None  # Full cookie string, used for payment requests
 
 
 class BatchDeleteRequest(BaseModel):
@@ -109,7 +109,7 @@ def resolve_account_ids(
     email_service_filter: Optional[str] = None,
     search_filter: Optional[str] = None,
 ) -> List[int]:
-    """When select_all=True, query all IDs that meet the conditions, otherwise directly return the incoming ids"""
+    """Resolve account IDs, expanding filters when `select_all=True`."""
     if not select_all:
         return ids
     query = db.query(Account.id)
@@ -126,7 +126,7 @@ def resolve_account_ids(
 
 
 def account_to_response(account: Account) -> AccountResponse:
-    """Convert Account model to responsive model"""
+    """Convert an Account model into the API response shape."""
     return AccountResponse(
         id=account.id,
         email=account.email,

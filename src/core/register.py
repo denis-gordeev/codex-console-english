@@ -38,20 +38,20 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class RegistrationResult:
-    """Registration results"""
+    """Registration result."""
     success: bool
     email: str = ""
-    password: str = "" #Registration password
+    password: str = ""  # Registration password
     account_id: str = ""
     workspace_id: str = ""
     access_token: str = ""
     refresh_token: str = ""
     id_token: str = ""
-    session_token: str = "" # Session token
+    session_token: str = ""  # Session token
     error_message: str = ""
     logs: list = None
     metadata: dict = None
-    source: str = "register" # 'register' or 'login', to distinguish the account source
+    source: str = "register"  # 'register' or 'login', to distinguish the account source
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary"""
@@ -74,18 +74,19 @@ class RegistrationResult:
 
 @dataclass
 class SignupFormResult:
-    """Results of submitting registration form"""
+    """Result of submitting the registration or login entry form."""
     success: bool
-    page_type: str = "" # page.type field in the response
-    is_existing_account: bool = False # Whether it is a registered account
-    response_data: Dict[str, Any] = None # Complete response data
+    page_type: str = ""  # page.type field in the response
+    is_existing_account: bool = False  # Whether this email already has an account
+    response_data: Dict[str, Any] = None  # Full response payload
     error_message: str = ""
 
 
 class RegistrationEngine:
     """
-    Register engine
-    Responsible for coordinating email services, OAuth processes and OpenAI API calls
+    Registration engine.
+
+    Coordinates email services, OAuth flows, and OpenAI API calls.
     """
 
     def __init__(
@@ -120,34 +121,34 @@ class RegistrationEngine:
             token_url=settings.openai_token_url,
             redirect_uri=settings.openai_redirect_uri,
             scope=settings.openai_scope,
-            proxy_url=proxy_url # Pass proxy configuration
+            proxy_url=proxy_url  # Pass proxy configuration
         )
 
-        #State variables
+        # State variables
         self.email: Optional[str] = None
-        self.password: Optional[str] = None #Registration password
+        self.password: Optional[str] = None  # Registration password
         self.email_info: Optional[Dict[str, Any]] = None
         self.oauth_start: Optional[OAuthStart] = None
         self.session: Optional[cffi_requests.Session] = None
-        self.session_token: Optional[str] = None # Session token
+        self.session_token: Optional[str] = None  # Session token
         self.logs: list = []
-        self._otp_sent_at: Optional[float] = None # OTP sending timestamp
-        self._is_existing_account: bool = False # Whether it is a registered account (for automatic login)
-        self._token_acquisition_requires_login: bool = False # Newly registered accounts require a second login to get the token
+        self._otp_sent_at: Optional[float] = None  # OTP sending timestamp
+        self._is_existing_account: bool = False  # Whether the email already has an account
+        self._token_acquisition_requires_login: bool = False  # Newly registered accounts need a second login to fetch tokens
 
     def _log(self, message: str, level: str = "info"):
-        """Log"""
+        """Record a runtime log entry."""
         timestamp = datetime.now().strftime("%H:%M:%S")
         log_message = f"[{timestamp}] {message}"
 
-        #Add to log list
+        # Add to in-memory log list
         self.logs.append(log_message)
 
         # Call the callback function
         if self.callback_logger:
             self.callback_logger(log_message)
 
-        # Record to database (if there are associated tasks)
+        # Persist to the database when this engine is attached to a task
         if self.task_uuid:
             try:
                 with get_db() as db:
@@ -155,7 +156,7 @@ class RegistrationEngine:
             except Exception as e:
                 logger.warning(f"Failed to record task log: {e}")
 
-        # Record to the log system according to the level
+        # Mirror the message to the structured logger
         if level == "error":
             logger.error(message)
         elif level == "warning":
@@ -168,7 +169,7 @@ class RegistrationEngine:
         return ''.join(secrets.choice(PASSWORD_CHARSET) for _ in range(length))
 
     def _check_ip_location(self) -> Tuple[bool, Optional[str]]:
-        """Check IP Geolocation"""
+        """Check IP geolocation."""
         try:
             return self.http_client.check_ip_location()
         except Exception as e:
@@ -176,9 +177,9 @@ class RegistrationEngine:
             return False, None
 
     def _create_email(self) -> bool:
-        """Create email"""
+        """Create an email address for the registration flow."""
         try:
-            self._log(f"Creating {self.email_service.service_type.value} mailbox, give the new account the entire inbox first...")
+            self._log(f"Creating a {self.email_service.service_type.value} mailbox...")
             self.email_info = self.email_service.create_email()
 
             if not self.email_info or "email" not in self.email_info:
@@ -186,7 +187,7 @@ class RegistrationEngine:
                 return False
 
             self.email = self.email_info["email"]
-            self._log(f"The mailbox is in place and the address is fresh: {self.email}")
+            self._log(f"Mailbox created: {self.email}")
             return True
 
         except Exception as e:
@@ -194,18 +195,18 @@ class RegistrationEngine:
             return False
 
     def _start_oauth(self) -> bool:
-        """Start the OAuth process"""
+        """Start the OAuth process."""
         try:
-            self._log("Start the OAuth authorization process, go to the door and swipe your face...")
+            self._log("Starting the OAuth authorization flow...")
             self.oauth_start = self.oauth_manager.start_oauth()
-            self._log(f"OAuth URL is ready and the channel is opened: {self.oauth_start.auth_url[:80]}...")
+            self._log(f"OAuth URL ready: {self.oauth_start.auth_url[:80]}...")
             return True
         except Exception as e:
             self._log(f"Failed to generate OAuth URL: {e}", "error")
             return False
 
     def _init_session(self) -> bool:
-        """Initialize session"""
+        """Initialize the HTTP session."""
         try:
             self.session = self.http_client.session
             return True
@@ -214,7 +215,7 @@ class RegistrationEngine:
             return False
 
     def _get_device_id(self) -> Optional[str]:
-        """Get Device ID"""
+        """Get the Device ID."""
         if not self.oauth_start:
             return None
 
@@ -235,12 +236,12 @@ class RegistrationEngine:
                     return did
 
                 self._log(
-                    f"Failed to obtain Device ID: oai-did Cookie not returned (HTTP {response.status_code}, {attempt}/{max_attempts} times)",
+                    f"Failed to obtain Device ID: oai-did cookie was not returned (HTTP {response.status_code}, attempt {attempt}/{max_attempts})",
                     "warning" if attempt < max_attempts else "error"
                 )
             except Exception as e:
                 self._log(
-                    f"Failed to obtain Device ID: {e} ({attempt}/{max_attempts} times)",
+                    f"Failed to obtain Device ID: {e} (attempt {attempt}/{max_attempts})",
                     "warning" if attempt < max_attempts else "error"
                 )
 
@@ -252,7 +253,7 @@ class RegistrationEngine:
         return None
 
     def _check_sentinel(self, did: str) -> Optional[str]:
-        """Check Sentinel interception"""
+        """Run the Sentinel POW check."""
         try:
             sen_token = self.http_client.check_sentinel(did)
             if sen_token:
@@ -276,10 +277,10 @@ class RegistrationEngine:
         record_existing_account: bool = True,
     ) -> SignupFormResult:
         """
-        Submit the authorization entry form
+        Submit the authorization entry form.
 
         Returns:
-            SignupFormResult: Submit the result, including account status judgment
+            SignupFormResult: Result including the detected page type.
         """
         try:
             request_body = json.dumps({
@@ -312,7 +313,7 @@ class RegistrationEngine:
                 data=request_body,
             )
 
-            self._log(f"{log_label}status: {response.status_code}")
+            self._log(f"{log_label} status: {response.status_code}")
 
             if response.status_code != 200:
                 return SignupFormResult(
@@ -331,10 +332,10 @@ class RegistrationEngine:
                 if is_existing:
                     self._otp_sent_at = time.time()
                     if record_existing_account:
-                        self._log(f"If a registered account is detected, it will automatically switch to the login process")
+                        self._log("Detected an existing account; switching to the login flow automatically")
                         self._is_existing_account = True
                     else:
-                        self._log("The login process has been triggered, waiting for the verification code automatically sent by the system")
+                        self._log("Login flow started; waiting for the verification code sent automatically by the system")
 
                 return SignupFormResult(
                     success=True,
@@ -381,7 +382,7 @@ class RegistrationEngine:
         )
 
     def _submit_login_password(self) -> SignupFormResult:
-        """Submit your login password and enter the email verification code page."""
+        """Submit the login password and continue to the email verification step."""
         try:
             response = self.session.post(
                 OPENAI_API_ENDPOINTS["password_verify"],
@@ -408,7 +409,7 @@ class RegistrationEngine:
             is_existing = page_type == OPENAI_PAGE_TYPES["EMAIL_OTP_VERIFICATION"]
             if is_existing:
                 self._otp_sent_at = time.time()
-                self._log("Login password verification passed, waiting for the verification code automatically sent by the system")
+                self._log("Login password accepted; waiting for the verification code sent automatically by the system")
 
             return SignupFormResult(
                 success=True,
@@ -431,41 +432,41 @@ class RegistrationEngine:
 
     def _prepare_authorize_flow(self, label: str) -> Tuple[Optional[str], Optional[str]]:
         """Initialize the authorization process at the current stage and return device id and sentinel token."""
-        self._log(f"{label}: Warm up the session first...")
+        self._log(f"{label}: Initializing session...")
         if not self._init_session():
             return None, None
 
-        self._log(f"{label}: The OAuth process is ready to start, tie your shoes...")
+        self._log(f"{label}: Starting OAuth...")
         if not self._start_oauth():
             return None, None
 
-        self._log(f"{label}: Receive Device ID pass...")
+        self._log(f"{label}: Fetching Device ID...")
         did = self._get_device_id()
         if not did:
             return None, None
 
-        self._log(f"{label}: Solve a Sentinel POW question. Only correct answers will be awarded...")
+        self._log(f"{label}: Solving Sentinel POW challenge...")
         sen_token = self._check_sentinel(did)
         if not sen_token:
             return did, None
 
-        self._log(f"{label}: Sentinel nodded and moved on")
+        self._log(f"{label}: Sentinel check passed")
         return did, sen_token
 
     def _complete_token_exchange(self, result: RegistrationResult) -> bool:
         """After the login state has been established, continue to complete the workspace and OAuth token acquisition."""
-        self._log("Waiting for the login verification code to arrive, the last guest is still on the way...")
+        self._log("Waiting for the login verification code...")
         code = self._get_verification_code()
         if not code:
             result.error_message = "Failed to obtain verification code"
             return False
 
-        self._log("Check the login verification code and verify your identity...")
+        self._log("Verifying the login code...")
         if not self._validate_verification_code(code):
             result.error_message = "Verification code verification failed"
             return False
 
-        self._log("Touch the Workspace ID to see which table you should sit at...")
+        self._log("Fetching Workspace ID...")
         workspace_id = self._get_workspace_id()
         if not workspace_id:
             result.error_message = "Failed to obtain Workspace ID"
@@ -473,13 +474,13 @@ class RegistrationEngine:
 
         result.workspace_id = workspace_id
 
-        self._log("Select Workspace and arrange a reliable seat...")
+        self._log("Selecting Workspace...")
         continue_url = self._select_workspace(workspace_id)
         if not continue_url:
             result.error_message = "Failed to select Workspace"
             return False
 
-        self._log("Follow the redirection breadcrumbs, don't lose track...")
+        self._log("Following the redirect chain...")
         callback_url = self._follow_redirects(continue_url)
         if not callback_url:
             result.error_message = "Failed to follow redirect chain"
@@ -502,14 +503,14 @@ class RegistrationEngine:
         if session_cookie:
             self.session_token = session_cookie
             result.session_token = session_cookie
-            self._log("Session Token was also obtained, and the network is not in vain today")
+            self._log("Session token retrieved successfully")
 
         return True
 
     def _restart_login_flow(self) -> Tuple[bool, str]:
         """After the newly registered account is created, re-initiate the login process to get the token."""
         self._token_acquisition_requires_login = True
-        self._log("I'm done with the registration, I'll log in again and ask for the token, and wrap up...")
+        self._log("Registration completed; restarting the login flow to fetch tokens...")
         self._reset_auth_flow()
 
         did, sen_token = self._prepare_authorize_flow("Relogin")
@@ -522,22 +523,22 @@ class RegistrationEngine:
         if not login_start_result.success:
             return False, f"Failed to re-login to submit email: {login_start_result.error_message}"
         if login_start_result.page_type != OPENAI_PAGE_TYPES["LOGIN_PASSWORD"]:
-            return False, f"Re-login without entering the password page: {login_start_result.page_type or 'unknown'}"
+            return False, f"Re-login did not reach the password page: {login_start_result.page_type or 'unknown'}"
 
         password_result = self._submit_login_password()
         if not password_result.success:
             return False, f"Failed to re-login and submit password: {password_result.error_message}"
         if not password_result.is_existing_account:
-            return False, f"Re-login without entering the verification code page: {password_result.page_type or 'unknown'}"
+            return False, f"Re-login did not reach the verification code page: {password_result.page_type or 'unknown'}"
         return True, ""
 
     def _register_password(self) -> Tuple[bool, Optional[str]]:
-        """Registration password"""
+        """Register the account password."""
         try:
             # Generate password
             password = self._generate_password()
-            self.password = password # Save password to instance variable
-            self._log(f"Generate password: {password}")
+            self.password = password  # Save password to instance variable
+            self._log(f"Generated password: {password}")
 
             # Submit password registration
             register_body = json.dumps({
@@ -584,28 +585,28 @@ class RegistrationEngine:
             return False, None
 
     def _mark_email_as_registered(self):
-        """Mark the mailbox as registered (to prevent repeated attempts)"""
+        """Mark the mailbox as already registered to avoid repeated attempts."""
         try:
             with get_db() as db:
                 # Check whether a record of this mailbox already exists
                 existing = crud.get_account_by_email(db, self.email)
                 if not existing:
-                    #Create a failure record and mark the email address as already registered
+                    # Create a failed record and mark the email address as already registered
                     crud.create_account(
                         db,
                         email=self.email,
-                        password="", # An empty password indicates unsuccessful registration
+                        password="",  # An empty password indicates unsuccessful registration
                         email_service=self.email_service.service_type.value,
                         email_service_id=self.email_info.get("service_id") if self.email_info else None,
                         status="failed",
                         extra_data={"register_failed_reason": "email_already_registered_on_openai"}
                     )
-                    self._log(f"The mailbox {self.email} has been marked as registered in the database")
+                    self._log(f"Mailbox {self.email} was marked as already registered in the database")
         except Exception as e:
             logger.warning(f"Failed to mark mailbox status: {e}")
 
     def _send_verification_code(self) -> bool:
-        """Send verification code"""
+        """Send the verification code."""
         try:
             # Record sending timestamp
             self._otp_sent_at = time.time()
@@ -618,7 +619,7 @@ class RegistrationEngine:
                 },
             )
 
-            self._log(f"Verification code sending status: {response.status_code}")
+            self._log(f"Send verification code status: {response.status_code}")
             return response.status_code == 200
 
         except Exception as e:
@@ -626,9 +627,9 @@ class RegistrationEngine:
             return False
 
     def _get_verification_code(self) -> Optional[str]:
-        """Get verification code"""
+        """Get the verification code."""
         try:
-            self._log(f"Waiting for the verification code of the email address {self.email}...")
+            self._log(f"Waiting for the verification code for {self.email}...")
 
             email_id = self.email_info.get("service_id") if self.email_info else None
             code = self.email_service.get_verification_code(
@@ -640,7 +641,7 @@ class RegistrationEngine:
             )
 
             if code:
-                self._log(f"Successfully obtained verification code: {code}")
+                self._log(f"Verification code received: {code}")
                 return code
             else:
                 self._log("Timeout waiting for verification code", "error")
@@ -651,7 +652,7 @@ class RegistrationEngine:
             return None
 
     def _validate_verification_code(self, code: str) -> bool:
-        """Verify verification code"""
+        """Verify the verification code."""
         try:
             code_body = f'{{"code":"{code}"}}'
 
@@ -665,7 +666,7 @@ class RegistrationEngine:
                 data=code_body,
             )
 
-            self._log(f"Verification code verification status: {response.status_code}")
+            self._log(f"Verify verification code status: {response.status_code}")
             return response.status_code == 200
 
         except Exception as e:
@@ -673,10 +674,10 @@ class RegistrationEngine:
             return False
 
     def _create_user_account(self) -> bool:
-        """Create user account"""
+        """Create the final user account profile."""
         try:
             user_info = generate_random_user_info()
-            self._log(f"Generate user information: {user_info['name']}, birthday: {user_info['birthdate']}")
+            self._log(f"Generated user profile: {user_info['name']}, birthday {user_info['birthdate']}")
             create_account_body = json.dumps(user_info)
 
             response = self.session.post(
@@ -702,7 +703,7 @@ class RegistrationEngine:
             return False
 
     def _get_workspace_id(self) -> Optional[str]:
-        """Get Workspace ID"""
+        """Get the Workspace ID."""
         try:
             auth_cookie = self.session.cookies.get("oai-client-auth-session")
             if not auth_cookie:
@@ -747,7 +748,7 @@ class RegistrationEngine:
             return None
 
     def _select_workspace(self, workspace_id: str) -> Optional[str]:
-        """Select Workspace"""
+        """Select the Workspace."""
         try:
             select_body = f'{{"workspace_id":"{workspace_id}"}}'
 
@@ -778,7 +779,7 @@ class RegistrationEngine:
             return None
 
     def _follow_redirects(self, start_url: str) -> Optional[str]:
-        """Follow the redirect chain and look for the callback URL"""
+        """Follow the redirect chain and look for the callback URL."""
         try:
             current_url = start_url
             max_redirects = 6
@@ -794,7 +795,7 @@ class RegistrationEngine:
 
                 location = response.headers.get("Location") or ""
 
-                # If it is not a redirect status code, stop
+                # Stop once the response is no longer a redirect
                 if response.status_code not in [301, 302, 303, 307, 308]:
                     self._log(f"Non-redirect status code: {response.status_code}")
                     break
@@ -807,7 +808,7 @@ class RegistrationEngine:
                 import urllib.parse
                 next_url = urllib.parse.urljoin(current_url, location)
 
-                # Check if callback parameters are included
+                # Check whether the callback parameters are already present
                 if "code=" in next_url and "state=" in next_url:
                     self._log(f"Callback URL found: {next_url[:100]}...")
                     return next_url
@@ -822,20 +823,20 @@ class RegistrationEngine:
             return None
 
     def _handle_oauth_callback(self, callback_url: str) -> Optional[Dict[str, Any]]:
-        """Handling OAuth callbacks"""
+        """Handle the OAuth callback."""
         try:
             if not self.oauth_start:
                 self._log("OAuth process not initialized", "error")
                 return None
 
-            self._log("Processing OAuth callbacks, trembling at the last moment, hold still...")
+            self._log("Processing OAuth callback...")
             token_info = self.oauth_manager.handle_callback(
                 callback_url=callback_url,
                 expected_state=self.oauth_start.state,
                 code_verifier=self.oauth_start.code_verifier
             )
 
-            self._log("OAuth authorization successful, customs clearance documents obtained")
+            self._log("OAuth authorization completed successfully")
             return token_info
 
         except Exception as e:
@@ -844,15 +845,15 @@ class RegistrationEngine:
 
     def run(self) -> RegistrationResult:
         """
-        Follow the complete registration process
+        Run the full registration flow.
 
         Support automatic login for registered accounts:
-        - If it is detected that the email address has been registered, automatically switch to the login process
-        - Registered accounts skip: set password, send verification code, create user account
-        - Common steps: Get Verification Code, Verify Verification Code, Workspace and OAuth callbacks
+        - If the email address is already registered, switch to the login flow automatically.
+        - Existing accounts skip password setup, OTP send, and account-profile creation.
+        - Shared steps still include OTP retrieval, OTP verification, workspace selection, and OAuth callbacks.
 
         Returns:
-            RegistrationResult: registration result
+            RegistrationResult: Final registration or login result.
         """
         result = RegistrationResult(success=False, logs=self.logs)
 
@@ -862,11 +863,11 @@ class RegistrationEngine:
             self._otp_sent_at = None
 
             self._log("=" * 60)
-            self._log("The registration process starts and starts knocking on the door for you")
+            self._log("Starting registration flow")
             self._log("=" * 60)
 
             # 1. Check IP geolocation
-            self._log("1. First look at where this network comes from, don't end up on the wrong set at the beginning...")
+            self._log("1. Checking IP geolocation...")
             ip_ok, location = self._check_ip_location()
             if not ip_ok:
                 result.error_message = f"IP geographical location is not supported: {location}"
@@ -876,7 +877,7 @@ class RegistrationEngine:
             self._log(f"IP location: {location}")
 
             # 2. Create email
-            self._log("2. Open a new mailbox and prepare to receive mail...")
+            self._log("2. Creating mailbox...")
             if not self._create_email():
                 result.error_message = "Failed to create mailbox"
                 return result
@@ -902,29 +903,29 @@ class RegistrationEngine:
             if self._is_existing_account:
                 self._log("Detected an existing account, proceeding directly to login for token retrieval")
             else:
-                self._log("5. Set the account password...")
+                self._log("5. Setting account password...")
                 password_ok, _ = self._register_password()
                 if not password_ok:
                     result.error_message = "Registration password failed"
                     return result
 
-                self._log("6. Send the registration verification code...")
+                self._log("6. Sending registration verification code...")
                 if not self._send_verification_code():
                     result.error_message = "Failed to send verification code"
                     return result
 
-                self._log("7. Wait for the verification code to arrive, please check your email...")
+                self._log("7. Waiting for the verification code...")
                 code = self._get_verification_code()
                 if not code:
                     result.error_message = "Failed to obtain verification code"
                     return result
 
-                self._log("8. Verify the email code...")
+                self._log("8. Verifying email code...")
                 if not self._validate_verification_code(code):
                     result.error_message = "Failed to verify verification code"
                     return result
 
-                self._log("9. Create the final user account profile...")
+                self._log("9. Creating final user account profile...")
                 if not self._create_user_account():
                     result.error_message = "Failed to create user account"
                     return result
@@ -940,9 +941,9 @@ class RegistrationEngine:
             # 10. Complete
             self._log("=" * 60)
             if self._is_existing_account:
-                self._log("Login successful, old friend returned home smoothly")
+                self._log("Login successful")
             else:
-                self._log("Registration successful, account has been firmly established, you can open the champagne")
+                self._log("Registration successful")
             self._log(f"Email: {result.email}")
             self._log(f"Account ID: {result.account_id}")
             self._log(f"Workspace ID: {result.workspace_id}")
@@ -966,13 +967,13 @@ class RegistrationEngine:
 
     def save_to_database(self, result: RegistrationResult) -> bool:
         """
-        Save registration results to database
+        Save registration results to the database.
 
         Args:
-            result: registration result
+            result: Registration result.
 
         Returns:
-            Is the save successful?
+            bool: Whether the save succeeded.
         """
         if not result.success:
             return False
