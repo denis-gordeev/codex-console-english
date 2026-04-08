@@ -7,6 +7,7 @@
 - Rewrote the most awkward registration-flow runtime messages and docstrings in `src/core/register.py` so the logs are plain English during signup, relogin, and token exchange.
 - Cleaned up remaining machine-translated API field descriptions and comments in `src/web/routes/payment.py`, `src/web/routes/accounts.py`, and `src/web/routes/email.py`.
 - Added regression assertions in `tests/test_registration_engine.py` to keep the cleaned registration logs from regressing back to awkward phrasing.
+- Verified repository is fully translated: no Cyrillic, Han, or other non-Latin scripts remain in tracked source files, documentation, or configuration.
 
 ## Next Actions
 
