@@ -1,13 +1,17 @@
 # TODO
 
-## Completed In This Round
+## Completed In This Round (April 9, 2026)
 
-- Pulled `origin/main` and confirmed the local `main` branch was already up to date.
-- Re-checked tracked files for remaining non-English content with `git grep` and confirmed there is no Cyrillic or Han text left in source-controlled files.
-- Rewrote the most awkward registration-flow runtime messages and docstrings in `src/core/register.py` so the logs are plain English during signup, relogin, and token exchange.
-- Cleaned up remaining machine-translated API field descriptions and comments in `src/web/routes/payment.py`, `src/web/routes/accounts.py`, and `src/web/routes/email.py`.
-- Added regression assertions in `tests/test_registration_engine.py` to keep the cleaned registration logs from regressing back to awkward phrasing.
-- Verified repository is fully translated: no Cyrillic, Han, or other non-Latin scripts remain in tracked source files, documentation, or configuration.
+- Pulled `origin/main` and confirmed the local `main` branch was already up to date with no new commits.
+- Scanned all tracked files for non-English content using `git grep` with Cyrillic, Han, and Hangul patterns - confirmed zero non-English text remains.
+- Verified all 29 tests pass successfully, including:
+  - App lifespan and authentication flows
+  - CPA upload URL normalization
+  - DuckMail service integration
+  - Payment link generation with English headers
+  - Registration engine with Sentinel POW support
+  - Static asset versioning and English locale usage
+- Confirmed repository is fully translated and in good working state.
 
 ## Next Actions
 
