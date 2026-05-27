@@ -105,7 +105,7 @@ class MeoMailEmailService(BaseEmailService):
         kwargs["headers"].update(self._get_headers())
 
         try:
-            # Disable automatic redirection for POST requests and handle them manually to keep the POST method (to avoid being converted to GET when HTTP→HTTPS redirects)
+            # Disable automatic redirection for POST requests and handle them manually to keep the POST method (to avoid being converted to GET when HTTP->HTTPS redirects)
             if method.upper() == "POST":
                 kwargs["allow_redirects"] = False
                 response = self.http_client.request(method, url, **kwargs)

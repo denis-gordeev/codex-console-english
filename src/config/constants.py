@@ -220,7 +220,7 @@ def generate_random_user_info() -> dict:
         "birthdate": birthdate
     }
 
-# Keep default values ​​for compatibility
+# Keep default values for compatibility
 DEFAULT_USER_INFO = {
     "name": "Neo",
     "birthdate": "2000-02-20",
