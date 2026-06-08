@@ -1,5 +1,15 @@
 # TODO
 
+## Completed In This Round (June 8, 2026 - Round 27)
+
+- Pulled `origin/main` - repository was already up to date.
+- Scanned all tracked files for non-English text (Cyrillic, CJK, Arabic, non-ASCII artifacts) - zero non-English language text found.
+- Replaced box-drawing characters with ASCII dashes in `.env.example:4,14` for ASCII compatibility.
+- Replaced Unicode arrows with HTML entities in `templates/accounts.html:195,199` (`←` → `&larr;`, `→` → `&rarr;`).
+- Replaced Unicode arrow with HTML entity in `templates/settings.html:529` (`→` → `-&gt;`).
+- Verified all 29 tests pass successfully (pytest on Python 3.10 via .venv).
+- Confirmed repository translation status remains complete; no new non-English text to translate.
+
 ## Completed In This Round (June 5, 2026 - Round 26)
 
 - Pulled `origin/main` - repository was already up to date.
