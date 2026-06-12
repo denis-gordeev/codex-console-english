@@ -14,7 +14,7 @@ from dataclasses import dataclass
 
 
 class SettingCategory(str, Enum):
-    """Set categories"""
+    """Setting categories"""
     GENERAL = "general"
     DATABASE = "database"
     WEBUI = "webui"
@@ -86,7 +86,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         db_key="webui.secret_key",
         default_value="your-secret-key-change-in-production",
         category=SettingCategory.WEBUI,
-        description="Web UI Key",
+        description="Web UI secret key",
         is_secret=True
     ),
     "webui_access_password": SettingDefinition(
@@ -149,12 +149,12 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         description="OpenAI OAuth permission scope"
     ),
 
-    #Agent configuration
+    # Proxy configuration
     "proxy_enabled": SettingDefinition(
         db_key="proxy.enabled",
         default_value=False,
         category=SettingCategory.PROXY,
-        description="Whether to enable proxy"
+        description="Enable proxy"
     ),
     "proxy_type": SettingDefinition(
         db_key="proxy.type",
@@ -178,26 +178,26 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         db_key="proxy.username",
         default_value="",
         category=SettingCategory.PROXY,
-        description="Agent username"
+        description="Proxy username"
     ),
     "proxy_password": SettingDefinition(
         db_key="proxy.password",
         default_value="",
         category=SettingCategory.PROXY,
-        description="Agent password",
+        description="Proxy password",
         is_secret=True
     ),
     "proxy_dynamic_enabled": SettingDefinition(
         db_key="proxy.dynamic_enabled",
         default_value=False,
         category=SettingCategory.PROXY,
-        description="Whether to enable dynamic proxy"
+        description="Enable dynamic proxy"
     ),
     "proxy_dynamic_api_url": SettingDefinition(
         db_key="proxy.dynamic_api_url",
         default_value="",
         category=SettingCategory.PROXY,
-        description="Dynamic proxy API address, return proxy URL string"
+        description="Dynamic proxy API URL (returns proxy URL string)"
     ),
     "proxy_dynamic_api_key": SettingDefinition(
         db_key="proxy.dynamic_api_key",
@@ -210,16 +210,16 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         db_key="proxy.dynamic_api_key_header",
         default_value="X-API-Key",
         category=SettingCategory.PROXY,
-        description="Dynamic Proxy API Key Request Header Name"
+        description="Dynamic proxy API key request header name"
     ),
     "proxy_dynamic_result_field": SettingDefinition(
         db_key="proxy.dynamic_result_field",
         default_value="",
         category=SettingCategory.PROXY,
-        description="Extract the field path of the proxy URL from the JSON response (leave blank to use the original response text)"
+        description="JSON field path to extract the proxy URL from (leave blank to use raw response text)"
     ),
 
-    #Register configuration
+    # Registration configuration
     "registration_max_retries": SettingDefinition(
         db_key="registration.max_retries",
         default_value=3,
@@ -256,7 +256,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         db_key="email.service_priority",
         default_value={"tempmail": 0, "outlook": 1, "moe_mail": 2},
         category=SettingCategory.EMAIL,
-        description="Mailbox service priority"
+        description="Email service priority"
     ),
 
     # Tempmail.lol configuration
@@ -279,18 +279,18 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         description="Tempmail maximum retries"
     ),
 
-    # Custom domain name email configuration
+    # Custom domain email configuration
     "custom_domain_base_url": SettingDefinition(
         db_key="custom_domain.base_url",
         default_value="",
         category=SettingCategory.CUSTOM_DOMAIN,
-        description="Custom domain name API address"
+        description="Custom domain API URL"
     ),
     "custom_domain_api_key": SettingDefinition(
         db_key="custom_domain.api_key",
         default_value="",
         category=SettingCategory.CUSTOM_DOMAIN,
-        description="Custom domain name API key",
+        description="Custom domain API key",
         is_secret=True
     ),
 
@@ -308,7 +308,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         db_key="tm.enabled",
         default_value=False,
         category=SettingCategory.GENERAL,
-        description="Whether to enable Team Manager upload"
+        description="Enable Team Manager upload"
     ),
     "tm_api_url": SettingDefinition(
         db_key="tm.api_url",
@@ -329,7 +329,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         db_key="cpa.enabled",
         default_value=False,
         category=SettingCategory.CPA,
-        description="Whether to enable CPA upload"
+        description="Enable CPA upload"
     ),
     "cpa_api_url": SettingDefinition(
         db_key="cpa.api_url",
@@ -376,7 +376,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         db_key="outlook.health_disable_duration",
         default_value=60,
         category=SettingCategory.EMAIL,
-        description="Outlook provider disabled for how long (seconds)"
+        description="How long to disable the Outlook provider (seconds)"
     ),
     "outlook_default_client_id": SettingDefinition(
         db_key="outlook.default_client_id",
@@ -582,7 +582,7 @@ def _save_settings_to_db(**kwargs) -> None:
 
 class Settings(BaseModel):
     """
-    Application configuration - completely based on database storage
+    Application configuration -- fully backed by database storage
     """
 
     # Application information
@@ -627,7 +627,7 @@ class Settings(BaseModel):
     openai_redirect_uri: str = "http://localhost:1455/auth/callback"
     openai_scope: str = "openid email profile offline_access"
 
-    #Agent configuration
+    # Proxy configuration
     proxy_enabled: bool = False
     proxy_type: str = "http"
     proxy_host: str = "127.0.0.1"
@@ -659,7 +659,7 @@ class Settings(BaseModel):
 
         return f"{scheme}://{auth}{self.proxy_host}:{self.proxy_port}"
 
-    #Register configuration
+    # Registration configuration
     registration_max_retries: int = 3
     registration_timeout: int = 120
     registration_default_password_length: int = 12
@@ -674,7 +674,7 @@ class Settings(BaseModel):
     tempmail_timeout: int = 30
     tempmail_max_retries: int = 3
 
-    # Custom domain name email configuration
+    # Custom domain email configuration
     custom_domain_base_url: str = ""
     custom_domain_api_key: Optional[SecretStr] = None
 
@@ -702,14 +702,14 @@ class Settings(BaseModel):
     outlook_default_client_id: str = "24d9a0ed-8787-4584-883c-2fd79308940a"
 
 
-# Global configuration example
+# Global configuration instance
 _settings: Optional[Settings] = None
 
 
 def get_settings() -> Settings:
     """
-    Get the global configuration instance (singleton mode)
-    Load configuration entirely from database
+    Get the global configuration instance (singleton).
+    Load all configuration from the database.
     """
     global _settings
     if _settings is None:
@@ -723,13 +723,13 @@ def get_settings() -> Settings:
 
 def update_settings(**kwargs) -> Settings:
     """
-    Update configuration and save to database
+    Update configuration and save to the database
     """
     global _settings
     if _settings is None:
         _settings = get_settings()
 
-    #Create a new configuration instance
+    # Create a new configuration instance
     updated_data = _settings.model_dump()
     updated_data.update(kwargs)
     _settings = Settings(**updated_data)
@@ -742,7 +742,7 @@ def update_settings(**kwargs) -> Settings:
 
 def get_database_url() -> str:
     """
-    Get database URL (handles relative paths)
+    Get the database URL (handles relative paths)
     """
     settings = get_settings()
     url = settings.database_url
@@ -751,7 +751,7 @@ def get_database_url() -> str:
     if url.startswith("sqlite:///"):
         path = url[10:] # Remove "sqlite:///"
         if not os.path.isabs(path):
-            # Convert to a path relative to the project root directory
+            # Resolve relative to the project root directory
             project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
             abs_path = os.path.join(project_root, path)
             return f"sqlite:///{abs_path}"
@@ -760,10 +760,10 @@ def get_database_url() -> str:
 
 
 def get_setting_definition(attr_name: str) -> Optional[SettingDefinition]:
-    """Get the definition information of the setting item"""
+    """Get the definition of a setting item"""
     return SETTING_DEFINITIONS.get(attr_name)
 
 
 def get_all_setting_definitions() -> Dict[str, SettingDefinition]:
-    """Get the definitions of all setting items"""
+    """Get the definitions of all settings"""
     return SETTING_DEFINITIONS.copy()

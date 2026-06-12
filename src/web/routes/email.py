@@ -20,7 +20,7 @@ router = APIRouter()
 # ============== Pydantic Models ==============
 
 class EmailServiceCreate(BaseModel):
-    """Create mailbox service request"""
+    """Create email service request"""
     service_type: str
     name: str
     config: Dict[str, Any]
@@ -29,7 +29,7 @@ class EmailServiceCreate(BaseModel):
 
 
 class EmailServiceUpdate(BaseModel):
-    """Update Mailbox Service Request"""
+    """Update email service request"""
     name: Optional[str] = None
     config: Optional[Dict[str, Any]] = None
     enabled: Optional[bool] = None
@@ -37,7 +37,7 @@ class EmailServiceUpdate(BaseModel):
 
 
 class EmailServiceResponse(BaseModel):
-    """Mailbox service response"""
+    """Email service response"""
     id: int
     service_type: str
     name: str
@@ -52,7 +52,7 @@ class EmailServiceResponse(BaseModel):
 
 
 class EmailServiceListResponse(BaseModel):
-    """Mailbox service list response"""
+    """Email service list response"""
     total: int
     services: List[EmailServiceResponse]
 
@@ -66,7 +66,7 @@ class ServiceTestResult(BaseModel):
 
 class OutlookBatchImportRequest(BaseModel):
     """Outlook bulk import request"""
-    data: str #Multiple lines of data, each line format: email----password or email----password----client_id----refresh_token
+    data: str  # Multiple lines of data; each line format: email----password or email----password----client_id----refresh_token
     enabled: bool = True
     priority: int = 0
 
@@ -124,7 +124,7 @@ def service_to_response(service: EmailServiceModel) -> EmailServiceResponse:
 
 @router.get("/stats")
 async def get_email_services_stats():
-    """Get mailbox service statistics"""
+    """Get email service statistics"""
     with get_db() as db:
         from sqlalchemy import func
 
@@ -146,7 +146,7 @@ async def get_email_services_stats():
             'duck_mail_count': 0,
             'freemail_count': 0,
             'imap_mail_count': 0,
-            'tempmail_available': True, # Temporary mailbox is always available
+            'tempmail_available': True, # Tempmail is always available
             'enabled_count': enabled_count
         }
 
@@ -175,7 +175,7 @@ async def get_service_types():
             {
                 "value": "tempmail",
                 "label": "Tempmail.lol",
-                "description": "Temporary mailbox service, no configuration required",
+                "description": "Tempmail temporary email service, no configuration required",
                 "config_fields": [
                     {"name": "base_url", "label": "API address", "default": "https://api.tempmail.lol/v2", "required": False},
                     {"name": "timeout", "label": "timeout", "default": 30, "required": False},
@@ -184,7 +184,7 @@ async def get_service_types():
             {
                 "value": "outlook",
                 "label": "Outlook",
-                "description": "Outlook mailbox, account information needs to be configured",
+                "description": "Outlook email, account information needs to be configured",
                 "config_fields": [
                     {"name": "email", "label": "Email address", "required": True},
                     {"name": "password", "label": "password", "required": True},
@@ -195,7 +195,7 @@ async def get_service_types():
             {
                 "value": "moe_mail",
                 "label": "MoeMail",
-                "description": "Customized domain name email service",
+                "description": "Custom domain email service",
                 "config_fields": [
                     {"name": "base_url", "label": "API address", "required": True},
                     {"name": "api_key", "label": "API Key", "required": True},
@@ -205,7 +205,7 @@ async def get_service_types():
             {
                 "value": "temp_mail",
                 "label": "Temp-Mail (self-deployment)",
-                "description": "Self-deployed Cloudflare Worker temporary mailbox, admin mode management",
+                "description": "Self-deployed Cloudflare Worker temporary email, admin mode management",
                 "config_fields": [
                     {"name": "base_url", "label": "Worker address", "required": True, "placeholder": "https://mail.example.com"},
                     {"name": "admin_password", "label": "Admin password", "required": True, "secret": True},
@@ -216,7 +216,7 @@ async def get_service_types():
             {
                 "value": "duck_mail",
                 "label": "DuckMail",
-                "description": "DuckMail interface email service, supports API Key private domain name access",
+                "description": "DuckMail interface email service, supports API Key private domain access",
                 "config_fields": [
                     {"name": "base_url", "label": "API address", "required": True, "placeholder": "https://api.duckmail.sbs"},
                     {"name": "default_domain", "label": "Default domain name", "required": True, "placeholder": "duckmail.sbs"},
@@ -227,7 +227,7 @@ async def get_service_types():
             {
                 "value": "freemail",
                 "label": "Freemail",
-                "description": "Freemail self-deployed Cloudflare Worker temporary mailbox service",
+                "description": "Freemail self-deployed Cloudflare Worker temporary email service",
                 "config_fields": [
                     {"name": "base_url", "label": "API address", "required": True, "placeholder": "https://freemail.example.com"},
                     {"name": "admin_token", "label": "Admin Token", "required": True, "secret": True},
@@ -236,7 +236,7 @@ async def get_service_types():
             },
             {
                 "value": "imap_mail",
-                "label": "IMAP mailbox",
+                "label": "IMAP email",
                 "description": "Standard IMAP email (Gmail/QQ/163, etc.) used only for verification codes and always connected directly",
                 "config_fields": [
                     {"name": "host", "label": "IMAP Server", "required": True, "placeholder": "imap.gmail.com"},
@@ -279,7 +279,7 @@ async def get_email_service(service_id: int):
     with get_db() as db:
         service = db.query(EmailServiceModel).filter(EmailServiceModel.id == service_id).first()
         if not service:
-            raise HTTPException(status_code=404, detail="Service does not exist")
+            raise HTTPException(status_code=404, detail="Service not found")
         return service_to_response(service)
 
 
@@ -289,7 +289,7 @@ async def get_email_service_full(service_id: int):
     with get_db() as db:
         service = db.query(EmailServiceModel).filter(EmailServiceModel.id == service_id).first()
         if not service:
-            raise HTTPException(status_code=404, detail="Service does not exist")
+            raise HTTPException(status_code=404, detail="Service not found")
 
         return {
             "id": service.id,
@@ -306,7 +306,7 @@ async def get_email_service_full(service_id: int):
 
 @router.post("", response_model=EmailServiceResponse)
 async def create_email_service(request: EmailServiceCreate):
-    """Create mailbox service configuration"""
+    """Create email service configuration"""
     # Verify service type
     try:
         EmailServiceType(request.service_type)
@@ -317,7 +317,7 @@ async def create_email_service(request: EmailServiceCreate):
         # Check if the name is duplicated
         existing = db.query(EmailServiceModel).filter(EmailServiceModel.name == request.name).first()
         if existing:
-            raise HTTPException(status_code=400, detail="Service name already exists")
+            raise HTTPException(status_code=400, detail="Service name already in use")
 
         service = EmailServiceModel(
             service_type=request.service_type,
@@ -335,11 +335,11 @@ async def create_email_service(request: EmailServiceCreate):
 
 @router.patch("/{service_id}", response_model=EmailServiceResponse)
 async def update_email_service(service_id: int, request: EmailServiceUpdate):
-    """Update mailbox service configuration"""
+    """Update email service configuration"""
     with get_db() as db:
         service = db.query(EmailServiceModel).filter(EmailServiceModel.id == service_id).first()
         if not service:
-            raise HTTPException(status_code=404, detail="Service does not exist")
+            raise HTTPException(status_code=404, detail="Service not found")
 
         update_data = {}
         if request.name is not None:
@@ -367,16 +367,16 @@ async def update_email_service(service_id: int, request: EmailServiceUpdate):
 
 @router.delete("/{service_id}")
 async def delete_email_service(service_id: int):
-    """Delete mailbox service configuration"""
+    """Delete email service configuration"""
     with get_db() as db:
         service = db.query(EmailServiceModel).filter(EmailServiceModel.id == service_id).first()
         if not service:
-            raise HTTPException(status_code=404, detail="Service does not exist")
+            raise HTTPException(status_code=404, detail="Service not found")
 
         db.delete(service)
         db.commit()
 
-        return {"success": True, "message": f"Service {service.name} has been deleted"}
+        return {"success": True, "message": f"Service {service.name} deleted"}
 
 
 @router.post("/{service_id}/test", response_model=ServiceTestResult)
@@ -385,7 +385,7 @@ async def test_email_service(service_id: int):
     with get_db() as db:
         service = db.query(EmailServiceModel).filter(EmailServiceModel.id == service_id).first()
         if not service:
-            raise HTTPException(status_code=404, detail="Service does not exist")
+            raise HTTPException(status_code=404, detail="Service not found")
 
         try:
             service_type = EmailServiceType(service.service_type)
@@ -415,11 +415,11 @@ async def test_email_service(service_id: int):
 
 @router.post("/{service_id}/enable")
 async def enable_email_service(service_id: int):
-    """Enable mailbox service"""
+    """Enable email service"""
     with get_db() as db:
         service = db.query(EmailServiceModel).filter(EmailServiceModel.id == service_id).first()
         if not service:
-            raise HTTPException(status_code=404, detail="Service does not exist")
+            raise HTTPException(status_code=404, detail="Service not found")
 
         service.enabled = True
         db.commit()
@@ -429,11 +429,11 @@ async def enable_email_service(service_id: int):
 
 @router.post("/{service_id}/disable")
 async def disable_email_service(service_id: int):
-    """Disable mailbox service"""
+    """Disable email service"""
     with get_db() as db:
         service = db.query(EmailServiceModel).filter(EmailServiceModel.id == service_id).first()
         if not service:
-            raise HTTPException(status_code=404, detail="Service does not exist")
+            raise HTTPException(status_code=404, detail="Service not found")
 
         service.enabled = False
         db.commit()
@@ -443,7 +443,7 @@ async def disable_email_service(service_id: int):
 
 @router.post("/reorder")
 async def reorder_services(service_ids: List[int]):
-    """Reorder mailbox service priority"""
+    """Reorder email service priority"""
     with get_db() as db:
         for index, service_id in enumerate(service_ids):
             service = db.query(EmailServiceModel).filter(EmailServiceModel.id == service_id).first()
@@ -560,7 +560,7 @@ async def batch_import_outlook(request: OutlookBatchImportRequest):
 
 @router.delete("/outlook/batch")
 async def batch_delete_outlook(service_ids: List[int]):
-    """Delete Outlook mailbox services in batches"""
+    """Delete Outlook email services in batches"""
     deleted = 0
     with get_db() as db:
         for service_id in service_ids:
@@ -576,16 +576,16 @@ async def batch_delete_outlook(service_ids: List[int]):
     return {"success": True, "deleted": deleted, "message": f"{deleted} services have been deleted"}
 
 
-# ============== Temporary mailbox test ==============
+# ============== Tempmail test ==============
 
 class TempmailTestRequest(BaseModel):
-    """Temporary mailbox test request"""
+    """Tempmail test request"""
     api_url: Optional[str] = None
 
 
 @router.post("/test-tempmail")
 async def test_tempmail_service(request: TempmailTestRequest):
-    """Test whether the temporary mailbox service is available"""
+    """Test whether the Tempmail service is available"""
     try:
         from ...services import EmailServiceFactory, EmailServiceType
         from ...config.settings import get_settings
@@ -600,10 +600,10 @@ async def test_tempmail_service(request: TempmailTestRequest):
         health = tempmail.check_health()
 
         if health:
-            return {"success": True, "message": "The temporary mailbox connection is normal"}
+            return {"success": True, "message": "Tempmail connection is working"}
         else:
-            return {"success": False, "message": "Temporary mailbox connection failed"}
+            return {"success": False, "message": "Tempmail connection failed"}
 
     except Exception as e:
-        logger.error(f"Failed to test temporary mailbox: {e}")
+        logger.error(f"Failed to test Tempmail: {e}")
         return {"success": False, "message": f"Test failed: {str(e)}"}

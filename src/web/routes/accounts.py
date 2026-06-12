@@ -391,11 +391,11 @@ async def export_accounts_csv(request: BatchExportRequest):
         )
         accounts = db.query(Account).filter(Account.id.in_(ids)).all()
 
-        #Create CSV content
+        # Create CSV content
         output = io.StringIO()
         writer = csv.writer(output)
 
-        #Write header
+        # Write header
         writer.writerow([
             "ID", "Email", "Password", "Client ID",
             "Account ID", "Workspace ID",
@@ -403,7 +403,7 @@ async def export_accounts_csv(request: BatchExportRequest):
             "Email Service", "Status", "Registered At", "Last Refresh", "Expires At"
         ])
 
-        #Write data
+        # Write data
         for acc in accounts:
             writer.writerow([
                 acc.id,

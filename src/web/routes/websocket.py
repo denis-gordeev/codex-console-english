@@ -70,7 +70,7 @@ async def task_websocket(websocket: WebSocket, task_uuid: str):
                         "type": "status",
                         "task_uuid": task_uuid,
                         "status": "cancelling",
-                        "message": "The cancellation request has been submitted and the brakes are being applied, don't panic"
+                        "message": "Cancellation request submitted; tasks are winding down"
                     })
 
             except asyncio.TimeoutError:
@@ -149,7 +149,7 @@ async def batch_websocket(websocket: WebSocket, batch_id: str):
                         "type": "status",
                         "batch_id": batch_id,
                         "status": "cancelling",
-                        "message": "Cancellation request has been submitted and the entire team is slowly pulling over."
+                        "message": "Cancellation request submitted; batch tasks are winding down."
                     })
 
             except asyncio.TimeoutError:

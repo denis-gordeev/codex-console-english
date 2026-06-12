@@ -30,7 +30,7 @@ _ws_lock = threading.Lock()
 # WebSocket sent log index (task_uuid -> {websocket: sent_count})
 _ws_sent_index: Dict[str, Dict] = defaultdict(dict)
 
-#Task status
+# Task status
 _task_status: Dict[str, dict] = {}
 
 # Task cancellation flag

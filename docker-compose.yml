@@ -12,6 +12,8 @@ services:
       - LOG_LEVEL=info
       # If you need an access password, you can uncomment and set it here
       - WEBUI_ACCESS_PASSWORD=admin123
+      # To use remote PostgreSQL instead of local SQLite, uncomment the following line:
+      # - APP_DATABASE_URL=postgresql://user:password@host:5432/dbname
     volumes:
       # Mount the data directory to persist the database and logs
       - ./data:/app/data

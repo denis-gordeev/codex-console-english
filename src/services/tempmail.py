@@ -108,7 +108,7 @@ class TempmailService(BaseEmailService):
             }
             self._email_cache[email] = email_info
 
-            logger.info(f"Tempmail.lol mailbox was created successfully, fresh and hot: {email}")
+            logger.info(f"Tempmail.lol mailbox created successfully: {email}")
             self.update_status(True)
             return email_info
 
@@ -145,14 +145,14 @@ class TempmailService(BaseEmailService):
             if email in self._email_cache:
                 token = self._email_cache[email].get("token")
             else:
-                logger.warning(f"The token for the mailbox {email} was not found and the verification code cannot be obtained")
+                logger.warning(f"Token for mailbox {email} not found; cannot retrieve verification code")
                 return None
 
         if not token:
-            logger.warning(f"The email address {email} does not have a token and cannot obtain the verification code")
+            logger.warning(f"Email address {email} has no token; cannot retrieve verification code")
             return None
 
-        logger.info(f"Waiting for the verification code from email address {email}, the postman should be on the way...")
+        logger.info(f"Waiting for verification code for {email}...")
 
         start_time = time.time()
         seen_ids = set()
@@ -208,7 +208,7 @@ class TempmailService(BaseEmailService):
                     match = re.search(pattern, content)
                     if match:
                         code = match.group(1)
-                        logger.info(f"The verification code was found, six guests appeared: {code}")
+                        logger.info(f"Verification code found: {code}")
                         self.update_status(True)
                         return code
 

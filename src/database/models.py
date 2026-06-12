@@ -1,5 +1,5 @@
 """
-SQLAlchemy ORM model definition
+SQLAlchemy ORM model definitions
 """
 
 from datetime import datetime
@@ -14,7 +14,7 @@ Base = declarative_base()
 
 
 class JSONEncodedDict(TypeDecorator):
-    """JSON encoding dictionary type"""
+    """JSON-encoded dictionary type"""
     impl = Text
 
     def process_bind_param(self, value: Optional[Dict[str, Any]], dialect):
@@ -29,16 +29,16 @@ class JSONEncodedDict(TypeDecorator):
 
 
 class Account(Base):
-    """Registered account table"""
+    """Registered accounts table"""
     __tablename__ = 'accounts'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     email = Column(String(255), nullable=False, unique=True, index=True)
-    password = Column(String(255)) #Registration password (clear text storage)
+    password = Column(String(255)) # Registration password (stored in clear text)
     access_token = Column(Text)
     refresh_token = Column(Text)
     id_token = Column(Text)
-    session_token = Column(Text) # Session token (priority refresh method)
+    session_token = Column(Text) # Session token (preferred refresh method)
     client_id = Column(String(255))  # OAuth Client ID
     account_id = Column(String(255))
     workspace_id = Column(String(255))
@@ -46,12 +46,12 @@ class Account(Base):
     email_service_id = Column(String(255)) # ID in the email service
     proxy_used = Column(String(255))
     registered_at = Column(DateTime, default=datetime.utcnow)
-    last_refresh = Column(DateTime) #Last refresh time
-    expires_at = Column(DateTime) # Token expiration time
+    last_refresh = Column(DateTime) # Last refresh time
+    expires_at = Column(DateTime) # Token expiry time
     status = Column(String(20), default='active')  # 'active', 'expired', 'banned', 'failed'
-    extra_data = Column(JSONEncodedDict) # Extra information storage
-    cpa_uploaded = Column(Boolean, default=False) # Whether it has been uploaded to CPA
-    cpa_uploaded_at = Column(DateTime) #Upload time
+    extra_data = Column(JSONEncodedDict) # Additional information storage
+    cpa_uploaded = Column(Boolean, default=False) # Whether uploaded to CPA
+    cpa_uploaded_at = Column(DateTime) # Upload time
     source = Column(String(20), default='register') # 'register' or 'login', distinguish the account source
     subscription_type = Column(String(20))  # None / 'plus' / 'team'
     subscription_at = Column(DateTime) # Subscription activation time
@@ -85,42 +85,42 @@ class Account(Base):
 
 
 class EmailService(Base):
-    """Mailbox service configuration table"""
+    """Email service configuration table"""
     __tablename__ = 'email_services'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     service_type = Column(String(50), nullable=False)  # 'outlook', 'moe_mail'
     name = Column(String(100), nullable=False)
-    config = Column(JSONEncodedDict, nullable=False) # Service configuration (encrypted storage)
+    config = Column(JSONEncodedDict, nullable=False) # Service configuration (stored encrypted)
     enabled = Column(Boolean, default=True)
-    priority = Column(Integer, default=0) # Use priority
+    priority = Column(Integer, default=0) # Priority
     last_used = Column(DateTime)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
 class RegistrationTask(Base):
-    """Registration task list"""
+    """Registration tasks table"""
     __tablename__ = 'registration_tasks'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    task_uuid = Column(String(36), unique=True, nullable=False, index=True) # Task unique identifier
+    task_uuid = Column(String(36), unique=True, nullable=False, index=True) # Unique task identifier
     status = Column(String(20), default='pending')  # 'pending', 'running', 'completed', 'failed', 'cancelled'
     email_service_id = Column(Integer, ForeignKey('email_services.id'), index=True) # Email service used
-    proxy = Column(String(255)) # proxy used
-    logs = Column(Text) #Registration process log
-    result = Column(JSONEncodedDict) #Registration result
+    proxy = Column(String(255)) # Proxy used
+    logs = Column(Text) # Registration process log
+    result = Column(JSONEncodedDict) # Registration result
     error_message = Column(Text)
     created_at = Column(DateTime, default=datetime.utcnow)
     started_at = Column(DateTime)
     completed_at = Column(DateTime)
 
-    # relation
+    # Relationship
     email_service = relationship('EmailService')
 
 
 class Setting(Base):
-    """System Settings Table"""
+    """System settings table"""
     __tablename__ = 'settings'
 
     key = Column(String(100), primary_key=True)
@@ -131,7 +131,7 @@ class Setting(Base):
 
 
 class CpaService(Base):
-    """CPA Service Configuration Table"""
+    """CPA service configuration table"""
     __tablename__ = 'cpa_services'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -159,7 +159,7 @@ class Sub2ApiService(Base):
 
 
 class TeamManagerService(Base):
-    """Team Manager Service Configuration Table"""
+    """Team Manager service configuration table"""
     __tablename__ = 'tm_services'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -173,21 +173,20 @@ class TeamManagerService(Base):
 
 
 class Proxy(Base):
-    """Agent list table"""
+    """Proxy list table"""
     __tablename__ = 'proxies'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(100), nullable=False) #Agent name
+    name = Column(String(100), nullable=False)  # Proxy name
     type = Column(String(20), nullable=False, default='http')  # http, socks5
     host = Column(String(255), nullable=False)
     port = Column(Integer, nullable=False)
     username = Column(String(100))
     password = Column(String(255))
     enabled = Column(Boolean, default=True)
-    is_default = Column(Boolean, default=False) # Whether it is the default proxy
+    is_default = Column(Boolean, default=False) # Default proxy
     priority = Column(Integer, default=0) # Priority (reserved field)
-    last_used = Column(DateTime) # Last used time
-    created_at = Column(DateTime, default=datetime.utcnow)
+    last_used = Column(DateTime) # Last used time    created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def to_dict(self, include_password: bool = False) -> Dict[str, Any]:

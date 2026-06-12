@@ -1,5 +1,27 @@
 # TODO
 
+## Completed In This Round (June 12, 2026 - Round 35)
+
+- Pulled `origin/main` - repository was already up to date.
+- Scanned all tracked files for non-English text (Cyrillic, CJK, Arabic, Thai, non-ASCII artifacts) - zero non-English language text found.
+- Fixed systematic "Agent" → "Proxy" mistranslation (Chinese 代理) across all source files:
+  - `src/config/settings.py`: description strings "Agent username/password" → "Proxy username/password", comments, and description strings for dynamic proxy settings.
+  - `src/config/constants.py`: section heading, DEFAULT_SETTINGS descriptions, error messages.
+  - `src/database/models.py`: Proxy model docstring and field comment.
+  - `src/database/crud.py`: section heading and docstrings for update_proxy, update_proxy_last_used, get_proxies_count.
+  - `src/web/routes/settings.py`: section heading, docstrings, and user-facing messages ("Agent has been deleted" → "Proxy has been deleted", "Agent connection successful" → "Proxy connection successful", etc.).
+  - `src/web/routes/registration.py`: docstring for update_proxy_usage.
+  - `src/core/upload/cpa_upload.py` and `src/core/upload/sub2api_upload.py`: docstrings "without using an agent" → "without using a proxy".
+- Fixed missing spaces after `#` in inline comments across `src/config/constants.py`, `src/config/settings.py`, `src/web/routes/registration.py`, `src/web/routes/accounts.py`, `src/web/routes/email.py`, `src/web/task_manager.py`, `src/services/outlook/service.py`, `src/core/register.py`.
+- Fixed awkward/overly literal English translations:
+  - `src/services/tempmail.py`: "fresh and hot" → removed, "postman should be on the way" → simplified, "six guests appeared" → removed.
+  - `src/web/routes/websocket.py`: "brakes are being applied, don't panic" → "tasks are winding down", "entire team is slowly pulling over" → "batch tasks are winding down".
+  - `src/config/constants.py`: "interface current limit" → "API rate limit", "Encountered verification code" → "CAPTCHA encountered", section headings normalized.
+  - `src/web/routes/settings.py`: "Temporary mailbox" → "Temporary email", "Verification code waiting to be set" → "Verification code wait settings", module docstring.
+  - `src/database/models.py`: "Mailbox service configuration table" → "Email service configuration table", other table docstrings normalized.
+- Verified Docker environment variable examples against actual `settings.py` names - confirmed `WEBUI_*` variables in docker-compose.yml and Dockerfile are correctly handled by `webui.py:main()` and `settings.py:_load_settings_from_db()`. Added commented-out `APP_DATABASE_URL` example to `docker-compose.yml` for PostgreSQL support.
+- All 32 tests pass successfully (pytest on Python 3.10 via .venv).
+
 ## Completed In This Round (June 12, 2026 - Round 34)
 
 - Pulled `origin/main` - repository was already up to date.
@@ -318,8 +340,12 @@
 
 ## Next Actions
 
+- Continue polishing awkward English in the service layer (moe_mail, base, tempmail, outlook) — docstrings, log messages, and description strings.
+- Fix remaining awkward English in web routes (email.py, accounts.py, payment.py) — "Mailbox" → "Email", "does not exist" → "not found", description strings.
 - Expand route-level API coverage for translated payment and account-management actions that depend on backend data, not just page rendering.
-- Continue reviewing lower-traffic backend modules for awkward English in comments, docstrings, and log output.
+- Add focused tests for the settings save flows and error messages returned by low-traffic API endpoints.
+- Add API tests for access-control edge cases such as malformed cookies and custom logout `next` targets.
+- Authenticate `gh` in a future round if issue and PR inspection is required.
 - Add focused tests for more user-visible registration and payment error messages after the surrounding API behavior is locked down.
 - Run a broader pytest subset in a future round once the full app test dependencies are available in the environment.
 - Authenticate `gh` in a future round if issue and PR inspection is required, since GitHub GraphQL access is currently unavailable in this environment.

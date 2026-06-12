@@ -24,7 +24,7 @@ def upload_to_sub2api(
     priority: int = 50,
 ) -> Tuple[bool, str]:
     """
-    Upload the account list to the Sub2API platform (without using an agent)
+    Upload the account list to the Sub2API platform (without using a proxy)
 
     Args:
         accounts: list of account model instances

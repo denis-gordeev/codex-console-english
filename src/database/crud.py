@@ -162,7 +162,7 @@ def create_email_service(
     enabled: bool = True,
     priority: int = 0
 ) -> EmailService:
-    """Create mailbox service configuration"""
+    """Create an email service configuration"""
     db_service = EmailService(
         service_type=service_type,
         name=name,
@@ -210,7 +210,7 @@ def update_email_service(
     service_id: int,
     **kwargs
 ) -> Optional[EmailService]:
-    """Update mailbox service configuration"""
+    """Update an email service configuration"""
     db_service = get_email_service_by_id(db, service_id)
     if not db_service:
         return None
@@ -225,7 +225,7 @@ def update_email_service(
 
 
 def delete_email_service(db: Session, service_id: int) -> bool:
-    """Delete mailbox service configuration"""
+    """Delete an email service configuration"""
     db_service = get_email_service_by_id(db, service_id)
     if not db_service:
         return False
@@ -330,7 +330,7 @@ get_registration_task = get_registration_task_by_uuid
 
 
 # ============================================================================
-# Set CRUD
+# Settings CRUD
 # ============================================================================
 
 def get_setting(db: Session, key: str) -> Optional[Setting]:
@@ -383,7 +383,7 @@ def delete_setting(db: Session, key: str) -> bool:
 
 
 # ============================================================================
-# Agent CRUD
+# Proxy CRUD
 # ============================================================================
 
 def create_proxy(
@@ -445,7 +445,7 @@ def update_proxy(
     proxy_id: int,
     **kwargs
 ) -> Optional[Proxy]:
-    """Update agent configuration"""
+    """Update proxy configuration"""
     db_proxy = get_proxy_by_id(db, proxy_id)
     if not db_proxy:
         return None
@@ -471,7 +471,7 @@ def delete_proxy(db: Session, proxy_id: int) -> bool:
 
 
 def update_proxy_last_used(db: Session, proxy_id: int) -> bool:
-    """Update agent last used time"""
+    """Update proxy last used time"""
     db_proxy = get_proxy_by_id(db, proxy_id)
     if not db_proxy:
         return False
@@ -482,9 +482,9 @@ def update_proxy_last_used(db: Session, proxy_id: int) -> bool:
 
 
 def get_random_proxy(db: Session) -> Optional[Proxy]:
-    """Randomly obtain an enabled proxy, and return the proxy with is_default=True first."""
+    """Get a random enabled proxy, preferring the one with is_default=True."""
     import random
-    # Return to default proxy first
+    # Return the default proxy first
     default_proxy = db.query(Proxy).filter(Proxy.enabled == True, Proxy.is_default == True).first()
     if default_proxy:
         return default_proxy
@@ -495,10 +495,10 @@ def get_random_proxy(db: Session) -> Optional[Proxy]:
 
 
 def set_proxy_default(db: Session, proxy_id: int) -> Optional[Proxy]:
-    """Sets the specified proxy as the default and clears the default flag for other proxies"""
-    # Clear all default tags
+    """Set the specified proxy as the default and clear the default flag on all other proxies"""
+    # Clear all default flags
     db.query(Proxy).filter(Proxy.is_default == True).update({"is_default": False})
-    # Set a new default proxy
+    # Set the new default proxy
     proxy = db.query(Proxy).filter(Proxy.id == proxy_id).first()
     if proxy:
         proxy.is_default = True
@@ -508,7 +508,7 @@ def set_proxy_default(db: Session, proxy_id: int) -> Optional[Proxy]:
 
 
 def get_proxies_count(db: Session, enabled: Optional[bool] = None) -> int:
-    """Get the number of agents"""
+    """Get the number of proxies"""
     query = db.query(func.count(Proxy.id))
     if enabled is not None:
         query = query.filter(Proxy.enabled == enabled)

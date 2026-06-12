@@ -113,7 +113,7 @@ def upload_to_cpa(
     api_url: str = None,
     api_token: str = None,
 ) -> Tuple[bool, str]:
-    """Upload a single account to the CPA management platform (without using an agent)
+    """Upload a single account to the CPA management platform (without using a proxy)
 
     Args:
         token_data: Token JSON data

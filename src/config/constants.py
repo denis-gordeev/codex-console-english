@@ -1,5 +1,5 @@
 """
-constant definition
+Constant definitions
 """
 
 import random
@@ -9,11 +9,11 @@ from typing import Dict, List, Tuple
 
 
 # ============================================================================
-# enumeration type
+# Enumerations
 # ============================================================================
 
 class AccountStatus(str, Enum):
-    """Account Status"""
+    """Account status"""
     ACTIVE = "active"
     EXPIRED = "expired"
     BANNED = "banned"
@@ -30,7 +30,7 @@ class TaskStatus(str, Enum):
 
 
 class EmailServiceType(str, Enum):
-    """Mailbox service type"""
+    """Email service type"""
     TEMPMAIL = "tempmail"
     OUTLOOK = "outlook"
     MOE_MAIL = "moe_mail"
@@ -41,7 +41,7 @@ class EmailServiceType(str, Enum):
 
 
 # ============================================================================
-# Apply constants
+# Application constants
 # ============================================================================
 
 APP_NAME = "OpenAI/Codex CLI automatic registration system"
@@ -49,10 +49,10 @@ APP_VERSION = "2.0.0"
 APP_DESCRIPTION = "System for automatically registering OpenAI/Codex CLI accounts"
 
 # ============================================================================
-# OpenAI OAuth related constants
+# OpenAI OAuth constants
 # ============================================================================
 
-#OAuth parameters
+# OAuth parameters
 OAUTH_CLIENT_ID = "app_EMoamEEZ73f0CkXaXp7hrann"
 OAUTH_AUTH_URL = "https://auth.openai.com/oauth/authorize"
 OAUTH_TOKEN_URL = "https://auth.openai.com/oauth/token"
@@ -73,13 +73,13 @@ OPENAI_API_ENDPOINTS = {
 
 # OpenAI page type (used to determine account status)
 OPENAI_PAGE_TYPES = {
-    "EMAIL_OTP_VERIFICATION": "email_otp_verification", # Account has been registered and OTP verification is required
-    "PASSWORD_REGISTRATION": "create_account_password", # New account, need to set a password
-    "LOGIN_PASSWORD": "login_password", # Login process, you need to enter a password
+    "EMAIL_OTP_VERIFICATION": "email_otp_verification", # Account already registered; OTP verification required
+    "PASSWORD_REGISTRATION": "create_account_password", # New account; password setup required
+    "LOGIN_PASSWORD": "login_password", # Login flow; password entry required
 }
 
 # ============================================================================
-# Email service related constants
+# Email service constants
 # ============================================================================
 
 # Tempmail.lol API endpoint
@@ -88,7 +88,7 @@ TEMPMAIL_API_ENDPOINTS = {
     "get_inbox": "/inbox",
 }
 
-# Custom domain name email API endpoint
+# Custom domain email API endpoint
 CUSTOM_DOMAIN_API_ENDPOINTS = {
     "get_config": "/api/config",
     "create_email": "/api/emails/generate",
@@ -98,7 +98,7 @@ CUSTOM_DOMAIN_API_ENDPOINTS = {
     "get_message": "/api/emails/{emailId}/{messageId}",
 }
 
-#Default configuration of email service
+# Default email service configuration
 EMAIL_SERVICE_DEFAULTS = {
     "tempmail": {
         "base_url": "https://api.tempmail.lol/v2",
@@ -144,25 +144,25 @@ EMAIL_SERVICE_DEFAULTS = {
 }
 
 # ============================================================================
-#Registration process related constants
+# Registration process constants
 # ============================================================================
 
 # Verification code related
 OTP_CODE_PATTERN = r"(?<!\d)(\d{6})(?!\d)"
-OTP_MAX_ATTEMPTS = 40 # Maximum number of polls
+OTP_MAX_ATTEMPTS = 40 # Maximum number of polling attempts
 
-# Verification code extraction regularity (enhanced version)
+# Verification code extraction patterns (enhanced)
 # Simple match: any 6-digit number
 OTP_CODE_SIMPLE_PATTERN = r"(?<!\d)(\d{6})(?!\d)"
-# Semantic matching: verification code with context (such as "code is 123456", "Verification code 123456")
-OTP_CODE_SEMANTIC_PATTERN = r'(?:code\s+is|Verification code[is]?\s*[::]?\s*)(\d{6})'
+# Semantic matching: verification code with context (e.g., "code is 123456", "verification code 123456")
+OTP_CODE_SEMANTIC_PATTERN = r'(?:code\s+is|verification code[is]?\s*[::]?\s*)(\d{6})'
 
 # OpenAI verify email sender
 OPENAI_EMAIL_SENDERS = [
     "noreply@openai.com",
     "no-reply@openai.com",
-    "@openai.com", # Exact domain name matching
-    ".openai.com", # Subdomain name matching (such as otp@tm1.openai.com)
+    "@openai.com", # Exact domain match
+    ".openai.com", # Subdomain match (e.g., otp@tm1.openai.com)
 ]
 
 # OpenAI verification email keywords
@@ -195,7 +195,7 @@ def generate_random_user_info() -> dict:
     Generate random user information
 
     Returns:
-        dictionary containing name and birthdate
+        Dictionary containing name and birthdate
     """
     # Randomly select a name
     name = random.choice(FIRST_NAMES)
@@ -204,13 +204,13 @@ def generate_random_user_info() -> dict:
     current_year = datetime.now().year
     birth_year = random.randint(current_year - 45, current_year - 18)
     birth_month = random.randint(1, 12)
-    # Determine the number of days based on the month
+    # Determine the number of days in the month
     if birth_month in [1, 3, 5, 7, 8, 10, 12]:
         birth_day = random.randint(1, 31)
     elif birth_month in [4, 6, 9, 11]:
         birth_day = random.randint(1, 30)
     else:
-        # February, simplified processing
+        # February; simplified handling
         birth_day = random.randint(1, 28)
 
     birthdate = f"{birth_year}-{birth_month:02d}-{birth_day:02d}"
@@ -227,7 +227,7 @@ DEFAULT_USER_INFO = {
 }
 
 # ============================================================================
-# Agent related constants
+# Proxy constants
 # ============================================================================
 
 PROXY_TYPES = ["http", "socks5", "socks5h"]
@@ -239,10 +239,10 @@ DEFAULT_PROXY_CONFIG = {
 }
 
 # ============================================================================
-# Database related constants
+# Database constants
 # ============================================================================
 
-# Database table name
+# Database table names
 DB_TABLE_NAMES = {
     "accounts": "accounts",
     "email_services": "email_services",
@@ -250,31 +250,31 @@ DB_TABLE_NAMES = {
     "settings": "settings",
 }
 
-#Default settings
+# Default settings
 DEFAULT_SETTINGS = [
     # (key, value, description, category)
-    ("system.name", APP_NAME, "system name", "general"),
-    ("system.version", APP_VERSION, "system version", "general"),
+    ("system.name", APP_NAME, "System name", "general"),
+    ("system.version", APP_VERSION, "System version", "general"),
     ("logs.retention_days", "30", "Log retention days", "general"),
     ("openai.client_id", OAUTH_CLIENT_ID, "OpenAI OAuth Client ID", "openai"),
-    ("openai.auth_url", OAUTH_AUTH_URL, "OpenAI authentication address", "openai"),
-    ("openai.token_url", OAUTH_TOKEN_URL, "OpenAI Token address", "openai"),
-    ("openai.redirect_uri", OAUTH_REDIRECT_URI, "OpenAI callback address", "openai"),
-    ("openai.scope", OAUTH_SCOPE, "OpenAI permission scope", "openai"),
-    ("proxy.enabled", "false", "Whether to enable proxy", "proxy"),
+    ("openai.auth_url", OAUTH_AUTH_URL, "OpenAI OAuth authorization URL", "openai"),
+    ("openai.token_url", OAUTH_TOKEN_URL, "OpenAI OAuth token URL", "openai"),
+    ("openai.redirect_uri", OAUTH_REDIRECT_URI, "OpenAI OAuth callback URI", "openai"),
+    ("openai.scope", OAUTH_SCOPE, "OpenAI OAuth scope", "openai"),
+    ("proxy.enabled", "false", "Enable proxy", "proxy"),
     ("proxy.type", "http", "Proxy type (http/socks5)", "proxy"),
-    ("proxy.host", "127.0.0.1", "proxy host", "proxy"),
-    ("proxy.port", "7890", "proxy port", "proxy"),
+    ("proxy.host", "127.0.0.1", "Proxy host", "proxy"),
+    ("proxy.port", "7890", "Proxy port", "proxy"),
     ("registration.max_retries", "3", "Maximum number of retries", "registration"),
     ("registration.timeout", "120", "timeout (seconds)", "registration"),
     ("registration.default_password_length", "12", "Default password length", "registration"),
     ("webui.host", "0.0.0.0", "Web UI listening host", "webui"),
     ("webui.port", "8000", "Web UI listening port", "webui"),
-    ("webui.debug", "true", "debug mode", "webui"),
+    ("webui.debug", "true", "Debug mode", "webui"),
 ]
 
 # ============================================================================
-# Web UI related constants
+# Web UI constants
 # ============================================================================
 
 # WebSocket events
@@ -287,7 +287,7 @@ WEBSOCKET_EVENTS = {
     "COMPLETE": "complete",
 }
 
-# API response status code
+# API response status codes
 API_STATUS_CODES = {
     "SUCCESS": 200,
     "CREATED": 201,
@@ -304,7 +304,7 @@ DEFAULT_PAGE_SIZE = 20
 MAX_PAGE_SIZE = 100
 
 # ============================================================================
-# Error message
+# Error messages
 # ============================================================================
 
 ERROR_MESSAGES = {
@@ -319,30 +319,30 @@ ERROR_MESSAGES = {
     "EMAIL_SERVICE_UNAVAILABLE": "The email service is unavailable",
     "EMAIL_CREATION_FAILED": "Creation of email failed",
     "OTP_NOT_RECEIVED": "Verification code not received",
-    "OTP_INVALID": "Verification code is invalid",
+    "OTP_INVALID": "Invalid verification code",
 
     # OpenAI related errors
     "OPENAI_AUTH_FAILED": "OpenAI authentication failed",
-    "OPENAI_RATE_LIMIT": "OpenAI interface current limit",
-    "OPENAI_CAPTCHA": "Encountered verification code",
+    "OPENAI_RATE_LIMIT": "OpenAI API rate limit",
+    "OPENAI_CAPTCHA": "CAPTCHA encountered",
 
-    # proxy error
+    # Proxy errors
     "PROXY_FAILED": "Proxy connection failed",
     "PROXY_AUTH_FAILED": "Proxy authentication failed",
 
-    #Account error
-    "ACCOUNT_NOT_FOUND": "Account does not exist",
+    # Account errors
+    "ACCOUNT_NOT_FOUND": "Account not found",
     "ACCOUNT_ALREADY_EXISTS": "Account already exists",
-    "ACCOUNT_INVALID": "Account is invalid",
+    "ACCOUNT_INVALID": "Invalid account",
 
-    # Task error
-    "TASK_NOT_FOUND": "Task does not exist",
-    "TASK_ALREADY_RUNNING": "The task is already running",
-    "TASK_CANCELLED": "Task has been canceled",
+    # Task errors
+    "TASK_NOT_FOUND": "Task not found",
+    "TASK_ALREADY_RUNNING": "Task is already running",
+    "TASK_CANCELLED": "Task canceled",
 }
 
 # ============================================================================
-# Regular expression
+# Regular expressions
 # ============================================================================
 
 REGEX_PATTERNS = {
@@ -353,7 +353,7 @@ REGEX_PATTERNS = {
 }
 
 # ============================================================================
-# time constant
+# Time constants
 # ============================================================================
 
 TIME_CONSTANTS = {
@@ -366,32 +366,32 @@ TIME_CONSTANTS = {
 
 
 # ============================================================================
-# Microsoft/Outlook related constants
+# Microsoft/Outlook constants
 # ============================================================================
 
-#Microsoft OAuth2 Token endpoint
+# Microsoft OAuth2 token endpoints
 MICROSOFT_TOKEN_ENDPOINTS = {
-    # Endpoint used by older versions of IMAP
+    # Endpoint for legacy IMAP
     "LIVE": "https://login.live.com/oauth20_token.srf",
-    # Endpoint used by the new version of IMAP (requires specific scope)
+    # Endpoint for new IMAP (requires specific scope)
     "CONSUMERS": "https://login.microsoftonline.com/consumers/oauth2/v2.0/token",
-    # Endpoint used by Graph API
+    # Endpoint for Graph API
     "COMMON": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
 }
 
 # IMAP server configuration
 OUTLOOK_IMAP_SERVERS = {
-    "OLD": "outlook.office365.com", # Old version of IMAP
-    "NEW": "outlook.live.com", # New version of IMAP
+    "OLD": "outlook.office365.com",  # Legacy IMAP
+    "NEW": "outlook.live.com",  # New IMAP endpoint
 }
 
 # Microsoft OAuth2 Scopes
 MICROSOFT_SCOPES = {
-    # Older versions of IMAP do not require a specific scope
+    # Legacy IMAP does not require a specific scope
     "IMAP_OLD": "",
-    # Scope required by the new version of IMAP
+    # Scope required by new IMAP
     "IMAP_NEW": "https://outlook.office.com/IMAP.AccessAsUser.All offline_access",
-    #Scope required by Graph API
+    # Scope required by Graph API
     "GRAPH_API": "https://graph.microsoft.com/.default",
 }
 

@@ -1,5 +1,5 @@
 """
-Set up API routing
+Settings API routes
 """
 
 import logging
@@ -20,7 +20,7 @@ router = APIRouter()
 # ============== Pydantic Models ==============
 
 class SettingItem(BaseModel):
-    """Setting items"""
+    """Setting item"""
     key: str
     value: str
     description: Optional[str] = None
@@ -28,7 +28,7 @@ class SettingItem(BaseModel):
 
 
 class SettingUpdateRequest(BaseModel):
-    """Set update request"""
+    """Setting update request"""
     value: str
 
 
@@ -191,7 +191,7 @@ async def test_dynamic_proxy(request: DynamicProxySettings):
         if resp.status_code == 200:
             ip = resp.json().get("ip", "")
             return {"success": True, "proxy_url": proxy_url, "ip": ip, "response_time": elapsed,
-                    "message": f"Dynamic proxy is available, export IP: {ip}, response time: {elapsed}ms"}
+                    "message": f"Dynamic proxy is available, exit IP: {ip}, response time: {elapsed}ms"}
         return {"success": False, "proxy_url": proxy_url, "message": f"Proxy connection failed: HTTP {resp.status_code}"}
     except Exception as e:
         return {"success": False, "proxy_url": proxy_url, "message": f"Proxy connection failed: {e}"}
@@ -287,9 +287,9 @@ async def backup_database():
         db_path = db_path[10:]
 
     if not os.path.exists(db_path):
-        raise HTTPException(status_code=404, detail="database file does not exist")
+        raise HTTPException(status_code=404, detail="Database file does not exist")
 
-    #Create backup directory
+    # Create backup directory
     from pathlib import Path as FilePath
     backup_dir = FilePath(db_path).parent / "backups"
     backup_dir.mkdir(exist_ok=True)
@@ -298,12 +298,12 @@ async def backup_database():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     backup_path = backup_dir / f"database_backup_{timestamp}.db"
 
-    #Copy database files
+    # Copy database files
     shutil.copy2(db_path, backup_path)
 
     return {
         "success": True,
-        "message": "Database backup successful",
+        "message": "Database backup succeeded",
         "backup_path": str(backup_path)
     }
 
@@ -338,7 +338,7 @@ async def cleanup_database(
 
     return {
         "success": True,
-        "message": f"{deleted_count} expired task records have been cleared",
+        "message": f"{deleted_count} expired task records cleared",
         "deleted_count": deleted_count
     }
 
@@ -374,36 +374,36 @@ async def get_recent_logs(
         return {"logs": [], "error": str(e)}
 
 
-# ============== Temporary mailbox settings ==============
+# ============== Tempmail settings ==============
 
 class TempmailSettings(BaseModel):
-    """Temporary mailbox settings"""
+    """Tempmail settings"""
     api_url: Optional[str] = None
     enabled: bool = True
 
 
 class EmailCodeSettings(BaseModel):
-    """Verification code waiting to be set"""
-    timeout: int = 120 # Verification code waiting timeout (seconds)
-    poll_interval: int = 3 # Verification code polling interval (seconds)
+    """Verification code wait settings"""
+    timeout: int = 120  # Verification code wait timeout (seconds)
+    poll_interval: int = 3  # Verification code polling interval (seconds)
 
 
 @router.get("/tempmail")
 async def get_tempmail_settings():
-    """Get temporary mailbox settings"""
+    """Get tempmail settings"""
     settings = get_settings()
 
     return {
         "api_url": settings.tempmail_base_url,
         "timeout": settings.tempmail_timeout,
         "max_retries": settings.tempmail_max_retries,
-        "enabled": True # The temporary mailbox is available by default
+        "enabled": True  # Tempmail is available by default
     }
 
 
 @router.post("/tempmail")
 async def update_tempmail_settings(request: TempmailSettings):
-    """Update temporary mailbox settings"""
+    """Update tempmail settings"""
     update_dict = {}
 
     if request.api_url:
@@ -411,14 +411,14 @@ async def update_tempmail_settings(request: TempmailSettings):
 
     update_settings(**update_dict)
 
-    return {"success": True, "message": "Temporary mailbox settings have been updated"}
+    return {"success": True, "message": "Tempmail settings updated"}
 
 
-# ============== Verification code waiting to be set ==============
+# ============== Verification code wait settings ==============
 
 @router.get("/email-code")
 async def get_email_code_settings():
-    """Get verification code and wait for settings"""
+    """Get verification code wait settings"""
     settings = get_settings()
     return {
         "timeout": settings.email_code_timeout,
@@ -428,8 +428,8 @@ async def get_email_code_settings():
 
 @router.post("/email-code")
 async def update_email_code_settings(request: EmailCodeSettings):
-    """Update verification code waiting settings"""
-    # Verify parameter range
+    """Update verification code wait settings"""
+    # Validate parameter ranges
     if request.timeout < 30 or request.timeout > 600:
         raise HTTPException(status_code=400, detail="Timeout must be between 30-600 seconds")
     if request.poll_interval < 1 or request.poll_interval > 30:
@@ -440,10 +440,10 @@ async def update_email_code_settings(request: EmailCodeSettings):
         email_code_poll_interval=request.poll_interval,
     )
 
-    return {"success": True, "message": "Verification code waiting settings have been updated"}
+    return {"success": True, "message": "Verification code wait settings updated"}
 
 
-# ============== Agent list CRUD ==============
+# ============== Proxy list CRUD ==============
 
 class ProxyCreateRequest(BaseModel):
     """Create proxy request"""
@@ -482,7 +482,7 @@ async def get_proxies_list(enabled: Optional[bool] = None):
 
 @router.post("/proxies")
 async def create_proxy_item(request: ProxyCreateRequest):
-    """Create agent"""
+    """Create proxy"""
     with get_db() as db:
         proxy = crud.create_proxy(
             db,
@@ -500,17 +500,17 @@ async def create_proxy_item(request: ProxyCreateRequest):
 
 @router.get("/proxies/{proxy_id}")
 async def get_proxy_item(proxy_id: int):
-    """Get a single agent"""
+    """Get a single proxy"""
     with get_db() as db:
         proxy = crud.get_proxy_by_id(db, proxy_id)
         if not proxy:
-            raise HTTPException(status_code=404, detail="Proxy does not exist")
+            raise HTTPException(status_code=404, detail="Proxy not found")
         return proxy.to_dict(include_password=True)
 
 
 @router.patch("/proxies/{proxy_id}")
 async def update_proxy_item(proxy_id: int, request: ProxyUpdateRequest):
-    """Update Agent"""
+    """Update proxy"""
     with get_db() as db:
         update_data = {}
         if request.name is not None:
@@ -532,40 +532,40 @@ async def update_proxy_item(proxy_id: int, request: ProxyUpdateRequest):
 
         proxy = crud.update_proxy(db, proxy_id, **update_data)
         if not proxy:
-            raise HTTPException(status_code=404, detail="Proxy does not exist")
+            raise HTTPException(status_code=404, detail="Proxy not found")
         return {"success": True, "proxy": proxy.to_dict()}
 
 
 @router.delete("/proxies/{proxy_id}")
 async def delete_proxy_item(proxy_id: int):
-    """Delete agent"""
+    """Delete proxy"""
     with get_db() as db:
         success = crud.delete_proxy(db, proxy_id)
         if not success:
-            raise HTTPException(status_code=404, detail="Proxy does not exist")
-        return {"success": True, "message": "Agent has been deleted"}
+            raise HTTPException(status_code=404, detail="Proxy not found")
+        return {"success": True, "message": "Proxy deleted"}
 
 
 @router.post("/proxies/{proxy_id}/set-default")
 async def set_proxy_default(proxy_id: int):
-    """Set the specified proxy as the default"""
+    """Set the specified proxy as default"""
     with get_db() as db:
         proxy = crud.set_proxy_default(db, proxy_id)
         if not proxy:
-            raise HTTPException(status_code=404, detail="Proxy does not exist")
+            raise HTTPException(status_code=404, detail="Proxy not found")
         return {"success": True, "proxy": proxy.to_dict()}
 
 
 @router.post("/proxies/{proxy_id}/test")
 async def test_proxy_item(proxy_id: int):
-    """Testing a single agent"""
+    """Test a single proxy"""
     import time
     from curl_cffi import requests as cffi_requests
 
     with get_db() as db:
         proxy = crud.get_proxy_by_id(db, proxy_id)
         if not proxy:
-            raise HTTPException(status_code=404, detail="Proxy does not exist")
+            raise HTTPException(status_code=404, detail="Proxy not found")
 
         proxy_url = proxy.proxy_url
         test_url = "https://api.ipify.org?format=json"
@@ -592,18 +592,18 @@ async def test_proxy_item(proxy_id: int):
                     "success": True,
                     "ip": ip_info.get("ip", ""),
                     "response_time": round(elapsed_time * 1000),
-                    "message": f"Agent connection successful, export IP: {ip_info.get('ip', 'unknown')}"
+                    "message": f"Proxy connection successful, exit IP: {ip_info.get('ip', 'unknown')}"
                 }
             else:
                 return {
                     "success": False,
-                    "message": f"The agent returned error status code: {response.status_code}"
+                    "message": f"Proxy returned error status code: {response.status_code}"
                 }
 
         except Exception as e:
             return {
                 "success": False,
-                "message": f"Agent connection failed: {str(e)}"
+                "message": f"Proxy connection failed: {str(e)}"
             }
 
 
@@ -677,8 +677,8 @@ async def enable_proxy(proxy_id: int):
     with get_db() as db:
         proxy = crud.update_proxy(db, proxy_id, enabled=True)
         if not proxy:
-            raise HTTPException(status_code=404, detail="Proxy does not exist")
-        return {"success": True, "message": "Proxy is enabled"}
+            raise HTTPException(status_code=404, detail="Proxy not found")
+        return {"success": True, "message": "Proxy enabled"}
 
 
 @router.post("/proxies/{proxy_id}/disable")
@@ -687,7 +687,7 @@ async def disable_proxy(proxy_id: int):
     with get_db() as db:
         proxy = crud.update_proxy(db, proxy_id, enabled=False)
         if not proxy:
-            raise HTTPException(status_code=404, detail="Proxy does not exist")
+            raise HTTPException(status_code=404, detail="Proxy not found")
         return {"success": True, "message": "Proxy disabled"}
 
 
@@ -722,7 +722,7 @@ async def update_outlook_settings(request: OutlookSettings):
     if update_dict:
         update_settings(**update_dict)
 
-    return {"success": True, "message": "Outlook settings have been updated"}
+    return {"success": True, "message": "Outlook settings updated"}
 
 
 # ============== Team Manager Settings ==============

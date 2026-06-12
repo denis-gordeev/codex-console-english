@@ -31,9 +31,15 @@ This repository keeps the original structure and overall approach, while applyin
 - Expanded Web UI auth regressions to cover the dashboard route, logout cookie clearing, and redirect behavior for already authenticated `/login` visits.
 - Improved the login UX so authenticated sessions are sent straight to the requested in-app page instead of seeing the password form again.
 
+- Fixed the systematic "Agent" → "Proxy" mistranslation (Chinese 代理) across all source files, including user-facing API messages, docstrings, and description strings.
+- Corrected missing spaces after `#` in inline comments across config, routes, services, and core modules.
+- Replaced awkward literal translations in user-facing messages (e.g., "brakes are being applied, don't panic" → "tasks are winding down", "six guests appeared" → removed).
+- Verified Docker environment variable examples against actual settings names and added a commented-out `APP_DATABASE_URL` example to `docker-compose.yml`.
+
 ### Next Iterations
 
-- Continue polishing wording consistency in logs, tests, and low-traffic routes as new gaps are found.
+- Continue polishing awkward English in service layer docstrings, log messages, and description strings.
+- Fix remaining "Mailbox" → "Email" and literal translations in web route modules.
 - Expand regression coverage for translated API messages and settings flows.
 - Add API tests for access-control edge cases such as malformed cookies and custom logout `next` targets.
 - Review remaining English copy for awkward phrasing in backend logs, comments, and route docstrings.

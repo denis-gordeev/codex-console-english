@@ -110,7 +110,7 @@ class RegistrationEngine:
         self.callback_logger = callback_logger or (lambda msg: logger.info(msg))
         self.task_uuid = task_uuid
 
-        #Create HTTP client
+        # Create HTTP client
         self.http_client = OpenAIHTTPClient(proxy_url=proxy_url)
 
         # Create OAuth manager

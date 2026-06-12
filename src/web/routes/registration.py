@@ -58,7 +58,7 @@ def get_proxy_for_registration(db) -> Tuple[Optional[str], Optional[int]]:
 
 
 def update_proxy_usage(db, proxy_id: Optional[int]):
-    """Update agent usage time"""
+    """Update proxy usage time"""
     if proxy_id:
         crud.update_proxy_last_used(db, proxy_id)
 
@@ -261,7 +261,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
             # Update the agent record of the task
             crud.update_registration_task(db, task_uuid, proxy=actual_proxy_url)
 
-            #Create email service
+            # Create email service
             service_type = EmailServiceType(email_service_type)
             settings = get_settings()
 
@@ -390,7 +390,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
 
             email_service = EmailServiceFactory.create(service_type, config)
 
-            #Create registration engine - use TaskManager's log callback
+            # Create registration engine - use TaskManager's log callback
             log_callback = task_manager.create_log_callback(task_uuid, prefix=log_prefix, batch_id=batch_id)
 
             engine = RegistrationEngine(
@@ -400,7 +400,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                 task_uuid=task_uuid
             )
 
-            #Execute registration
+            # Execute registration
             result = engine.run()
 
             if result.success:
@@ -506,7 +506,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
 
                 logger.info(f"Registration task completed: {task_uuid}, email: {result.email}")
             else:
-                #Update task status to failed
+                # Update task status to failed
                 crud.update_registration_task(
                     db, task_uuid,
                     status="failed",
@@ -548,7 +548,7 @@ async def run_registration_task(task_uuid: str, email_service_type: str, proxy: 
         loop = asyncio.get_event_loop()
         task_manager.set_loop(loop)
 
-    #Initialize TaskManager state
+    # Initialize TaskManager state
     task_manager.update_status(task_uuid, "pending")
     task_manager.add_log(task_uuid, f"{log_prefix} [System] Task {task_uuid[:8]} has been added to the queue" if log_prefix else f"[System] Task {task_uuid[:8]} has been added to the queue")
 
@@ -822,7 +822,7 @@ async def start_registration(
             detail=f"Invalid email service type: {request.email_service_type}"
         )
 
-    #Create task
+    # Create task
     task_uuid = str(uuid.uuid4())
 
     with get_db() as db:
@@ -888,7 +888,7 @@ async def start_batch_registration(
     if request.mode not in ("parallel", "pipeline"):
         raise HTTPException(status_code=400, detail="Mode must be parallel or pipeline")
 
-    #Create batch tasks
+    # Create batch tasks
     batch_id = str(uuid.uuid4())
     task_uuids = []
 
@@ -1442,7 +1442,7 @@ async def start_outlook_batch_registration(
             service_ids=[]
         )
 
-    #Create batch tasks
+    # Create batch tasks
     batch_id = str(uuid.uuid4())
 
     #Initialize batch task status

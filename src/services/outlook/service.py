@@ -24,7 +24,7 @@ from .providers.graph_api import GraphAPIProvider
 logger = logging.getLogger(__name__)
 
 
-#Default provider priority
+# Default provider priority
 # IMAP_OLD is the most compatible (only login.live.com token is required), IMAP_NEW is second, and Graph API is last
 # Reason: Some client_ids do not have Graph API permissions, but have IMAP permissions
 DEFAULT_PROVIDER_PRIORITY = [
