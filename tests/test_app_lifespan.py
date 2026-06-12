@@ -102,9 +102,51 @@ def test_login_normalizes_external_next_targets(monkeypatch):
     assert response.headers["location"] == "/"
 
 
+def test_authenticated_login_page_redirects_to_requested_local_target(monkeypatch):
+    client = _build_test_client(monkeypatch)
+
+    login_response = client.post(
+        "/login",
+        data={"password": "letmein", "next": "/settings"},
+        follow_redirects=False,
+    )
+
+    assert login_response.status_code == 302
+
+    response = client.get("/login?next=/accounts", follow_redirects=False)
+
+    assert response.status_code == 302
+    assert response.headers["location"] == "/accounts"
+
+
+def test_logout_clears_auth_cookie_and_requires_reauthentication(monkeypatch):
+    client = _build_test_client(monkeypatch)
+
+    login_response = client.post(
+        "/login",
+        data={"password": "letmein", "next": "/"},
+        follow_redirects=False,
+    )
+
+    assert login_response.status_code == 302
+    assert "webui_auth=" in login_response.headers["set-cookie"]
+
+    logout_response = client.get("/logout", follow_redirects=False)
+
+    assert logout_response.status_code == 302
+    assert logout_response.headers["location"] == "/login"
+    assert "webui_auth=\"\"" in logout_response.headers["set-cookie"]
+
+    response = client.get("/", follow_redirects=False)
+
+    assert response.status_code == 302
+    assert response.headers["location"] == "/login?next=%2F"
+
+
 @pytest.mark.parametrize(
     ("path", "expected_text"),
     [
+        ("/", "Registration Console"),
         ("/accounts", "Account Management"),
         ("/email-services", "Email Service Management"),
         ("/settings", "System Settings"),

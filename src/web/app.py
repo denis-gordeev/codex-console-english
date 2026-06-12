@@ -144,10 +144,13 @@ def create_app() -> FastAPI:
     @app.get("/login", response_class=HTMLResponse)
     async def login_page(request: Request, next: Optional[str] = "/"):
         """Render the Web UI login page."""
+        normalized_next = _normalize_next_path(next)
+        if _is_authenticated(request):
+            return RedirectResponse(url=normalized_next, status_code=302)
         return templates.TemplateResponse(
             request=request,
             name="login.html",
-            context={"error": "", "next": _normalize_next_path(next)},
+            context={"error": "", "next": normalized_next},
         )
 
     @app.post("/login")

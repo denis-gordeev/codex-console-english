@@ -28,14 +28,17 @@ This repository keeps the original structure and overall approach, while applyin
 - Migrated remaining Pydantic response models from class-based `Config` to `ConfigDict`.
 - Replaced FastAPI `@app.on_event(...)` startup and shutdown hooks with a lifespan handler.
 - Added a regression test to verify the app lifespan initializes shared runtime state on startup.
+- Expanded Web UI auth regressions to cover the dashboard route, logout cookie clearing, and redirect behavior for already authenticated `/login` visits.
+- Improved the login UX so authenticated sessions are sent straight to the requested in-app page instead of seeing the password form again.
 
 ### Next Iterations
 
 - Continue polishing wording consistency in logs, tests, and low-traffic routes as new gaps are found.
 - Expand regression coverage for translated API messages and settings flows.
-- Add API tests for the login gate and authenticated page redirects.
-- Review remaining English copy for awkward machine-translated phrasing in backend logs and route docstrings.
+- Add API tests for access-control edge cases such as malformed cookies and custom logout `next` targets.
+- Review remaining English copy for awkward phrasing in backend logs, comments, and route docstrings.
 - Verify Docker environment variable examples against the actual `settings` names used by the app.
+- Add focused tests for the settings save flows and error messages returned by low-traffic API endpoints.
 
 ## What This Branch Fixes
 

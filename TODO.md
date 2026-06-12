@@ -1,5 +1,14 @@
 # TODO
 
+## Completed In This Round (June 12, 2026 - Round 34)
+
+- Pulled `origin/main` - repository was already up to date.
+- Reviewed the current `README.md` progress tracker and advanced one unfinished iteration instead of doing another scan-only round.
+- Improved Web UI login flow so authenticated sessions that revisit `/login` are redirected to their requested local page immediately.
+- Expanded auth regression coverage in `tests/test_app_lifespan.py` to cover the protected dashboard route, logout cookie clearing, and re-authentication after logout.
+- Updated `README.md` progress and next-iteration items so documented status matches the codebase again.
+- Added new follow-up plan items for malformed auth-cookie handling, logout redirect edge cases, and settings/API regression coverage.
+
 ## Completed In This Round (June 11, 2026 - Round 33)
 
 - Pulled `origin/main` - repository was already up to date.
