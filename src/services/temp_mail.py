@@ -1,5 +1,5 @@
-"""Temp-Mail mailbox service implementation
-Based on self-deployed Cloudflare Worker temporary mailbox service
+"""Temp-Mail email service implementation
+Based on self-deployed Cloudflare Worker temporary email service
 For interface documentation, see plan/temp-mail.md"""
 
 import re
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 class TempMailService(BaseEmailService):
     """Temp-Mail email service
-    Temporary mailbox based on self-deployed Cloudflare Worker, admin mode management mailbox
+    Temporary email based on self-deployed Cloudflare Worker, admin mode management email
     No proxy, no requests library"""
 
     def __init__(self, config: Dict[str, Any] = None, name: str = None):
@@ -59,7 +59,7 @@ class TempMailService(BaseEmailService):
         )
         self.http_client = HTTPClient(proxy_url=None, config=http_config)
 
-        # Mailbox cache: email -> {jwt, address}
+        # Email cache: email -> {jwt, address}
         self._email_cache: Dict[str, Dict[str, Any]] = {}
 
     def _decode_mime_header(self, value: str) -> str:
@@ -207,7 +207,7 @@ class TempMailService(BaseEmailService):
             raise EmailServiceError(f"Request failed: {method} {path} - {e}")
 
     def create_email(self, config: Dict[str, Any] = None) -> Dict[str, Any]:
-        """Create temporary mailbox via admin API
+        """Create temporary email address via admin API
 
         Returns:
             Dictionary containing email information:
@@ -252,7 +252,7 @@ class TempMailService(BaseEmailService):
             # Cache jwt for use when obtaining verification code
             self._email_cache[address] = email_info
 
-            logger.info(f"TempMail mailbox created successfully: {address}")
+            logger.info(f"TempMail email address created successfully: {address}")
             self.update_status(True)
             return email_info
 
@@ -260,7 +260,7 @@ class TempMailService(BaseEmailService):
             self.update_status(False, e)
             if isinstance(e, EmailServiceError):
                 raise
-            raise EmailServiceError(f"Failed to create mailbox: {e}")
+            raise EmailServiceError(f"Failed to create email address: {e}")
 
     def get_verification_code(
         self,
@@ -276,7 +276,7 @@ class TempMailService(BaseEmailService):
             email: email address
             email_id: Unused, reserved for interface compatibility
             timeout: timeout (seconds)
-            pattern: Verification code regular
+            pattern: Verification code regex pattern
             otp_sent_at: OTP sending timestamp (not used yet)
 
         Returns:
@@ -346,7 +346,7 @@ class TempMailService(BaseEmailService):
         return None
 
     def list_emails(self, limit: int = 100, offset: int = 0, **kwargs) -> List[Dict[str, Any]]:
-        """List mailboxes
+        """List emails
 
         Args:
             limit: the upper limit of the returned quantity
@@ -389,12 +389,12 @@ class TempMailService(BaseEmailService):
             self.update_status(True)
             return emails
         except Exception as e:
-            logger.warning(f"Failed to list TempMail mailboxes: {e}")
+            logger.warning(f"Failed to list TempMail emails: {e}")
             self.update_status(False, e)
             return list(self._email_cache.values())
 
     def delete_email(self, email_id: str) -> bool:
-        """Delete mailbox
+        """Delete email address
 
         Note:
             The current TempMail admin API document does not see the deletion address interface. Here, remove it from the local cache first.
@@ -416,7 +416,7 @@ class TempMailService(BaseEmailService):
             removed = True
 
         if removed:
-            logger.info(f"Mailbox removed from TempMail cache: {email_id}")
+            logger.info(f"Email removed from TempMail cache: {email_id}")
             self.update_status(True)
         else:
             logger.info(f"Email not found in TempMail cache: {email_id}")

@@ -1,6 +1,6 @@
 """
-Freemail mailbox service implementation
-Based on self-deployed Cloudflare Worker temporary mailbox service (https://github.com/idinging/freemail)
+Freemail email service implementation
+Based on self-deployed Cloudflare Worker temporary email service (https://github.com/idinging/freemail)
 """
 
 import re
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 class FreemailService(BaseEmailService):
     """
     Freemail email service
-    Temporary mailbox based on self-deployed Cloudflare Worker
+    Temporary email based on self-deployed Cloudflare Worker
     """
 
     def __init__(self, config: Dict[str, Any] = None, name: str = None):
@@ -122,7 +122,7 @@ class FreemailService(BaseEmailService):
 
     def create_email(self, config: Dict[str, Any] = None) -> Dict[str, Any]:
         """
-        Create temporary mailbox via API
+        Create temporary email address via API
 
         Returns:
             Dictionary containing email information:
@@ -167,7 +167,7 @@ class FreemailService(BaseEmailService):
                 "created_at": time.time(),
             }
 
-            logger.info(f"Freemail mailbox successfully created: {email}")
+            logger.info(f"Freemail email address successfully created: {email}")
             self.update_status(True)
             return email_info
 
@@ -192,7 +192,7 @@ class FreemailService(BaseEmailService):
             email: email address
             email_id: Unused, reserved for interface compatibility
             timeout: timeout (seconds)
-            pattern: Verification code regular
+            pattern: Verification code regex pattern
             otp_sent_at: OTP sending timestamp (not used yet)
 
         Returns:
@@ -229,11 +229,11 @@ class FreemailService(BaseEmailService):
                     # Try to use the verification code extracted by Freemail directly
                     v_code = mail.get("verification_code")
                     if v_code:
-                        logger.info(f"Find the verification code from the Freemail mailbox {email}: {v_code}")
+                        logger.info(f"Find the verification code from the Freemail email {email}: {v_code}")
                         self.update_status(True)
                         return v_code
 
-                    # If not provided directly, match preview through regular expression
+                    # If not provided directly, match preview through regex pattern
                     match = re.search(pattern, content)
                     if match:
                         code = match.group(1)
@@ -264,7 +264,7 @@ class FreemailService(BaseEmailService):
 
     def list_emails(self, **kwargs) -> List[Dict[str, Any]]:
         """
-        List mailboxes
+        List emails
 
         Args:
             **kwargs: additional query parameters
@@ -294,13 +294,13 @@ class FreemailService(BaseEmailService):
             self.update_status(True)
             return emails
         except Exception as e:
-            logger.warning(f"Failed to list Freemail mailboxes: {e}")
+            logger.warning(f"Failed to list Freemail emails: {e}")
             self.update_status(False, e)
             return []
 
     def delete_email(self, email_id: str) -> bool:
         """
-        Delete mailbox
+        Delete email address
         """
         try:
             self._make_request("DELETE", "/api/mailboxes", params={"address": email_id})
@@ -308,7 +308,7 @@ class FreemailService(BaseEmailService):
             self.update_status(True)
             return True
         except Exception as e:
-            logger.warning(f"Failed to delete Freemail mailbox: {e}")
+            logger.warning(f"Failed to delete Freemail email address: {e}")
             self.update_status(False, e)
             return False
 

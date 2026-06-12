@@ -50,10 +50,10 @@ def setup_logging(
     # Clear existing processors
     root_logger.handlers.clear()
 
-    #Create formatter
+    # Create formatter
     formatter = logging.Formatter(log_format)
 
-    #Console handler
+    # Console handler
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(formatter)
     console_handler.setLevel(numeric_level)
@@ -87,14 +87,14 @@ def generate_password(length: int = DEFAULT_PASSWORD_LENGTH) -> str:
     if length < 4:
         length = 4
 
-    # Make sure the password contains at least one uppercase letter, one lowercase letter and one number
+    # Ensure the password contains at least one uppercase letter, one lowercase letter, and one digit
     password = [
         secrets.choice(string.ascii_lowercase),
         secrets.choice(string.ascii_uppercase),
         secrets.choice(string.digits),
     ]
 
-    #Add remaining characters
+    # Add remaining characters
     password.extend(secrets.choice(PASSWORD_CHARSET) for _ in range(length - 3))
 
     # Randomly shuffle
@@ -216,7 +216,7 @@ def retry_with_backoff(
         except exceptions as e:
             last_exception = e
 
-            # If it is the last attempt, throw an exception directly
+            # If this is the last attempt, re-raise the exception
             if attempt == max_retries:
                 break
 
@@ -226,7 +226,7 @@ def retry_with_backoff(
             # Add random jitter
             delay *= (0.5 + random.random())
 
-            # Record log
+            # Log the retry attempt
             logger = logging.getLogger(__name__)
             logger.warning(
                 f"Attempt {func.__name__} failed (attempt {attempt + 1}/{max_retries + 1}): {e}. "
@@ -235,12 +235,12 @@ def retry_with_backoff(
 
             time.sleep(delay)
 
-    # All retries fail and the last exception is thrown
+    # All retries failed; raise the last exception
     raise last_exception
 
 
 class RetryDecorator:
-    """Retry the decorator class"""
+    """Retry decorator class"""
 
     def __init__(
         self,
@@ -282,7 +282,7 @@ def validate_email(email: str) -> bool:
         email: email address
 
     Returns:
-        Is it valid?
+        Is the format valid?
     """
     pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
     return bool(re.match(pattern, email))
@@ -296,7 +296,7 @@ def validate_url(url: str) -> bool:
         url: URL
 
     Returns:
-        Is it valid?
+        Is the format valid?
     """
     pattern = r"^https?://[^\s/$.?#].[^\s]*$"
     return bool(re.match(pattern, url))
@@ -351,7 +351,7 @@ def write_json_file(filepath: str, data: Dict[str, Any], indent: int = 2) -> boo
         indent: number of indent spaces
 
     Returns:
-        Is it successful?
+        True if successful
     """
     try:
         # Make sure the directory exists
@@ -438,18 +438,18 @@ def format_duration(seconds: int) -> str:
         Formatted duration string
     """
     if seconds < 60:
-        return f"{seconds}seconds"
+        return f"{seconds}s"
 
     minutes, seconds = divmod(seconds, 60)
     if minutes < 60:
-        return f"{minutes}minutes{seconds}seconds"
+        return f"{minutes}m {seconds}s"
 
     hours, minutes = divmod(minutes, 60)
     if hours < 24:
-        return f"{hours}hours{minutes}minutes"
+        return f"{hours}h {minutes}m"
 
     days, hours = divmod(hours, 24)
-    return f"{days}days{hours}hours"
+    return f"{days}d {hours}h"
 
 
 def mask_sensitive_data(data: Union[str, Dict, List], mask_char: str = "*") -> Union[str, Dict, List]:
@@ -464,7 +464,7 @@ def mask_sensitive_data(data: Union[str, Dict, List], mask_char: str = "*") -> U
         masked data
     """
     if isinstance(data, str):
-        # If it is a mailbox, mask the middle part
+        # If it is an email address, mask the middle part
         if "@" in data:
             local, domain = data.split("@", 1)
             if len(local) > 2:

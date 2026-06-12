@@ -1,5 +1,5 @@
 """
-Outlook Mailbox Service Module
+Outlook Email Service Module
 Support multiple IMAP/API connection methods, automatic failover
 """
 

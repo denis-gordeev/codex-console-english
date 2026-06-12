@@ -154,7 +154,7 @@ def account_to_response(account: Account) -> AccountResponse:
 async def list_accounts(
     page: int = Query(1, ge=1, description="page number"),
     page_size: int = Query(20, ge=1, le=100, description="number per page"),
-    status: Optional[str] = Query(None, description="Status Filter"),
+    status: Optional[str] = Query(None, description="Status filter"),
     email_service: Optional[str] = Query(None, description="Email service filtering"),
     search: Optional[str] = Query(None, description="search keyword"),
 ):
@@ -708,7 +708,7 @@ async def validate_account_token(account_id: int, request: Optional[TokenValidat
 class CPAUploadRequest(BaseModel):
     """CPA upload request"""
     proxy: Optional[str] = None
-    cpa_service_id: Optional[int] = None #Specify the CPA service ID. If not passed, the global configuration will be used.
+    cpa_service_id: Optional[int] = None  # Specify the CPA service ID. If not passed, the global configuration will be used.
 
 
 class BatchCPAUploadRequest(BaseModel):
@@ -719,7 +719,7 @@ class BatchCPAUploadRequest(BaseModel):
     status_filter: Optional[str] = None
     email_service_filter: Optional[str] = None
     search_filter: Optional[str] = None
-    cpa_service_id: Optional[int] = None #Specify the CPA service ID. If not passed, the global configuration will be used.
+    cpa_service_id: Optional[int] = None  # Specify the CPA service ID. If not passed, the global configuration will be used.
 
 
 @router.post("/batch-upload-cpa")
@@ -807,7 +807,7 @@ class BatchSub2ApiUploadRequest(BaseModel):
     status_filter: Optional[str] = None
     email_service_filter: Optional[str] = None
     search_filter: Optional[str] = None
-    service_id: Optional[int] = None #Specify the Sub2API service ID. If not passed, the first enabled one will be used.
+    service_id: Optional[int] = None  # Specify the Sub2API service ID. If not passed, the first enabled one will be used.
     concurrency: int = 3
     priority: int = 50
 

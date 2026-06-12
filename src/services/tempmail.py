@@ -1,5 +1,5 @@
 """
-Tempmail.lol mailbox service implementation
+Tempmail.lol email service implementation
 """
 
 import re
@@ -38,7 +38,7 @@ class TempmailService(BaseEmailService):
         """
         super().__init__(EmailServiceType.TEMPMAIL, name)
 
-        #Default configuration
+        # Default configuration
         default_config = {
             "base_url": "https://api.tempmail.lol/v2",
             "timeout": 30,
@@ -48,7 +48,7 @@ class TempmailService(BaseEmailService):
 
         self.config = {**default_config, **(config or {})}
 
-        #Create HTTP client
+        # Create HTTP client
         http_config = RequestConfig(
             timeout=self.config["timeout"],
             max_retries=self.config["max_retries"],
@@ -58,13 +58,13 @@ class TempmailService(BaseEmailService):
             config=http_config
         )
 
-        #State variables
+        # State variables
         self._email_cache: Dict[str, Dict[str, Any]] = {}
         self._last_check_time: float = 0
 
     def create_email(self, config: Dict[str, Any] = None) -> Dict[str, Any]:
         """
-        Create a new temporary mailbox
+        Create a new temporary email address
 
         Args:
             config: Configuration parameters (Tempmail.lol currently does not support custom configuration)
@@ -77,7 +77,7 @@ class TempmailService(BaseEmailService):
             - created_at: creation timestamp
         """
         try:
-            #Send create request
+            # Send create request
             response = self.http_client.post(
                 f"{self.config['base_url']}/inbox/create",
                 headers={
@@ -99,7 +99,7 @@ class TempmailService(BaseEmailService):
                 self.update_status(False, EmailServiceError("Return data is incomplete"))
                 raise EmailServiceError("Tempmail.lol returns incomplete data")
 
-            #Cache email information
+            # Cache email information
             email_info = {
                 "email": email,
                 "service_id": token,
@@ -108,7 +108,7 @@ class TempmailService(BaseEmailService):
             }
             self._email_cache[email] = email_info
 
-            logger.info(f"Tempmail.lol mailbox created successfully: {email}")
+            logger.info(f"Tempmail.lol email address created successfully: {email}")
             self.update_status(True)
             return email_info
 
@@ -116,7 +116,7 @@ class TempmailService(BaseEmailService):
             self.update_status(False, e)
             if isinstance(e, EmailServiceError):
                 raise
-            raise EmailServiceError(f"Failed to create Tempmail.lol mailbox: {e}")
+            raise EmailServiceError(f"Failed to create Tempmail.lol email address: {e}")
 
     def get_verification_code(
         self,
@@ -133,7 +133,7 @@ class TempmailService(BaseEmailService):
             email: email address
             email_id: Email token (if not provided, search from cache)
             timeout: timeout (seconds)
-            pattern: verification code regular expression
+            pattern: verification code regex pattern
             otp_sent_at: OTP sending timestamp (Tempmail service does not use this parameter yet)
 
         Returns:
@@ -145,7 +145,7 @@ class TempmailService(BaseEmailService):
             if email in self._email_cache:
                 token = self._email_cache[email].get("token")
             else:
-                logger.warning(f"Token for mailbox {email} not found; cannot retrieve verification code")
+                logger.warning(f"Token for email {email} not found; cannot retrieve verification code")
                 return None
 
         if not token:
@@ -223,19 +223,19 @@ class TempmailService(BaseEmailService):
 
     def list_emails(self, **kwargs) -> List[Dict[str, Any]]:
         """
-        List all cached mailboxes
+        List all cached emails
 
         Note:
-            Tempmail.lol API does not support listing all mailboxes, and cached mailboxes are returned here.
+            Tempmail.lol API does not support listing all emails, and cached emails are returned here.
         """
         return list(self._email_cache.values())
 
     def delete_email(self, email_id: str) -> bool:
         """
-        Delete mailbox
+        Delete email address
 
         Note:
-            Tempmail.lol API does not support deleting mailboxes, so it will be removed from the cache here.
+            Tempmail.lol API does not support deleting email addresses, so it will be removed from the cache here.
         """
         # Find and remove from cache
         emails_to_delete = []

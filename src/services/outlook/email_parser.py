@@ -25,7 +25,7 @@ class EmailParser:
     """
 
     def __init__(self):
-        # Compile regular expression
+        # Compile regex patterns
         self._simple_pattern = re.compile(OTP_CODE_SIMPLE_PATTERN)
         self._semantic_pattern = re.compile(OTP_CODE_SEMANTIC_PATTERN, re.IGNORECASE)
 

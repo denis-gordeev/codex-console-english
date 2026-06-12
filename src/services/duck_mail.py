@@ -1,4 +1,4 @@
-"""DuckMail mailbox service implementation.
+"""DuckMail email service implementation.
 
 Compatible with DuckMail's accounts/token/messages API model.
 """
@@ -238,12 +238,12 @@ class DuckMailService(BaseEmailService):
     ) -> Optional[str]:
         account_info = self._get_account_info(email=email, email_id=email_id)
         if not account_info:
-            logger.warning(f"DuckMail Mailbox cache not found: {email}, {email_id}")
+            logger.warning(f"DuckMail email cache not found: {email}, {email_id}")
             return None
 
         token = account_info.get("token")
         if not token:
-            logger.warning(f"DuckMail mailbox is missing access token: {email}")
+            logger.warning(f"DuckMail email is missing access token: {email}")
             return None
 
         start_time = time.time()
@@ -314,7 +314,7 @@ class DuckMailService(BaseEmailService):
             self.update_status(True)
             return True
         except Exception as e:
-            logger.warning(f"DuckMail failed to delete mailbox: {e}")
+            logger.warning(f"DuckMail failed to delete email address: {e}")
             self.update_status(False, e)
             return False
 

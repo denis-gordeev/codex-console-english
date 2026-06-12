@@ -1,6 +1,6 @@
 """
-HTTP client encapsulation
-HTTP request encapsulation based on curl_cffi, supporting proxy and error handling
+HTTP client wrapper
+HTTP request wrapper based on curl_cffi, supporting proxy and error handling
 """
 
 import time
@@ -38,8 +38,8 @@ class HTTPClientError(Exception):
 
 class HTTPClient:
     """
-    HTTP client encapsulation
-    Supports proxies, retries, error handling and session management
+    HTTP client wrapper
+    Supports proxies, retries, error handling, and session management
     """
 
     def __init__(
@@ -106,7 +106,7 @@ class HTTPClient:
         kwargs.setdefault("timeout", self.config.timeout)
         kwargs.setdefault("allow_redirects", self.config.follow_redirects)
 
-        #Add proxy configuration
+        # Add proxy configuration
         if self.proxies and "proxies" not in kwargs:
             kwargs["proxies"] = self.proxies
 
@@ -122,7 +122,7 @@ class HTTPClient:
                         f" (attempt {attempt + 1}/{self.config.max_retries})"
                     )
 
-                    # If it is a server error, try again
+                    # For server errors, retry
                     if response.status_code >= 500 and attempt < self.config.max_retries - 1:
                         time.sleep(self.config.retry_delay * (attempt + 1))
                         continue
@@ -141,7 +141,7 @@ class HTTPClient:
                     break
 
         raise HTTPClientError(
-            f"The request failed, the maximum number of retries has been reached: {method} {url} - {last_exception}"
+            f"Request failed: maximum retries reached for {method} {url} - {last_exception}"
         )
 
     def get(self, url: str, **kwargs) -> Response:
@@ -204,7 +204,7 @@ class HTTPClient:
             test_url: test URL
 
         Returns:
-            bool: whether the agent is available
+            bool: whether the proxy is available
         """
         if not self.proxy_url:
             return False
@@ -253,7 +253,7 @@ class OpenAIHTTPClient(HTTPClient):
             self.config.timeout = 30
             self.config.max_retries = 3
 
-        #Default request header
+        # Default request headers
         self.default_headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
                          "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -271,7 +271,7 @@ class OpenAIHTTPClient(HTTPClient):
         Check IP geolocation
 
         Returns:
-            Tuple[whether supported, location information]
+            Tuple[is_supported, location]
         """
         try:
             response = self.get("https://cloudflare.com/cdn-cgi/trace", timeout=10)
@@ -312,7 +312,7 @@ class OpenAIHTTPClient(HTTPClient):
             **kwargs: other parameters
 
         Returns:
-            Respond to JSON data
+            Response JSON data
 
         Raises:
             HTTPClientError: Request failed
@@ -400,7 +400,7 @@ def create_http_client(
     config: Optional[RequestConfig] = None
 ) -> HTTPClient:
     """
-    Create an HTTP client factory function
+    HTTP client factory function
 
     Args:
         proxy_url: proxy URL
@@ -417,7 +417,7 @@ def create_openai_client(
     config: Optional[RequestConfig] = None
 ) -> OpenAIHTTPClient:
     """
-    Create OpenAI HTTP client factory function
+    OpenAI HTTP client factory function
 
     Args:
         proxy_url: proxy URL

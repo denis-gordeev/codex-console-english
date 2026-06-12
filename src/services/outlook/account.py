@@ -25,7 +25,7 @@ class OutlookAccount:
         )
 
     def has_oauth(self) -> bool:
-        """Does OAuth2 support"""
+        """Whether OAuth2 is supported"""
         return bool(self.client_id and self.refresh_token)
 
     def validate(self) -> bool:

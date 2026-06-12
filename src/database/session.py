@@ -63,7 +63,7 @@ class DatabaseSessionManager:
 
     @contextmanager
     def session_scope(self) -> Generator[Session, None, None]:
-        """transaction scope context manager
+        """Transaction scope context manager
         Usage example:
             with session_scope() as session:
                 # Database operations
@@ -87,10 +87,10 @@ class DatabaseSessionManager:
         Base.metadata.drop_all(bind=self.engine)
 
     def migrate_tables(self):
-        """Database migration - adding missing columns
-        Used to update table structure without deleting data"""
+        """Database migration — adding missing columns
+        Updates table structure without deleting data"""
         if not self.database_url.startswith("sqlite"):
-            logger.info("Non-SQLite databases, skip automatic migration")
+            logger.info("Non-SQLite database; skipping automatic migration")
             return
 
         # New columns to check and add
@@ -125,12 +125,12 @@ class DatabaseSessionManager:
                     ))
                     if result.fetchone() is None:
                         # Column does not exist, add it
-                        logger.info(f"Add column {table_name}.{column_name}")
+                        logger.info(f"Adding column {table_name}.{column_name}")
                         conn.execute(text(
                             f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_type}"
                         ))
                         conn.commit()
-                        logger.info(f"Column {table_name}.{column_name} added successfully")
+                        logger.info(f"Column {table_name}.{column_name} added")
                 except Exception as e:
                     logger.warning(f"Error migrating column {table_name}.{column_name}: {e}")
 
@@ -145,7 +145,7 @@ def init_database(database_url: str = None) -> DatabaseSessionManager:
     if _db_manager is None:
         _db_manager = DatabaseSessionManager(database_url)
         _db_manager.create_tables()
-        # Perform database migration
+        # Run database migrations
         _db_manager.migrate_tables()
     return _db_manager
 
@@ -153,13 +153,13 @@ def init_database(database_url: str = None) -> DatabaseSessionManager:
 def get_session_manager() -> DatabaseSessionManager:
     """Get the database session manager"""
     if _db_manager is None:
-        raise RuntimeError("The database has not been initialized, please call init_database() first")
+        raise RuntimeError("Database not initialized; call init_database() first")
     return _db_manager
 
 
 @contextmanager
 def get_db() -> Generator[Session, None, None]:
-    """Shortcut function to get database session"""
+    """Shortcut to get a database session"""
     manager = get_session_manager()
     db = manager.SessionLocal()
     try:

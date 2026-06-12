@@ -1,5 +1,5 @@
 """
-Outlook mailbox service main class
+Outlook email service main class
 Support multiple IMAP/API connection methods, automatic failover
 """
 
@@ -45,7 +45,7 @@ def get_email_code_settings() -> dict:
 
 class OutlookService(BaseEmailService):
     """
-    Outlook mailbox service
+    Outlook email service
     Support multiple IMAP/API connection methods, automatic failover
     """
 
@@ -65,7 +65,7 @@ class OutlookService(BaseEmailService):
         """
         super().__init__(ServiceType.OUTLOOK, name)
 
-        #Default configuration
+        # Default configuration
         default_config = {
             "accounts": [],
             "provider_priority": [p.value for p in DEFAULT_PROVIDER_PRIORITY],
@@ -138,7 +138,7 @@ class OutlookService(BaseEmailService):
         self._providers: Dict[tuple, OutlookProvider] = {}
         self._provider_lock = threading.Lock()
 
-        # IMAP connection limit (prevent current limiting)
+        # IMAP connection limit (prevent rate limiting)
         self._imap_semaphore = threading.Semaphore(5)
 
         # Verification code deduplication mechanism
@@ -300,13 +300,13 @@ class OutlookService(BaseEmailService):
         otp_sent_at: Optional[float] = None,
     ) -> Optional[str]:
         """
-        Get verification code from Outlook mailbox
+        Get verification code from Outlook email
 
         Args:
             email: email address
             email_id: Not used
             timeout: timeout (seconds)
-            pattern: Verification code regular expression (not used)
+            pattern: Verification code regex pattern (not used)
             otp_sent_at: OTP sending timestamp
 
         Returns:
@@ -404,7 +404,7 @@ class OutlookService(BaseEmailService):
         ]
 
     def delete_email(self, email_id: str) -> bool:
-        """Delete mailbox (Outlook does not support deleting accounts)"""
+        """Delete email address (Outlook does not support deleting accounts)"""
         logger.warning(f"Outlook service does not support deletion of account: {email_id}")
         return False
 

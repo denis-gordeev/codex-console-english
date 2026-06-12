@@ -1,5 +1,5 @@
-"""Dynamic proxy acquisition module
-Supports obtaining dynamic proxy URL through external API"""
+"""Dynamic proxy fetching module
+Supports fetching dynamic proxy URLs via external API"""
 
 import logging
 import re
@@ -9,16 +9,16 @@ logger = logging.getLogger(__name__)
 
 
 def fetch_dynamic_proxy(api_url: str, api_key: str = "", api_key_header: str = "X-API-Key", result_field: str = "") -> Optional[str]:
-    """Get proxy URL from proxy API
+    """Fetch proxy URL from proxy API
 
     Args:
-        api_url: proxy API address, the response should be the proxy URL string or JSON containing the proxy URL
+        api_url: proxy API address; the response should be a proxy URL string or JSON containing the proxy URL
         api_key: API key (optional)
         api_key_header: API key request header name
-        result_field: Extract the field path of the proxy URL from the JSON response. It supports dot separation (such as "data.proxy"). If left blank, the original response text will be used.
+        result_field: Dot-notation field path to extract the proxy URL from the JSON response (e.g. "data.proxy"). If left blank, the raw response text is used.
 
     Returns:
-        Proxy URL string (such as http://user:pass@host:port), returns None on failure"""
+        Proxy URL string (e.g. http://user:pass@host:port), or None on failure"""
     try:
         from curl_cffi import requests as cffi_requests
 
@@ -34,7 +34,7 @@ def fetch_dynamic_proxy(api_url: str, api_key: str = "", api_key_header: str = "
         )
 
         if response.status_code != 200:
-            logger.warning(f"Dynamic proxy API returns error status code: {response.status_code}")
+            logger.warning(f"Dynamic proxy API returned error status code: {response.status_code}")
             return None
 
         text = response.text.strip()
@@ -45,7 +45,7 @@ def fetch_dynamic_proxy(api_url: str, api_key: str = "", api_key_header: str = "
                 import json
                 data = json.loads(text)
                 if result_field:
-                    # Extract layer by layer according to point number path
+                    # Extract fields layer by layer following the dot-notation path
                     for key in result_field.split("."):
                         if isinstance(data, dict):
                             data = data.get(key)
@@ -57,7 +57,7 @@ def fetch_dynamic_proxy(api_url: str, api_key: str = "", api_key_header: str = "
                             break
                     proxy_url = str(data).strip() if data is not None else None
                 else:
-                    # No specified field, try common key names
+                    # No field specified, try common key names
                     for key in ("proxy", "url", "proxy_url", "data", "ip"):
                         val = data.get(key) if isinstance(data, dict) else None
                         if val:
@@ -71,31 +71,31 @@ def fetch_dynamic_proxy(api_url: str, api_key: str = "", api_key_header: str = "
             proxy_url = text
 
         if not proxy_url:
-            logger.warning("Dynamic proxy API returns empty proxy URL")
+            logger.warning("Dynamic proxy API returned an empty proxy URL")
             return None
 
-        # If no protocol header is included, http:// is added by default.
+        # If no protocol prefix is included, prepend http:// by default
         if not re.match(r'^(http|socks5)://', proxy_url):
             proxy_url = "http://" + proxy_url
 
-        logger.info(f"Dynamic proxy acquisition successful: {proxy_url[:40]}..." if len(proxy_url) > 40 else f"Dynamic proxy acquisition successful: {proxy_url}")
+        logger.info(f"Dynamic proxy fetched successfully: {proxy_url[:40]}..." if len(proxy_url) > 40 else f"Dynamic proxy fetched successfully: {proxy_url}")
         return proxy_url
 
     except Exception as e:
-        logger.error(f"Failed to obtain dynamic proxy: {e}")
+        logger.error(f"Failed to fetch dynamic proxy: {e}")
         return None
 
 
 def get_proxy_url_for_task() -> Optional[str]:
     """Get the proxy URL for the registration task.
-    Dynamic proxies are used in preference if enabled, otherwise static proxy configurations are used.
+    Prefers dynamic proxies if enabled; otherwise falls back to static proxy configuration.
 
     Returns:
         Proxy URL or None"""
     from ..config.settings import get_settings
     settings = get_settings()
 
-    # Prefer using dynamic proxies
+    # Prefer dynamic proxies
     if settings.proxy_dynamic_enabled and settings.proxy_dynamic_api_url:
         api_key = settings.proxy_dynamic_api_key.get_secret_value() if settings.proxy_dynamic_api_key else ""
         proxy_url = fetch_dynamic_proxy(
@@ -106,7 +106,7 @@ def get_proxy_url_for_task() -> Optional[str]:
         )
         if proxy_url:
             return proxy_url
-        logger.warning("Failed to obtain the dynamic proxy and fell back to the static proxy.")
+        logger.warning("Failed to fetch dynamic proxy; falling back to static proxy.")
 
     # Use static proxy
     return settings.proxy_url

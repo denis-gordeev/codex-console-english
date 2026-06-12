@@ -1,5 +1,5 @@
 """
-Outlook mailbox service implementation
+Outlook email service implementation
 Supports IMAP protocol, XOAUTH2 and password authentication
 """
 
@@ -74,7 +74,7 @@ class OutlookAccount:
         )
 
     def has_oauth(self) -> bool:
-        """Does OAuth2 support"""
+        """Whether OAuth2 is supported"""
         return bool(self.client_id and self.refresh_token)
 
     def validate(self) -> bool:
@@ -88,7 +88,7 @@ class OutlookIMAPClient:
     Supports XOAUTH2 and password authentication
     """
 
-    #Microsoft OAuth2 Token cache
+    # Microsoft OAuth2 Token cache
     _token_cache: Dict[str, tuple] = {}
     _cache_lock = threading.Lock()
 
@@ -351,7 +351,7 @@ class OutlookIMAPClient:
 
 class OutlookService(BaseEmailService):
     """
-    Outlook mailbox service
+    Outlook email service
     Supports polling and verification code acquisition for multiple Outlook accounts
     """
 
@@ -374,7 +374,7 @@ class OutlookService(BaseEmailService):
         """
         super().__init__(EmailServiceType.OUTLOOK, name)
 
-        #Default configuration
+        # Default configuration
         default_config = {
             "accounts": [],
             "imap_host": "outlook.office365.com",
@@ -403,7 +403,7 @@ class OutlookService(BaseEmailService):
             else:
                 logger.warning(f"Invalid Outlook account configuration: {self.config}")
         else:
-            #Multiple account format
+            # Multiple account format
             for account_config in self.config.get("accounts", []):
                 account = OutlookAccount.from_config(account_config)
                 if account.validate():
@@ -415,7 +415,7 @@ class OutlookService(BaseEmailService):
         if not self.accounts:
             logger.warning("No valid Outlook account configured")
 
-        # IMAP connection limit (prevent current limiting)
+        # IMAP connection limit (prevent rate limiting)
         self._imap_semaphore = threading.Semaphore(5)
 
         # Verification code deduplication mechanism: email -> set of used codes
@@ -465,13 +465,13 @@ class OutlookService(BaseEmailService):
         otp_sent_at: Optional[float] = None,
     ) -> Optional[str]:
         """
-        Get verification code from Outlook mailbox
+        Get verification code from Outlook email
 
         Args:
             email: email address
             email_id: Not used (for Outlook, email is the ID)
             timeout: timeout time (seconds), the configuration value is used by default
-            pattern: verification code regular expression
+            pattern: verification code regex pattern
             otp_sent_at: OTP sending timestamp, used to filter old emails
 
         Returns:
@@ -586,7 +586,7 @@ class OutlookService(BaseEmailService):
 
     def delete_email(self, email_id: str) -> bool:
         """
-        Delete a mailbox (for Outlook, deleting an account is not supported)
+        Delete an email address (for Outlook, deleting an account is not supported)
 
         Args:
             email_id: email address
@@ -613,7 +613,7 @@ class OutlookService(BaseEmailService):
                     port=self.config["imap_port"],
                     timeout=10
                 ) as client:
-                    # Try listing mailboxes (quick test)
+                    # Try listing emails (quick test)
                     client._conn.select("INBOX", readonly=True)
                     self.update_status(True)
                     return True
@@ -685,12 +685,12 @@ class OutlookService(BaseEmailService):
 
         Args:
             mail: mail information dictionary
-            fallback_pattern: back-up regular expression
+            fallback_pattern: fallback regex pattern
 
         Returns:
             Verification code string, returns None if not found
         """
-        #Compile regular
+        # Compile regex patterns
         re_simple = re.compile(OTP_CODE_SIMPLE_PATTERN)
         re_semantic = re.compile(OTP_CODE_SEMANTIC_PATTERN, re.IGNORECASE)
 

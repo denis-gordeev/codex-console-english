@@ -1,4 +1,4 @@
-"""Implementation of custom domain name mailbox service
+"""Implementation of custom domain email service
 Based on the REST API interface in email.md"""
 
 import re
@@ -17,11 +17,11 @@ logger = logging.getLogger(__name__)
 
 
 class MeoMailEmailService(BaseEmailService):
-    """Custom domain name email service
+    """Custom domain email service
     Based on REST API interface"""
 
     def __init__(self, config: Dict[str, Any] = None, name: str = None):
-        """Initialize custom domain name mailbox service
+        """Initialize custom domain email service
 
         Args:
             config: configuration dictionary, supports the following keys:
@@ -178,7 +178,7 @@ class MeoMailEmailService(BaseEmailService):
             return {}
 
     def create_email(self, config: Dict[str, Any] = None) -> Dict[str, Any]:
-        """Create temporary mailbox
+        """Create temporary email address
 
         Args:
             config: configuration parameters:
@@ -233,7 +233,7 @@ class MeoMailEmailService(BaseEmailService):
             # Caching email information
             self._emails_cache[email_id] = email_info
 
-            logger.info(f"Successfully created custom domain name email: {email} (ID: {email_id})")
+            logger.info(f"Successfully created custom domain email: {email} (ID: {email_id})")
             self.update_status(True)
             return email_info
 
@@ -241,7 +241,7 @@ class MeoMailEmailService(BaseEmailService):
             self.update_status(False, e)
             if isinstance(e, EmailServiceError):
                 raise
-            raise EmailServiceError(f"Failed to create mailbox: {e}")
+            raise EmailServiceError(f"Failed to create email address: {e}")
 
     def get_verification_code(
         self,
@@ -251,14 +251,14 @@ class MeoMailEmailService(BaseEmailService):
         pattern: str = OTP_CODE_PATTERN,
         otp_sent_at: Optional[float] = None,
     ) -> Optional[str]:
-        """Get verification code from custom domain name email
+        """Get verification code from custom domain email
 
         Args:
             email: email address
             email_id: Email ID (if not provided, search from cache)
             timeout: timeout (seconds)
-            pattern: verification code regular expression
-            otp_sent_at: OTP sending timestamp (custom domain name service does not use this parameter yet)
+            pattern: verification code regex pattern
+            otp_sent_at: OTP sending timestamp (custom domain service does not use this parameter yet)
 
         Returns:
             Verification code string, returns None if timeout or not found"""
@@ -275,7 +275,7 @@ class MeoMailEmailService(BaseEmailService):
             logger.warning(f"The ID of the email address {email} was not found and the verification code cannot be obtained.")
             return None
 
-        logger.info(f"Obtaining verification code from custom domain name email {email}...")
+        logger.info(f"Obtaining verification code from custom domain email {email}...")
 
         start_time = time.time()
         seen_message_ids = set()
@@ -317,7 +317,7 @@ class MeoMailEmailService(BaseEmailService):
                     match = re.search(pattern, re.sub(email_pattern, "", content))
                     if match:
                         code = match.group(1)
-                        logger.info(f"Find the verification code from the custom domain name email {email}: {code}")
+                        logger.info(f"Find the verification code from the custom domain email {email}: {code}")
                         self.update_status(True)
                         return code
 
@@ -375,12 +375,12 @@ class MeoMailEmailService(BaseEmailService):
             self.update_status(True)
             return emails
         except Exception as e:
-            logger.warning(f"Failed to list mailbox: {e}")
+            logger.warning(f"Failed to list email: {e}")
             self.update_status(False, e)
             return []
 
     def delete_email(self, email_id: str) -> bool:
-        """Delete mailbox
+        """Delete email address
 
         Args:
             email_id: Email ID
@@ -396,43 +396,43 @@ class MeoMailEmailService(BaseEmailService):
                 self._emails_cache.pop(email_id, None)
                 logger.info(f"Email deleted successfully: {email_id}")
             else:
-                logger.warning(f"Failed to delete mailbox: {email_id}")
+                logger.warning(f"Failed to delete email address: {email_id}")
 
             self.update_status(success)
             return success
 
         except Exception as e:
-            logger.error(f"Failed to delete mailbox: {email_id} - {e}")
+            logger.error(f"Failed to delete email address: {email_id} - {e}")
             self.update_status(False, e)
             return False
 
     def check_health(self) -> bool:
-        """Check whether the custom domain name email service is available"""
+        """Check whether the custom domain email service is available"""
         try:
             # Try to get configuration
             config = self.get_config(force_refresh=True)
             if config:
-                logger.debug(f"The custom domain name mailbox service health check passed, configuration: {config.get('defaultRole', 'N/A')}")
+                logger.debug(f"The custom domain email service health check passed, configuration: {config.get('defaultRole', 'N/A')}")
                 self.update_status(True)
                 return True
             else:
-                logger.warning("Custom domain name mailbox service health check failed: the obtained configuration is empty")
+                logger.warning("Custom domain email service health check failed: the obtained configuration is empty")
                 self.update_status(False, EmailServiceError("Get configuration is empty"))
                 return False
         except Exception as e:
-            logger.warning(f"Custom domain name mailbox service health check failed: {e}")
+            logger.warning(f"Custom domain email service health check failed: {e}")
             self.update_status(False, e)
             return False
 
     def get_email_messages(self, email_id: str, cursor: str = None) -> List[Dict[str, Any]]:
-        """Get the mailing list in your mailbox
+        """Get the message list in your email
 
         Args:
             email_id: Email ID
             cursor: paging cursor
 
         Returns:
-            mailing list"""
+            message list"""
         params = {}
         if cursor:
             params["cursor"] = cursor
@@ -443,7 +443,7 @@ class MeoMailEmailService(BaseEmailService):
             self.update_status(True)
             return messages
         except Exception as e:
-            logger.error(f"Failed to get mailing list: {email_id} - {e}")
+            logger.error(f"Failed to get message list: {email_id} - {e}")
             self.update_status(False, e)
             return []
 

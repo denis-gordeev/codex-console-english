@@ -170,7 +170,7 @@ class OutlookBatchRegistrationResponse(BaseModel):
     batch_id: str
     total: int # total number
     skipped: int # Number of skips (registered)
-    to_register: int #Number to be registered
+    to_register: int # Number to be registered
     service_ids: List[int] # The actual service ID to be registered
 
 
@@ -230,7 +230,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
         try:
             # Check if canceled
             if task_manager.is_cancelled(task_uuid):
-                logger.info(f"Task {task_uuid} has been canceled and execution is skipped")
+                logger.info(f"Task {task_uuid} has been canceled; skipping execution")
                 return
 
             # Update task status to running
@@ -241,7 +241,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
             )
 
             if not task:
-                logger.error(f"Task does not exist: {task_uuid}")
+                logger.error(f"Task not found: {task_uuid}")
                 return
 
             # Update TaskManager status
@@ -258,7 +258,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                 if actual_proxy_url:
                     logger.info(f"Task {task_uuid} uses proxy: {actual_proxy_url[:50]}...")
 
-            # Update the agent record of the task
+            # Update the proxy record of the task
             crud.update_registration_task(db, task_uuid, proxy=actual_proxy_url)
 
             # Create email service
@@ -278,9 +278,9 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                     config = _normalize_email_service_config(service_type, db_service.config, actual_proxy_url)
                     # Update the email service associated with the task
                     crud.update_registration_task(db, task_uuid, email_service_id=db_service.id)
-                    logger.info(f"Use database mailbox service: {db_service.name} (ID: {db_service.id}, type: {service_type.value})")
+                    logger.info(f"Use database email service: {db_service.name} (ID: {db_service.id}, type: {service_type.value})")
                 else:
-                    raise ValueError(f"The email service does not exist or is disabled: {email_service_id}")
+                    raise ValueError(f"Email service not found or disabled: {email_service_id}")
             else:
                 # Use default configuration or passed configuration
                 if service_type == EmailServiceType.TEMPMAIL:
@@ -291,7 +291,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                         "proxy_url": actual_proxy_url,
                     }
                 elif service_type == EmailServiceType.MOE_MAIL:
-                    # Check if there is an available custom domain name service in the database
+                    # Check if there is an available custom domain service in the database
                     from ...database.models import EmailService as EmailServiceModel
                     db_service = db.query(EmailServiceModel).filter(
                         EmailServiceModel.service_type == "moe_mail",
@@ -301,7 +301,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                     if db_service and db_service.config:
                         config = _normalize_email_service_config(service_type, db_service.config, actual_proxy_url)
                         crud.update_registration_task(db, task_uuid, email_service_id=db_service.id)
-                        logger.info(f"Use database custom domain name service: {db_service.name}")
+                        logger.info(f"Use database custom domain service: {db_service.name}")
                     elif settings.custom_domain_base_url and settings.custom_domain_api_key:
                         config = {
                             "base_url": settings.custom_domain_base_url,
@@ -309,7 +309,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                             "proxy_url": actual_proxy_url,
                         }
                     else:
-                        raise ValueError("There is no custom domain name email service available, please configure it in the settings first")
+                        raise ValueError("No custom domain email service available; please configure it in settings first")
                 elif service_type == EmailServiceType.OUTLOOK:
                     # Check if there is an available Outlook account in the database
                     from ...database.models import EmailService as EmailServiceModel, Account
@@ -382,9 +382,9 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                     if db_service and db_service.config:
                         config = _normalize_email_service_config(service_type, db_service.config, actual_proxy_url)
                         crud.update_registration_task(db, task_uuid, email_service_id=db_service.id)
-                        logger.info(f"Use database IMAP mailbox service: {db_service.name}")
+                        logger.info(f"Use database IMAP email service: {db_service.name}")
                     else:
-                        raise ValueError("There is no available IMAP mailbox service, please add it to the mailbox service first")
+                        raise ValueError("No available IMAP email service; please add it to the email service page first")
                 else:
                     config = email_service_config or {}
 
@@ -404,7 +404,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
             result = engine.run()
 
             if result.success:
-                # Update agent usage time
+                # Update proxy last-used time
                 update_proxy_usage(db, proxy_id)
 
                 # Save to database
@@ -832,7 +832,7 @@ async def start_registration(
             proxy=request.proxy
         )
 
-    #Run the registration task in the background
+    # Run the registration task in the background
     background_tasks.add_task(
         run_registration_task,
         task_uuid,
@@ -938,7 +938,7 @@ async def start_batch_registration(
 async def get_batch_status(batch_id: str):
     """Get batch task status"""
     if batch_id not in batch_tasks:
-        raise HTTPException(status_code=404, detail="Batch task does not exist")
+        raise HTTPException(status_code=404, detail="Batch task not found")
 
     batch = batch_tasks[batch_id]
     return {
@@ -958,7 +958,7 @@ async def get_batch_status(batch_id: str):
 async def cancel_batch(batch_id: str):
     """Cancel batch task"""
     if batch_id not in batch_tasks:
-        raise HTTPException(status_code=404, detail="Batch task does not exist")
+        raise HTTPException(status_code=404, detail="Batch task not found")
 
     batch = batch_tasks[batch_id]
     if batch.get("finished"):
@@ -998,7 +998,7 @@ async def get_task(task_uuid: str):
     with get_db() as db:
         task = crud.get_registration_task(db, task_uuid)
         if not task:
-            raise HTTPException(status_code=404, detail="Task does not exist")
+            raise HTTPException(status_code=404, detail="Task not found")
         return task_to_response(task)
 
 
@@ -1008,7 +1008,7 @@ async def get_task_logs(task_uuid: str):
     with get_db() as db:
         task = crud.get_registration_task(db, task_uuid)
         if not task:
-            raise HTTPException(status_code=404, detail="Task does not exist")
+            raise HTTPException(status_code=404, detail="Task not found")
 
         logs = task.logs or ""
         return {
@@ -1024,7 +1024,7 @@ async def cancel_task(task_uuid: str):
     with get_db() as db:
         task = crud.get_registration_task(db, task_uuid)
         if not task:
-            raise HTTPException(status_code=404, detail="Task does not exist")
+            raise HTTPException(status_code=404, detail="Task not found")
 
         if task.status not in ["pending", "running"]:
             raise HTTPException(status_code=400, detail="Task completed or canceled")
@@ -1040,7 +1040,7 @@ async def delete_task(task_uuid: str):
     with get_db() as db:
         task = crud.get_registration_task(db, task_uuid)
         if not task:
-            raise HTTPException(status_code=404, detail="Task does not exist")
+            raise HTTPException(status_code=404, detail="Task not found")
 
         if task.status == "running":
             raise HTTPException(status_code=400, detail="Cannot delete running task")
@@ -1079,10 +1079,10 @@ async def get_available_email_services():
     """
     Get a list of email services available for registration
 
-    Returns all enabled mailbox services, including:
-    - tempmail: temporary mailbox (no configuration required)
+    Returns all enabled email services, including:
+    - tempmail: Tempmail (no configuration required)
     - outlook: Imported Outlook account
-    - moe_mail: configured custom domain name service
+    - moe_mail: configured custom domain service
     """
     from ...database.models import EmailService as EmailServiceModel
     from ...config.settings import get_settings
@@ -1096,7 +1096,7 @@ async def get_available_email_services():
                 "id": None,
                 "name": "Tempmail.lol",
                 "type": "tempmail",
-                "description": "Temporary mailbox, automatically created"
+                "description": "Tempmail, automatically created"
             }]
         },
         "outlook": {
@@ -1151,7 +1151,7 @@ async def get_available_email_services():
         result["outlook"]["count"] = len(outlook_services)
         result["outlook"]["available"] = len(outlook_services) > 0
 
-        # Get custom domain name service
+        # Get custom domain service
         custom_services = db.query(EmailServiceModel).filter(
             EmailServiceModel.service_type == "moe_mail",
             EmailServiceModel.enabled == True
@@ -1170,19 +1170,19 @@ async def get_available_email_services():
         result["moe_mail"]["count"] = len(custom_services)
         result["moe_mail"]["available"] = len(custom_services) > 0
 
-        # If there is no custom domain name service in the database, check settings
+        # If there is no custom domain service in the database, check settings
         if not result["moe_mail"]["available"]:
             if settings.custom_domain_base_url and settings.custom_domain_api_key:
                 result["moe_mail"]["available"] = True
                 result["moe_mail"]["count"] = 1
                 result["moe_mail"]["services"].append({
                     "id": None,
-                    "name": "Default custom domain name service",
+                    "name": "Default custom domain service",
                     "type": "moe_mail",
                     "from_settings": True
                 })
 
-        # Get the TempMail service (self-deployed Cloudflare Worker temporary mailbox)
+        # Get the TempMail service (self-deployed Cloudflare Worker Tempmail)
         temp_mail_services = db.query(EmailServiceModel).filter(
             EmailServiceModel.service_type == "temp_mail",
             EmailServiceModel.enabled == True
@@ -1266,7 +1266,7 @@ async def get_outlook_accounts_for_registration():
     """
     Get a list of Outlook accounts available for registration
 
-    Returns all enabled Outlook services and checks whether each mailbox is registered in the accounts table
+    Returns all enabled Outlook services and checks whether each email is registered in the accounts table
     """
     from ...database.models import EmailService as EmailServiceModel
     from ...database.models import Account
@@ -1384,7 +1384,7 @@ async def start_outlook_batch_registration(
     Start an Outlook bulk registration task
 
     - service_ids: selected EmailService ID list
-    - skip_registered: whether to automatically skip registered mailboxes (default True)
+    - skip_registered: whether to automatically skip registered emails (default True)
     - proxy: proxy address
     - interval_min: minimum interval seconds
     - interval_max: maximum interval seconds
@@ -1445,7 +1445,7 @@ async def start_outlook_batch_registration(
     # Create batch tasks
     batch_id = str(uuid.uuid4())
 
-    #Initialize batch task status
+    # Initialize batch task status
     batch_tasks[batch_id] = {
         "total": len(actual_service_ids),
         "completed": 0,
@@ -1491,7 +1491,7 @@ async def start_outlook_batch_registration(
 async def get_outlook_batch_status(batch_id: str):
     """Get Outlook batch task status"""
     if batch_id not in batch_tasks:
-        raise HTTPException(status_code=404, detail="Batch task does not exist")
+        raise HTTPException(status_code=404, detail="Batch task not found")
 
     batch = batch_tasks[batch_id]
     return {
@@ -1513,7 +1513,7 @@ async def get_outlook_batch_status(batch_id: str):
 async def cancel_outlook_batch(batch_id: str):
     """Cancel Outlook batch task"""
     if batch_id not in batch_tasks:
-        raise HTTPException(status_code=404, detail="Batch task does not exist")
+        raise HTTPException(status_code=404, detail="Batch task not found")
 
     batch = batch_tasks[batch_id]
     if batch.get("finished"):

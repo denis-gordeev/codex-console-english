@@ -130,7 +130,7 @@ class GraphAPIProvider(OutlookProvider):
             if self.config.proxy_url:
                 proxies = {"http": self.config.proxy_url, "https": self.config.proxy_url}
 
-            #Send request (curl_cffi automatically URL-encodes params)
+            # Send request (curl_cffi automatically URL-encodes params)
             resp = _requests.get(
                 url,
                 params=params,

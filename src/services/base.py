@@ -1,5 +1,5 @@
-"""Mailbox service abstract base class
-Base class for all mailbox service implementations"""
+"""Email service abstract base class
+Base class for all email service implementations"""
 
 import abc
 import logging
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class EmailServiceError(Exception):
-    """Email service abnormality"""
+    """Email service error"""
     pass
 
 
@@ -25,12 +25,12 @@ class EmailServiceStatus(Enum):
 
 
 class BaseEmailService(abc.ABC):
-    """Mailbox service abstract base class
+    """Email service abstract base class
 
-    All mailbox services must implement this interface"""
+    All email services must implement this interface"""
 
     def __init__(self, service_type: EmailServiceType, name: str = None):
-        """Initialize mailbox service
+        """Initialize email service
 
         Args:
             service_type: service type
@@ -60,7 +60,7 @@ class BaseEmailService(abc.ABC):
         Returns:
             A dictionary containing email information, containing at least:
             - email: email address
-            - service_id: ID in the mailbox service
+            - service_id: ID in the email service
             - token/credentials: access credentials (if required)
 
         Raises:
@@ -82,7 +82,7 @@ class BaseEmailService(abc.ABC):
             email: email address
             email_id: ID in the email service (if required)
             timeout: timeout (seconds)
-            pattern: verification code regular expression
+            pattern: verification code regex pattern
             otp_sent_at: OTP sending timestamp, used to filter old emails
 
         Returns:
@@ -94,7 +94,7 @@ class BaseEmailService(abc.ABC):
 
     @abc.abstractmethod
     def list_emails(self, **kwargs) -> List[Dict[str, Any]]:
-        """List all mailboxes (if supported by the service)
+        """List all emails (if supported by the service)
 
         Args:
             **kwargs: other parameters
@@ -108,7 +108,7 @@ class BaseEmailService(abc.ABC):
 
     @abc.abstractmethod
     def delete_email(self, email_id: str) -> bool:
-        """Delete mailbox
+        """Delete email address
 
         Args:
             email_id: ID in the email service
@@ -220,18 +220,18 @@ class BaseEmailService(abc.ABC):
         return None
 
     def get_email_messages(self, email_id: str, **kwargs) -> List[Dict[str, Any]]:
-        """Get the list of messages in the mailbox (optional implementation)
+        """Get the list of messages in the email (optional implementation)
 
         Args:
             email_id: ID in the email service
             **kwargs: other parameters
 
         Returns:
-            mailing list
+            message list
 
         Note:
             This is an optional method and may not be supported by some services"""
-        raise NotImplementedError("This email service does not support obtaining mailing lists")
+        raise NotImplementedError("This email service does not support listing messages")
 
     def get_message_content(self, email_id: str, message_id: str) -> Optional[Dict[str, Any]]:
         """Get email content (optional implementation)
@@ -245,7 +245,7 @@ class BaseEmailService(abc.ABC):
 
         Note:
             This is an optional method and may not be supported by some services"""
-        raise NotImplementedError("This email service does not support obtaining email content")
+        raise NotImplementedError("This email service does not support reading email content")
 
     def update_status(self, success: bool, error: Exception = None):
         """Update service status
@@ -310,7 +310,7 @@ class EmailServiceFactory:
             instance = service_class(config, name)
             return instance
         except Exception as e:
-            raise ValueError(f"Failed to create mailbox service: {e}")
+            raise ValueError(f"Failed to create email service: {e}")
 
     @classmethod
     def get_available_services(cls) -> List[EmailServiceType]:
@@ -338,7 +338,7 @@ def create_email_service(
     config: Dict[str, Any],
     name: str = None
 ) -> BaseEmailService:
-    """Create a mailbox service (simplified factory function)
+    """Create an email service (simplified factory function)
 
     Args:
         service_type: service type

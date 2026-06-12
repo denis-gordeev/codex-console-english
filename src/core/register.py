@@ -74,7 +74,7 @@ class RegistrationResult:
 
 @dataclass
 class SignupFormResult:
-    """Result of submitting the registration or login entry form."""
+    """Result of submitting the registration or login form."""
     success: bool
     page_type: str = ""  # page.type field in the response
     is_existing_account: bool = False  # Whether this email already has an account
@@ -179,19 +179,19 @@ class RegistrationEngine:
     def _create_email(self) -> bool:
         """Create an email address for the registration flow."""
         try:
-            self._log(f"Creating a {self.email_service.service_type.value} mailbox...")
+            self._log(f"Creating a {self.email_service.service_type.value} email address...")
             self.email_info = self.email_service.create_email()
 
             if not self.email_info or "email" not in self.email_info:
-                self._log("Failed to create mailbox: Incomplete information returned", "error")
+                self._log("Failed to create email address: Incomplete information returned", "error")
                 return False
 
             self.email = self.email_info["email"]
-            self._log(f"Mailbox created: {self.email}")
+            self._log(f"Email address created: {self.email}")
             return True
 
         except Exception as e:
-            self._log(f"Failed to create mailbox: {e}", "error")
+            self._log(f"Failed to create email address: {e}", "error")
             return False
 
     def _start_oauth(self) -> bool:
@@ -346,7 +346,7 @@ class RegistrationEngine:
 
             except Exception as parse_error:
                 self._log(f"Failed to parse response: {parse_error}", "warning")
-                # Unable to parse, default is successful
+                # Unable to parse; default to success
                 return SignupFormResult(success=True)
 
         except Exception as e:
@@ -377,7 +377,7 @@ class RegistrationEngine:
             sen_token,
             screen_hint="login",
             referer="https://auth.openai.com/log-in",
-            log_label="Submit login entry",
+            log_label="Submit login form",
             record_existing_account=False,
         )
 
@@ -454,7 +454,7 @@ class RegistrationEngine:
         return did, sen_token
 
     def _complete_token_exchange(self, result: RegistrationResult) -> bool:
-        """After the login state has been established, continue to complete the workspace and OAuth token acquisition."""
+        """After the login state has been established, complete the workspace and OAuth token acquisition."""
         self._log("Waiting for the login verification code...")
         code = self._get_verification_code()
         if not code:
@@ -463,7 +463,7 @@ class RegistrationEngine:
 
         self._log("Verifying the login code...")
         if not self._validate_verification_code(code):
-            result.error_message = "Verification code verification failed"
+            result.error_message = "Verification code validation failed"
             return False
 
         self._log("Fetching Workspace ID...")
@@ -515,9 +515,9 @@ class RegistrationEngine:
 
         did, sen_token = self._prepare_authorize_flow("Relogin")
         if not did:
-            return False, "Failed to obtain Device ID when logging in again"
+            return False, "Failed to obtain Device ID on re-login"
         if not sen_token:
-            return False, "Sentinel POW verification failed when logging in again"
+            return False, "Sentinel POW verification failed on re-login"
 
         login_start_result = self._submit_login_start(did, sen_token)
         if not login_start_result.success:
@@ -562,13 +562,13 @@ class RegistrationEngine:
                 error_text = response.text[:500]
                 self._log(f"Password registration failed: {error_text}", "warning")
 
-                # Parse the error message to determine whether the email address has been registered
+                # Parse the error message to determine whether the email address is already registered
                 try:
                     error_json = response.json()
                     error_msg = error_json.get("error", {}).get("message", "")
                     error_code = error_json.get("error", {}).get("code", "")
 
-                    # Check if the email address has been registered
+                    # Check if the email address is already registered
                     if "already" in error_msg.lower() or "exists" in error_msg.lower() or error_code == "user_exists":
                         self._log(f"Email {self.email} may have been registered with OpenAI", "error")
                         # Mark this email as registered
@@ -585,10 +585,10 @@ class RegistrationEngine:
             return False, None
 
     def _mark_email_as_registered(self):
-        """Mark the mailbox as already registered to avoid repeated attempts."""
+        """Mark the email address as already registered to avoid repeated attempts."""
         try:
             with get_db() as db:
-                # Check whether a record of this mailbox already exists
+                # Check whether a record of this email address already exists
                 existing = crud.get_account_by_email(db, self.email)
                 if not existing:
                     # Create a failed record and mark the email address as already registered
@@ -601,9 +601,9 @@ class RegistrationEngine:
                         status="failed",
                         extra_data={"register_failed_reason": "email_already_registered_on_openai"}
                     )
-                    self._log(f"Mailbox {self.email} was marked as already registered in the database")
+                    self._log(f"Email address {self.email} was marked as already registered in the database")
         except Exception as e:
-            logger.warning(f"Failed to mark mailbox status: {e}")
+            logger.warning(f"Failed to mark email address status: {e}")
 
     def _send_verification_code(self) -> bool:
         """Send the verification code."""
@@ -652,7 +652,7 @@ class RegistrationEngine:
             return None
 
     def _validate_verification_code(self, code: str) -> bool:
-        """Verify the verification code."""
+        """Validate the verification code."""
         try:
             code_body = f'{{"code":"{code}"}}'
 
@@ -666,11 +666,11 @@ class RegistrationEngine:
                 data=code_body,
             )
 
-            self._log(f"Verify verification code status: {response.status_code}")
+            self._log(f"Verification code validation status: {response.status_code}")
             return response.status_code == 200
 
         except Exception as e:
-            self._log(f"Failed to verify verification code: {e}", "error")
+            self._log(f"Failed to validate verification code: {e}", "error")
             return False
 
     def _create_user_account(self) -> bool:
@@ -728,12 +728,12 @@ class RegistrationEngine:
 
                 workspaces = auth_json.get("workspaces") or []
                 if not workspaces:
-                    self._log("There is no workspace information in the authorization cookie", "error")
+                    self._log("No workspace information in the authorization cookie", "error")
                     return None
 
                 workspace_id = str((workspaces[0] or {}).get("id") or "").strip()
                 if not workspace_id:
-                    self._log("Unable to resolve workspace_id", "error")
+                    self._log("Unable to resolve workspace ID", "error")
                     return None
 
                 self._log(f"Workspace ID: {workspace_id}")
@@ -870,16 +870,16 @@ class RegistrationEngine:
             self._log("1. Checking IP geolocation...")
             ip_ok, location = self._check_ip_location()
             if not ip_ok:
-                result.error_message = f"IP geographical location is not supported: {location}"
+                result.error_message = f"IP geolocation is not supported: {location}"
                 self._log(f"IP check failed: {location}", "error")
                 return result
 
             self._log(f"IP location: {location}")
 
             # 2. Create email
-            self._log("2. Creating mailbox...")
+            self._log("2. Creating email address...")
             if not self._create_email():
-                result.error_message = "Failed to create mailbox"
+                result.error_message = "Failed to create email address"
                 return result
 
             result.email = self.email
@@ -922,7 +922,7 @@ class RegistrationEngine:
 
                 self._log("8. Verifying email code...")
                 if not self._validate_verification_code(code):
-                    result.error_message = "Failed to verify verification code"
+                    result.error_message = "Failed to validate verification code"
                     return result
 
                 self._log("9. Creating final user account profile...")

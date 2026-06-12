@@ -1,5 +1,5 @@
 """
-Database initialization and initialization data
+Database initialization and seed data
 """
 
 from .session import init_database
@@ -11,10 +11,10 @@ def initialize_database(database_url: str = None):
     Initialize database
     Create all tables and set default configuration
     """
-    #Initialize database connection and table
+    # Initialize database connection and tables
     db_manager = init_database(database_url)
 
-    #Create table
+    # Create tables
     db_manager.create_tables()
 
     # Initialize default settings (imported from settings module to avoid circular imports)
@@ -39,7 +39,7 @@ def reset_database(database_url: str = None):
     db_manager.create_tables()
     print("All tables have been recreated")
 
-    #Initialize default settings
+    # Initialize default settings
     from ..config.settings import init_default_settings
     init_default_settings()
 
@@ -49,14 +49,14 @@ def reset_database(database_url: str = None):
 
 def check_database_connection(database_url: str = None) -> bool:
     """
-    Check whether the database connection is normal
+    Check whether the database connection is working
     """
     try:
         db_manager = init_database(database_url)
         with db_manager.get_db() as db:
             # Try executing a simple query
             db.execute("SELECT 1")
-        print("Database connection is normal")
+        print("Database connection is working")
         return True
     except Exception as e:
         print(f"Database connection failed: {e}")
@@ -67,10 +67,10 @@ if __name__ == "__main__":
     # When running this script directly, initialize the database
     import argparse
 
-    parser = argparse.ArgumentParser(description="database initialization script")
+    parser = argparse.ArgumentParser(description="Database initialization script")
     parser.add_argument("--reset", action="store_true", help="Reset database (delete all data)")
     parser.add_argument("--check", action="store_true", help="Check database connection")
-    parser.add_argument("--url", help="database connection string")
+    parser.add_argument("--url", help="Database connection string")
 
     args = parser.parse_args()
 

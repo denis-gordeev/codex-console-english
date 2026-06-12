@@ -4,25 +4,17 @@
 
 - Pulled `origin/main` - repository was already up to date.
 - Scanned all tracked files for non-English text (Cyrillic, CJK, Arabic, Thai, non-ASCII artifacts) - zero non-English language text found.
-- Fixed systematic "Agent" → "Proxy" mistranslation (Chinese 代理) across all source files:
-  - `src/config/settings.py`: description strings "Agent username/password" → "Proxy username/password", comments, and description strings for dynamic proxy settings.
-  - `src/config/constants.py`: section heading, DEFAULT_SETTINGS descriptions, error messages.
-  - `src/database/models.py`: Proxy model docstring and field comment.
-  - `src/database/crud.py`: section heading and docstrings for update_proxy, update_proxy_last_used, get_proxies_count.
-  - `src/web/routes/settings.py`: section heading, docstrings, and user-facing messages ("Agent has been deleted" → "Proxy has been deleted", "Agent connection successful" → "Proxy connection successful", etc.).
-  - `src/web/routes/registration.py`: docstring for update_proxy_usage.
-  - `src/core/upload/cpa_upload.py` and `src/core/upload/sub2api_upload.py`: docstrings "without using an agent" → "without using a proxy".
-- Fixed missing spaces after `#` in inline comments across `src/config/constants.py`, `src/config/settings.py`, `src/web/routes/registration.py`, `src/web/routes/accounts.py`, `src/web/routes/email.py`, `src/web/task_manager.py`, `src/services/outlook/service.py`, `src/core/register.py`.
-- Fixed awkward/overly literal English translations:
-  - `src/services/tempmail.py`: "fresh and hot" → removed, "postman should be on the way" → simplified, "six guests appeared" → removed.
-  - `src/web/routes/websocket.py`: "brakes are being applied, don't panic" → "tasks are winding down", "entire team is slowly pulling over" → "batch tasks are winding down".
-  - `src/config/constants.py`: "interface current limit" → "API rate limit", "Encountered verification code" → "CAPTCHA encountered", section headings normalized.
-  - `src/web/routes/settings.py`: "Temporary mailbox" → "Temporary email", "Verification code waiting to be set" → "Verification code wait settings", module docstring.
-  - `src/database/models.py`: "Mailbox service configuration table" → "Email service configuration table", other table docstrings normalized.
-- Verified Docker environment variable examples against actual `settings.py` names - confirmed `WEBUI_*` variables in docker-compose.yml and Dockerfile are correctly handled by `webui.py:main()` and `settings.py:_load_settings_from_db()`. Added commented-out `APP_DATABASE_URL` example to `docker-compose.yml` for PostgreSQL support.
-- All 32 tests pass successfully (pytest on Python 3.10 via .venv).
-
-## Completed In This Round (June 12, 2026 - Round 34)
+- Fixed the "Agent" → "Proxy" mistranslation across settings.py, routes/settings.py, routes/registration.py, database/crud.py, database/models.py, core/http_client.py, and web routes. The proxy settings were labeled "Agent" (a Chinese→English mistranslation) instead of "Proxy".
+- Replaced "Mailbox" with "Email" across all service modules (base.py, moe_mail.py, tempmail.py, temp_mail.py, duck_mail.py, freemail.py, imap_mail.py, outlook_legacy_mail.py, outlook/), routes (email.py, registration.py, settings.py), and models.py for consistent terminology.
+- Cleaned up setting descriptions in settings.py ("Whether to enable X" → "Enable X", "Web UI Key" → "Web UI secret key", "Custom domain name API address" → "Custom domain API URL").
+- Polished error messages in constants.py for conciseness ("Account does not exist" → "Account not found", "Task does not exist" → "Task not found", "OpenAI interface current limit" → "OpenAI API rate limit", "Verification code is invalid" → "Invalid verification code").
+- Standardized section headers in constants.py ("enumeration type" → "Enumerations", "Apply constants" → "Application constants", "related constants" → "constants", singular → plural where appropriate).
+- Improved route-level English in settings.py ("Proxy does not exist" → "Proxy not found", "Proxy has been deleted" → "Proxy deleted", "export IP" → "exit IP", "Temporary mailbox" → "Tempmail").
+- Refined service module docstrings (base.py: "abnormality" → "error", "regular expression" → "regex pattern"; outlook_legacy_mail.py: "current limiting" → "rate limiting", "Does OAuth2 support" → "Whether OAuth2 is supported").
+- Replaced "encapsulation" → "wrapper" in core/http_client.py.
+- Fixed missing spaces after # in comments across multiple files (models.py, register.py, accounts.py, utils.py, tempmail.py, outlook_legacy_mail.py, session.py, init_db.py).
+- Updated README.md progress tracker with completed items and refined next-iteration items.
+- Verified all 32 tests pass successfully (pytest on Python 3.10 via .venv).
 
 - Pulled `origin/main` - repository was already up to date.
 - Reviewed the current `README.md` progress tracker and advanced one unfinished iteration instead of doing another scan-only round.
@@ -340,12 +332,8 @@
 
 ## Next Actions
 
-- Continue polishing awkward English in the service layer (moe_mail, base, tempmail, outlook) — docstrings, log messages, and description strings.
-- Fix remaining awkward English in web routes (email.py, accounts.py, payment.py) — "Mailbox" → "Email", "does not exist" → "not found", description strings.
 - Expand route-level API coverage for translated payment and account-management actions that depend on backend data, not just page rendering.
+- Review remaining "domain name" occurrences in frontend templates and JS for consistency with "domain".
 - Add focused tests for the settings save flows and error messages returned by low-traffic API endpoints.
 - Add API tests for access-control edge cases such as malformed cookies and custom logout `next` targets.
-- Authenticate `gh` in a future round if issue and PR inspection is required.
-- Add focused tests for more user-visible registration and payment error messages after the surrounding API behavior is locked down.
-- Run a broader pytest subset in a future round once the full app test dependencies are available in the environment.
 - Authenticate `gh` in a future round if issue and PR inspection is required, since GitHub GraphQL access is currently unavailable in this environment.
