@@ -355,7 +355,7 @@ const statusMap = {
         temp_mail: 'Temp-Mail (self-deployment)',
         duck_mail: 'DuckMail',
         freemail: 'Freemail',
-        imap_mail: 'IMAP mailbox'
+        imap_mail: 'IMAP email'
     }
 };
 

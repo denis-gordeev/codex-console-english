@@ -55,7 +55,7 @@ class BaseEmailService(abc.ABC):
         """Create new email address
 
         Args:
-            config: configuration parameters, such as email prefix, domain name, etc.
+            config: configuration parameters, such as email prefix, domain, etc.
 
         Returns:
             A dictionary containing email information, containing at least:

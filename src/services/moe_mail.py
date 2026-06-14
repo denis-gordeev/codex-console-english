@@ -31,7 +31,7 @@ class MeoMailEmailService(BaseEmailService):
                 - timeout: request timeout (default: 30)
                 - max_retries: Maximum number of retries (default: 3)
                 - proxy_url: proxy URL
-                - default_domain: default domain name
+                - default_domain: default domain
                 - default_expiry: default expiration time (milliseconds)
             name: service name"""
         super().__init__(EmailServiceType.MOE_MAIL, name)
@@ -184,7 +184,7 @@ class MeoMailEmailService(BaseEmailService):
             config: configuration parameters:
                 - name: email prefix (optional)
                 - expiryTime: validity period (milliseconds) (optional)
-                - domain: email domain name (optional)
+                - domain: email domain (optional)
 
         Returns:
             Dictionary containing email information:
@@ -196,7 +196,7 @@ class MeoMailEmailService(BaseEmailService):
         sys_config = self.get_config()
         default_domain = self.config.get("default_domain")
         if not default_domain and sys_config.get("emailDomains"):
-            # Use the first domain name configured by the system
+            # Use the first domain configured by the system
             domains = sys_config["emailDomains"].split(",")
             default_domain = domains[0].strip() if domains else None
 

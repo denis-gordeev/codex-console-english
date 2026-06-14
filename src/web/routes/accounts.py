@@ -161,7 +161,7 @@ async def list_accounts(
     """
     Get account list
 
-    Supports paging, status filtering, mailbox service filtering and search
+    Supports paging, status filtering, email service filtering and search
     """
     with get_db() as db:
         # Build query
@@ -978,7 +978,7 @@ def _build_inbox_config(db, service_type, email: str) -> dict:
         }
 
     if service_type == EST.MOE_MAIL:
-        # Match by domain name suffix, if not found, take the one with the smallest priority
+        # Match by domain suffix, if not found, take the one with the smallest priority
         domain = email.split("@")[1] if "@" in email else ""
         services = db.query(EmailServiceModel).filter(
             EmailServiceModel.service_type == "moe_mail",

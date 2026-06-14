@@ -232,7 +232,7 @@ async function loadAvailableServices() {
         addLog('info', '[System] Email service list has been loaded');
     } catch (error) {
         console.error('Failed to load email service list:', error);
-        addLog('warning', '[Warning] Failed to load mailbox service list');
+        addLog('warning', '[Warning] Failed to load email service list');
     }
 }
 
@@ -244,7 +244,7 @@ function updateEmailServiceOptions() {
     // Tempmail
     if (availableServices.tempmail.available) {
         const optgroup = document.createElement('optgroup');
-        optgroup.label = '🌐 Temporary Mailbox';
+        optgroup.label = '🌐 Temp Mail';
 
         availableServices.tempmail.services.forEach(service => {
             const option = document.createElement('option');
@@ -292,7 +292,7 @@ function updateEmailServiceOptions() {
         select.appendChild(optgroup);
     }
 
-    // Custom domain name
+    // Custom domain
     if (availableServices.moe_mail.available) {
         const optgroup = document.createElement('optgroup');
         optgroup.label = `🔗 Custom Domain Email (${availableServices.moe_mail.count} services)`;
@@ -374,7 +374,7 @@ function updateEmailServiceOptions() {
     }
 }
 
-// Handle mailbox service switching
+// Handle email service switching
 function handleServiceChange(e) {
     const value = e.target.value;
     if (!value) return;
@@ -405,7 +405,7 @@ function handleServiceChange(e) {
     } else if (type === 'moe_mail') {
         const service = availableServices.moe_mail.services.find(s => s.id == id);
         if (service) {
-            addLog('info', `[System] Custom domain name service selected: ${service.name}`);
+            addLog('info', `[System] Custom domain service selected: ${service.name}`);
         }
     } else if (type === 'temp_mail') {
         const service = availableServices.temp_mail.services.find(s => s.id == id);

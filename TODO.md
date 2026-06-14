@@ -4,6 +4,10 @@
 
 - Pulled `origin/main` - repository was already up to date.
 - Scanned all tracked files for non-English text (Cyrillic, CJK, Arabic, Thai, non-ASCII artifacts) - zero non-English language text found.
+- Replaced "domain name" with "domain" across services (base.py, freemail.py, moe_mail.py, temp_mail.py), routes (email.py, accounts.py), JS (app.js, email_services.js), and templates (email_services.html) for consistent terminology.
+- Replaced remaining "mailbox" with "email" across routes (accounts.py, email.py), JS (accounts.js, app.js, email_services.js, settings.js, utils.js), and templates (accounts.html, email_services.html, index.html, settings.html).
+- Replaced "Temporary Mailbox" / "temporary mailbox" with "Temp Mail" / "temp mail" in templates and JS for UI consistency.
+- Replaced "Customized mailbox" with "Custom email" in email_services.html.
 - Verified all 32 tests pass successfully (pytest on Python 3.10 via .venv).
 - Confirmed repository translation status remains complete; no new non-English text to translate.
 

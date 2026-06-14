@@ -199,7 +199,7 @@ async def get_service_types():
                 "config_fields": [
                     {"name": "base_url", "label": "API address", "required": True},
                     {"name": "api_key", "label": "API Key", "required": True},
-                    {"name": "default_domain", "label": "Default domain name", "required": False},
+                    {"name": "default_domain", "label": "Default domain", "required": False},
                 ]
             },
             {
@@ -209,7 +209,7 @@ async def get_service_types():
                 "config_fields": [
                     {"name": "base_url", "label": "Worker address", "required": True, "placeholder": "https://mail.example.com"},
                     {"name": "admin_password", "label": "Admin password", "required": True, "secret": True},
-                    {"name": "domain", "label": "Email domain name", "required": True, "placeholder": "example.com"},
+                    {"name": "domain", "label": "Email domain", "required": True, "placeholder": "example.com"},
                     {"name": "enable_prefix", "label": "Enable prefix", "required": False, "default": True},
                 ]
             },
@@ -219,7 +219,7 @@ async def get_service_types():
                 "description": "DuckMail interface email service, supports API Key private domain access",
                 "config_fields": [
                     {"name": "base_url", "label": "API address", "required": True, "placeholder": "https://api.duckmail.sbs"},
-                    {"name": "default_domain", "label": "Default domain name", "required": True, "placeholder": "duckmail.sbs"},
+                    {"name": "default_domain", "label": "Default domain", "required": True, "placeholder": "duckmail.sbs"},
                     {"name": "api_key", "label": "API Key", "required": False, "secret": True},
                     {"name": "password_length", "label": "Random password length", "required": False, "default": 12},
                 ]
@@ -231,7 +231,7 @@ async def get_service_types():
                 "config_fields": [
                     {"name": "base_url", "label": "API address", "required": True, "placeholder": "https://freemail.example.com"},
                     {"name": "admin_token", "label": "Admin Token", "required": True, "secret": True},
-                    {"name": "domain", "label": "Email domain name", "required": False, "placeholder": "example.com"},
+                    {"name": "domain", "label": "Email domain", "required": False, "placeholder": "example.com"},
                 ]
             },
             {
@@ -406,7 +406,7 @@ async def test_email_service(service_id: int):
                 )
 
         except Exception as e:
-            logger.error(f"Test mailbox service failed: {e}")
+            logger.error(f"Test email service failed: {e}")
             return ServiceTestResult(
                 success=False,
                 message=f"Test failed: {str(e)}"

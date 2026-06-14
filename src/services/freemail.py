@@ -29,9 +29,9 @@ class FreemailService(BaseEmailService):
 
         Args:
             config: configuration dictionary, supports the following keys:
-                - base_url: Worker domain name address (required)
+                - base_url: Worker domain address (required)
                 - admin_token: Admin Token, corresponding to JWT_TOKEN (required)
-                - domain: email domain name, such as example.com
+                - domain: email domain, such as example.com
                 - timeout: request timeout, default 30
                 - max_retries: Maximum number of retries, default 3
             name: service name
@@ -111,14 +111,14 @@ class FreemailService(BaseEmailService):
             raise EmailServiceError(f"Request failed: {method} {path} - {e}")
 
     def _ensure_domains(self):
-        """Get and cache the list of available domain names"""
+        """Get and cache the list of available domains"""
         if not self._domains:
             try:
                 domains = self._make_request("GET", "/api/domains")
                 if isinstance(domains, list):
                     self._domains = domains
             except Exception as e:
-                logger.warning(f"Failed to obtain Freemail domain name list: {e}")
+                logger.warning(f"Failed to obtain Freemail domain list: {e}")
 
     def create_email(self, config: Dict[str, Any] = None) -> Dict[str, Any]:
         """

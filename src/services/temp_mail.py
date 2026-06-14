@@ -31,9 +31,9 @@ class TempMailService(BaseEmailService):
 
         Args:
             config: configuration dictionary, supports the following keys:
-                - base_url: Worker domain name address, such as https://mail.example.com (required)
+                - base_url: Worker domain address, such as https://mail.example.com (required)
                 - admin_password: Admin password, corresponding to x-admin-auth header (required)
-                - domain: email domain name, such as example.com (required)
+                - domain: email domain, such as example.com (required)
                 - enable_prefix: Whether to enable prefix, default True
                 - timeout: request timeout, default 30
                 - max_retries: Maximum number of retries, default 3

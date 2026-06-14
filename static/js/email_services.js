@@ -31,18 +31,18 @@ const elements = {
     selectAllOutlook: document.getElementById('select-all-outlook'),
     batchDeleteOutlookBtn: document.getElementById('batch-delete-outlook-btn'),
 
-    // Custom domain name (merge)
+    // Custom domain (merge)
     customTable: document.getElementById('custom-services-table'),
     addCustomBtn: document.getElementById('add-custom-btn'),
     selectAllCustom: document.getElementById('select-all-custom'),
 
-    //Temporary mailbox
+    //Temp mail
     tempmailForm: document.getElementById('tempmail-form'),
     tempmailApi: document.getElementById('tempmail-api'),
     tempmailEnabled: document.getElementById('tempmail-enabled'),
     testTempmailBtn: document.getElementById('test-tempmail-btn'),
 
-    //Add a custom domain name modal box
+    //Add a custom domain modal
     addCustomModal: document.getElementById('add-custom-modal'),
     addCustomForm: document.getElementById('add-custom-form'),
     closeCustomModal: document.getElementById('close-custom-modal'),
@@ -54,7 +54,7 @@ const elements = {
     addFreemailFields: document.getElementById('add-freemail-fields'),
     addImapFields: document.getElementById('add-imap-fields'),
 
-    //Edit custom domain name modal box
+    //Edit custom domain modal
     editCustomModal: document.getElementById('edit-custom-modal'),
     editCustomForm: document.getElementById('edit-custom-form'),
     closeEditCustomModal: document.getElementById('close-edit-custom-modal'),
@@ -75,7 +75,7 @@ const elements = {
 };
 
 const CUSTOM_SUBTYPE_LABELS = {
-    moemail: '🔗 MoeMail (custom domain name API)',
+    moemail: '🔗 MoeMail (custom domain API)',
     tempmail: '📮 TempMail (self-deployed Cloudflare Worker)',
     duckmail: '🦆 DuckMail (DuckMail API)',
     freemail: 'Freemail (self-deployed Cloudflare Worker)',
@@ -122,7 +122,7 @@ function initEventListeners() {
     // Outlook batch delete
     elements.batchDeleteOutlookBtn.addEventListener('click', handleBatchDeleteOutlook);
 
-    // Select all custom domain names
+    // Select all custom domains
     elements.selectAllCustom.addEventListener('change', (e) => {
         const checkboxes = elements.customTable.querySelectorAll('input[type="checkbox"][data-id]');
         checkboxes.forEach(cb => {
@@ -133,7 +133,7 @@ function initEventListeners() {
         });
     });
 
-    //Add custom domain name
+    //Add custom domain
     elements.addCustomBtn.addEventListener('click', () => {
         elements.addCustomForm.reset();
         switchAddSubType('moemail');
@@ -146,7 +146,7 @@ function initEventListeners() {
     //Type switching (add form)
     elements.customSubType.addEventListener('change', (e) => switchAddSubType(e.target.value));
 
-    //Edit custom domain name
+    //Edit custom domain
     elements.closeEditCustomModal.addEventListener('click', () => elements.editCustomModal.classList.remove('active'));
     elements.cancelEditCustom.addEventListener('click', () => elements.editCustomModal.classList.remove('active'));
     elements.editCustomForm.addEventListener('submit', handleEditCustom);
@@ -156,7 +156,7 @@ function initEventListeners() {
     elements.cancelEditOutlook.addEventListener('click', () => elements.editOutlookModal.classList.remove('active'));
     elements.editOutlookForm.addEventListener('submit', handleEditOutlook);
 
-    //Temporary mailbox configuration
+    //Temp mail configuration
     elements.tempmailForm.addEventListener('submit', handleSaveTempmail);
     elements.testTempmailBtn.addEventListener('click', handleTestTempmail);
 
@@ -303,10 +303,10 @@ function getCustomServiceAddress(service) {
     if (!domain) {
         return escapeHtml(baseUrl);
     }
-    return `${escapeHtml(baseUrl)}<div style="color: var(--text-muted); margin-top: 4px;">Default domain name: @${escapeHtml(domain)}</div>`;
+    return `${escapeHtml(baseUrl)}<div style="color: var(--text-muted); margin-top: 4px;">Default domain: @${escapeHtml(domain)}</div>`;
 }
 
-// Load custom mailbox service (moe_mail + temp_mail + duck_mail + freemail merge)
+// Load custom email service (moe_mail + temp_mail + duck_mail + freemail merge)
 async function loadCustomServices() {
     try {
         const [r1, r2, r3, r4, r5] = await Promise.all([
@@ -374,11 +374,11 @@ async function loadCustomServices() {
         });
 
     } catch (error) {
-        console.error('Loading custom mailbox service failed:', error);
+        console.error('Loading custom email service failed:', error);
     }
 }
 
-//Load temporary mailbox configuration
+//Load temp mail configuration
 async function loadTempmailConfig() {
     try {
         const settings = await api.get('/settings');
@@ -557,7 +557,7 @@ async function handleBatchDeleteOutlook() {
     }
 }
 
-//Save temporary mailbox configuration
+//Save temp mail configuration
 async function handleSaveTempmail(e) {
     e.preventDefault();
     try {
@@ -571,7 +571,7 @@ async function handleSaveTempmail(e) {
     }
 }
 
-//Test temporary mailbox
+//Test temp mail
 async function handleTestTempmail() {
     elements.testTempmailBtn.disabled = true;
     elements.testTempmailBtn.textContent = 'Testing...';
@@ -579,7 +579,7 @@ async function handleTestTempmail() {
         const result = await api.post('/email-services/test-tempmail', {
             api_url: elements.tempmailApi.value
         });
-        if (result.success) toast.success('The temporary mailbox connection is normal');
+        if (result.success) toast.success('The temp mail connection is normal');
         else toast.error('Connection failed: ' + (result.error || 'Unknown error'));
     } catch (error) {
         toast.error('Test failed: ' + error.message);
@@ -606,7 +606,7 @@ function escapeHtml(text) {
 
 // ============== Editing function ==============
 
-//Edit custom mailbox service (supports moemail / tempmail / duckmail)
+//Edit custom email service (supports moemail / tempmail / duckmail)
 async function editCustomService(id, subType) {
     try {
         const service = await api.get(`/email-services/${id}/full`);
@@ -665,7 +665,7 @@ async function editCustomService(id, subType) {
     }
 }
 
-//Save and edit custom mailbox service
+//Save and edit custom email service
 async function handleEditCustom(e) {
     e.preventDefault();
     const id = document.getElementById('edit-custom-id').value;

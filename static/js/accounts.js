@@ -358,7 +358,7 @@ function renderAccounts(accounts) {
         });
     });
 
-    // Bind the copy mailbox button
+    // Bind the copy email button
     elements.table.querySelectorAll('.copy-email-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -570,7 +570,7 @@ async function viewAccount(id) {
                     </span>
                 </div>
                 <div class="info-item">
-                    <span class="label">Mailbox service</span>
+                    <span class="label">Email service</span>
                     <span class="value">${getServiceTypeText(account.email_service)}</span>
                 </div>
                 <div class="info-item">

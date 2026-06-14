@@ -375,7 +375,7 @@ async function handleSaveWebuiSettings(e) {
     }
 }
 
-//Load the mailbox service
+//Load the email service
 async function loadEmailServices() {
     // Check if the element exists
     if (!elements.emailServicesTable) return;
@@ -400,7 +400,7 @@ async function loadEmailServices() {
     }
 }
 
-// Render mailbox service
+// Render email service
 function renderEmailServices(services) {
     // Check if the element exists
     if (!elements.emailServicesTable) return;
@@ -598,7 +598,7 @@ async function handleAddService(e) {
 
     try {
         await api.post('/email-services', data);
-        toast.success('Mailbox service has been added');
+        toast.success('Email service has been added');
         elements.addServiceModal.classList.remove('active');
         elements.addServiceForm.reset();
         loadEmailServices();
