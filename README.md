@@ -38,6 +38,9 @@ This repository keeps the original structure and overall approach, while applyin
 - Improved route-level English in settings.py, email.py, registration.py, and accounts.py (concise error messages, consistent naming).
 - Refined service module docstrings and log messages (base.py, moe_mail.py, tempmail.py, temp_mail.py, duck_mail.py, freemail.py, imap_mail.py, outlook/).
 - Replaced "encapsulation" → "wrapper", "regular expression" → "regex pattern", "current limiting" → "rate limiting" across core and service modules.
+- Replaced all "domain name" with "domain" across frontend templates, JS, route labels, and service docstrings for consistent terminology.
+- Replaced all remaining "Mailbox" and "mailbox" with "Email" / "email" in user-facing UI labels, comments, log messages, and route descriptions.
+- Changed "Customized email service" → "Custom email service" and "Temporary Mailbox" → "Temp Mail" for conciseness.
 
 ### Next Iterations
 
@@ -46,7 +49,6 @@ This repository keeps the original structure and overall approach, while applyin
 - Add API tests for access-control edge cases such as malformed cookies and custom logout `next` targets.
 - Verify Docker environment variable examples against the actual `settings` names used by the app.
 - Add focused tests for the settings save flows and error messages returned by low-traffic API endpoints.
-- Review remaining "domain name" occurrences in frontend templates and JS for consistency with "domain".
 
 ## What This Branch Fixes
 

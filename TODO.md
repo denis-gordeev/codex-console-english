@@ -4,14 +4,11 @@
 
 - Pulled `origin/main` - repository was already up to date.
 - Scanned all tracked files for non-English text (Cyrillic, CJK, Arabic, Thai, non-ASCII artifacts) - zero non-English language text found.
-- Replaced "domain name" with "domain" across services (base.py, freemail.py, moe_mail.py, temp_mail.py), routes (email.py, accounts.py), JS (app.js, email_services.js), and templates (email_services.html) for consistent terminology.
-- Replaced remaining "mailbox" with "email" across routes (accounts.py, email.py), JS (accounts.js, app.js, email_services.js, settings.js, utils.js), and templates (accounts.html, email_services.html, index.html, settings.html).
-- Replaced "Temporary Mailbox" / "temporary mailbox" with "Temp Mail" / "temp mail" in templates and JS for UI consistency.
-- Replaced "Customized mailbox" with "Custom email" in email_services.html.
+- Replaced all "domain name" with "domain" across frontend templates (email_services.html), JS (app.js, email_services.js), route labels (email.py), service docstrings (base.py, freemail.py, moe_mail.py, temp_mail.py), and route comments (accounts.py) for consistent terminology.
+- Replaced all remaining "Mailbox" / "mailbox" with "Email" / "email" in user-facing UI labels, JS comments, log messages, route descriptions, and template text (accounts.js, accounts.html, app.js, email_services.js, settings.js, utils.js, index.html, settings.html, accounts.py, email.py).
+- Changed "Customized email service" → "Custom email service", "Customized mailbox" → "Custom email", "Temporary Mailbox" → "Temp Mail", "Enable temporary mailbox" → "Enable temp mail" for conciseness.
+- Updated README.md progress tracker: added completed items and removed the now-resolved "domain name" next-iteration item.
 - Verified all 32 tests pass successfully (pytest on Python 3.10 via .venv).
-- Confirmed repository translation status remains complete; no new non-English text to translate.
-
-## Completed In This Round (June 12, 2026 - Round 35)
 
 - Pulled `origin/main` - repository was already up to date.
 - Scanned all tracked files for non-English text (Cyrillic, CJK, Arabic, Thai, non-ASCII artifacts) - zero non-English language text found.
@@ -344,7 +341,8 @@
 ## Next Actions
 
 - Expand route-level API coverage for translated payment and account-management actions that depend on backend data, not just page rendering.
-- Review remaining "domain name" occurrences in frontend templates and JS for consistency with "domain".
 - Add focused tests for the settings save flows and error messages returned by low-traffic API endpoints.
 - Add API tests for access-control edge cases such as malformed cookies and custom logout `next` targets.
+- Verify Docker environment variable examples against the actual `settings` names used by the app.
+- Continue polishing wording consistency in comments, log messages, and low-traffic routes as new gaps are found.
 - Authenticate `gh` in a future round if issue and PR inspection is required, since GitHub GraphQL access is currently unavailable in this environment.
