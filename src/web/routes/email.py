@@ -204,8 +204,8 @@ async def get_service_types():
             },
             {
                 "value": "temp_mail",
-                "label": "Temp-Mail (self-deployment)",
-                "description": "Self-deployed Cloudflare Worker temporary email, admin mode management",
+                "label": "Temp-Mail (self-hosted)",
+                "description": "Self-hosted Cloudflare Worker temporary email, admin-managed",
                 "config_fields": [
                     {"name": "base_url", "label": "Worker address", "required": True, "placeholder": "https://mail.example.com"},
                     {"name": "admin_password", "label": "Admin password", "required": True, "secret": True},
@@ -216,7 +216,7 @@ async def get_service_types():
             {
                 "value": "duck_mail",
                 "label": "DuckMail",
-                "description": "DuckMail interface email service, supports API Key private domain access",
+                "description": "DuckMail API email service; supports API Key custom domain access",
                 "config_fields": [
                     {"name": "base_url", "label": "API address", "required": True, "placeholder": "https://api.duckmail.sbs"},
                     {"name": "default_domain", "label": "Default domain", "required": True, "placeholder": "duckmail.sbs"},
@@ -227,7 +227,7 @@ async def get_service_types():
             {
                 "value": "freemail",
                 "label": "Freemail",
-                "description": "Freemail self-deployed Cloudflare Worker temporary email service",
+                "description": "Freemail self-hosted Cloudflare Worker temporary email service",
                 "config_fields": [
                     {"name": "base_url", "label": "API address", "required": True, "placeholder": "https://freemail.example.com"},
                     {"name": "admin_token", "label": "Admin Token", "required": True, "secret": True},

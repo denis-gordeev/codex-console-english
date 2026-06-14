@@ -1,6 +1,6 @@
 """
 Freemail email service implementation
-Based on self-deployed Cloudflare Worker temporary email service (https://github.com/idinging/freemail)
+Based on self-hosted Cloudflare Worker temporary email service (https://github.com/idinging/freemail)
 """
 
 import re
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 class FreemailService(BaseEmailService):
     """
     Freemail email service
-    Temporary email based on self-deployed Cloudflare Worker
+    Temporary email based on self-hosted Cloudflare Worker
     """
 
     def __init__(self, config: Dict[str, Any] = None, name: str = None):
@@ -190,7 +190,7 @@ class FreemailService(BaseEmailService):
 
         Args:
             email: email address
-            email_id: Unused, reserved for interface compatibility
+            email_id: Unused, reserved for API compatibility
             timeout: timeout (seconds)
             pattern: Verification code regex pattern
             otp_sent_at: OTP sending timestamp (not used yet)
@@ -229,7 +229,7 @@ class FreemailService(BaseEmailService):
                     # Try to use the verification code extracted by Freemail directly
                     v_code = mail.get("verification_code")
                     if v_code:
-                        logger.info(f"Find the verification code from the Freemail email {email}: {v_code}")
+                        logger.info(f"Found verification code for Freemail email {email}: {v_code}")
                         self.update_status(True)
                         return v_code
 
@@ -237,7 +237,7 @@ class FreemailService(BaseEmailService):
                     match = re.search(pattern, content)
                     if match:
                         code = match.group(1)
-                        logger.info(f"Find the verification code from the Freemail email address {email}: {code}")
+                        logger.info(f"Found verification code for Freemail email {email}: {code}")
                         self.update_status(True)
                         return code
 
@@ -248,7 +248,7 @@ class FreemailService(BaseEmailService):
                         match = re.search(pattern, full_content)
                         if match:
                             code = match.group(1)
-                            logger.info(f"Find the verification code from the Freemail email address {email}: {code}")
+                            logger.info(f"Found verification code for Freemail email {email}: {code}")
                             self.update_status(True)
                             return code
                     except Exception as e:

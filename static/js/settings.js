@@ -332,7 +332,7 @@ async function loadSettings() {
         document.getElementById('sleep-min').value = data.registration?.sleep_min || 5;
         document.getElementById('sleep-max').value = data.registration?.sleep_max || 30;
 
-        //Verification code waiting for configuration
+        // Verification code retrieval configuration
         if (data.email_code) {
             document.getElementById('email-code-timeout').value = data.email_code.timeout || 120;
             document.getElementById('email-code-poll-interval').value = data.email_code.poll_interval || 3;
@@ -483,7 +483,7 @@ async function handleSaveRegistration(e) {
     }
 }
 
-//Save the verification code and wait for configuration
+// Save verification code retrieval configuration
 async function handleSaveEmailCode(e) {
     e.preventDefault();
 
@@ -759,7 +759,7 @@ function escapeHtml(text) {
 
 
 // ============================================================================
-//Agent list management
+// Proxy list management
 // ============================================================================
 
 //Load proxy list
@@ -790,7 +790,7 @@ function renderProxies(proxies) {
                 <td colspan="7">
                     <div class="empty-state">
                         <div class="empty-state-icon">🌐</div>
-                        <div class="empty-state-title">No agent yet</div>
+                        <div class="empty-state-title">No proxies yet</div>
                         <div class="empty-state-description">Click the "Add Proxy" button to add a proxy server</div>
                     </div>
                 </td>
@@ -854,7 +854,7 @@ async function handleSetProxyDefault(id) {
     }
 }
 
-//Open the agent modal box
+// Open the proxy modal
 function openProxyModal(proxy = null) {
     elements.proxyModalTitle.textContent = proxy ? 'Edit proxy' : 'Add proxy';
     elements.proxyItemForm.reset();
@@ -873,7 +873,7 @@ function openProxyModal(proxy = null) {
     elements.addProxyModal.classList.add('active');
 }
 
-// Close the agent modal box
+// Close the proxy modal
 function closeProxyModal() {
     elements.addProxyModal.classList.remove('active');
     elements.proxyItemForm.reset();
@@ -897,10 +897,10 @@ async function handleSaveProxyItem(e) {
     try {
         if (proxyId) {
             await api.patch(`/settings/proxies/${proxyId}`, data);
-            toast.success('Agent has been updated');
+            toast.success('Proxy updated');
         } else {
             await api.post('/settings/proxies', data);
-            toast.success('Agent has been added');
+            toast.success('Proxy added');
         }
         closeProxyModal();
         loadProxies();
@@ -909,17 +909,17 @@ async function handleSaveProxyItem(e) {
     }
 }
 
-//edit agent
+// Edit proxy
 async function editProxyItem(id) {
     try {
         const proxy = await api.get(`/settings/proxies/${id}`);
         openProxyModal(proxy);
     } catch (error) {
-        toast.error('Failed to obtain agent information');
+        toast.error('Failed to load proxy info');
     }
 }
 
-//Test a single agent
+// Test a single proxy
 async function testProxyItem(id) {
     try {
         const result = await api.post(`/settings/proxies/${id}/test`);
@@ -933,12 +933,12 @@ async function testProxyItem(id) {
     }
 }
 
-//Switch agent status
+// Toggle proxy status
 async function toggleProxyItem(id, enabled) {
     try {
         const endpoint = enabled ? 'enable' : 'disable';
         await api.post(`/settings/proxies/${id}/${endpoint}`);
-        toast.success(enabled ? 'Agent is enabled' : 'Agent is disabled');
+        toast.success(enabled ? 'Proxy enabled' : 'Proxy disabled');
         loadProxies();
     } catch (error) {
         toast.error('Operation failed: ' + error.message);
@@ -947,12 +947,12 @@ async function toggleProxyItem(id, enabled) {
 
 // Delete proxy
 async function deleteProxyItem(id) {
-    const confirmed = await confirm('Are you sure you want to delete this agent?');
+    const confirmed = await confirm('Are you sure you want to delete this proxy?');
     if (!confirmed) return;
 
     try {
         await api.delete(`/settings/proxies/${id}`);
-        toast.success('Agent has been deleted');
+        toast.success('Proxy deleted');
         loadProxies();
     } catch (error) {
         toast.error('Deletion failed: ' + error.message);

@@ -350,7 +350,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         db_key="email_code.timeout",
         default_value=120,
         category=SettingCategory.EMAIL,
-        description="Verification code waiting timeout (seconds)"
+        description="Verification code retrieval timeout (seconds)"
     ),
     "email_code_poll_interval": SettingDefinition(
         db_key="email_code.poll_interval",

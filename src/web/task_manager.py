@@ -76,7 +76,7 @@ class TaskManager:
         return self._loop
 
     def is_cancelled(self, task_uuid: str) -> bool:
-        """Check whether the task has been canceled"""
+        """Check if the task has been canceled"""
         return _task_cancelled.get(task_uuid, False)
 
     def cancel_task(self, task_uuid: str):
@@ -152,10 +152,10 @@ class TaskManager:
             # Avoid registering the same connection repeatedly
             if websocket not in _ws_connections[task_uuid]:
                 _ws_connections[task_uuid].append(websocket)
-                # Record the number of logs sent to avoid duplication when sending historical logs
+                # Record log count to avoid resending historical logs
                 with _get_log_lock(task_uuid):
                     _ws_sent_index[task_uuid][id(websocket)] = len(_log_queues.get(task_uuid, []))
-                logger.info(f"WebSocket connection has been registered, log speaker is ready to start broadcasting: {task_uuid}")
+                logger.info(f"WebSocket registered, log broadcast starting: {task_uuid}")
             else:
                 logger.warning(f"WebSocket connection already exists, skip repeated registration: {task_uuid}")
 
@@ -310,7 +310,7 @@ class TaskManager:
             return _batch_logs.get(batch_id, []).copy()
 
     def is_batch_cancelled(self, batch_id: str) -> bool:
-        """Check whether the batch task has been canceled"""
+        """Check if the batch task has been canceled"""
         status = _batch_status.get(batch_id, {})
         return status.get("cancelled", False)
 
@@ -330,10 +330,10 @@ class TaskManager:
             # Avoid registering the same connection repeatedly
             if websocket not in _ws_connections[key]:
                 _ws_connections[key].append(websocket)
-                # Record the number of logs sent to avoid duplication when sending historical logs
+                # Record log count to avoid resending historical logs
                 with _get_batch_lock(batch_id):
                     _ws_sent_index[key][id(websocket)] = len(_batch_logs.get(batch_id, []))
-                logger.info(f"Batch task WebSocket connection has been registered, batch channel collection started: {batch_id}")
+                logger.info(f"Batch WebSocket registered, batch log broadcast starting: {batch_id}")
             else:
                 logger.warning(f"Batch task WebSocket connection already exists, skip repeated registration: {batch_id}")
 

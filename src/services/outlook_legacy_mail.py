@@ -170,10 +170,10 @@ class OutlookIMAPClient:
 
         # Fall back to password authentication
         self._conn.login(self.account.email, self.account.password)
-        logger.debug(f"Use password authentication to connect: {self.account.email}")
+        logger.debug(f"Connected using password authentication: {self.account.email}")
 
     def _ensure_connection(self):
-        """Make sure the connection is valid"""
+        """Ensure the connection is valid"""
         if self._conn:
             try:
                 self._conn.noop()
@@ -193,12 +193,12 @@ class OutlookIMAPClient:
         Get recent emails
 
         Args:
-            count: the number of emails obtained
-            only_unseen: whether to get only unread emails
-            timeout: timeout time
+            count: Number of emails to fetch
+            only_unseen: Fetch only unread emails
+            timeout: Timeout (seconds)
 
         Returns:
-            mailing list
+            list of emails
         """
         self._ensure_connection()
 
@@ -418,7 +418,7 @@ class OutlookService(BaseEmailService):
         # IMAP connection limit (prevent rate limiting)
         self._imap_semaphore = threading.Semaphore(5)
 
-        # Verification code deduplication mechanism: email -> set of used codes
+        # Verification code dedup tracking: email -> set of used codes
         self._used_codes: Dict[str, set] = {}
 
     def create_email(self, config: Dict[str, Any] = None) -> Dict[str, Any]:
@@ -470,7 +470,7 @@ class OutlookService(BaseEmailService):
         Args:
             email: email address
             email_id: Not used (for Outlook, email is the ID)
-            timeout: timeout time (seconds), the configuration value is used by default
+            timeout: Timeout (seconds); defaults to configured value
             pattern: verification code regex pattern
             otp_sent_at: OTP sending timestamp, used to filter old emails
 
@@ -485,17 +485,17 @@ class OutlookService(BaseEmailService):
                 break
 
         if not account:
-            self.update_status(False, EmailServiceError(f"The account corresponding to the email address was not found: {email}"))
+            self.update_status(False, EmailServiceError(f"No account found for email: {email}"))
             return None
 
-        # Get the verification code from the database and wait for configuration
+        # Load verification code retrieval settings from database
         code_settings = get_email_code_settings()
         actual_timeout = timeout or code_settings["timeout"]
         poll_interval = code_settings["poll_interval"]
 
-        logger.info(f"[{email}] starts to obtain the verification code, timeout {actual_timeout}s, OTP sending time: {otp_sent_at}")
+        logger.info(f"[{email}] fetching verification code, timeout {actual_timeout}s, OTP sending time: {otp_sent_at}")
 
-        # Initialize verification code deduplication collection
+        # Initialize verification code dedup set
         if email not in self._used_codes:
             self._used_codes[email] = set()
         used_codes = self._used_codes[email]
@@ -547,7 +547,7 @@ class OutlookService(BaseEmailService):
                             if code:
                                 # Deduplication check
                                 if code in used_codes:
-                                    logger.debug(f"[{email}] Skip the used verification code: {code}")
+                                    logger.debug(f"[{email}] Skipping already-used verification code: {code}")
                                     continue
 
                                 used_codes.add(code)
@@ -598,7 +598,7 @@ class OutlookService(BaseEmailService):
         return False
 
     def check_health(self) -> bool:
-        """Check whether the Outlook service is available"""
+        """Check if the Outlook service is available"""
         if not self.accounts:
             self.update_status(False, EmailServiceError("No account configured"))
             return False
@@ -641,7 +641,7 @@ class OutlookService(BaseEmailService):
             target_email: target email address (used to verify recipients)
 
         Returns:
-            Whether to verify email for OpenAI
+            Whether the email is verified as being from OpenAI
         """
         sender = mail.get("from", "").lower()
 

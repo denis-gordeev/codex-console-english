@@ -41,10 +41,22 @@ This repository keeps the original structure and overall approach, while applyin
 - Replaced all "domain name" with "domain" across frontend templates, JS, route labels, and service docstrings for consistent terminology.
 - Replaced all remaining "Mailbox" and "mailbox" with "Email" / "email" in user-facing UI labels, comments, log messages, and route descriptions.
 - Changed "Customized email service" → "Custom email service" and "Temporary Mailbox" → "Temp Mail" for conciseness.
+- Fixed remaining "Agent" → "Proxy" mistranslation in settings.js and settings.html (user-facing strings, comments, toast messages).
+- Replaced "self-deployed" → "self-hosted" across all frontend and backend files for standard English terminology.
+- Replaced "mailing list" → "list of emails" / "email list" across all Outlook and email service modules.
+- Replaced "interface" → "API"/"endpoint" where Chinese "接口" was mistranslated in REST API context.
+- Replaced "private domain" → "custom domain" in DuckMail service description.
+- Fixed "Verification code waiting for configuration" → "Verification code retrieval configuration" for clarity.
+- Replaced "deduplication mechanism/collection" → "dedup tracking/set" for concise terminology.
+- Fixed "Get the quantity" → "Number of emails to fetch", "whether to only get unread" → "Fetch only unread emails", and similar awkward phrasing.
+- Polished error messages ("The number of registrations must be between 1-100" → "Registration count must be between 1 and 100").
+- Polished log messages across Outlook, moe_mail, freemail, temp_mail, websocket, and task_manager for natural English.
+- Fixed "Is the connection normal?" → "True if the connection is working", "Configuration information" → "Configuration dictionary", "timeout time" → "Timeout (seconds)".
+- Replaced non-ASCII ▼ with &darr; in app.js multi-select dropdown.
 
 ### Next Iterations
 
-- Continue polishing wording consistency in logs, tests, and low-traffic routes as new gaps are found.
+- Continue polishing wording consistency in logs, tests, and low-traffic routes (remaining JS comment spacing issues).
 - Expand regression coverage for translated API messages and settings flows.
 - Add API tests for access-control edge cases such as malformed cookies and custom logout `next` targets.
 - Verify Docker environment variable examples against the actual `settings` names used by the app.

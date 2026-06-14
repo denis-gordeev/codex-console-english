@@ -57,8 +57,8 @@ class OutlookService(BaseEmailService):
             config: configuration dictionary, supports the following keys:
                 - accounts: Outlook account list
                 - provider_priority: provider priority list
-                - health_failure_threshold: threshold of consecutive failures
-                - health_disable_duration: disable duration (seconds)
+                - health_failure_threshold: Consecutive failure threshold
+                - health_disable_duration: Duration to disable the provider (seconds)
                 - timeout: request timeout
                 - proxy_url: proxy URL
             name: service name
@@ -141,7 +141,7 @@ class OutlookService(BaseEmailService):
         # IMAP connection limit (prevent rate limiting)
         self._imap_semaphore = threading.Semaphore(5)
 
-        # Verification code deduplication mechanism
+        # Verification code dedup tracking
         self._used_codes: Dict[str, set] = {}
 
     def _get_provider(
@@ -211,11 +211,11 @@ class OutlookService(BaseEmailService):
 
         Args:
             account: Outlook account
-            count: Get the quantity
-            only_unseen: whether to only get unread
+            count: Number of emails to fetch
+            only_unseen: Fetch only unread emails
 
         Returns:
-            mailing list
+            list of emails
         """
         errors = []
 
@@ -320,20 +320,20 @@ class OutlookService(BaseEmailService):
                 break
 
         if not account:
-            self.update_status(False, EmailServiceError(f"The account corresponding to the email address was not found: {email}"))
+            self.update_status(False, EmailServiceError(f"No account found for email: {email}"))
             return None
 
-        # Get the verification code and wait for configuration
+        # Load verification code retrieval settings
         code_settings = get_email_code_settings()
         actual_timeout = timeout or code_settings["timeout"]
         poll_interval = code_settings["poll_interval"]
 
         logger.info(
-            f"[{email}] starts to obtain the verification code, timeout {actual_timeout}s,"
+            f"[{email}] fetching verification code, timeout {actual_timeout}s,"
             f"Provider priority: {[p.value for p in self.provider_priority]}"
         )
 
-        # Initialize verification code deduplication collection
+        # Initialize verification code dedup set
         if email not in self._used_codes:
             self._used_codes[email] = set()
         used_codes = self._used_codes[email]
@@ -360,7 +360,7 @@ class OutlookService(BaseEmailService):
 
                 if emails:
                     logger.debug(
-                        f"[{email}] obtained {len(emails)} emails in the {poll_count}th poll"
+                        f"[{email}] fetched {len(emails)} emails in poll #{poll_count}"
                     )
 
                     # Find the verification code from the email
@@ -409,7 +409,7 @@ class OutlookService(BaseEmailService):
         return False
 
     def check_health(self) -> bool:
-        """Check whether the Outlook service is available"""
+        """Check if the Outlook service is available"""
         if not self.accounts:
             self.update_status(False, EmailServiceError("No account configured"))
             return False

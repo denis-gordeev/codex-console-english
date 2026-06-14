@@ -91,7 +91,7 @@ class TokenManager:
         """Return an access token.
 
         Args:
-            force_refresh: Whether to bypass the cache and refresh immediately.
+            force_refresh: Force bypass of cache and refresh immediately.
 
         Returns:
             Access token string, or `None` on failure.

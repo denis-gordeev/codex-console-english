@@ -159,10 +159,10 @@ class MeoMailEmailService(BaseEmailService):
         """Get system configuration
 
         Args:
-            force_refresh: whether to force cache refresh
+            force_refresh: Force cache refresh
 
         Returns:
-            Configuration information"""
+            Configuration dictionary"""
         # Check cache
         if not force_refresh and self._cached_config and time.time() - self._last_config_check < 300:
             return self._cached_config
@@ -233,7 +233,7 @@ class MeoMailEmailService(BaseEmailService):
             # Caching email information
             self._emails_cache[email_id] = email_info
 
-            logger.info(f"Successfully created custom domain email: {email} (ID: {email_id})")
+            logger.info(f"Created custom domain email: {email} (ID: {email_id})")
             self.update_status(True)
             return email_info
 
@@ -272,17 +272,17 @@ class MeoMailEmailService(BaseEmailService):
                     break
 
         if not target_email_id:
-            logger.warning(f"The ID of the email address {email} was not found and the verification code cannot be obtained.")
+            logger.warning(f"Email ID not found for {email}; cannot retrieve verification code.")
             return None
 
-        logger.info(f"Obtaining verification code from custom domain email {email}...")
+        logger.info(f"Fetching verification code for {email}...")
 
         start_time = time.time()
         seen_message_ids = set()
 
         while time.time() - start_time < timeout:
             try:
-                # Get mailing list
+                # Get email list
                 response = self._make_request("GET", f"/api/emails/{target_email_id}")
 
                 messages = response.get("messages", [])
@@ -317,7 +317,7 @@ class MeoMailEmailService(BaseEmailService):
                     match = re.search(pattern, re.sub(email_pattern, "", content))
                     if match:
                         code = match.group(1)
-                        logger.info(f"Find the verification code from the custom domain email {email}: {code}")
+                        logger.info(f"Found verification code for {email}: {code}")
                         self.update_status(True)
                         return code
 
@@ -407,17 +407,17 @@ class MeoMailEmailService(BaseEmailService):
             return False
 
     def check_health(self) -> bool:
-        """Check whether the custom domain email service is available"""
+        """Check if the custom domain email service is available"""
         try:
             # Try to get configuration
             config = self.get_config(force_refresh=True)
             if config:
-                logger.debug(f"The custom domain email service health check passed, configuration: {config.get('defaultRole', 'N/A')}")
+                logger.debug(f"Custom domain email health check passed, configuration: {config.get('defaultRole', 'N/A')}")
                 self.update_status(True)
                 return True
             else:
-                logger.warning("Custom domain email service health check failed: the obtained configuration is empty")
-                self.update_status(False, EmailServiceError("Get configuration is empty"))
+                logger.warning("Custom domain email health check failed: configuration is empty")
+                self.update_status(False, EmailServiceError("Configuration is empty"))
                 return False
         except Exception as e:
             logger.warning(f"Custom domain email service health check failed: {e}")

@@ -31,9 +31,9 @@ class HealthChecker:
         Initialize health checker
 
         Args:
-            failure_threshold: Threshold for the number of consecutive failures, disabled after exceeding
-            disable_duration: disable duration (seconds)
-            recovery_check_interval: Recovery check interval (seconds)
+            failure_threshold: Consecutive failure threshold before the provider is disabled
+            disable_duration: Duration to disable the provider (seconds)
+            recovery_check_interval: Interval between recovery checks (seconds)
         """
         self.failure_threshold = failure_threshold
         self.disable_duration = disable_duration
@@ -148,7 +148,7 @@ class HealthChecker:
 
         Args:
             provider_type: provider type
-            duration: Disable duration (seconds), the configured value is used by default
+            duration: Duration to disable (seconds); defaults to the configured value
         """
         with self._lock:
             health = self._health_status.get(provider_type)
@@ -240,7 +240,7 @@ class FailoverManager:
         Get current provider
 
         Returns:
-            The current provider type, or None if no one is available
+            The current provider type, or None if none is available
         """
         available = self.health_checker.get_available_providers(self.priority_order)
         if not available:

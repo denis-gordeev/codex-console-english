@@ -187,7 +187,7 @@ class BaseEmailService(abc.ABC):
                     if email_data.get("address") != email:
                         continue
 
-                    # Get mailing list
+                    # Get email list
                     messages = self.get_email_messages(email_id or current_email_id)
                     for message in messages:
                         # Check sender

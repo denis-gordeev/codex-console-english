@@ -97,14 +97,14 @@ class TokenRefreshManager:
 
             data = response.json()
 
-            #Extract access_token
+            # Extract access_token
             access_token = data.get("accessToken")
             if not access_token:
                 result.error_message = "Session token refresh failed: accessToken not found"
                 logger.warning(result.error_message)
                 return result
 
-            #Extract expiration time
+            # Extract expiration time
             expires_at = None
             expires_str = data.get("expires")
             if expires_str:
@@ -173,7 +173,7 @@ class TokenRefreshManager:
 
             data = response.json()
 
-            #Extract token
+            # Extract token
             access_token = data.get("access_token")
             new_refresh_token = data.get("refresh_token", refresh_token)
             expires_in = data.get("expires_in", 3600)

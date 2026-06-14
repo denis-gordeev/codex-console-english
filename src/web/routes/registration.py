@@ -869,7 +869,7 @@ async def start_batch_registration(
     """
     # Verify parameters
     if request.count < 1 or request.count > 100:
-        raise HTTPException(status_code=400, detail="The number of registrations must be between 1-100")
+        raise HTTPException(status_code=400, detail="Registration count must be between 1 and 100")
 
     try:
         EmailServiceType(request.email_service_type)
@@ -883,7 +883,7 @@ async def start_batch_registration(
         raise HTTPException(status_code=400, detail="Invalid interval parameter")
 
     if not 1 <= request.concurrency <= 50:
-        raise HTTPException(status_code=400, detail="The number of concurrency must be between 1-50")
+        raise HTTPException(status_code=400, detail="Concurrency must be between 1 and 50")
 
     if request.mode not in ("parallel", "pipeline"):
         raise HTTPException(status_code=400, detail="Mode must be parallel or pipeline")
@@ -1182,7 +1182,7 @@ async def get_available_email_services():
                     "from_settings": True
                 })
 
-        # Get the TempMail service (self-deployed Cloudflare Worker Tempmail)
+        # Get the TempMail service (self-hosted Cloudflare Worker Tempmail)
         temp_mail_services = db.query(EmailServiceModel).filter(
             EmailServiceModel.service_type == "temp_mail",
             EmailServiceModel.enabled == True
@@ -1384,7 +1384,7 @@ async def start_outlook_batch_registration(
     Start an Outlook bulk registration task
 
     - service_ids: selected EmailService ID list
-    - skip_registered: whether to automatically skip registered emails (default True)
+    - skip_registered: Automatically skip registered emails (default True)
     - proxy: proxy address
     - interval_min: minimum interval seconds
     - interval_max: maximum interval seconds
@@ -1400,7 +1400,7 @@ async def start_outlook_batch_registration(
         raise HTTPException(status_code=400, detail="Invalid interval parameter")
 
     if not 1 <= request.concurrency <= 50:
-        raise HTTPException(status_code=400, detail="The number of concurrency must be between 1-50")
+        raise HTTPException(status_code=400, detail="Concurrency must be between 1 and 50")
 
     if request.mode not in ("parallel", "pipeline"):
         raise HTTPException(status_code=400, detail="Mode must be parallel or pipeline")

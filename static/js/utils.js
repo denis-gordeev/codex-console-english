@@ -169,7 +169,7 @@ class LoadingManager {
 const loading = new LoadingManager();
 
 // ============================================
-//API request encapsulation
+// API request wrapper
 // ============================================
 
 class ApiClient {
@@ -352,7 +352,7 @@ const statusMap = {
         tempmail: 'Tempmail.lol',
         outlook: 'Outlook',
         moe_mail: 'MoeMail',
-        temp_mail: 'Temp-Mail (self-deployment)',
+        temp_mail: 'Temp-Mail (self-hosted)',
         duck_mail: 'DuckMail',
         freemail: 'Freemail',
         imap_mail: 'IMAP email'

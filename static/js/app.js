@@ -16,8 +16,8 @@ let taskCompleted = false; // Mark whether the task is completed
 let batchCompleted = false; // Mark whether the batch task has been completed
 let taskFinalStatus = null; // Save the final status of the task
 let batchFinalStatus = null; // Save the final status of the batch task
-let displayedLogs = new Set(); // Used for log deduplication
-let toastShown = false; // Mark whether toast has been shown
+let displayedLogs = new Set(); // Used for log dedup
+let toastShown = false; // Tracks whether toast has been shown
 let availableServices = {
     tempmail: { available: true, services: [] },
     outlook: { available: false, services: [] },
@@ -30,7 +30,7 @@ let availableServices = {
 // WebSocket related variables
 let webSocket = null;
 let batchWebSocket = null; // Batch task WebSocket
-let useWebSocket = true; // Whether to use WebSocket
+let useWebSocket = true; // Use WebSocket (vs REST polling)
 let wsHeartbeatInterval = null; // Heartbeat timer
 let batchWsHeartbeatInterval = null; // Batch task heartbeat timer
 let activeTaskUuid = null; // Currently active single task UUID (used for reconnection when the page becomes visible again)
@@ -141,7 +141,7 @@ async function loadServiceSelect(apiPath, container, checkbox, selectGroup) {
             <div class="msd-dropdown" id="${container.id}-dd">
                 <div class="msd-trigger" onclick="toggleMsd('${container.id}-dd')">
                     <span class="msd-label">All (${services.length})</span>
-                    <span class="msd-arrow">▼</span>
+                    <span class="msd-arrow">&darr;</span>
                 </div>
                 <div class="msd-list">${items}</div>
             </div>`;
@@ -202,7 +202,7 @@ function initEventListeners() {
     //Clear the log
     elements.clearLogBtn.addEventListener('click', () => {
         elements.consoleLog.innerHTML = '<div class="log-line info">[System] Log has been cleared</div>';
-        displayedLogs.clear(); // Clear the log deduplication collection
+        displayedLogs.clear(); // Clear the log dedup set
     });
 
     // Refresh the account list
@@ -322,7 +322,7 @@ function updateEmailServiceOptions() {
         select.appendChild(optgroup);
     }
 
-    // Temp-Mail (self-deployment)
+    // Temp-Mail (self-hosted)
     if (availableServices.temp_mail && availableServices.temp_mail.available) {
         const optgroup = document.createElement('optgroup');
         optgroup.label = `📮 Self-Hosted Temp-Mail (${availableServices.temp_mail.count} services)`;
@@ -410,7 +410,7 @@ function handleServiceChange(e) {
     } else if (type === 'temp_mail') {
         const service = availableServices.temp_mail.services.find(s => s.id == id);
         if (service) {
-            addLog('info', `[System] Temp-Mail self-deployment service selected: ${service.name}`);
+            addLog('info', `[System] Temp-Mail self-hosted service selected: ${service.name}`);
         }
     } else if (type === 'duck_mail') {
         const service = availableServices.duck_mail.services.find(s => s.id == id);
@@ -989,14 +989,14 @@ function startAccountsPolling() {
 
 //Add log
 function addLog(type, message) {
-    // Log deduplication: use the hash of the message content as the key
+    // Log dedup: use the hash of the message content as the key
     const logKey = `${type}:${message}`;
     if (displayedLogs.has(logKey)) {
         return; // Already displayed, skip
     }
     displayedLogs.add(logKey);
 
-    // Limit the size of the deduplication set to avoid memory leaks
+    // Limit the size of the dedup set to avoid memory leaks
     if (displayedLogs.size > 1000) {
         // Clear half of the records
         const keys = Array.from(displayedLogs);

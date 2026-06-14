@@ -74,7 +74,7 @@ class TokenInfo:
     refresh_token: Optional[str] = None
 
     def is_expired(self, buffer_seconds: int = 120) -> bool:
-        """Check whether the token has expired."""
+        """Check if the token has expired."""
         import time
         return time.time() >= (self.expires_at - buffer_seconds)
 

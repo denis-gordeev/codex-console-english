@@ -1,6 +1,6 @@
 """Temp-Mail email service implementation
-Based on self-deployed Cloudflare Worker temporary email service
-For interface documentation, see plan/temp-mail.md"""
+Based on self-hosted Cloudflare Worker temporary email service
+For API documentation, see plan/temp-mail.md"""
 
 import re
 import time
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 class TempMailService(BaseEmailService):
     """Temp-Mail email service
-    Temporary email based on self-deployed Cloudflare Worker, admin mode management email
+    Temporary email based on self-hosted Cloudflare Worker, admin-managed email
     No proxy, no requests library"""
 
     def __init__(self, config: Dict[str, Any] = None, name: str = None):
@@ -34,7 +34,7 @@ class TempMailService(BaseEmailService):
                 - base_url: Worker domain address, such as https://mail.example.com (required)
                 - admin_password: Admin password, corresponding to x-admin-auth header (required)
                 - domain: email domain, such as example.com (required)
-                - enable_prefix: Whether to enable prefix, default True
+                - enable_prefix: Enable prefix (default: True)
                 - timeout: request timeout, default 30
                 - max_retries: Maximum number of retries, default 3
             name: service name"""
@@ -274,7 +274,7 @@ class TempMailService(BaseEmailService):
 
         Args:
             email: email address
-            email_id: Unused, reserved for interface compatibility
+            email_id: Unused, reserved for API compatibility
             timeout: timeout (seconds)
             pattern: Verification code regex pattern
             otp_sent_at: OTP sending timestamp (not used yet)
@@ -397,8 +397,8 @@ class TempMailService(BaseEmailService):
         """Delete email address
 
         Note:
-            The current TempMail admin API document does not see the deletion address interface. Here, remove it from the local cache first.
-            To satisfy the unified interface and avoid service instantiation failure."""
+            The TempMail admin API does not expose a delete-address endpoint.
+            This stub satisfies the unified API contract and prevents service instantiation failures."""
         removed = False
         emails_to_delete = []
 

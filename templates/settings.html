@@ -31,7 +31,7 @@
         <main class="main-content">
             <div class="page-header">
                 <h2>System Settings</h2>
-                <p class="subtitle">Configuring agents, email services and system parameters</p>
+                <p class="subtitle">Configure proxies, email services and system parameters</p>
             </div>
 
             <!-- Set tab page -->
@@ -89,10 +89,10 @@
                     </div>
                 </div>
 
-                <!-- Agent list -->
+                <!-- Proxy list -->
                 <div class="card" style="margin-top: var(--spacing-lg);">
                     <div class="card-header">
-                        <h3>Agent list</h3>
+                        <h3>Proxy list</h3>
                         <div style="display: flex; gap: var(--spacing-sm);">
                             <button class="btn btn-secondary btn-sm" id="test-all-proxies-btn">🔌 Test all</button>
                             <button class="btn btn-primary btn-sm" id="add-proxy-btn">➕ Add proxy</button>
@@ -118,7 +118,7 @@
                                         <td colspan="7">
                                             <div class="empty-state">
                                                 <div class="empty-state-icon">🌐</div>
-                                                <div class="empty-state-title">No agent yet</div>
+                                                <div class="empty-state-title">No proxies yet</div>
                                                 <div class="empty-state-description">Click the "Add Proxy" button to add a proxy server</div>
                                             </div>
                                         </td>
@@ -491,7 +491,7 @@
             <div class="tab-content" id="email-code-tab">
                 <div class="card">
                     <div class="card-header">
-                        <h3>Verification code waiting for configuration</h3>
+                        <h3>Verification code retrieval configuration</h3>
                         <span class="hint">Configure the timeout and polling interval for obtaining Outlook email verification codes</span>
                     </div>
                     <div class="card-body">
@@ -525,7 +525,7 @@
                         <ul class="info-list">
                             <li><strong>Progressive checking</strong>: only unread messages are checked in the first 3 polls, then all messages are checked</li>
                             <li><strong>Timestamp filtering</strong>: Automatically skip old emails before OTP is sent</li>
-                            <li><strong>Verification code deduplication</strong>: Avoid reusing the same verification code</li>
+                            <li><strong>Verification code dedup</strong>: Avoid reusing the same verification code</li>
                             <li><strong>Multi-strategy extraction</strong>: topic priority -&gt; semantic matching -&gt; covert matching</li>
                             <li><strong>Sender Verification</strong>: Strictly verify that the email comes from the official OpenAI</li>
                         </ul>

@@ -42,7 +42,7 @@ class EmailParser:
             target_email: target email address (used to verify recipients)
 
         Returns:
-            Whether to verify email for OpenAI
+            Whether the email is verified as being from OpenAI
         """
         sender = email.sender.lower()
 
@@ -97,7 +97,7 @@ class EmailParser:
         # 3. Bottom line: any 6-digit number in the text
         code = self._extract_simple(email.body)
         if code:
-            logger.debug(f"Extract the verification code from the bottom of the text: {code}")
+            logger.debug(f"Extracted verification code from text fallback: {code}")
             return code
 
         return None
@@ -131,10 +131,10 @@ class EmailParser:
         used_codes: Optional[set] = None,
     ) -> Optional[str]:
         """
-        Find verification code from mailing list
+        Find verification code in list of emails
 
         Args:
-            emails: mailing list
+            emails: list of emails
             target_email: target email address
             min_timestamp: minimum timestamp (used to filter old emails)
             used_codes: used verification code set (used for deduplication)
@@ -160,7 +160,7 @@ class EmailParser:
             if code:
                 # Deduplication check
                 if code in used_codes:
-                    logger.debug(f"Skip the used verification code: {code}")
+                    logger.debug(f"Skipping already-used verification code: {code}")
                     continue
 
                 logger.info(
@@ -180,11 +180,11 @@ class EmailParser:
         Filter messages by sender
 
         Args:
-            emails: mailing list
+            emails: list of emails
             sender_patterns: list of sender matching patterns
 
         Returns:
-            Filtered mailing list
+            Filtered list of emails
         """
         filtered = []
         for email in emails:
@@ -202,11 +202,11 @@ class EmailParser:
         Filter emails by subject keywords
 
         Args:
-            emails: mailing list
+            emails: list of emails
             keywords: keyword list
 
         Returns:
-            Filtered mailing list
+            Filtered list of emails
         """
         filtered = []
         for email in emails:

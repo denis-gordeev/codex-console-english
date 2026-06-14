@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 def _normalize_cpa_auth_files_url(api_url: str) -> str:
-    """Normalize the CPA address filled in by the user to the auth-files interface address."""
+    """Normalize the user-provided CPA URL to the auth-files API endpoint."""
     normalized = (api_url or "").strip().rstrip("/")
     lower_url = normalized.lower()
 
@@ -286,9 +286,9 @@ def test_cpa_connection(api_url: str, api_token: str, proxy: str = None) -> Tupl
         if response.status_code == 401:
             return False, "Connection successful, but API Token is invalid"
         if response.status_code == 403:
-            return False, "The connection is successful, but remote management is not enabled on the server or the current Token has no permissions."
+            return False, "Connected, but remote management is not enabled or the token lacks permissions."
         if response.status_code == 404:
-            return False, "CPA auth-files interface not found, please check whether the API URL is filled in as the root address, /v0/management or the complete auth-files address"
+            return False, "CPA auth-files API endpoint not found. Ensure the API URL is set to the root address, /v0/management, or the full auth-files URL."
         if response.status_code == 503:
             return False, "Connection successful, but server authentication manager is unavailable"
 

@@ -138,7 +138,7 @@ def get_accounts_count(
     email_service: Optional[str] = None,
     status: Optional[str] = None
 ) -> int:
-    """Get the number of accounts"""
+    """Count accounts"""
     query = db.query(func.count(Account.id))
 
     if email_service:
@@ -508,7 +508,7 @@ def set_proxy_default(db: Session, proxy_id: int) -> Optional[Proxy]:
 
 
 def get_proxies_count(db: Session, enabled: Optional[bool] = None) -> int:
-    """Get the number of proxies"""
+    """Count proxies"""
     query = db.query(func.count(Proxy.id))
     if enabled is not None:
         query = query.filter(Proxy.enabled == enabled)

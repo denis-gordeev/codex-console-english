@@ -159,7 +159,7 @@ class TempmailService(BaseEmailService):
 
         while time.time() - start_time < timeout:
             try:
-                # Get mailing list
+                # Get email list
                 response = self.http_client.get(
                     f"{self.config['base_url']}/inbox",
                     params={"token": token},

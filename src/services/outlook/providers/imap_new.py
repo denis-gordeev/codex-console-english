@@ -146,11 +146,11 @@ class IMAPNewProvider(OutlookProvider):
         """Get recent emails
 
         Args:
-            count: Get the quantity
-            only_unseen: whether to only get unread
+            count: Number of emails to fetch
+            only_unseen: Fetch only unread emails
 
         Returns:
-            mailing list"""
+            list of emails"""
         if not self._connected:
             if not self.connect():
                 return []

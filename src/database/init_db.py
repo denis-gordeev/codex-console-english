@@ -49,7 +49,7 @@ def reset_database(database_url: str = None):
 
 def check_database_connection(database_url: str = None) -> bool:
     """
-    Check whether the database connection is working
+    Check if the database connection is working
     """
     try:
         db_manager = init_database(database_url)

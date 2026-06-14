@@ -34,7 +34,7 @@ class GenerateLinkRequest(BaseModel):
     price_interval: str = "month"
     seat_quantity: int = 5
     proxy: Optional[str] = None
-    auto_open: bool = False  # Whether to open the generated link in an incognito window
+    auto_open: bool = False  # Open the generated link in an incognito window
     country: str = "SG"  # Billing country, which determines the checkout currency
 
 

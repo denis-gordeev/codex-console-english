@@ -134,7 +134,7 @@ def _post_form(
     Args:
         url: request URL
         data: form data
-        timeout: timeout time
+        timeout: Timeout (seconds)
         proxy_url: proxy URL
 
     Returns:

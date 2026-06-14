@@ -26,9 +26,9 @@ async def task_websocket(websocket: WebSocket, task_uuid: str):
     """
     await websocket.accept()
 
-    #Register connection (the current number of logs will be recorded to avoid repeated sending of historical logs)
+    # Register connection; record current log count to avoid resending historical logs
     task_manager.register_websocket(task_uuid, websocket)
-    logger.info(f"WebSocket connection has been established, log channel is officially opened: {task_uuid}")
+    logger.info(f"WebSocket connection established, log channel active: {task_uuid}")
 
     try:
         # Send current status
@@ -78,7 +78,7 @@ async def task_websocket(websocket: WebSocket, task_uuid: str):
                 try:
                     await websocket.send_json({"type": "ping"})
                 except Exception:
-                    # Sending failed, maybe the connection was disconnected
+                    # Send failed; connection may have dropped
                     logger.info(f"WebSocket heartbeat detection failed: {task_uuid}")
                     break
 
@@ -107,9 +107,9 @@ async def batch_websocket(websocket: WebSocket, batch_id: str):
     """
     await websocket.accept()
 
-    #Register connection (the current number of logs will be recorded to avoid repeated sending of historical logs)
+    # Register connection; record current log count to avoid resending historical logs
     task_manager.register_batch_websocket(batch_id, websocket)
-    logger.info(f"The batch task WebSocket connection has been established, and the group chat channel is officially opened: {batch_id}")
+    logger.info(f"Batch task WebSocket connection established, log channel active: {batch_id}")
 
     try:
         # Send current status

@@ -76,9 +76,9 @@ const elements = {
 
 const CUSTOM_SUBTYPE_LABELS = {
     moemail: '🔗 MoeMail (custom domain API)',
-    tempmail: '📮 TempMail (self-deployed Cloudflare Worker)',
+    tempmail: '📮 TempMail (self-hosted Cloudflare Worker)',
     duckmail: '🦆 DuckMail (DuckMail API)',
-    freemail: 'Freemail (self-deployed Cloudflare Worker)',
+    freemail: 'Freemail (self-hosted Cloudflare Worker)',
     imap: '📧 IMAP email (Gmail/QQ/163, etc.)'
 };
 

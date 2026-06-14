@@ -1,6 +1,27 @@
 # TODO
 
-## Completed In This Round (June 14, 2026 - Round 36)
+## Completed In This Round (June 14, 2026 - Round 37)
+
+- Pulled `origin/main` - repository was already up to date.
+- Deep scan found ~154 substantive translation artifacts (awkward English, mistranslations, inconsistent terminology) that previous rounds had missed.
+- Fixed the remaining "Agent" → "Proxy" mistranslation in settings.js (13 occurrences: comments, toast messages, confirm dialogs) and settings.html (3 occurrences: section headers, empty-state text, subtitle).
+- Replaced "self-deployed" → "self-hosted" across all files (15 occurrences in email_services.js, app.js, utils.js, email_services.html, email.py routes, temp_mail.py, freemail.py, registration.py).
+- Replaced "mailing list" → "list of emails" / "email list" across all Outlook service modules and email parser (15 occurrences in service.py, base.py, graph_api.py, imap_new.py, imap_old.py, email_parser.py, outlook_legacy_mail.py, moe_mail.py, base.py, tempmail.py).
+- Replaced "interface" → "API"/"endpoint" where Chinese "接口" was mistranslated (8 occurrences in temp_mail.py, freemail.py, email.py routes, cpa_upload.py).
+- Replaced "private domain" → "custom domain" in email.py routes (DuckMail description).
+- Fixed "Verification code waiting for configuration" → "Verification code retrieval configuration" in settings.html, settings.js, settings.py, and Python service modules (6 occurrences).
+- Replaced "deduplication mechanism/collection" → "dedup tracking/set" across Outlook services, app.js, and settings.html (11 occurrences).
+- Fixed "Get the quantity" → "Number of emails to fetch" across Outlook provider docstrings (8 occurrences).
+- Fixed "Whether to enable prefix" → "Enable prefix", "whether to only get unread" → "Fetch only unread emails" and similar awkward "whether" patterns (15 occurrences).
+- Fixed "encapsulation" → "wrapper" in utils.js.
+- Replaced non-ASCII ▼ → &darr; in app.js multi-select dropdown.
+- Polished error messages: "The number of registrations must be between 1-100" → "Registration count must be between 1 and 100", "The number of concurrency must be between 1-50" → "Concurrency must be between 1 and 50".
+- Polished log messages across Outlook, moe_mail, freemail, temp_mail, websocket, and task_manager modules for natural English phrasing.
+- Fixed "Is the connection normal?" → "True if the connection is working" across Outlook provider docstrings.
+- Fixed "Configuration information" → "Configuration dictionary", "timeout time" → "Timeout (seconds)" across docstrings.
+- Fixed "admin mode management" → "admin-managed" in temp_mail.py and email.py routes.
+- Fixed comment spacing (#Extract → # Extract) in token_refresh.py.
+- Verified all 32 tests pass successfully (pytest on Python 3.10 via .venv).
 
 - Pulled `origin/main` - repository was already up to date.
 - Scanned all tracked files for non-English text (Cyrillic, CJK, Arabic, Thai, non-ASCII artifacts) - zero non-English language text found.
@@ -340,9 +361,9 @@
 
 ## Next Actions
 
-- Expand route-level API coverage for translated payment and account-management actions that depend on backend data, not just page rendering.
+- Continue polishing wording consistency in comments, log messages, and low-traffic routes as new gaps are found (remaining ~70 comment spacing issues in JS files).
+- Expand route-level API coverage for translated payment and account-management actions that depend on backend data.
 - Add focused tests for the settings save flows and error messages returned by low-traffic API endpoints.
 - Add API tests for access-control edge cases such as malformed cookies and custom logout `next` targets.
 - Verify Docker environment variable examples against the actual `settings` names used by the app.
-- Continue polishing wording consistency in comments, log messages, and low-traffic routes as new gaps are found.
 - Authenticate `gh` in a future round if issue and PR inspection is required, since GitHub GraphQL access is currently unavailable in this environment.
