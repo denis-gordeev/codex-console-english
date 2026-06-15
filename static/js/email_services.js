@@ -36,13 +36,13 @@ const elements = {
     addCustomBtn: document.getElementById('add-custom-btn'),
     selectAllCustom: document.getElementById('select-all-custom'),
 
-    //Temp mail
+    // Temp mail
     tempmailForm: document.getElementById('tempmail-form'),
     tempmailApi: document.getElementById('tempmail-api'),
     tempmailEnabled: document.getElementById('tempmail-enabled'),
     testTempmailBtn: document.getElementById('test-tempmail-btn'),
 
-    //Add a custom domain modal
+    // Add a custom domain modal
     addCustomModal: document.getElementById('add-custom-modal'),
     addCustomForm: document.getElementById('add-custom-form'),
     closeCustomModal: document.getElementById('close-custom-modal'),
@@ -54,7 +54,7 @@ const elements = {
     addFreemailFields: document.getElementById('add-freemail-fields'),
     addImapFields: document.getElementById('add-imap-fields'),
 
-    //Edit custom domain modal
+    // Edit custom domain modal
     editCustomModal: document.getElementById('edit-custom-modal'),
     editCustomForm: document.getElementById('edit-custom-form'),
     closeEditCustomModal: document.getElementById('close-edit-custom-modal'),
@@ -67,7 +67,7 @@ const elements = {
     editCustomTypeBadge: document.getElementById('edit-custom-type-badge'),
     editCustomSubTypeHidden: document.getElementById('edit-custom-sub-type-hidden'),
 
-    //Edit Outlook modal box
+    // Edit Outlook modal box
     editOutlookModal: document.getElementById('edit-outlook-modal'),
     editOutlookForm: document.getElementById('edit-outlook-form'),
     closeEditOutlookModal: document.getElementById('close-edit-outlook-modal'),
@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initEventListeners();
 });
 
-//Event listening
+// Event listening
 function initEventListeners() {
     // Outlook import expand/collapse
     elements.toggleOutlookImport.addEventListener('click', () => {
@@ -133,7 +133,7 @@ function initEventListeners() {
         });
     });
 
-    //Add custom domain
+    // Add custom domain
     elements.addCustomBtn.addEventListener('click', () => {
         elements.addCustomForm.reset();
         switchAddSubType('moemail');
@@ -143,10 +143,10 @@ function initEventListeners() {
     elements.cancelAddCustom.addEventListener('click', () => elements.addCustomModal.classList.remove('active'));
     elements.addCustomForm.addEventListener('submit', handleAddCustom);
 
-    //Type switching (add form)
+    // Type switching (add form)
     elements.customSubType.addEventListener('change', (e) => switchAddSubType(e.target.value));
 
-    //Edit custom domain
+    // Edit custom domain
     elements.closeEditCustomModal.addEventListener('click', () => elements.editCustomModal.classList.remove('active'));
     elements.cancelEditCustom.addEventListener('click', () => elements.editCustomModal.classList.remove('active'));
     elements.editCustomForm.addEventListener('submit', handleEditCustom);
@@ -156,7 +156,7 @@ function initEventListeners() {
     elements.cancelEditOutlook.addEventListener('click', () => elements.editOutlookModal.classList.remove('active'));
     elements.editOutlookForm.addEventListener('submit', handleEditOutlook);
 
-    //Temp mail configuration
+    // Temp mail configuration
     elements.tempmailForm.addEventListener('submit', handleSaveTempmail);
     elements.testTempmailBtn.addEventListener('click', handleTestTempmail);
 
@@ -178,7 +178,7 @@ function closeEmailMoreMenu(el) {
     if (menu) menu.classList.remove('active');
 }
 
-//Switch to add form subtype
+// Switch to add form subtype
 function switchAddSubType(subType) {
     elements.customSubType.value = subType;
     elements.addMoemailFields.style.display = subType === 'moemail' ? '' : 'none';
@@ -188,7 +188,7 @@ function switchAddSubType(subType) {
     elements.addImapFields.style.display = subType === 'imap' ? '' : 'none';
 }
 
-//Switch the edit form subtype display
+// Switch the edit form subtype display
 function switchEditSubType(subType) {
     elements.editCustomSubTypeHidden.value = subType;
     elements.editMoemailFields.style.display = subType === 'moemail' ? '' : 'none';
@@ -199,7 +199,7 @@ function switchEditSubType(subType) {
     elements.editCustomTypeBadge.textContent = CUSTOM_SUBTYPE_LABELS[subType] || CUSTOM_SUBTYPE_LABELS.moemail;
 }
 
-//Load statistics
+// Load statistics
 async function loadStats() {
     try {
         const data = await api.get('/email-services/stats');
@@ -212,7 +212,7 @@ async function loadStats() {
     }
 }
 
-//Load Outlook service
+// Load Outlook service
 async function loadOutlookServices() {
     try {
         const data = await api.get('/email-services?service_type=outlook');
@@ -378,7 +378,7 @@ async function loadCustomServices() {
     }
 }
 
-//Load temp mail configuration
+// Load temp mail configuration
 async function loadTempmailConfig() {
     try {
         const settings = await api.get('/settings');
@@ -429,7 +429,7 @@ async function handleOutlookImport() {
     }
 }
 
-//Add a custom email service (distinguished by subtype)
+// Add a custom email service (distinguished by subtype)
 async function handleAddCustom(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -497,7 +497,7 @@ async function handleAddCustom(e) {
     }
 }
 
-//Switch service status
+// Switch service status
 async function toggleService(id, enabled) {
     try {
         await api.patch(`/email-services/${id}`, { enabled });
@@ -538,7 +538,7 @@ async function deleteService(id, name) {
     }
 }
 
-//Delete Outlook in batches
+// Delete Outlook in batches
 async function handleBatchDeleteOutlook() {
     if (selectedOutlook.size === 0) return;
     const confirmed = await confirm(`Are you sure you want to delete the selected ${selectedOutlook.size} accounts?`);
@@ -557,7 +557,7 @@ async function handleBatchDeleteOutlook() {
     }
 }
 
-//Save temp mail configuration
+// Save temp mail configuration
 async function handleSaveTempmail(e) {
     e.preventDefault();
     try {
@@ -571,7 +571,7 @@ async function handleSaveTempmail(e) {
     }
 }
 
-//Test temp mail
+// Test temp mail
 async function handleTestTempmail() {
     elements.testTempmailBtn.disabled = true;
     elements.testTempmailBtn.textContent = 'Testing...';
@@ -589,14 +589,14 @@ async function handleTestTempmail() {
     }
 }
 
-//Update batch button
+// Update batch button
 function updateBatchButtons() {
     const count = selectedOutlook.size;
     elements.batchDeleteOutlookBtn.disabled = count === 0;
     elements.batchDeleteOutlookBtn.textContent = count > 0 ? `🗑️ Delete selected (${count})` : '🗑️ Batch delete';
 }
 
-//HTML escaping
+// HTML escaping
 function escapeHtml(text) {
     if (!text) return '';
     const div = document.createElement('div');
@@ -606,7 +606,7 @@ function escapeHtml(text) {
 
 // ============== Editing function ==============
 
-//Edit custom email service (supports moemail / tempmail / duckmail)
+// Edit custom email service (supports moemail / tempmail / duckmail)
 async function editCustomService(id, subType) {
     try {
         const service = await api.get(`/email-services/${id}/full`);
@@ -665,7 +665,7 @@ async function editCustomService(id, subType) {
     }
 }
 
-//Save and edit custom email service
+// Save and edit custom email service
 async function handleEditCustom(e) {
     e.preventDefault();
     const id = document.getElementById('edit-custom-id').value;
@@ -751,7 +751,7 @@ async function editOutlookService(id) {
     }
 }
 
-//Save edit Outlook service
+// Save edit Outlook service
 async function handleEditOutlook(e) {
     e.preventDefault();
     const id = document.getElementById('edit-outlook-id').value;

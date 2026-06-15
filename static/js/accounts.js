@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderSelectAllBanner();
 });
 
-//Event listening
+// Event listening
 function initEventListeners() {
     // filter
     elements.filterStatus.addEventListener('change', () => {
@@ -63,7 +63,7 @@ function initEventListeners() {
         loadAccounts();
     });
 
-    //Search (anti-shake)
+    // Search (anti-shake)
     elements.searchInput.addEventListener('input', debounce(() => {
         currentPage = 1;
         resetSelectAllPages();
@@ -90,13 +90,13 @@ function initEventListeners() {
     // Batch refresh Token
     elements.batchRefreshBtn.addEventListener('click', handleBatchRefresh);
 
-    //Batch verification Token
+    // Batch verification Token
     elements.batchValidateBtn.addEventListener('click', handleBatchValidate);
 
     // Batch detection subscription
     elements.batchCheckSubBtn.addEventListener('click', handleBatchCheckSubscription);
 
-    //Upload drop-down menu
+    // Upload drop-down menu
     const uploadMenu = document.getElementById('upload-menu');
     elements.batchUploadBtn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -144,7 +144,7 @@ function initEventListeners() {
         }
     });
 
-    //Export
+    // Export
     elements.exportBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         elements.exportMenu.classList.toggle('active');
@@ -176,7 +176,7 @@ function initEventListeners() {
     });
 }
 
-//Load statistics
+// Load statistics
 async function loadStats() {
     try {
         const data = await api.get('/accounts/stats/summary');
@@ -186,7 +186,7 @@ async function loadStats() {
         elements.expiredAccounts.textContent = format.number(data.by_status?.expired || 0);
         elements.failedAccounts.textContent = format.number(data.by_status?.failed || 0);
 
-        //Add animation effects
+        // Add animation effects
         animateValue(elements.totalAccounts, data.total || 0);
     } catch (error) {
         console.error('Loading statistics failed:', error);
@@ -202,12 +202,12 @@ function animateValue(element, value) {
     }, 200);
 }
 
-//Load the account list
+// Load the account list
 async function loadAccounts() {
     if (isLoading) return;
     isLoading = true;
 
-    //Show loading status
+    // Show loading status
     elements.table.innerHTML = `
         <tr>
             <td colspan="9">
@@ -220,7 +220,7 @@ async function loadAccounts() {
         </tr>
     `;
 
-    //Record the current filter conditions
+    // Record the current filter conditions
     currentFilters.status = elements.filterStatus.value;
     currentFilters.email_service = elements.filterService.value;
     currentFilters.search = elements.searchInput.value.trim();
@@ -338,7 +338,7 @@ function renderAccounts(accounts) {
         </tr>
     `).join('');
 
-    //Bind checkbox event
+    // Bind checkbox event
     elements.table.querySelectorAll('input[type="checkbox"][data-id]').forEach(cb => {
         cb.addEventListener('change', (e) => {
             const id = parseInt(e.target.dataset.id);
@@ -348,7 +348,7 @@ function renderAccounts(accounts) {
                 selectedAccounts.delete(id);
                 selectAllPages = false;
             }
-            //Synchronize all selection box status
+            // Synchronize all selection box status
             const allChecked = elements.table.querySelectorAll('input[type="checkbox"][data-id]');
             const checkedCount = elements.table.querySelectorAll('input[type="checkbox"][data-id]:checked').length;
             elements.selectAll.checked = allChecked.length > 0 && checkedCount === allChecked.length;
@@ -374,7 +374,7 @@ function renderAccounts(accounts) {
         });
     });
 
-    //Synchronize the full selection box state after rendering
+    // Synchronize the full selection box state after rendering
     const allCbs = elements.table.querySelectorAll('input[type="checkbox"][data-id]');
     const checkedCbs = elements.table.querySelectorAll('input[type="checkbox"][data-id]:checked');
     elements.selectAll.checked = allCbs.length > 0 && checkedCbs.length === allCbs.length;
@@ -382,7 +382,7 @@ function renderAccounts(accounts) {
     renderSelectAllBanner();
 }
 
-//Switch password display
+// Switch password display
 function togglePassword(element, password) {
     if (element.dataset.revealed === 'true') {
         element.textContent = password.substring(0, 4) + '****';
@@ -395,7 +395,7 @@ function togglePassword(element, password) {
     }
 }
 
-//Update pagination
+// Update pagination
 function updatePagination() {
     const totalPages = Math.max(1, Math.ceil(totalAccounts / pageSize));
 
@@ -405,7 +405,7 @@ function updatePagination() {
     elements.pageInfo.textContent = `Page ${currentPage} / Total Page ${totalPages}`;
 }
 
-//Reset the status of all selected pages
+// Reset the status of all selected pages
 function resetSelectAllPages() {
     selectAllPages = false;
     selectedAccounts.clear();
@@ -433,7 +433,7 @@ function getEffectiveCount() {
     return selectAllPages ? totalAccounts : selectedAccounts.size;
 }
 
-//Render the select all banner
+// Render the select all banner
 function renderSelectAllBanner() {
     let banner = document.getElementById('select-all-banner');
     const totalPages = Math.ceil(totalAccounts / pageSize);
@@ -469,7 +469,7 @@ function selectAllPagesAction() {
     renderSelectAllBanner();
 }
 
-//Update batch operation button
+// Update batch operation button
 function updateBatchButtons() {
     const count = getEffectiveCount();
     elements.batchDeleteBtn.disabled = count === 0;
@@ -646,7 +646,7 @@ async function viewAccount(id) {
     }
 }
 
-//Copy email
+// Copy email
 function copyEmail(email) {
     copyToClipboard(email);
 }
@@ -687,7 +687,7 @@ async function handleBatchDelete() {
     }
 }
 
-//Export account
+// Export account
 async function exportAccounts(format) {
     const count = getEffectiveCount();
     if (count === 0) {
@@ -723,7 +723,7 @@ async function exportAccounts(format) {
             }
         }
 
-        //Create download link
+        // Create download link
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -740,7 +740,7 @@ async function exportAccounts(format) {
     }
 }
 
-//HTML escaping
+// HTML escaping
 function escapeHtml(text) {
     if (!text) return '';
     const div = document.createElement('div');
@@ -760,7 +760,7 @@ function selectCpaService() {
         const cancelBtn = document.getElementById('cancel-cpa-modal-btn');
         const globalBtn = document.getElementById('cpa-use-global-btn');
 
-        //Load service list
+        // Load service list
         listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted)">Loading...</div>';
         modal.classList.add('active');
 
@@ -818,7 +818,7 @@ function selectCpaService() {
     });
 }
 
-//Unified upload entrance: popup target selection
+// Unified upload entrance: popup target selection
 async function uploadAccount(id) {
     const targets = [
         { label: '☁️ Upload to CPA', value: 'cpa' },
@@ -877,7 +877,7 @@ async function uploadToCpa(id) {
     }
 }
 
-//Batch upload to CPA
+// Batch upload to CPA
 async function handleBatchUploadCpa() {
     const count = getEffectiveCount();
     if (count === 0) return;
@@ -1022,7 +1022,7 @@ function selectSub2ApiService() {
     });
 }
 
-//Batch upload to Sub2API
+// Batch upload to Sub2API
 async function handleBatchUploadSub2Api() {
     const count = getEffectiveCount();
     if (count === 0) return;
@@ -1162,7 +1162,7 @@ async function uploadToTm(id) {
     }
 }
 
-//Batch upload to Team Manager
+// Batch upload to Team Manager
 async function handleBatchUploadTm() {
     const count = getEffectiveCount();
     if (count === 0) return;
@@ -1192,7 +1192,7 @@ async function handleBatchUploadTm() {
     }
 }
 
-//More menu switches
+// More menu switches
 function toggleMoreMenu(btn) {
     const menu = btn.nextElementSibling;
     const isActive = menu.classList.contains('active');
@@ -1206,7 +1206,7 @@ function closeMoreMenu(el) {
     if (menu) menu.classList.remove('active');
 }
 
-//Save account Cookies
+// Save account Cookies
 async function saveCookies(id) {
     const textarea = document.getElementById(`cookies-input-${id}`);
     if (!textarea) return;

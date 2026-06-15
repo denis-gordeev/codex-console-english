@@ -1,5 +1,13 @@
 # TODO
 
+## Completed In This Round (June 15, 2026 - Round 39)
+
+- Pulled `origin/main` - repository was already up to date.
+- Scanned all tracked files for non-English text (Cyrillic, CJK, Arabic, Thai, non-ASCII artifacts) - zero non-English language text found.
+- Fixed 154 JS comment spacing issues across 6 files: added missing space after `//` in app.js (64), accounts.js (29), email_services.js (24), settings.js (23), utils.js (11), payment.js (3).
+- Replaced em dash (`—`) with ASCII `--` in `src/database/session.py:90` docstring for ASCII compatibility.
+- Verified all 32 tests pass successfully (pytest on Python 3.10 via .venv).
+
 ## Completed In This Round (June 15, 2026 - Round 38)
 
 - Pulled `origin/main` - repository was already up to date.
@@ -369,9 +377,9 @@
 
 ## Next Actions
 
-- Continue polishing wording consistency in comments, log messages, and low-traffic routes as new gaps are found (remaining ~70 comment spacing issues in JS files).
-- Expand route-level API coverage for translated payment and account-management actions that depend on backend data.
-- Add focused tests for the settings save flows and error messages returned by low-traffic API endpoints.
+- Continue polishing wording consistency in logs, tests, and low-traffic routes.
+- Expand regression coverage for translated API messages and settings flows.
 - Add API tests for access-control edge cases such as malformed cookies and custom logout `next` targets.
 - Verify Docker environment variable examples against the actual `settings` names used by the app.
+- Add focused tests for the settings save flows and error messages returned by low-traffic API endpoints.
 - Authenticate `gh` in a future round if issue and PR inspection is required, since GitHub GraphQL access is currently unavailable in this environment.

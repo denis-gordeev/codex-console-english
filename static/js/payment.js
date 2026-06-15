@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAccounts();
 });
 
-//Load the account list
+// Load the account list
 async function loadAccounts() {
     try {
         const resp = await fetch('/api/accounts?page=1&page_size=100&status=active');
@@ -41,13 +41,13 @@ function onCountryChange() {
     document.getElementById('currency-display').value = currency;
 }
 
-//Select a package
+// Select a package
 function selectPlan(plan) {
     selectedPlan = plan;
     document.getElementById('plan-plus').classList.toggle('selected', plan === 'plus');
     document.getElementById('plan-team').classList.toggle('selected', plan === 'team');
     document.getElementById('team-options').classList.toggle('show', plan === 'team');
-    //Hide generated links
+    // Hide generated links
     document.getElementById('link-box').classList.remove('show');
     generatedLink = '';
 }

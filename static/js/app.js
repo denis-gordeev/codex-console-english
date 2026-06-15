@@ -53,7 +53,7 @@ const elements = {
     batchProgressSection: document.getElementById('batch-progress-section'),
     consoleLog: document.getElementById('console-log'),
     clearLogBtn: document.getElementById('clear-log-btn'),
-    //Task status
+    // Task status
     taskId: document.getElementById('task-id'),
     taskEmail: document.getElementById('task-email'),
     taskStatus: document.getElementById('task-status'),
@@ -185,12 +185,12 @@ function getSelectedServiceIds(container) {
     return Array.from(container.querySelectorAll('.msd-item input:checked')).map(cb => parseInt(cb.value));
 }
 
-//Event listening
+// Event listening
 function initEventListeners() {
-    //Registration form submission
+    // Registration form submission
     elements.form.addEventListener('submit', handleStartRegistration);
 
-    //Switch registration mode
+    // Switch registration mode
     elements.regMode.addEventListener('change', handleModeChange);
 
     // Email service switching
@@ -199,7 +199,7 @@ function initEventListeners() {
     // Cancel button
     elements.cancelBtn.addEventListener('click', handleCancelTask);
 
-    //Clear the log
+    // Clear the log
     elements.clearLogBtn.addEventListener('click', () => {
         elements.consoleLog.innerHTML = '<div class="log-line info">[System] Log has been cleared</div>';
         displayedLogs.clear(); // Clear the log dedup set
@@ -220,13 +220,13 @@ function initEventListeners() {
     });
 }
 
-//Load available email services
+// Load available email services
 async function loadAvailableServices() {
     try {
         const data = await api.get('/registration/available-services');
         availableServices = data;
 
-        //Update the email service selection box
+        // Update the email service selection box
         updateEmailServiceOptions();
 
         addLog('info', '[System] Email service list has been loaded');
@@ -236,7 +236,7 @@ async function loadAvailableServices() {
     }
 }
 
-//Update the email service selection box
+// Update the email service selection box
 function updateEmailServiceOptions() {
     const select = elements.emailService;
     select.innerHTML = '';
@@ -396,7 +396,7 @@ function handleServiceChange(e) {
         elements.regModeGroup.style.display = 'block';
     }
 
-    //Display service information
+    // Display service information
     if (type === 'outlook') {
         const service = availableServices.outlook.services.find(s => s.id == id);
         if (service) {
@@ -425,7 +425,7 @@ function handleServiceChange(e) {
     }
 }
 
-//Mode switch
+// Mode switch
 function handleModeChange(e) {
     const mode = e.target.value;
     isBatchMode = mode === 'batch';
@@ -468,7 +468,7 @@ async function handleStartRegistration(e) {
     elements.startBtn.disabled = true;
     elements.cancelBtn.disabled = false;
 
-    //Clear the log
+    // Clear the log
     elements.consoleLog.innerHTML = '';
 
     // Build request data (the proxy automatically gets it from settings)
@@ -494,13 +494,13 @@ async function handleStartRegistration(e) {
     }
 }
 
-//Single registration
+// Single registration
 async function handleSingleRegistration(requestData) {
-    //Reset task status
+    // Reset task status
     taskCompleted = false;
     taskFinalStatus = null;
     displayedLogs.clear(); // Clear the log deduplication collection
-    toastShown = false; //Reset toast flag
+    toastShown = false; // Reset toast flag
 
     addLog('info', '[System] is starting the registration task...');
 
@@ -531,7 +531,7 @@ async function handleSingleRegistration(requestData) {
 // Connect WebSocket
 function connectWebSocket(taskUuid) {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/api/ws/task/${taskUuid}`;
+    const wsUrl = `${protocol}// ${window.location.host}/api/ws/task/${taskUuid}`;
 
     try {
         webSocket = new WebSocket(wsUrl);
@@ -556,14 +556,14 @@ function connectWebSocket(taskUuid) {
 
                 // Check if completed
                 if (['completed', 'failed', 'cancelled', 'cancelling'].includes(data.status)) {
-                    //Save the final state for onclose judgment
+                    // Save the final state for onclose judgment
                     taskFinalStatus = data.status;
                     taskCompleted = true;
 
                     // Disconnect WebSocket (asynchronous operation)
                     disconnectWebSocket();
 
-                    //Reset the button after the task is completed
+                    // Reset the button after the task is completed
                     resetButtons();
 
                     // Show toast only once
@@ -645,20 +645,20 @@ function stopWebSocketHeartbeat() {
     }
 }
 
-//Send cancellation request
+// Send cancellation request
 function cancelViaWebSocket() {
     if (webSocket && webSocket.readyState === WebSocket.OPEN) {
         webSocket.send(JSON.stringify({ type: 'cancel' }));
     }
 }
 
-//Batch registration
+// Batch registration
 async function handleBatchRegistration(requestData) {
-    //Reset batch task status
+    // Reset batch task status
     batchCompleted = false;
     batchFinalStatus = null;
     displayedLogs.clear(); // Clear the log deduplication collection
-    toastShown = false; //Reset toast flag
+    toastShown = false; // Reset toast flag
 
     const count = parseInt(elements.batchCount.value) || 5;
     const intervalMin = parseInt(elements.intervalMin.value) || 5;
@@ -695,7 +695,7 @@ async function handleBatchRegistration(requestData) {
     }
 }
 
-//Cancel task
+// Cancel task
 async function handleCancelTask() {
     // Disable the cancel button to prevent repeated clicks
     elements.cancelBtn.disabled = true;
@@ -710,7 +710,7 @@ async function handleCancelTask() {
                 addLog('warning', '[Warning] Batch task cancellation request has been submitted');
                 toast.info('Task cancellation request has been submitted');
             } else {
-                //Downgrade to REST API
+                // Downgrade to REST API
                 const endpoint = isOutlookBatchMode
                     ? `/registration/outlook-batch/${currentBatch.batch_id}/cancel`
                     : `/registration/batch/${currentBatch.batch_id}/cancel`;
@@ -722,7 +722,7 @@ async function handleCancelTask() {
                 resetButtons();
             }
         }
-        //Single task cancellation
+        // Single task cancellation
         else if (currentTask) {
             // Cancel via WebSocket first
             if (webSocket && webSocket.readyState === WebSocket.OPEN) {
@@ -730,7 +730,7 @@ async function handleCancelTask() {
                 addLog('warning', '[Warning] Task cancellation request has been submitted');
                 toast.info('Task cancellation request has been submitted');
             } else {
-                //Downgrade to REST API
+                // Downgrade to REST API
                 await api.post(`/registration/tasks/${currentTask.task_uuid}/cancel`);
                 addLog('warning', '[Warning] Task has been canceled');
                 toast.info('Task canceled');
@@ -747,12 +747,12 @@ async function handleCancelTask() {
     } catch (error) {
         addLog('error', `[Error] Cancellation failed: ${error.message}`);
         toast.error(error.message);
-        //Restore the cancel button and allow retries
+        // Restore the cancel button and allow retries
         elements.cancelBtn.disabled = false;
     }
 }
 
-//Start polling logs
+// Start polling logs
 function startLogPolling(taskUuid) {
     let lastLogIndex = 0;
 
@@ -760,10 +760,10 @@ function startLogPolling(taskUuid) {
         try {
             const data = await api.get(`/registration/tasks/${taskUuid}/logs`);
 
-            //Update task status
+            // Update task status
             updateTaskStatus(data.status);
 
-            //Update email information
+            // Update email information
             if (data.email) {
                 elements.taskEmail.textContent = data.email;
             }
@@ -771,7 +771,7 @@ function startLogPolling(taskUuid) {
                 elements.taskService.textContent = getServiceTypeText(data.email_service);
             }
 
-            //Add new log
+            // Add new log
             const logs = data.logs || [];
             for (let i = lastLogIndex; i < logs.length; i++) {
                 const log = logs[i];
@@ -854,7 +854,7 @@ function stopBatchPolling() {
     }
 }
 
-//Display task status
+// Display task status
 function showTaskStatus(task) {
     elements.taskStatusRow.style.display = 'grid';
     elements.batchProgressSection.style.display = 'none';
@@ -864,7 +864,7 @@ function showTaskStatus(task) {
     elements.taskService.textContent = '-';
 }
 
-//Update task status
+// Update task status
 function updateTaskStatus(status) {
     const statusInfo = {
         pending: { text: 'Waiting', class: 'pending' },
@@ -880,7 +880,7 @@ function updateTaskStatus(status) {
     elements.taskStatus.textContent = info.text;
 }
 
-//Display batch status
+// Display batch status
 function showBatchStatus(batch) {
     elements.batchProgressSection.style.display = 'block';
     elements.taskStatusRow.style.display = 'none';
@@ -892,12 +892,12 @@ function showBatchStatus(batch) {
     elements.batchFailed.textContent = '0';
     elements.batchRemaining.textContent = batch.count;
 
-    //Reset counter
+    // Reset counter
     elements.batchSuccess.dataset.last = '0';
     elements.batchFailed.dataset.last = '0';
 }
 
-//Update batch progress
+// Update batch progress
 function updateBatchProgress(data) {
     const progress = ((data.completed / data.total) * 100).toFixed(0);
     elements.batchProgressText.textContent = `${data.completed}/${data.total}`;
@@ -924,7 +924,7 @@ function updateBatchProgress(data) {
     }
 }
 
-//Load the recently registered account
+// Load the recently registered account
 async function loadRecentAccounts() {
     try {
         const data = await api.get('/accounts?page=1&page_size=10');
@@ -966,7 +966,7 @@ async function loadRecentAccounts() {
             </tr>
         `).join('');
 
-        //Bind copy button event
+        // Bind copy button event
         elements.recentAccountsTable.querySelectorAll('.copy-email-btn').forEach(btn => {
             btn.addEventListener('click', (e) => { e.stopPropagation(); copyToClipboard(btn.dataset.email); });
         });
@@ -979,7 +979,7 @@ async function loadRecentAccounts() {
     }
 }
 
-//Start account list polling
+// Start account list polling
 function startAccountsPolling() {
     // Refresh the account list every 30 seconds
     accountsPollingInterval = setInterval(() => {
@@ -987,7 +987,7 @@ function startAccountsPolling() {
     }, 30000);
 }
 
-//Add log
+// Add log
 function addLog(type, message) {
     // Log dedup: use the hash of the message content as the key
     const logKey = `${type}:${message}`;
@@ -1006,7 +1006,7 @@ function addLog(type, message) {
     const line = document.createElement('div');
     line.className = `log-line ${type}`;
 
-    //Add timestamp
+    // Add timestamp
     const timestamp = new Date().toLocaleTimeString('en-US', {
         hour: '2-digit',
         minute: '2-digit',
@@ -1016,10 +1016,10 @@ function addLog(type, message) {
     line.innerHTML = `<span class="timestamp">[${timestamp}]</span>${escapeHtml(message)}`;
     elements.consoleLog.appendChild(line);
 
-    //Automatically scroll to the bottom
+    // Automatically scroll to the bottom
     elements.consoleLog.scrollTop = elements.consoleLog.scrollHeight;
 
-    //Limit the number of log lines
+    // Limit the number of log lines
     const lines = elements.consoleLog.querySelectorAll('.log-line');
     if (lines.length > 500) {
         lines[0].remove();
@@ -1043,17 +1043,17 @@ function getLogType(log) {
     return 'info';
 }
 
-//Reset button state
+// Reset button state
 function resetButtons() {
     elements.startBtn.disabled = false;
     elements.cancelBtn.disabled = true;
     currentTask = null;
     currentBatch = null;
     isBatchMode = false;
-    //Reset completion flag
+    // Reset completion flag
     taskCompleted = false;
     batchCompleted = false;
-    //Reset final status flag
+    // Reset final status flag
     taskFinalStatus = null;
     batchFinalStatus = null;
     // Clear active task ID
@@ -1067,7 +1067,7 @@ function resetButtons() {
     // NOTE: Do not reset isOutlookBatchMode as the user may want to continue using Outlook batch mode
 }
 
-//HTML escaping
+// HTML escaping
 function escapeHtml(text) {
     if (!text) return '';
     const div = document.createElement('div');
@@ -1078,7 +1078,7 @@ function escapeHtml(text) {
 
 // ============== Outlook batch registration function ==============
 
-//Load Outlook account list
+// Load Outlook account list
 async function loadOutlookAccounts() {
     try {
         elements.outlookAccountsContainer.innerHTML = '<div class="loading-placeholder" style="text-align: center; padding: var(--spacing-md); color: var(--text-muted);">Loading...</div>';
@@ -1139,7 +1139,7 @@ function selectUnregisteredOutlook() {
     });
 }
 
-//Cancel select all
+// Cancel select all
 function deselectAllOutlookAccounts() {
     const checkboxes = document.querySelectorAll('.outlook-account-checkbox');
     checkboxes.forEach(cb => cb.checked = false);
@@ -1147,11 +1147,11 @@ function deselectAllOutlookAccounts() {
 
 // Handle Outlook batch registration
 async function handleOutlookBatchRegistration() {
-    //Reset batch task status
+    // Reset batch task status
     batchCompleted = false;
     batchFinalStatus = null;
     displayedLogs.clear(); // Clear the log deduplication collection
-    toastShown = false; //Reset toast flag
+    toastShown = false; // Reset toast flag
 
     // Get the selected account
     const selectedIds = [];
@@ -1174,7 +1174,7 @@ async function handleOutlookBatchRegistration() {
     elements.startBtn.disabled = true;
     elements.cancelBtn.disabled = false;
 
-    //Clear the log
+    // Clear the log
     elements.consoleLog.innerHTML = '';
 
     const requestData = {
@@ -1211,7 +1211,7 @@ async function handleOutlookBatchRegistration() {
         addLog('info', `[System] Batch task has been created: ${data.batch_id}`);
         addLog('info', `[System] Total: ${data.total}, Skip registered: ${data.skipped}, To be registered: ${data.to_register}`);
 
-        //Initialize batch status display
+        // Initialize batch status display
         showBatchStatus({ count: data.to_register });
 
         // Prefer using WebSocket
@@ -1226,10 +1226,10 @@ async function handleOutlookBatchRegistration() {
 
 // ============== Batch task WebSocket function ==============
 
-//Connect batch task WebSocket
+// Connect batch task WebSocket
 function connectBatchWebSocket(batchId) {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/api/ws/batch/${batchId}`;
+    const wsUrl = `${protocol}// ${window.location.host}/api/ws/batch/${batchId}`;
 
     try {
         batchWebSocket = new WebSocket(wsUrl);
@@ -1261,14 +1261,14 @@ function connectBatchWebSocket(batchId) {
 
                 // Check if completed
                 if (['completed', 'failed', 'cancelled', 'cancelling'].includes(data.status)) {
-                    //Save the final state for onclose judgment
+                    // Save the final state for onclose judgment
                     batchFinalStatus = data.status;
                     batchCompleted = true;
 
                     // Disconnect WebSocket (asynchronous operation)
                     disconnectBatchWebSocket();
 
-                    //Reset the button after the task is completed
+                    // Reset the button after the task is completed
                     resetButtons();
 
                     // Show toast only once
@@ -1323,7 +1323,7 @@ function connectBatchWebSocket(batchId) {
     }
 }
 
-//Disconnect batch task WebSocket
+// Disconnect batch task WebSocket
 function disconnectBatchWebSocket() {
     stopBatchWebSocketHeartbeat();
     if (batchWebSocket) {
@@ -1332,7 +1332,7 @@ function disconnectBatchWebSocket() {
     }
 }
 
-//Start batch task heartbeat
+// Start batch task heartbeat
 function startBatchWebSocketHeartbeat() {
     stopBatchWebSocketHeartbeat();
     batchWsHeartbeatInterval = setInterval(() => {
@@ -1350,7 +1350,7 @@ function stopBatchWebSocketHeartbeat() {
     }
 }
 
-//Send batch task cancellation request
+// Send batch task cancellation request
 function cancelBatchViaWebSocket() {
     if (batchWebSocket && batchWebSocket.readyState === WebSocket.OPEN) {
         batchWebSocket.send(JSON.stringify({ type: 'cancel' }));
@@ -1371,7 +1371,7 @@ function startOutlookBatchPolling(batchId) {
                 failed: data.failed
             });
 
-            //output log
+            // output log
             if (data.logs && data.logs.length > 0) {
                 const lastLogIndex = batchPollingInterval.lastLogIndex || 0;
                 for (let i = lastLogIndex; i < data.logs.length; i++) {
@@ -1417,14 +1417,14 @@ function initVisibilityReconnect() {
         const wsDisconnected = !webSocket || webSocket.readyState === WebSocket.CLOSED;
         const batchWsDisconnected = !batchWebSocket || batchWebSocket.readyState === WebSocket.CLOSED;
 
-        //Single task reconnection
+        // Single task reconnection
         if (activeTaskUuid && !taskCompleted && wsDisconnected) {
             console.log('[Reconnect] The page is visible again, reconnect the single task WebSocket:', activeTaskUuid);
             addLog('info', '[System] page has been reactivated and task monitoring is being reconnected...');
             connectWebSocket(activeTaskUuid);
         }
 
-        //Batch task reconnection
+        // Batch task reconnection
         if (activeBatchId && !batchCompleted && batchWsDisconnected) {
             console.log('[Reconnect] The page is visible again, reconnect the batch task WebSocket:', activeBatchId);
             addLog('info', '[System] page has been reactivated, reconnecting to batch task monitoring...');
@@ -1433,7 +1433,7 @@ function initVisibilityReconnect() {
     });
 }
 
-//Resume ongoing tasks when the page loads (handling the situation of returning to the registration page after cross-page navigation)
+// Resume ongoing tasks when the page loads (handling the situation of returning to the registration page after cross-page navigation)
 async function restoreActiveTask() {
     const saved = sessionStorage.getItem('activeTask');
     if (!saved) return;
@@ -1473,7 +1473,7 @@ async function restoreActiveTask() {
             sessionStorage.removeItem('activeTask');
         }
     } else if ((mode === 'batch' || mode === 'outlook_batch') && batch_id) {
-        //Query whether the batch task is still running
+        // Query whether the batch task is still running
         const endpoint = mode === 'outlook_batch'
             ? `/registration/outlook-batch/${batch_id}`
             : `/registration/batch/${batch_id}`;

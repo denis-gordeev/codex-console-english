@@ -74,7 +74,7 @@ class ToastManager {
     }
 }
 
-//Global Toast instance
+// Global Toast instance
 const toast = new ToastManager();
 
 // ============================================
@@ -121,7 +121,7 @@ class ThemeManager {
     }
 }
 
-//Global theme instance
+// Global theme instance
 const theme = new ThemeManager();
 
 // ============================================
@@ -205,7 +205,7 @@ class ApiClient {
 
             return data;
         } catch (error) {
-            //Network error handling
+            // Network error handling
             if (!error.response) {
                 toast.error('Network connection failed, please check the network');
             }
@@ -237,7 +237,7 @@ class ApiClient {
 const api = new ApiClient();
 
 // ============================================
-//Event delegation helper
+// Event delegation helper
 // ============================================
 
 function delegate(element, eventType, selector, handler) {
@@ -277,7 +277,7 @@ function throttle(func, limit) {
 }
 
 // ============================================
-//Formatting tools
+// Formatting tools
 // ============================================
 
 const format = {
@@ -432,7 +432,7 @@ function confirm(message, title = 'Confirm operation') {
 }
 
 // ============================================
-//Copy to clipboard
+// Copy to clipboard
 // ============================================
 
 async function copyToClipboard(text) {
@@ -442,7 +442,7 @@ async function copyToClipboard(text) {
             toast.success('Copied to clipboard');
             return true;
         } catch (err) {
-            //Downgrade to execCommand
+            // Downgrade to execCommand
         }
     }
     try {
@@ -466,7 +466,7 @@ async function copyToClipboard(text) {
 }
 
 // ============================================
-//Local storage helper
+// Local storage helper
 // ============================================
 
 const storage = {
@@ -498,10 +498,10 @@ const storage = {
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    //Initialize theme
+    // Initialize theme
     theme.applyTheme();
 
-    //Global keyboard shortcuts
+    // Global keyboard shortcuts
     document.addEventListener('keydown', (e) => {
         // Ctrl/Cmd + K: Focus search
         if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
@@ -518,7 +518,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-//Export global object
+// Export global object
 window.toast = toast;
 window.theme = theme;
 window.loading = loading;

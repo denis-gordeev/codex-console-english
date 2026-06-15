@@ -53,10 +53,12 @@ This repository keeps the original structure and overall approach, while applyin
 - Polished log messages across Outlook, moe_mail, freemail, temp_mail, websocket, and task_manager for natural English.
 - Fixed "Is the connection normal?" → "True if the connection is working", "Configuration information" → "Configuration dictionary", "timeout time" → "Timeout (seconds)".
 - Replaced non-ASCII ▼ with &darr; in app.js multi-select dropdown.
+- Fixed 154 JS comment spacing issues (missing space after `//`) across all 6 frontend JS files.
+- Replaced non-ASCII em dash with ASCII `--` in session.py docstring for ASCII compatibility.
 
 ### Next Iterations
 
-- Continue polishing wording consistency in logs, tests, and low-traffic routes (remaining JS comment spacing issues).
+- Continue polishing wording consistency in logs, tests, and low-traffic routes.
 - Expand regression coverage for translated API messages and settings flows.
 - Add API tests for access-control edge cases such as malformed cookies and custom logout `next` targets.
 - Verify Docker environment variable examples against the actual `settings` names used by the app.

@@ -36,7 +36,7 @@ const elements = {
     closeProxyModal: document.getElementById('close-proxy-modal'),
     cancelProxyBtn: document.getElementById('cancel-proxy-btn'),
     proxyModalTitle: document.getElementById('proxy-modal-title'),
-    //Dynamic proxy settings
+    // Dynamic proxy settings
     dynamicProxyForm: document.getElementById('dynamic-proxy-form'),
     testDynamicProxyBtn: document.getElementById('test-dynamic-proxy-btn'),
     // CPA service management
@@ -94,7 +94,7 @@ document.addEventListener('click', () => {
     document.querySelectorAll('.dropdown-menu.active').forEach(m => m.classList.remove('active'));
 });
 
-//Initialize tab page
+// Initialize tab page
 function initTabs() {
     elements.tabs.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -109,9 +109,9 @@ function initTabs() {
     });
 }
 
-//Event listening
+// Event listening
 function initEventListeners() {
-    //Registration configuration form
+    // Registration configuration form
     if (elements.registrationForm) {
         elements.registrationForm.addEventListener('submit', handleSaveRegistration);
     }
@@ -126,7 +126,7 @@ function initEventListeners() {
         elements.cleanupBtn.addEventListener('click', handleCleanup);
     }
 
-    //Add email service
+    // Add email service
     if (elements.addEmailServiceBtn) {
         elements.addEmailServiceBtn.addEventListener('click', () => {
             elements.addServiceModal.classList.add('active');
@@ -161,7 +161,7 @@ function initEventListeners() {
         });
     }
 
-    //Add service form
+    // Add service form
     if (elements.addServiceForm) {
         elements.addServiceForm.addEventListener('submit', handleAddService);
     }
@@ -197,7 +197,7 @@ function initEventListeners() {
         });
     }
 
-    //Related to proxy list
+    // Related to proxy list
     if (elements.addProxyBtn) {
         elements.addProxyBtn.addEventListener('click', () => openProxyModal());
     }
@@ -226,7 +226,7 @@ function initEventListeners() {
         elements.proxyItemForm.addEventListener('submit', handleSaveProxyItem);
     }
 
-    //Dynamic proxy settings
+    // Dynamic proxy settings
     if (elements.dynamicProxyForm) {
         elements.dynamicProxyForm.addEventListener('submit', handleSaveDynamicProxy);
     }
@@ -314,18 +314,18 @@ function initEventListeners() {
     }
 }
 
-//Load settings
+// Load settings
 async function loadSettings() {
     try {
         const data = await api.get('/settings');
 
-        //Dynamic proxy settings
+        // Dynamic proxy settings
         document.getElementById('dynamic-proxy-enabled').checked = data.proxy?.dynamic_enabled || false;
         document.getElementById('dynamic-proxy-api-url').value = data.proxy?.dynamic_api_url || '';
         document.getElementById('dynamic-proxy-api-key-header').value = data.proxy?.dynamic_api_key_header || 'X-API-Key';
         document.getElementById('dynamic-proxy-result-field').value = data.proxy?.dynamic_result_field || '';
 
-        //Register configuration
+        // Register configuration
         document.getElementById('max-retries').value = data.registration?.max_retries || 3;
         document.getElementById('timeout').value = data.registration?.timeout || 120;
         document.getElementById('password-length').value = data.registration?.default_password_length || 12;
@@ -356,7 +356,7 @@ async function loadSettings() {
     }
 }
 
-//Save Web UI settings
+// Save Web UI settings
 async function handleSaveWebuiSettings(e) {
     e.preventDefault();
 
@@ -375,7 +375,7 @@ async function handleSaveWebuiSettings(e) {
     }
 }
 
-//Load the email service
+// Load the email service
 async function loadEmailServices() {
     // Check if the element exists
     if (!elements.emailServicesTable) return;
@@ -448,7 +448,7 @@ function renderEmailServices(services) {
     `).join('');
 }
 
-//Load database information
+// Load database information
 async function loadDatabaseInfo() {
     try {
         const data = await api.get('/settings/database');
@@ -463,7 +463,7 @@ async function loadDatabaseInfo() {
     }
 }
 
-//Save registration configuration
+// Save registration configuration
 async function handleSaveRegistration(e) {
     e.preventDefault();
 
@@ -549,7 +549,7 @@ async function handleCleanup() {
     }
 }
 
-//Load service configuration fields
+// Load service configuration fields
 async function loadServiceConfigFields(serviceType) {
     try {
         const data = await api.get('/email-services/types');
@@ -577,7 +577,7 @@ async function loadServiceConfigFields(serviceType) {
     }
 }
 
-//Add email service
+// Add email service
 async function handleAddService(e) {
     e.preventDefault();
 
@@ -621,7 +621,7 @@ async function testService(id) {
     }
 }
 
-//Switch service status
+// Switch service status
 async function toggleService(id, enabled) {
     try {
         const endpoint = enabled ? 'enable' : 'disable';
@@ -647,7 +647,7 @@ async function deleteService(id) {
     }
 }
 
-//Update the selected service
+// Update the selected service
 function updateSelectedServices() {
     selectedServiceIds.clear();
     document.querySelectorAll('.service-checkbox:checked').forEach(cb => {
@@ -749,7 +749,7 @@ async function handleOutlookBatchImport() {
     }
 }
 
-//HTML escaping
+// HTML escaping
 function escapeHtml(text) {
     if (!text) return '';
     const div = document.createElement('div');
@@ -762,7 +762,7 @@ function escapeHtml(text) {
 // Proxy list management
 // ============================================================================
 
-//Load proxy list
+// Load proxy list
 async function loadProxies() {
     try {
         const data = await api.get('/settings/proxies');
@@ -843,7 +843,7 @@ function closeSettingsMoreMenu(el) {
     if (menu) menu.classList.remove('active');
 }
 
-//Set as default proxy
+// Set as default proxy
 async function handleSetProxyDefault(id) {
     try {
         await api.post(`/settings/proxies/${id}/set-default`);
@@ -992,7 +992,7 @@ async function loadOutlookSettings() {
     }
 }
 
-//Save Outlook settings
+// Save Outlook settings
 async function handleSaveOutlookSettings(e) {
     e.preventDefault();
     const data = {

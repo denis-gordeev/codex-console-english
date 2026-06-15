@@ -87,7 +87,7 @@ class DatabaseSessionManager:
         Base.metadata.drop_all(bind=self.engine)
 
     def migrate_tables(self):
-        """Database migration — adding missing columns
+        """Database migration -- adding missing columns
         Updates table structure without deleting data"""
         if not self.database_url.startswith("sqlite"):
             logger.info("Non-SQLite database; skipping automatic migration")
