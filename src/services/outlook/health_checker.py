@@ -50,7 +50,7 @@ class HealthChecker:
             )
 
     def get_health(self, provider_type: ProviderType) -> ProviderHealth:
-        """Get the provider's health status"""
+        """Get provider health status"""
         with self._lock:
             return self._health_status.get(provider_type, ProviderHealth(provider_type=provider_type))
 
@@ -203,7 +203,7 @@ class HealthChecker:
                 self._health_status[provider_type] = ProviderHealth(
                     provider_type=provider_type
                 )
-            logger.info("Health status of all providers has been reset")
+            logger.info("All provider health statuses have been reset")
 
 
 class FailoverManager:

@@ -46,7 +46,7 @@ class IMAPOldProvider(OutlookProvider):
         """Connect to IMAP server
 
         Returns:
-            Is the connection successful?"""
+            True if connection is successful"""
         if self._connected and self._conn:
             # Check existing connections
             try:
@@ -95,7 +95,7 @@ class IMAPOldProvider(OutlookProvider):
         """Use XOAUTH2 authentication
 
         Returns:
-            Whether the authentication is successful"""
+            True if authentication is successful"""
         if not self._token_manager:
             self._token_manager = TokenManager(
                 self.account,
@@ -209,7 +209,7 @@ class IMAPOldProvider(OutlookProvider):
 
     @staticmethod
     def _parse_email(raw: bytes) -> EmailMessage:
-        """Parse the original email
+        """Parse raw email
 
         Args:
             raw: raw email data

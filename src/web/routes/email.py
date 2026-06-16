@@ -523,7 +523,7 @@ async def batch_import_outlook(request: OutlookBatchImportRequest):
                     config["client_id"] = client_id
                     config["refresh_token"] = refresh_token
 
-            #Create service record
+            # Create service record
             try:
                 service = EmailServiceModel(
                     service_type="outlook",
@@ -546,7 +546,7 @@ async def batch_import_outlook(request: OutlookBatchImportRequest):
 
             except Exception as e:
                 failed += 1
-                errors.append(f"Line {i+1}: Creation failed: {str(e)}")
+                errors.append(f"Line {i+1}: Email creation failed: {str(e)}")
                 db.rollback()
 
     return OutlookBatchImportResponse(

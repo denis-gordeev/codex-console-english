@@ -41,7 +41,7 @@
                 <button class="tab-btn" data-tab="upload">☁️ Upload</button>
                 <button class="tab-btn" data-tab="outlook">📮 Outlook configuration</button>
                 <button class="tab-btn" data-tab="registration">⚙️ Registration configuration</button>
-                <button class="tab-btn" data-tab="email-code">📧 Verification code configuration</button>
+                <button class="tab-btn" data-tab="email-code">📧 OTP configuration</button>
                 <button class="tab-btn" data-tab="database">💾 Database</button>
             </div>
 
@@ -487,12 +487,12 @@
                 </div>
             </div>
 
-            <!-- Verification code configuration -->
+            <!-- OTP configuration -->
             <div class="tab-content" id="email-code-tab">
                 <div class="card">
                     <div class="card-header">
-                        <h3>Verification code retrieval configuration</h3>
-                        <span class="hint">Configure the timeout and polling interval for obtaining Outlook email verification codes</span>
+                        <h3>OTP retrieval configuration</h3>
+                        <span class="hint">Configure the timeout and polling interval for retrieving Outlook email OTPs</span>
                     </div>
                     <div class="card-body">
                         <form id="email-code-form">
@@ -519,15 +519,15 @@
 
                 <div class="card" style="margin-top: var(--spacing-lg);">
                     <div class="card-header">
-                        <h3>Verification code acquisition strategy</h3>
+                        <h3>OTP retrieval strategy</h3>
                     </div>
                     <div class="card-body">
                         <ul class="info-list">
                             <li><strong>Progressive checking</strong>: only unread messages are checked in the first 3 polls, then all messages are checked</li>
                             <li><strong>Timestamp filtering</strong>: Automatically skip old emails before OTP is sent</li>
-                            <li><strong>Verification code dedup</strong>: Avoid reusing the same verification code</li>
-                            <li><strong>Multi-strategy extraction</strong>: topic priority -&gt; semantic matching -&gt; covert matching</li>
-                            <li><strong>Sender Verification</strong>: Strictly verify that the email comes from the official OpenAI</li>
+                            <li><strong>OTP deduplication</strong>: Avoid reusing the same OTP</li>
+                            <li><strong>Multi-strategy extraction</strong>: subject priority -&gt; semantic matching -&gt; fallback matching</li>
+                            <li><strong>Sender validation</strong>: Verify that the email is from the official OpenAI domain</li>
                         </ul>
                     </div>
                 </div>

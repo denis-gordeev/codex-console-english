@@ -39,12 +39,12 @@ class SettingDefinition:
     is_secret: bool = False
 
 
-# Definition of all configuration items (including database key name, default value, classification, description)
+# Definition of all settings (including database key, default value, category, and description)
 SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
     # Application information
     "app_name": SettingDefinition(
         db_key="app.name",
-        default_value="OpenAI/Codex CLI automatic registration system",
+        default_value="OpenAI/Codex CLI Auto-Registration System",
         category=SettingCategory.GENERAL,
         description="Application name"
     ),
@@ -345,18 +345,18 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         is_secret=True
     ),
 
-    # Verification code configuration
+    # OTP configuration
     "email_code_timeout": SettingDefinition(
         db_key="email_code.timeout",
         default_value=120,
         category=SettingCategory.EMAIL,
-        description="Verification code retrieval timeout (seconds)"
+        description="OTP retrieval timeout (seconds)"
     ),
     "email_code_poll_interval": SettingDefinition(
         db_key="email_code.poll_interval",
         default_value=3,
         category=SettingCategory.EMAIL,
-        description="Verification code polling interval (seconds)"
+        description="OTP polling interval (seconds)"
     ),
 
     # Outlook configuration
@@ -386,7 +386,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
     ),
 }
 
-# Mapping of attribute names to database key names (for backward compatibility)
+# Mapping of attribute names to database keys (for backward compatibility)
 DB_SETTING_KEYS = {name: defn.db_key for name, defn in SETTING_DEFINITIONS.items()}
 
 # Type definition mapping
@@ -491,7 +491,7 @@ def _value_to_string(value: Any) -> str:
 def init_default_settings() -> None:
     """
     Initialize default settings in database
-    If the setting item does not exist, create it and set the default value
+    If the setting is not found, create it and set the default value
     """
     try:
         from ..database.session import get_db
@@ -586,7 +586,7 @@ class Settings(BaseModel):
     """
 
     # Application information
-    app_name: str = "OpenAI/Codex CLI automatic registration system"
+    app_name: str = "OpenAI/Codex CLI Auto-Registration System"
     app_version: str = "2.0.0"
     debug: bool = False
 
@@ -691,7 +691,7 @@ class Settings(BaseModel):
     cpa_api_url: str = ""
     cpa_api_token: SecretStr = SecretStr("")
 
-    # Verification code configuration
+    # OTP configuration
     email_code_timeout: int = 120
     email_code_poll_interval: int = 3
 
@@ -760,7 +760,7 @@ def get_database_url() -> str:
 
 
 def get_setting_definition(attr_name: str) -> Optional[SettingDefinition]:
-    """Get the definition of a setting item"""
+    """Get the definition of a setting"""
     return SETTING_DEFINITIONS.get(attr_name)
 
 

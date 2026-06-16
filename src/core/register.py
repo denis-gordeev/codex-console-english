@@ -51,7 +51,7 @@ class RegistrationResult:
     error_message: str = ""
     logs: list = None
     metadata: dict = None
-    source: str = "register"  # 'register' or 'login', to distinguish the account source
+    source: str = "register"  # 'register' or 'login', account source
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary"""
@@ -77,7 +77,7 @@ class SignupFormResult:
     """Result of submitting the registration or login form."""
     success: bool
     page_type: str = ""  # page.type field in the response
-    is_existing_account: bool = False  # Whether this email already has an account
+    is_existing_account: bool = False  # Email already has an existing account
     response_data: Dict[str, Any] = None  # Full response payload
     error_message: str = ""
 
@@ -133,11 +133,11 @@ class RegistrationEngine:
         self.session_token: Optional[str] = None  # Session token
         self.logs: list = []
         self._otp_sent_at: Optional[float] = None  # OTP sending timestamp
-        self._is_existing_account: bool = False  # Whether the email already has an account
+        self._is_existing_account: bool = False  # Email already has an existing account
         self._token_acquisition_requires_login: bool = False  # Newly registered accounts need a second login to fetch tokens
 
     def _log(self, message: str, level: str = "info"):
-        """Record a runtime log entry."""
+        """Log a runtime message."""
         timestamp = datetime.now().strftime("%H:%M:%S")
         log_message = f"[{timestamp}] {message}"
 
@@ -236,12 +236,12 @@ class RegistrationEngine:
                     return did
 
                 self._log(
-                    f"Failed to obtain Device ID: oai-did cookie was not returned (HTTP {response.status_code}, attempt {attempt}/{max_attempts})",
+                    f"Failed to get Device ID: oai-did cookie was not returned (HTTP {response.status_code}, attempt {attempt}/{max_attempts})",
                     "warning" if attempt < max_attempts else "error"
                 )
             except Exception as e:
                 self._log(
-                    f"Failed to obtain Device ID: {e} (attempt {attempt}/{max_attempts})",
+                    f"Failed to get Device ID: {e} (attempt {attempt}/{max_attempts})",
                     "warning" if attempt < max_attempts else "error"
                 )
 
@@ -454,11 +454,11 @@ class RegistrationEngine:
         return did, sen_token
 
     def _complete_token_exchange(self, result: RegistrationResult) -> bool:
-        """After the login state has been established, complete the workspace and OAuth token acquisition."""
+        """After the login state has been established, complete the workspace and OAuth token retrieval."""
         self._log("Waiting for the login verification code...")
         code = self._get_verification_code()
         if not code:
-            result.error_message = "Failed to obtain verification code"
+            result.error_message = "Failed to get verification code"
             return False
 
         self._log("Verifying the login code...")
@@ -469,7 +469,7 @@ class RegistrationEngine:
         self._log("Fetching Workspace ID...")
         workspace_id = self._get_workspace_id()
         if not workspace_id:
-            result.error_message = "Failed to obtain Workspace ID"
+            result.error_message = "Failed to get Workspace ID"
             return False
 
         result.workspace_id = workspace_id
@@ -515,7 +515,7 @@ class RegistrationEngine:
 
         did, sen_token = self._prepare_authorize_flow("Relogin")
         if not did:
-            return False, "Failed to obtain Device ID on re-login"
+            return False, "Failed to get Device ID on re-login"
         if not sen_token:
             return False, "Sentinel POW verification failed on re-login"
 
@@ -562,7 +562,7 @@ class RegistrationEngine:
                 error_text = response.text[:500]
                 self._log(f"Password registration failed: {error_text}", "warning")
 
-                # Parse the error message to determine whether the email address is already registered
+                # Parse the error message to check if the email address is already registered
                 try:
                     error_json = response.json()
                     error_msg = error_json.get("error", {}).get("message", "")
@@ -648,7 +648,7 @@ class RegistrationEngine:
                 return None
 
         except Exception as e:
-            self._log(f"Failed to obtain verification code: {e}", "error")
+            self._log(f"Failed to get verification code: {e}", "error")
             return None
 
     def _validate_verification_code(self, code: str) -> bool:
@@ -707,7 +707,7 @@ class RegistrationEngine:
         try:
             auth_cookie = self.session.cookies.get("oai-client-auth-session")
             if not auth_cookie:
-                self._log("Failed to obtain authorization cookie", "error")
+                self._log("Failed to get authorization cookie", "error")
                 return None
 
             # Decode JWT
@@ -744,7 +744,7 @@ class RegistrationEngine:
                 return None
 
         except Exception as e:
-            self._log(f"Failed to obtain Workspace ID: {e}", "error")
+            self._log(f"Failed to get Workspace ID: {e}", "error")
             return None
 
     def _select_workspace(self, workspace_id: str) -> Optional[str]:
@@ -887,7 +887,7 @@ class RegistrationEngine:
             # 3. Prepare for the first round of authorization process
             did, sen_token = self._prepare_authorize_flow("First authorization")
             if not did:
-                result.error_message = "Failed to obtain Device ID"
+                result.error_message = "Failed to get Device ID"
                 return result
             if not sen_token:
                 result.error_message = "Sentinel POW verification failed"
@@ -917,7 +917,7 @@ class RegistrationEngine:
                 self._log("7. Waiting for the verification code...")
                 code = self._get_verification_code()
                 if not code:
-                    result.error_message = "Failed to obtain verification code"
+                    result.error_message = "Failed to get verification code"
                     return result
 
                 self._log("8. Verifying email code...")
@@ -973,7 +973,7 @@ class RegistrationEngine:
             result: Registration result.
 
         Returns:
-            bool: Whether the save succeeded.
+            bool: True if the save was successful.
         """
         if not result.success:
             return False

@@ -29,7 +29,7 @@ class OutlookAccount:
         return bool(self.client_id and self.refresh_token)
 
     def validate(self) -> bool:
-        """Verify whether the account information is valid"""
+        """Check if account credentials are valid"""
         return bool(self.email and self.password) or self.has_oauth()
 
     def to_dict(self, include_sensitive: bool = False) -> Dict[str, Any]:

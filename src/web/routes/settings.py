@@ -20,7 +20,7 @@ router = APIRouter()
 # ============== Pydantic Models ==============
 
 class SettingItem(BaseModel):
-    """Setting item"""
+    """Setting"""
     key: str
     value: str
     description: Optional[str] = None
@@ -175,7 +175,7 @@ async def test_dynamic_proxy(request: DynamicProxySettings):
     if not proxy_url:
         return {"success": False, "message": "Dynamic proxy API returned empty or the request failed"}
 
-    # Test connectivity using the obtained proxy
+    # Test connectivity using the retrieved proxy
     import time
     from curl_cffi import requests as cffi_requests
     try:
@@ -383,9 +383,9 @@ class TempmailSettings(BaseModel):
 
 
 class EmailCodeSettings(BaseModel):
-    """Verification code wait settings"""
-    timeout: int = 120  # Verification code wait timeout (seconds)
-    poll_interval: int = 3  # Verification code polling interval (seconds)
+    """OTP wait settings"""
+    timeout: int = 120  # OTP wait timeout (seconds)
+    poll_interval: int = 3  # OTP polling interval (seconds)
 
 
 @router.get("/tempmail")
@@ -414,11 +414,11 @@ async def update_tempmail_settings(request: TempmailSettings):
     return {"success": True, "message": "Tempmail settings updated"}
 
 
-# ============== Verification code wait settings ==============
+# ============== OTP wait settings ==============
 
 @router.get("/email-code")
 async def get_email_code_settings():
-    """Get verification code wait settings"""
+    """Get OTP wait settings"""
     settings = get_settings()
     return {
         "timeout": settings.email_code_timeout,
@@ -428,7 +428,7 @@ async def get_email_code_settings():
 
 @router.post("/email-code")
 async def update_email_code_settings(request: EmailCodeSettings):
-    """Update verification code wait settings"""
+    """Update OTP wait settings"""
     # Validate parameter ranges
     if request.timeout < 30 or request.timeout > 600:
         raise HTTPException(status_code=400, detail="Timeout must be between 30-600 seconds")
@@ -440,7 +440,7 @@ async def update_email_code_settings(request: EmailCodeSettings):
         email_code_poll_interval=request.poll_interval,
     )
 
-    return {"success": True, "message": "Verification code wait settings updated"}
+    return {"success": True, "message": "OTP wait settings updated"}
 
 
 # ============== Proxy list CRUD ==============

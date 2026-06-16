@@ -239,7 +239,7 @@ def submit_callback_url(
     proxy_url: Optional[str] = None
 ) -> str:
     """
-    Handle OAuth callback URL, obtain access token
+    Handle OAuth callback URL, get access token
 
     Args:
         callback_url: callback URL

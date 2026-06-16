@@ -39,7 +39,7 @@ class TokenManager:
 
     # Default timeout.
     DEFAULT_TIMEOUT = 30
-    # Refresh slightly ahead of token expiry.
+    # Refresh slightly ahead of token expiration.
     REFRESH_BUFFER = 120
 
     def __init__(
@@ -110,7 +110,7 @@ class TokenManager:
                 self.set_cached_token(token)
                 return token.access_token
         except Exception as e:
-            logger.error(f"[{self.account.email}] Failed to obtain Token ({self.provider_type.value}): {e}")
+            logger.error(f"[{self.account.email}] Failed to get Token ({self.provider_type.value}): {e}")
 
         return None
 
@@ -179,7 +179,7 @@ class TokenManager:
             return token
 
         except json.JSONDecodeError as e:
-            logger.error(f"[{self.account.email}] JSON parsing error: {e}")
+            logger.error(f"[{self.account.email}] JSON parse error: {e}")
             return None
 
         except Exception as e:

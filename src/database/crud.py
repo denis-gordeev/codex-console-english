@@ -350,7 +350,7 @@ def set_setting(
     description: Optional[str] = None,
     category: str = 'general'
 ) -> Setting:
-    """Set or update configuration items"""
+    """Set or update settings"""
     db_setting = get_setting(db, key)
     if db_setting:
         db_setting.value = value

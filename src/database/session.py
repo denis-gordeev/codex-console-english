@@ -124,7 +124,7 @@ class DatabaseSessionManager:
                         f"SELECT * FROM pragma_table_info('{table_name}') WHERE name='{column_name}'"
                     ))
                     if result.fetchone() is None:
-                        # Column does not exist, add it
+                        # Column not found; adding it
                         logger.info(f"Adding column {table_name}.{column_name}")
                         conn.execute(text(
                             f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_type}"

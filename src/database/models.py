@@ -47,14 +47,14 @@ class Account(Base):
     proxy_used = Column(String(255))
     registered_at = Column(DateTime, default=datetime.utcnow)
     last_refresh = Column(DateTime) # Last refresh time
-    expires_at = Column(DateTime) # Token expiry time
+    expires_at = Column(DateTime) # Token expiration time
     status = Column(String(20), default='active')  # 'active', 'expired', 'banned', 'failed'
-    extra_data = Column(JSONEncodedDict) # Additional information storage
-    cpa_uploaded = Column(Boolean, default=False) # Whether uploaded to CPA
+    extra_data = Column(JSONEncodedDict) # Additional data
+    cpa_uploaded = Column(Boolean, default=False) # Uploaded to CPA
     cpa_uploaded_at = Column(DateTime) # Upload time
-    source = Column(String(20), default='register') # 'register' or 'login', distinguish the account source
+    source = Column(String(20), default='register') # 'register' or 'login', account source
     subscription_type = Column(String(20))  # None / 'plus' / 'team'
-    subscription_at = Column(DateTime) # Subscription activation time
+    subscription_at = Column(DateTime) # Subscription start time
     cookies = Column(Text) # Complete cookie string, used for payment requests
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

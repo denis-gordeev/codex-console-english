@@ -282,7 +282,7 @@ def validate_email(email: str) -> bool:
         email: email address
 
     Returns:
-        Is the format valid?
+        True if the format is valid
     """
     pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
     return bool(re.match(pattern, email))
@@ -296,7 +296,7 @@ def validate_url(url: str) -> bool:
         url: URL
 
     Returns:
-        Is the format valid?
+        True if the format is valid
     """
     pattern = r"^https?://[^\s/$.?#].[^\s]*$"
     return bool(re.match(pattern, url))

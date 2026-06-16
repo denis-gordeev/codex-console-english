@@ -181,7 +181,7 @@ class MeoMailEmailService(BaseEmailService):
         """Create temporary email address
 
         Args:
-            config: configuration parameters:
+            config: configuration options:
                 - name: email prefix (optional)
                 - expiryTime: validity period (milliseconds) (optional)
                 - domain: email domain (optional)
@@ -386,7 +386,7 @@ class MeoMailEmailService(BaseEmailService):
             email_id: Email ID
 
         Returns:
-            True if the deletion succeeded"""
+            True if deletion was successful"""
         try:
             response = self._make_request("DELETE", f"/api/emails/{email_id}")
             success = response.get("success", False)
@@ -416,8 +416,8 @@ class MeoMailEmailService(BaseEmailService):
                 self.update_status(True)
                 return True
             else:
-                logger.warning("Custom domain email health check failed: configuration is empty")
-                self.update_status(False, EmailServiceError("Configuration is empty"))
+                logger.warning("Custom domain email health check failed: no configuration provided")
+                self.update_status(False, EmailServiceError("No configuration provided"))
                 return False
         except Exception as e:
             logger.warning(f"Custom domain email service health check failed: {e}")

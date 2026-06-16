@@ -84,7 +84,7 @@ class ImapMailService(BaseEmailService):
         return body
 
     def _is_openai_sender(self, from_addr: str) -> bool:
-        """Determine whether the sender is OpenAI"""
+        """Check if the sender is OpenAI"""
         from_lower = from_addr.lower()
         for sender in OPENAI_EMAIL_SENDERS:
             if sender.startswith("@") or sender.startswith("."):
@@ -166,7 +166,7 @@ class ImapMailService(BaseEmailService):
                             # Mark as read
                             mail.store(msg_id, "+FLAGS", "\\Seen")
                             self.update_status(True)
-                            logger.info(f"IMAP successfully obtained verification code: {code}")
+                            logger.info(f"IMAP successfully retrieved verification code: {code}")
                             return code
 
                 except imaplib.IMAP4.error as e:

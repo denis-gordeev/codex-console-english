@@ -9,7 +9,7 @@ let pageSize = 20;
 let totalAccounts = 0;
 let selectedAccounts = new Set();
 let isLoading = false;
-let selectAllPages = false; // Whether all pages are selected
+let selectAllPages = false; // True when all pages are selected
 let currentFilters = { status: '', email_service: '', search: '' }; // Current filter conditions
 
 // DOM element
@@ -90,7 +90,7 @@ function initEventListeners() {
     // Batch refresh Token
     elements.batchRefreshBtn.addEventListener('click', handleBatchRefresh);
 
-    // Batch verification Token
+    // Batch token validation
     elements.batchValidateBtn.addEventListener('click', handleBatchValidate);
 
     // Batch detection subscription
@@ -1227,7 +1227,7 @@ async function checkInboxCode(id) {
         if (result.success) {
             showInboxCodeResult(result.code, result.email);
         } else {
-            toast.error('Query failed: ' + (result.error || 'Verification code not received'));
+            toast.error('Query failed: ' + (result.error || 'OTP not received'));
         }
     } catch (error) {
         toast.error('Query failed: ' + error.message);

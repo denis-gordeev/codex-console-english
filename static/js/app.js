@@ -16,7 +16,7 @@ let taskCompleted = false; // Mark whether the task is completed
 let batchCompleted = false; // Mark whether the batch task has been completed
 let taskFinalStatus = null; // Save the final status of the task
 let batchFinalStatus = null; // Save the final status of the batch task
-let displayedLogs = new Set(); // Used for log dedup
+let displayedLogs = new Set(); // Used for log deduplication
 let toastShown = false; // Tracks whether toast has been shown
 let availableServices = {
     tempmail: { available: true, services: [] },
@@ -202,7 +202,7 @@ function initEventListeners() {
     // Clear the log
     elements.clearLogBtn.addEventListener('click', () => {
         elements.consoleLog.innerHTML = '<div class="log-line info">[System] Log has been cleared</div>';
-        displayedLogs.clear(); // Clear the log dedup set
+        displayedLogs.clear(); // Clear the log deduplication set
     });
 
     // Refresh the account list
@@ -499,7 +499,7 @@ async function handleSingleRegistration(requestData) {
     // Reset task status
     taskCompleted = false;
     taskFinalStatus = null;
-    displayedLogs.clear(); // Clear the log deduplication collection
+    displayedLogs.clear(); // Clear the log deduplication set
     toastShown = false; // Reset toast flag
 
     addLog('info', '[System] is starting the registration task...');
@@ -657,7 +657,7 @@ async function handleBatchRegistration(requestData) {
     // Reset batch task status
     batchCompleted = false;
     batchFinalStatus = null;
-    displayedLogs.clear(); // Clear the log deduplication collection
+    displayedLogs.clear(); // Clear the log deduplication set
     toastShown = false; // Reset toast flag
 
     const count = parseInt(elements.batchCount.value) || 5;
@@ -989,7 +989,7 @@ function startAccountsPolling() {
 
 // Add log
 function addLog(type, message) {
-    // Log dedup: use the hash of the message content as the key
+    // Log deduplication: use the hash of the message content as the key
     const logKey = `${type}:${message}`;
     if (displayedLogs.has(logKey)) {
         return; // Already displayed, skip
@@ -1150,7 +1150,7 @@ async function handleOutlookBatchRegistration() {
     // Reset batch task status
     batchCompleted = false;
     batchFinalStatus = null;
-    displayedLogs.clear(); // Clear the log deduplication collection
+    displayedLogs.clear(); // Clear the log deduplication set
     toastShown = false; // Reset toast flag
 
     // Get the selected account

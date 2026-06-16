@@ -83,7 +83,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title=settings.app_name,
         version=settings.app_version,
-        description="OpenAI/Codex CLI automatic registration system Web UI",
+        description="OpenAI/Codex CLI Auto-Registration System Web UI",
         docs_url="/api/docs" if settings.debug else None,
         redoc_url="/api/redoc" if settings.debug else None,
         lifespan=lifespan,

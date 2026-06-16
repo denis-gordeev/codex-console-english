@@ -117,7 +117,7 @@ class TaskManager:
                     "message": log_message,
                     "timestamp": datetime.utcnow().isoformat()
                 })
-                #Update sent_index after successful sending
+                # Update sent_index after successful sending
                 with _ws_lock:
                     ws_id = id(ws)
                     if task_uuid in _ws_sent_index and ws_id in _ws_sent_index[task_uuid]:
@@ -256,7 +256,7 @@ class TaskManager:
                     "message": log_message,
                     "timestamp": datetime.utcnow().isoformat()
                 })
-                #Update sent_index after successful sending
+                # Update sent_index after successful sending
                 with _ws_lock:
                     ws_id = id(ws)
                     if key in _ws_sent_index and ws_id in _ws_sent_index[key]:
@@ -267,12 +267,12 @@ class TaskManager:
     def update_batch_status(self, batch_id: str, **kwargs):
         """Update batch task status"""
         if batch_id not in _batch_status:
-            logger.warning(f"Batch task {batch_id} does not exist")
+            logger.warning(f"Batch task {batch_id} not found")
             return
 
         _batch_status[batch_id].update(kwargs)
 
-        #Asynchronous broadcast status update
+        # Async broadcast of status update
         if self._loop and self._loop.is_running():
             try:
                 asyncio.run_coroutine_threadsafe(

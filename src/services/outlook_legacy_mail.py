@@ -78,7 +78,7 @@ class OutlookAccount:
         return bool(self.client_id and self.refresh_token)
 
     def validate(self) -> bool:
-        """Verify whether the account information is valid"""
+        """Check if account credentials are valid"""
         return bool(self.email and self.password) or self.has_oauth()
 
 
@@ -166,7 +166,7 @@ class OutlookIMAPClient:
                 logger.debug(f"Use XOAUTH2 authentication connection: {self.account.email}")
                 return
             except Exception as e:
-                logger.warning(f"XOAUTH2 authentication failed, fallback password authentication: {e}")
+                logger.warning(f"XOAUTH2 authentication failed, falling back to password authentication: {e}")
 
         # Fall back to password authentication
         self._conn.login(self.account.email, self.account.password)
@@ -352,7 +352,7 @@ class OutlookIMAPClient:
 class OutlookService(BaseEmailService):
     """
     Outlook email service
-    Supports polling and verification code acquisition for multiple Outlook accounts
+    Supports polling and OTP retrieval for multiple Outlook accounts
     """
 
     def __init__(self, config: Dict[str, Any] = None, name: str = None):
@@ -418,7 +418,7 @@ class OutlookService(BaseEmailService):
         # IMAP connection limit (prevent rate limiting)
         self._imap_semaphore = threading.Semaphore(5)
 
-        # Verification code dedup tracking: email -> set of used codes
+        # OTP deduplication tracking: email -> set of used codes
         self._used_codes: Dict[str, set] = {}
 
     def create_email(self, config: Dict[str, Any] = None) -> Dict[str, Any]:
@@ -426,7 +426,7 @@ class OutlookService(BaseEmailService):
         Select an available Outlook account
 
         Args:
-            config: Configuration parameters (currently not used)
+            config: Configuration options (currently unused)
 
         Returns:
             Dictionary containing email information:
@@ -488,19 +488,19 @@ class OutlookService(BaseEmailService):
             self.update_status(False, EmailServiceError(f"No account found for email: {email}"))
             return None
 
-        # Load verification code retrieval settings from database
+        # Load OTP retrieval settings from database
         code_settings = get_email_code_settings()
         actual_timeout = timeout or code_settings["timeout"]
         poll_interval = code_settings["poll_interval"]
 
         logger.info(f"[{email}] fetching verification code, timeout {actual_timeout}s, OTP sending time: {otp_sent_at}")
 
-        # Initialize verification code dedup set
+        # Initialize OTP deduplication set
         if email not in self._used_codes:
             self._used_codes[email] = set()
         used_codes = self._used_codes[email]
 
-        # Calculate minimum timestamp (allow 60 seconds clock offset)
+        # Calculate minimum timestamp (allow 60 seconds of clock drift)
         min_timestamp = (otp_sent_at - 60) if otp_sent_at else 0
 
         start_time = time.time()
@@ -623,7 +623,7 @@ class OutlookService(BaseEmailService):
             return False
 
     def _is_oai_mail(self, mail: Dict[str, Any]) -> bool:
-        """Determine whether it is an OpenAI related email (old method, retained for compatibility)"""
+        """Check if an email is OpenAI-related (old method, kept for backward compatibility)"""
         combined = f"{mail.get('from', '')} {mail.get('subject', '')} {mail.get('body', '')}".lower()
         keywords = ["openai", "chatgpt", "verification", "verification code", "code"]
         return any(keyword in combined for keyword in keywords)
@@ -637,7 +637,7 @@ class OutlookService(BaseEmailService):
         Strictly judge whether it is an OpenAI verification email
 
         Args:
-            mail: mail information dictionary
+            mail: mail info dict
             target_email: target email address (used to verify recipients)
 
         Returns:
@@ -648,7 +648,7 @@ class OutlookService(BaseEmailService):
         # 1. The sender must be OpenAI
         valid_senders = OPENAI_EMAIL_SENDERS
         if not any(s in sender for s in valid_senders):
-            logger.debug(f"The email sender is not OpenAI: {sender}")
+            logger.debug(f"Email sender is not from OpenAI: {sender}")
             return False
 
         # 2. The subject or text contains verification keywords
@@ -657,7 +657,7 @@ class OutlookService(BaseEmailService):
         verification_keywords = OPENAI_VERIFICATION_KEYWORDS
         combined = f"{subject} {body}"
         if not any(kw in combined for kw in verification_keywords):
-            logger.debug(f"The email does not contain the verification keyword: {subject[:50]}")
+            logger.debug(f"Email does not contain OTP keywords: {subject[:50]}")
             return False
 
         # 3. Verify recipient (optional)
@@ -679,12 +679,12 @@ class OutlookService(BaseEmailService):
         Extract verification code from email
 
         Priority:
-        1. Extract from topic (6 digits)
-        2. Use semantic regular extraction from the text (such as "code is 123456")
-        3. Guarantee: any 6-digit number
+        1. Extract from subject (6 digits)
+        2. Extract using semantic regex from the text (such as "code is 123456")
+        3. Fallback: any 6-digit number
 
         Args:
-            mail: mail information dictionary
+            mail: mail info dict
             fallback_pattern: fallback regex pattern
 
         Returns:
@@ -694,12 +694,12 @@ class OutlookService(BaseEmailService):
         re_simple = re.compile(OTP_CODE_SIMPLE_PATTERN)
         re_semantic = re.compile(OTP_CODE_SEMANTIC_PATTERN, re.IGNORECASE)
 
-        # 1. Topic priority
+        # 1. Subject priority
         subject = mail.get("subject", "")
         match = re_simple.search(subject)
         if match:
             code = match.group(1)
-            logger.debug(f"Extract verification code from topic: {code}")
+            logger.debug(f"Extract verification code from subject: {code}")
             return code
 
         # 2. Text semantic matching
@@ -710,7 +710,7 @@ class OutlookService(BaseEmailService):
             logger.debug(f"Extract verification code from text semantics: {code}")
             return code
 
-        # 3. Guarantee: any 6-digit number
+        # 3. Fallback: any 6-digit number
         match = re_simple.search(body)
         if match:
             code = match.group(1)

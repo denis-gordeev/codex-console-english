@@ -585,12 +585,12 @@ class BatchRefreshRequest(BaseModel):
 
 
 class TokenValidateRequest(BaseModel):
-    """Token verification request"""
+    """Token validation request"""
     proxy: Optional[str] = None
 
 
 class BatchValidateRequest(BaseModel):
-    """Batch verification request"""
+    """Batch validation request"""
     ids: List[int] = []
     proxy: Optional[str] = None
     select_all: bool = False
@@ -652,7 +652,7 @@ async def refresh_account_token(account_id: int, request: Optional[TokenRefreshR
 
 @router.post("/batch-validate")
 async def batch_validate_tokens(request: BatchValidateRequest):
-    """Batch verification of account Token validity"""
+    """Batch validation of account tokens"""
     proxy = _get_proxy(request.proxy)
 
     results = {
@@ -1060,6 +1060,6 @@ async def get_account_inbox_code(account_id: int):
             return {"success": False, "error": str(e)}
 
         if not code:
-            return {"success": False, "error": "Verification code email not received"}
+            return {"success": False, "error": "OTP email not received"}
 
         return {"success": True, "code": code, "email": account.email}

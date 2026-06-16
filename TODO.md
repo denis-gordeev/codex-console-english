@@ -1,5 +1,58 @@
 # TODO
 
+## Completed In This Round (June 16, 2026 - Round 41)
+
+- Pulled `origin/main` - repository was already up to date.
+- Deep scan found ~182 substantive translation artifacts (awkward English, mistranslations, inconsistent terminology) that previous rounds had missed.
+- Replaced "automatic registration system" → "Auto-Registration System" across 6 files (src/__init__.py, constants.py, settings.py, app.py, webui.py) for title-case consistency.
+- Replaced all "Verification code" compound terms with "OTP" across backend and frontend (34 occurrences):
+  - "Verification code configuration" → "OTP configuration" in settings.html, settings.py, settings.js, constants.py
+  - "Verification code retrieval/acquisition" → "OTP retrieval" across routes, services, templates, JS
+  - "Verification code not received" → "OTP not received" in constants.py, accounts.js, accounts.py
+  - "Invalid verification code" → "Invalid OTP" in constants.py
+  - "Verification code dedup" → "OTP deduplication" in settings.html, email_parser.py, service.py, legacy_mail.py
+  - "Verification code keyword" → "OTP keywords" in email_parser.py, legacy_mail.py
+- Replaced all "obtain" → "get" in log messages and docstrings (21 occurrences across register.py, freemail.py, token_manager.py, imap_new.py, graph_api.py, oauth.py, temp_mail.py, registration.py, settings.py).
+- Replaced "topic" → "subject" where Chinese 主题 was mistranslated (6 occurrences in email_parser.py, outlook_legacy_mail.py, settings.html).
+- Replaced "covert matching" → "fallback matching" and "Bottom line" → "Fallback" in settings.html, email_parser.py.
+- Replaced "Mail parser" → "Email parser" in email_parser.py, service.py (3 occurrences).
+- Replaced "New version of IMAP" → "New IMAP" in imap_new.py (4 occurrences).
+- Replaced "Is the connection successful?" → "True if connection is successful" in imap_old.py, imap_new.py, graph_api.py.
+- Replaced "Whether the X" → statement form in comments and docstrings (13 occurrences across models.py, register.py, registration.py, email_parser.py, base.py, accounts.js).
+- Replaced "Determine whether" → "Check if" (4 occurrences in email_parser.py, legacy_mail.py, imap_mail.py, register.py).
+- Replaced "Verify whether" → "Check if" in legacy_mail.py, account.py (2 occurrences).
+- Replaced "does not exist" → "not found" in session.py, settings.py, task_manager.py (3 occurrences).
+- Replaced "interface" → "abstract class" / "abstract methods" in base.py, providers/base.py (2 occurrences).
+- Replaced "Verification" → "Validation" in login.html, accounts.py, settings.html (12 occurrences: "Token verification" → "Token validation", "Access Verification" → "Access Authentication", "Verify entry" → "Log in", "Sender Verification" → "Sender Validation").
+- Replaced "Succeeded" → "was successful" in docstrings (register.py, base.py, moe_mail.py).
+- Replaced "Execute" → "Run" in registration.py (4 occurrences).
+- Replaced "synchronization tasks" → "synchronous tasks" in registration.py (2 occurrences).
+- Replaced "mutual contamination" → "configuration key collisions" in registration.py.
+- Replaced "clock offset" → "clock drift" in service.py, legacy_mail.py (2 occurrences).
+- Replaced "Token expiry" → "Token expiration" in models.py, token_manager.py (2 occurrences).
+- Replaced "Additional information storage" → "Additional data" in models.py.
+- Replaced "Subscription activation time" → "Subscription start time" in models.py.
+- Replaced "distinguish the account source" → "account source" in models.py, register.py (2 occurrences).
+- Replaced "configuration items/parameters" → "settings/options" in crud.py, settings.py, base.py, moe_mail.py, tempmail.py, legacy_mail.py, service.py (9 occurrences).
+- Replaced "database key name" → "database key" in settings.py (2 occurrences).
+- Replaced "Email information dictionary" → "Email dict" in base.py, legacy_mail.py (5 occurrences).
+- Replaced "collection" → "set" where Chinese 集合 was mistranslated in app.js (3 occurrences).
+- Replaced "dedup" → "deduplication" in app.js, settings.html, email_parser.py (5 occurrences).
+- Fixed gerund→imperative patterns in docstrings: "Semantic matching to extract" → "Extract using semantic matching", "Parse the original email" → "Parse raw email", etc.
+- Replaced "Based on self-hosted" → "Self-hosted" in freemail.py, temp_mail.py module docstrings.
+- Replaced "Record a runtime log entry" → "Log a runtime message" in register.py.
+- Replaced "retained for compatibility" → "kept for backward compatibility" in legacy_mail.py.
+- Replaced "fallback password authentication" → "falling back to password authentication" in legacy_mail.py.
+- Replaced "JSON parsing error" → "JSON parse error" in token_manager.py.
+- Replaced "strictly verify" → "verify" in settings.html.
+- Replaced "Creation failed" → "Email creation failed" in base.py, email.py routes (2 occurrences).
+- Replaced "Health status of all providers has been reset" → "All provider health statuses have been reset" in service.py, health_checker.py (2 occurrences).
+- Replaced "Get the provider's health status" → "Get provider health status" in health_checker.py.
+- Replaced "Already registered OpenAI accounts" → "Already registered" in registration.py.
+- Fixed missing spaces after # in Python comments: task_manager.py (2), email.py (1), task_manager.py async broadcast (1).
+- Fixed missing space after emoji in index.html: `📝Registration` → `📝 Registration`.
+- Verified all 32 tests pass successfully (pytest on Python 3.10 via .venv).
+
 ## Completed In This Round (June 16, 2026 - Round 40)
 
 - Pulled `origin/main` - repository was already up to date.
@@ -458,3 +511,4 @@
 - Add focused tests for the settings save flows and error messages returned by low-traffic API endpoints.
 - Verify that all "not found" HTTP 404 messages are consistent with test assertions after the "does not exist" → "not found" bulk replacement.
 - Authenticate `gh` in a future round if issue and PR inspection is required, since GitHub GraphQL access is currently unavailable in this environment.
+- Review remaining "verification code" occurrences that may need "OTP" in less-visible code paths.

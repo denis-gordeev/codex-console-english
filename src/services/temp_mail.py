@@ -1,5 +1,5 @@
 """Temp-Mail email service implementation
-Based on self-hosted Cloudflare Worker temporary email service
+Self-hosted Cloudflare Worker temporary email service
 For API documentation, see plan/temp-mail.md"""
 
 import re
@@ -249,7 +249,7 @@ class TempMailService(BaseEmailService):
                 "created_at": time.time(),
             }
 
-            # Cache jwt for use when obtaining verification code
+            # Cache JWT for use when retrieving verification codes
             self._email_cache[address] = email_info
 
             logger.info(f"TempMail email address created successfully: {address}")

@@ -1,6 +1,6 @@
 """
 Freemail email service implementation
-Based on self-hosted Cloudflare Worker temporary email service (https://github.com/idinging/freemail)
+Self-hosted Cloudflare Worker temporary email service (https://github.com/idinging/freemail)
 """
 
 import re
@@ -118,7 +118,7 @@ class FreemailService(BaseEmailService):
                 if isinstance(domains, list):
                     self._domains = domains
             except Exception as e:
-                logger.warning(f"Failed to obtain Freemail domain list: {e}")
+                logger.warning(f"Failed to get Freemail domain list: {e}")
 
     def create_email(self, config: Dict[str, Any] = None) -> Dict[str, Any]:
         """
@@ -252,7 +252,7 @@ class FreemailService(BaseEmailService):
                             self.update_status(True)
                             return code
                     except Exception as e:
-                        logger.debug(f"Failed to obtain Freemail email details: {e}")
+                        logger.debug(f"Failed to get Freemail email details: {e}")
 
             except Exception as e:
                 logger.debug(f"Error checking Freemail mail: {e}")

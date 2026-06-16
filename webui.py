@@ -112,7 +112,7 @@ def main():
     import argparse
     import os
 
-    parser = argparse.ArgumentParser(description="OpenAI/Codex CLI automatic registration system Web UI")
+    parser = argparse.ArgumentParser(description="OpenAI/Codex CLI Auto-Registration System Web UI")
     parser.add_argument("--host", help="Listening host (can also be set through the WEBUI_HOST environment variable)")
     parser.add_argument("--port", type=int, help="Listening port (can also be set through the WEBUI_PORT environment variable)")
     parser.add_argument("--debug", action="store_true", help="Enable debug mode (can also be set via the DEBUG=1 environment variable)")

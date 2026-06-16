@@ -44,8 +44,8 @@ class EmailMessage:
     body_preview: str = ""                     # Preview text
     received_at: Optional[datetime] = None     # Received time
     received_timestamp: int = 0                # Received timestamp
-    is_read: bool = False                      # Whether the message is marked as read
-    has_attachments: bool = False              # Whether the message has attachments
+    is_read: bool = False                      # Message is marked as read
+    has_attachments: bool = False              # Message has attachments
     raw_data: Optional[bytes] = None           # Raw message data for debugging
 
     def to_dict(self) -> Dict[str, Any]:

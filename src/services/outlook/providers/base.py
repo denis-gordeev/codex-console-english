@@ -26,7 +26,7 @@ class ProviderConfig:
 
 class OutlookProvider(abc.ABC):
     """Outlook provider abstract base class
-    Define the interface that all providers must implement"""
+    Define the abstract methods all providers must implement"""
 
     def __init__(
         self,

@@ -61,6 +61,19 @@ This repository keeps the original structure and overall approach, while applyin
 - Polished 20 awkward log messages in registration routes and register engine for natural English.
 - Fixed formatting bug in models.py (two column definitions on one line).
 - Added missing space after emoji in settings.html.
+- Replaced "automatic registration system" with "Auto-Registration System" for title-case consistency across 6 files.
+- Replaced all "Verification code" compound terms with "OTP" (34 occurrences) for concise standard terminology.
+- Replaced "obtain" with "get" in 21 log messages and docstrings for natural English.
+- Fixed "topic" → "subject" mistranslation (Chinese 主题) in email parser and settings (6 occurrences).
+- Replaced "covert matching" → "fallback matching" and "Bottom line" → "Fallback" in email extraction strategy.
+- Replaced "Mail parser" → "Email parser" and "New version of IMAP" → "New IMAP" for conciseness.
+- Standardized "Whether the X" → statement form in 13 comments/docstrings.
+- Replaced "Verification" → "Validation" / "Authentication" in 12 UI and API contexts (login page, token validation, sender validation).
+- Replaced "Execute" → "Run", "synchronization tasks" → "synchronous tasks" in registration routes.
+- Replaced "configuration items/parameters" → "settings/options" across 9 occurrences.
+- Replaced "collection" → "set" (Chinese 集合 mistranslation) and "dedup" → "deduplication" in JS.
+- Fixed "Is the connection successful?" → "True if connection is successful" across 3 provider docstrings.
+- Fixed 4 missing spaces after # in Python comments and 1 missing space after emoji in index.html.
 
 ### Next Iterations
 

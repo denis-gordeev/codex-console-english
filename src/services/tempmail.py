@@ -67,7 +67,7 @@ class TempmailService(BaseEmailService):
         Create a new temporary email address
 
         Args:
-            config: Configuration parameters (Tempmail.lol currently does not support custom configuration)
+            config: Configuration options (Tempmail.lol does not support custom configuration)
 
         Returns:
             Dictionary containing email information:

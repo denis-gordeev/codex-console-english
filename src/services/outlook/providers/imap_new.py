@@ -55,7 +55,7 @@ class IMAPNewProvider(OutlookProvider):
         """Connect to IMAP server
 
         Returns:
-            Is the connection successful?"""
+            True if connection is successful"""
         if self._connected and self._conn:
             try:
                 self._conn.noop()
@@ -63,7 +63,7 @@ class IMAPNewProvider(OutlookProvider):
             except Exception:
                 self.disconnect()
 
-        # The new version of IMAP must use OAuth2. If there is no OAuth, it will be skipped silently and health failures will not be recorded.
+        # New IMAP requires OAuth2; without OAuth it will be skipped without recording a health failure.
         if not self.account.has_oauth():
             logger.debug(f"[{self.account.email}] Skip IMAP_NEW (no OAuth)")
             return False
@@ -82,7 +82,7 @@ class IMAPNewProvider(OutlookProvider):
             if self._authenticate_xoauth2():
                 self._connected = True
                 self.record_success()
-                logger.info(f"[{self.account.email}] New version of IMAP connection successful (XOAUTH2)")
+                logger.info(f"[{self.account.email}] New IMAP connection successful (XOAUTH2)")
                 return True
 
             return False
@@ -90,14 +90,14 @@ class IMAPNewProvider(OutlookProvider):
         except Exception as e:
             self.disconnect()
             self.record_failure(str(e))
-            logger.error(f"[{self.account.email}] New version of IMAP connection failed: {e}")
+            logger.error(f"[{self.account.email}] New IMAP connection failed: {e}")
             return False
 
     def _authenticate_xoauth2(self) -> bool:
         """Use XOAUTH2 authentication
 
         Returns:
-            Whether the authentication is successful"""
+            True if authentication is successful"""
         if not self._token_manager:
             self._token_manager = TokenManager(
                 self.account,
@@ -109,7 +109,7 @@ class IMAPNewProvider(OutlookProvider):
         # Get Access Token
         token = self._token_manager.get_access_token()
         if not token:
-            logger.error(f"[{self.account.email}] Failed to obtain IMAP Token")
+            logger.error(f"[{self.account.email}] Failed to get IMAP Token")
             return False
 
         try:
@@ -205,8 +205,8 @@ class IMAPNewProvider(OutlookProvider):
 
     @staticmethod
     def _parse_email(raw: bytes) -> EmailMessage:
-        """Parse the original email"""
-        # Use parsing methods from legacy providers
+        """Parse raw email"""
+        # Reuse the legacy provider's email parsing
         return IMAPOldProvider._parse_email(raw)
 
     def test_connection(self) -> bool:
@@ -217,5 +217,5 @@ class IMAPNewProvider(OutlookProvider):
                 self._conn.search(None, "ALL")
             return True
         except Exception as e:
-            logger.warning(f"[{self.account.email}] New version of IMAP connection test failed: {e}")
+            logger.warning(f"[{self.account.email}] New IMAP connection test failed: {e}")
             return False

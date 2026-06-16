@@ -131,7 +131,7 @@ class OutlookService(BaseEmailService):
             priority_order=self.provider_priority,
         )
 
-        # Mail parser
+        # Email parser
         self.email_parser = get_email_parser()
 
         # Provider instance cache: (email, provider_type) -> OutlookProvider
@@ -264,7 +264,7 @@ class OutlookService(BaseEmailService):
         Select an available Outlook account
 
         Args:
-            config: Configuration parameters (not used)
+            config: Configuration options (unused)
 
         Returns:
             Dictionary containing email information
@@ -323,7 +323,7 @@ class OutlookService(BaseEmailService):
             self.update_status(False, EmailServiceError(f"No account found for email: {email}"))
             return None
 
-        # Load verification code retrieval settings
+        # Load OTP retrieval settings
         code_settings = get_email_code_settings()
         actual_timeout = timeout or code_settings["timeout"]
         poll_interval = code_settings["poll_interval"]
@@ -333,12 +333,12 @@ class OutlookService(BaseEmailService):
             f"Provider priority: {[p.value for p in self.provider_priority]}"
         )
 
-        # Initialize verification code dedup set
+        # Initialize OTP deduplication set
         if email not in self._used_codes:
             self._used_codes[email] = set()
         used_codes = self._used_codes[email]
 
-        # Calculate minimum timestamp (allow 60 seconds clock offset)
+        # Calculate minimum timestamp (allow 60 seconds of clock drift)
         min_timestamp = (otp_sent_at - 60) if otp_sent_at else 0
 
         start_time = time.time()
@@ -475,7 +475,7 @@ class OutlookService(BaseEmailService):
     def reset_provider_health(self):
         """Reset the health status of all providers"""
         self.health_checker.reset_all()
-        logger.info("Health status of all providers has been reset")
+        logger.info("All provider health statuses have been reset")
 
     def force_provider(self, provider_type: ProviderType):
         """Force the use of the specified provider"""

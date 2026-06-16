@@ -44,7 +44,7 @@ class EmailServiceType(str, Enum):
 # Application constants
 # ============================================================================
 
-APP_NAME = "OpenAI/Codex CLI automatic registration system"
+APP_NAME = "OpenAI/Codex CLI Auto-Registration System"
 APP_VERSION = "2.0.0"
 APP_DESCRIPTION = "System for automatically registering OpenAI/Codex CLI accounts"
 
@@ -147,11 +147,11 @@ EMAIL_SERVICE_DEFAULTS = {
 # Registration process constants
 # ============================================================================
 
-# Verification code constants
+# OTP constants
 OTP_CODE_PATTERN = r"(?<!\d)(\d{6})(?!\d)"
 OTP_MAX_ATTEMPTS = 40 # Maximum number of polling attempts
 
-# Verification code extraction patterns (enhanced)
+# OTP extraction patterns (enhanced)
 # Simple match: any 6-digit number
 OTP_CODE_SIMPLE_PATTERN = r"(?<!\d)(\d{6})(?!\d)"
 # Semantic matching: verification code with context (e.g., "code is 123456", "verification code 123456")
@@ -318,8 +318,8 @@ ERROR_MESSAGES = {
     # Email service error
     "EMAIL_SERVICE_UNAVAILABLE": "The email service is unavailable",
     "EMAIL_CREATION_FAILED": "Creation of email failed",
-    "OTP_NOT_RECEIVED": "Verification code not received",
-    "OTP_INVALID": "Invalid verification code",
+    "OTP_NOT_RECEIVED": "OTP not received",
+    "OTP_INVALID": "Invalid OTP",
 
     # OpenAI related errors
     "OPENAI_AUTH_FAILED": "OpenAI authentication failed",

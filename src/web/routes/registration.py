@@ -37,7 +37,7 @@ def get_proxy_for_registration(db) -> Tuple[Optional[str], Optional[int]]:
 
     Strategy:
     1. Prioritize randomly selecting an enabled proxy from the proxy list
-    2. If the proxy list is empty and dynamic proxy is enabled, call the dynamic proxy API to obtain
+    2. If the proxy list is empty and dynamic proxy is enabled, call the dynamic proxy API to get
     3. Otherwise use the static default proxy in system settings
 
     Returns:
@@ -135,8 +135,8 @@ class OutlookAccountForRegistration(BaseModel):
     id: int # ID of EmailService table
     email: str
     name: str
-    has_oauth: bool # Whether there is OAuth configuration
-    is_registered: bool # Whether it has been registered
+    has_oauth: bool # Has OAuth configuration
+    is_registered: bool # Already registered
     registered_account_id: Optional[int] = None
 
 
@@ -198,7 +198,7 @@ def _normalize_email_service_config(
     config: Optional[dict],
     proxy_url: Optional[str] = None
 ) -> dict:
-    """Compatible with old field names by service type to avoid mutual contamination of configuration keys of different services."""
+    """Compatible with old field names by service type to avoid configuration key collisions between services."""
     normalized = config.copy() if config else {}
 
     if 'api_url' in normalized and 'base_url' not in normalized:
@@ -342,7 +342,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                         crud.update_registration_task(db, task_uuid, email_service_id=selected_service.id)
                         logger.info(f"Use database Outlook account: {selected_service.name}")
                     else:
-                        raise ValueError("All Outlook accounts have already registered OpenAI accounts, please add new Outlook accounts")
+                        raise ValueError("All Outlook accounts are already registered; please add new Outlook accounts")
                 elif service_type == EmailServiceType.DUCK_MAIL:
                     from ...database.models import EmailService as EmailServiceModel
 
@@ -400,7 +400,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                 task_uuid=task_uuid
             )
 
-            # Execute registration
+            # Run registration
             result = engine.run()
 
             if result.success:
@@ -539,9 +539,9 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
 
 async def run_registration_task(task_uuid: str, email_service_type: str, proxy: Optional[str], email_service_config: Optional[dict], email_service_id: Optional[int] = None, log_prefix: str = "", batch_id: str = "", auto_upload_cpa: bool = False, cpa_service_ids: List[int] = None, auto_upload_sub2api: bool = False, sub2api_service_ids: List[int] = None, auto_upload_tm: bool = False, tm_service_ids: List[int] = None):
     """
-    Execute registration tasks asynchronously
+    Run registration tasks asynchronously
 
-    Use run_in_executor to put synchronization tasks into the thread pool for execution to avoid blocking the main event loop
+    Use run_in_executor to run synchronous tasks in the thread pool to avoid blocking the main event loop
     """
     loop = task_manager.get_loop()
     if loop is None:
@@ -553,7 +553,7 @@ async def run_registration_task(task_uuid: str, email_service_type: str, proxy: 
     task_manager.add_log(task_uuid, f"{log_prefix} [System] Task {task_uuid[:8]} has been added to the queue" if log_prefix else f"[System] Task {task_uuid[:8]} has been added to the queue")
 
     try:
-        # Execute synchronization tasks in the thread pool (pass in log_prefix and batch_id for callback use)
+        # Run synchronous tasks in the thread pool
         await loop.run_in_executor(
             task_manager.executor,
             _run_sync_registration_task,
@@ -1331,10 +1331,10 @@ async def run_outlook_batch_registration(
     tm_service_ids: List[int] = None,
 ):
     """
-    Execute Outlook batch registration tasks asynchronously and reuse common concurrency logic
+    Run Outlook batch registration tasks asynchronously and reuse common concurrency logic
 
     Map each service_id to an independent task_uuid, and then call
-    Concurrency logic of run_batch_registration
+    Reuses the concurrency logic from run_batch_registration
     """
     loop = task_manager.get_loop()
     if loop is None:

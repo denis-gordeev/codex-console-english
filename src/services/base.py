@@ -27,7 +27,7 @@ class EmailServiceStatus(Enum):
 class BaseEmailService(abc.ABC):
     """Email service abstract base class
 
-    All email services must implement this interface"""
+    All email services must implement this abstract class"""
 
     def __init__(self, service_type: EmailServiceType, name: str = None):
         """Initialize email service
@@ -55,16 +55,16 @@ class BaseEmailService(abc.ABC):
         """Create new email address
 
         Args:
-            config: configuration parameters, such as email prefix, domain, etc.
+            config: configuration options, such as email prefix, domain, etc.
 
         Returns:
-            A dictionary containing email information, containing at least:
+            A dictionary with at least:
             - email: email address
             - service_id: ID in the email service
             - token/credentials: access credentials (if required)
 
         Raises:
-            EmailServiceError: Creation failed"""
+            EmailServiceError: Email creation failed"""
         pass
 
     @abc.abstractmethod
@@ -114,7 +114,7 @@ class BaseEmailService(abc.ABC):
             email_id: ID in the email service
 
         Returns:
-            True if the deletion succeeded
+            True if deletion was successful
 
         Raises:
             EmailServiceError: Service error"""
@@ -138,7 +138,7 @@ class BaseEmailService(abc.ABC):
             email_id: ID in the email service
 
         Returns:
-            Email information dictionary, or None if not found"""
+            Email dict, or None if not found"""
         # Default implementation: traverse the list to find
         for email_info in self.list_emails():
             if email_info.get("id") == email_id:
@@ -165,7 +165,7 @@ class BaseEmailService(abc.ABC):
             expected_subject: expected subject (contains checks)
 
         Returns:
-            Email information dictionary, returns None if timeout occurs"""
+            Email dict, or None on timeout"""
         import time
         from datetime import datetime
 

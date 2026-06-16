@@ -66,7 +66,7 @@ const elements = {
     tmServiceForm: document.getElementById('tm-service-form'),
     tmServiceModalTitle: document.getElementById('tm-service-modal-title'),
     testTmServiceBtn: document.getElementById('test-tm-service-btn'),
-    // Verification code settings
+    // OTP settings
     emailCodeForm: document.getElementById('email-code-form'),
     // Outlook settings
     outlookSettingsForm: document.getElementById('outlook-settings-form'),
@@ -234,7 +234,7 @@ function initEventListeners() {
         elements.testDynamicProxyBtn.addEventListener('click', handleTestDynamicProxy);
     }
 
-    // Verification code settings
+    // OTP settings
     if (elements.emailCodeForm) {
         elements.emailCodeForm.addEventListener('submit', handleSaveEmailCode);
     }
@@ -332,7 +332,7 @@ async function loadSettings() {
         document.getElementById('sleep-min').value = data.registration?.sleep_min || 5;
         document.getElementById('sleep-max').value = data.registration?.sleep_max || 30;
 
-        // Verification code retrieval configuration
+        // OTP retrieval configuration
         if (data.email_code) {
             document.getElementById('email-code-timeout').value = data.email_code.timeout || 120;
             document.getElementById('email-code-poll-interval').value = data.email_code.poll_interval || 3;
@@ -483,7 +483,7 @@ async function handleSaveRegistration(e) {
     }
 }
 
-// Save verification code retrieval configuration
+// Save OTP retrieval configuration
 async function handleSaveEmailCode(e) {
     e.preventDefault();
 
@@ -507,7 +507,7 @@ async function handleSaveEmailCode(e) {
 
     try {
         await api.post('/settings/email-code', data);
-        toast.success('Verification code configuration has been saved');
+        toast.success('OTP configuration saved');
     } catch (error) {
         toast.error('Save failed: ' + error.message);
     }

@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 class EmailParser:
     """
-    Mail parser
+    Email parser
     Used to identify OpenAI verification emails and extract verification codes
     """
 
@@ -35,20 +35,20 @@ class EmailParser:
         target_email: Optional[str] = None,
     ) -> bool:
         """
-        Determine whether it is an OpenAI verification email
+        Check if an email is an OpenAI verification email
 
         Args:
             email: email object
             target_email: target email address (used to verify recipients)
 
         Returns:
-            Whether the email is verified as being from OpenAI
+            True if the email is verified as being from OpenAI
         """
         sender = email.sender.lower()
 
         # 1. The sender must be OpenAI
         if not any(s in sender for s in OPENAI_EMAIL_SENDERS):
-            logger.debug(f"The email sender is not OpenAI: {sender}")
+            logger.debug(f"Email sender is not from OpenAI: {sender}")
             return False
 
         # 2. The subject or text contains verification keywords
@@ -57,7 +57,7 @@ class EmailParser:
         combined = f"{subject} {body}"
 
         if not any(kw in combined for kw in OPENAI_VERIFICATION_KEYWORDS):
-            logger.debug(f"The email does not contain the verification keyword: {subject[:50]}")
+            logger.debug(f"Email does not contain OTP keywords: {subject[:50]}")
             return False
 
         # 3. Recipient check has been removed: the recipient in the IMAP header of the alias email may not match, and it is only judged by the sender + keywords.
@@ -72,9 +72,9 @@ class EmailParser:
         Extract verification code from email
 
         Priority:
-        1. Extract from topic (6 digits)
-        2. Use semantic regular extraction from the text (such as "code is 123456")
-        3. Guarantee: any 6-digit number
+        1. Extract from subject (6 digits)
+        2. Extract using semantic regex from the text (such as "code is 123456")
+        3. Fallback: any 6-digit number
 
         Args:
             email: email object
@@ -82,10 +82,10 @@ class EmailParser:
         Returns:
             Verification code string, returns None if not found
         """
-        # 1. Topic priority
+        # 1. Subject priority
         code = self._extract_from_subject(email.subject)
         if code:
-            logger.debug(f"Extract verification code from topic: {code}")
+            logger.debug(f"Extract verification code from subject: {code}")
             return code
 
         # 2. Text semantic matching
@@ -94,7 +94,7 @@ class EmailParser:
             logger.debug(f"Extract verification code from text semantics: {code}")
             return code
 
-        # 3. Bottom line: any 6-digit number in the text
+        # 3. Fallback: any 6-digit number in the text
         code = self._extract_simple(email.body)
         if code:
             logger.debug(f"Extracted verification code from text fallback: {code}")
@@ -103,21 +103,21 @@ class EmailParser:
         return None
 
     def _extract_from_subject(self, subject: str) -> Optional[str]:
-        """Extract verification code from topic"""
+        """Extract verification code from subject"""
         match = self._simple_pattern.search(subject)
         if match:
             return match.group(1)
         return None
 
     def _extract_semantic(self, body: str) -> Optional[str]:
-        """Semantic matching to extract verification code"""
+        """Extract verification code using semantic matching"""
         match = self._semantic_pattern.search(body)
         if match:
             return match.group(1)
         return None
 
     def _extract_simple(self, body: str) -> Optional[str]:
-        """Simple matching to extract verification code"""
+        """Extract verification code using simple matching"""
         match = self._simple_pattern.search(body)
         if match:
             return match.group(1)
@@ -137,7 +137,7 @@ class EmailParser:
             emails: list of emails
             target_email: target email address
             min_timestamp: minimum timestamp (used to filter old emails)
-            used_codes: used verification code set (used for dedup tracking)
+            used_codes: set of used OTPs (for deduplication tracking)
 
         Returns:
             Verification code string, returns None if not found
@@ -181,7 +181,7 @@ class EmailParser:
 
         Args:
             emails: list of emails
-            sender_patterns: list of sender matching patterns
+            sender_patterns: list of sender patterns to match
 
         Returns:
             Filtered list of emails
@@ -221,7 +221,7 @@ _parser: Optional[EmailParser] = None
 
 
 def get_email_parser() -> EmailParser:
-    """Get the global mail parser instance"""
+    """Get the global email parser instance"""
     global _parser
     if _parser is None:
         _parser = EmailParser()
