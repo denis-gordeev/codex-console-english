@@ -183,7 +183,7 @@ class RegistrationEngine:
             self.email_info = self.email_service.create_email()
 
             if not self.email_info or "email" not in self.email_info:
-                self._log("Failed to create email address: Incomplete information returned", "error")
+                self._log("Failed to create email address: Incomplete information in response", "error")
                 return False
 
             self.email = self.email_info["email"]
@@ -257,13 +257,13 @@ class RegistrationEngine:
         try:
             sen_token = self.http_client.check_sentinel(did)
             if sen_token:
-                self._log(f"Sentinel token obtained successfully")
+                self._log(f"Sentinel token obtained")
                 return sen_token
-            self._log("Sentinel check failed: token not obtained", "warning")
+            self._log("Sentinel check failed: no token received", "warning")
             return None
 
         except Exception as e:
-            self._log(f"Sentinel check exception: {e}", "warning")
+            self._log(f"Sentinel check error: {e}", "warning")
             return None
 
     def _submit_auth_start(
@@ -360,7 +360,7 @@ class RegistrationEngine:
         *,
         record_existing_account: bool = True,
     ) -> SignupFormResult:
-        """Submit the registration portal form."""
+        """Submit the registration entry form."""
         return self._submit_auth_start(
             did,
             sen_token,
@@ -521,13 +521,13 @@ class RegistrationEngine:
 
         login_start_result = self._submit_login_start(did, sen_token)
         if not login_start_result.success:
-            return False, f"Failed to re-login to submit email: {login_start_result.error_message}"
+            return False, f"Failed to submit email on re-login: {login_start_result.error_message}"
         if login_start_result.page_type != OPENAI_PAGE_TYPES["LOGIN_PASSWORD"]:
             return False, f"Re-login did not reach the password page: {login_start_result.page_type or 'unknown'}"
 
         password_result = self._submit_login_password()
         if not password_result.success:
-            return False, f"Failed to re-login and submit password: {password_result.error_message}"
+            return False, f"Failed to submit password on re-login: {password_result.error_message}"
         if not password_result.is_existing_account:
             return False, f"Re-login did not reach the verification code page: {password_result.page_type or 'unknown'}"
         return True, ""
@@ -717,7 +717,7 @@ class RegistrationEngine:
             try:
                 segments = auth_cookie.split(".")
                 if len(segments) < 1:
-                    self._log("Authorization cookie format error", "error")
+                    self._log("Invalid authorization cookie format", "error")
                     return None
 
                 # Decode the first segment
@@ -728,12 +728,12 @@ class RegistrationEngine:
 
                 workspaces = auth_json.get("workspaces") or []
                 if not workspaces:
-                    self._log("No workspace information in the authorization cookie", "error")
+                    self._log("No workspace data in the authorization cookie", "error")
                     return None
 
                 workspace_id = str((workspaces[0] or {}).get("id") or "").strip()
                 if not workspace_id:
-                    self._log("Unable to resolve workspace ID", "error")
+                    self._log("Could not resolve workspace ID", "error")
                     return None
 
                 self._log(f"Workspace ID: {workspace_id}")
@@ -906,7 +906,7 @@ class RegistrationEngine:
                 self._log("5. Setting account password...")
                 password_ok, _ = self._register_password()
                 if not password_ok:
-                    result.error_message = "Registration password failed"
+                    result.error_message = "Password registration failed"
                     return result
 
                 self._log("6. Sending registration verification code...")
@@ -1002,7 +1002,7 @@ class RegistrationEngine:
                     source=result.source
                 )
 
-                self._log(f"The account has been stored in the database, it is safe to leave it, ID: {account.id}")
+                self._log(f"Account saved to database, ID: {account.id}")
                 return True
 
         except Exception as e:

@@ -1,5 +1,5 @@
 """Implementation of custom domain email service
-Based on the REST API interface in email.md"""
+Based on the REST API in email.md"""
 
 import re
 import time
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 class MeoMailEmailService(BaseEmailService):
     """Custom domain email service
-    Based on REST API interface"""
+    Based on the REST API"""
 
     def __init__(self, config: Dict[str, Any] = None, name: str = None):
         """Initialize custom domain email service
@@ -94,7 +94,7 @@ class MeoMailEmailService(BaseEmailService):
             **kwargs: request parameters
 
         Returns:
-            Respond to JSON data
+            Response JSON data
 
         Raises:
             EmailServiceError: Request failed"""
@@ -386,7 +386,7 @@ class MeoMailEmailService(BaseEmailService):
             email_id: Email ID
 
         Returns:
-            Is deletion successful?"""
+            True if the deletion succeeded"""
         try:
             response = self._make_request("DELETE", f"/api/emails/{email_id}")
             success = response.get("success", False)

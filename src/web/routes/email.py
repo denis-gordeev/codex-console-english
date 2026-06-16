@@ -86,19 +86,19 @@ class OutlookBatchImportResponse(BaseModel):
 SENSITIVE_FIELDS = {'password', 'api_key', 'refresh_token', 'access_token', 'admin_token'}
 
 def filter_sensitive_config(config: Dict[str, Any]) -> Dict[str, Any]:
-    """Filter sensitive configuration information"""
+    """Filter sensitive configuration fields"""
     if not config:
         return {}
 
     filtered = {}
     for key, value in config.items():
         if key in SENSITIVE_FIELDS:
-            # Sensitive fields are not returned, but whether the tag exists
+            # Sensitive fields are not returned, but their presence is indicated
             filtered[f"has_{key}"] = bool(value)
         else:
             filtered[key] = value
 
-    # Calculate whether there is OAuth for Outlook
+    # Check whether OAuth is configured for Outlook
     if config.get('client_id') and config.get('refresh_token'):
         filtered['has_oauth'] = True
 

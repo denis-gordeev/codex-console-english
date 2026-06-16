@@ -100,7 +100,7 @@ async def get_sub2api_service(service_id: int):
     with get_db() as db:
         svc = crud.get_sub2api_service_by_id(db, service_id)
         if not svc:
-            raise HTTPException(status_code=404, detail="Sub2API service does not exist")
+            raise HTTPException(status_code=404, detail="Sub2API service not found")
         return _to_response(svc)
 
 
@@ -110,7 +110,7 @@ async def get_sub2api_service_full(service_id: int):
     with get_db() as db:
         svc = crud.get_sub2api_service_by_id(db, service_id)
         if not svc:
-            raise HTTPException(status_code=404, detail="Sub2API service does not exist")
+            raise HTTPException(status_code=404, detail="Sub2API service not found")
         return {
             "id": svc.id,
             "name": svc.name,
@@ -127,7 +127,7 @@ async def update_sub2api_service(service_id: int, request: Sub2ApiServiceUpdate)
     with get_db() as db:
         svc = crud.get_sub2api_service_by_id(db, service_id)
         if not svc:
-            raise HTTPException(status_code=404, detail="Sub2API service does not exist")
+            raise HTTPException(status_code=404, detail="Sub2API service not found")
 
         update_data = {}
         if request.name is not None:
@@ -152,7 +152,7 @@ async def delete_sub2api_service(service_id: int):
     with get_db() as db:
         svc = crud.get_sub2api_service_by_id(db, service_id)
         if not svc:
-            raise HTTPException(status_code=404, detail="Sub2API service does not exist")
+            raise HTTPException(status_code=404, detail="Sub2API service not found")
         crud.delete_sub2api_service(db, service_id)
         return {"success": True, "message": f"Sub2API service {svc.name} has been deleted"}
 
@@ -163,7 +163,7 @@ async def test_sub2api_service(service_id: int):
     with get_db() as db:
         svc = crud.get_sub2api_service_by_id(db, service_id)
         if not svc:
-            raise HTTPException(status_code=404, detail="Sub2API service does not exist")
+            raise HTTPException(status_code=404, detail="Sub2API service not found")
         success, message = test_sub2api_connection(svc.api_url, svc.api_key)
         return {"success": success, "message": message}
 

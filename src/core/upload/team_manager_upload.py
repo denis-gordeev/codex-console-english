@@ -96,7 +96,7 @@ def batch_upload_to_team_manager(
             if not account:
                 results["failed_count"] += 1
                 results["details"].append(
-                    {"id": account_id, "email": None, "success": False, "error": "Account does not exist"}
+                    {"id": account_id, "email": None, "success": False, "error": "Account not found"}
                 )
                 continue
             if not account.access_token:

@@ -137,7 +137,7 @@ class EmailParser:
             emails: list of emails
             target_email: target email address
             min_timestamp: minimum timestamp (used to filter old emails)
-            used_codes: used verification code set (used for deduplication)
+            used_codes: used verification code set (used for dedup tracking)
 
         Returns:
             Verification code string, returns None if not found

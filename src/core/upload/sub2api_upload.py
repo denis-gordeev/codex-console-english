@@ -158,7 +158,7 @@ def batch_upload_to_sub2api(
             acc = db.query(Account).filter(Account.id == account_id).first()
             if not acc:
                 results["failed_count"] += 1
-                results["details"].append({"id": account_id, "email": None, "success": False, "error": "Account does not exist"})
+                results["details"].append({"id": account_id, "email": None, "success": False, "error": "Account not found"})
                 continue
             if not acc.access_token:
                 results["skipped_count"] += 1

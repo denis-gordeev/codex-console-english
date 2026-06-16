@@ -93,7 +93,7 @@ async def get_cpa_service(service_id: int):
     with get_db() as db:
         service = crud.get_cpa_service_by_id(db, service_id)
         if not service:
-            raise HTTPException(status_code=404, detail="CPA service does not exist")
+            raise HTTPException(status_code=404, detail="CPA service not found")
         return _to_response(service)
 
 
@@ -103,7 +103,7 @@ async def get_cpa_service_full(service_id: int):
     with get_db() as db:
         service = crud.get_cpa_service_by_id(db, service_id)
         if not service:
-            raise HTTPException(status_code=404, detail="CPA service does not exist")
+            raise HTTPException(status_code=404, detail="CPA service not found")
         return {
             "id": service.id,
             "name": service.name,
@@ -120,7 +120,7 @@ async def update_cpa_service(service_id: int, request: CpaServiceUpdate):
     with get_db() as db:
         service = crud.get_cpa_service_by_id(db, service_id)
         if not service:
-            raise HTTPException(status_code=404, detail="CPA service does not exist")
+            raise HTTPException(status_code=404, detail="CPA service not found")
 
         update_data = {}
         if request.name is not None:
@@ -145,7 +145,7 @@ async def delete_cpa_service(service_id: int):
     with get_db() as db:
         service = crud.get_cpa_service_by_id(db, service_id)
         if not service:
-            raise HTTPException(status_code=404, detail="CPA service does not exist")
+            raise HTTPException(status_code=404, detail="CPA service not found")
         crud.delete_cpa_service(db, service_id)
         return {"success": True, "message": f"CPA service {service.name} has been deleted"}
 
@@ -156,7 +156,7 @@ async def test_cpa_service(service_id: int):
     with get_db() as db:
         service = crud.get_cpa_service_by_id(db, service_id)
         if not service:
-            raise HTTPException(status_code=404, detail="CPA service does not exist")
+            raise HTTPException(status_code=404, detail="CPA service not found")
         success, message = test_cpa_connection(service.api_url, service.api_token)
         return {"success": success, "message": message}
 

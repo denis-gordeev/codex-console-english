@@ -21,7 +21,7 @@ class ProviderConfig:
 
     # Health check configuration
     health_failure_threshold: int = 3
-    health_disable_duration: int = 300  # Second
+    health_disable_duration: int = 300  # Seconds
 
 
 class OutlookProvider(abc.ABC):
@@ -33,7 +33,7 @@ class OutlookProvider(abc.ABC):
         account: OutlookAccount,
         config: Optional[ProviderConfig] = None,
     ):
-        """initialization provider
+        """Initialize the provider
 
         Args:
             account: Outlook account
@@ -77,7 +77,7 @@ class OutlookProvider(abc.ABC):
         """Connect to service
 
         Returns:
-            Is the connection successful?"""
+            True if the connection was established"""
         pass
 
     @abc.abstractmethod
@@ -137,7 +137,7 @@ class OutlookProvider(abc.ABC):
         """Check health status
 
         Returns:
-            Is it healthy and available?"""
+            True if healthy and available"""
         # Check if disabled
         if self._health.is_disabled():
             logger.debug(

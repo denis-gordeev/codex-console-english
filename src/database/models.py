@@ -186,7 +186,8 @@ class Proxy(Base):
     enabled = Column(Boolean, default=True)
     is_default = Column(Boolean, default=False) # Default proxy
     priority = Column(Integer, default=0) # Priority (reserved field)
-    last_used = Column(DateTime) # Last used time    created_at = Column(DateTime, default=datetime.utcnow)
+    last_used = Column(DateTime)  # Last used time
+    created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def to_dict(self, include_password: bool = False) -> Dict[str, Any]:

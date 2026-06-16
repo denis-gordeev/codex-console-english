@@ -77,7 +77,7 @@ class FreemailService(BaseEmailService):
             **kwargs: additional parameters passed to http_client.request
 
         Returns:
-            Respond to JSON data
+            Response JSON data
 
         Raises:
             EmailServiceError: Request failed

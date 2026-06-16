@@ -64,7 +64,7 @@ def generate_payment_link(request: GenerateLinkRequest):
     with get_db() as db:
         account = db.query(Account).filter(Account.id == request.account_id).first()
         if not account:
-            raise HTTPException(status_code=404, detail="Account does not exist")
+            raise HTTPException(status_code=404, detail="Account not found")
 
         proxy = request.proxy or get_settings().proxy_url
 
@@ -139,7 +139,7 @@ def batch_check_subscription(request: BatchCheckSubscriptionRequest):
             if not account:
                 results["failed_count"] += 1
                 results["details"].append(
-                    {"id": account_id, "email": None, "success": False, "error": "Account does not exist"}
+                    {"id": account_id, "email": None, "success": False, "error": "Account not found"}
                 )
                 continue
 
@@ -171,7 +171,7 @@ def mark_subscription(account_id: int, request: MarkSubscriptionRequest):
     with get_db() as db:
         account = db.query(Account).filter(Account.id == account_id).first()
         if not account:
-            raise HTTPException(status_code=404, detail="Account does not exist")
+            raise HTTPException(status_code=404, detail="Account not found")
 
         account.subscription_type = None if request.subscription_type == "free" else request.subscription_type
         account.subscription_at = datetime.utcnow() if request.subscription_type != "free" else None

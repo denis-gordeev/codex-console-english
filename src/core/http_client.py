@@ -32,7 +32,7 @@ class RequestConfig:
 
 
 class HTTPClientError(Exception):
-    """HTTP client exception"""
+    """HTTP client error"""
     pass
 
 
@@ -230,7 +230,7 @@ class HTTPClient:
 
 class OpenAIHTTPClient(HTTPClient):
     """
-    OpenAI dedicated HTTP client
+    OpenAI-specific HTTP client
     Contains OpenAI API specific request methods
     """
 
@@ -352,7 +352,7 @@ class OpenAIHTTPClient(HTTPClient):
 
     def check_sentinel(self, did: str, proxies: Optional[Dict] = None) -> Optional[str]:
         """
-        Check Sentinel interception
+        Check Sentinel challenge
 
         Args:
             did: Device ID
@@ -391,7 +391,7 @@ class OpenAIHTTPClient(HTTPClient):
             logger.error(f"Sentinel POW solution failed: {e}")
             return None
         except Exception as e:
-            logger.error(f"Sentinel check exception: {e}")
+            logger.error(f"Sentinel check error: {e}")
             return None
 
 

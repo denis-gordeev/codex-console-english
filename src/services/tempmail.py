@@ -96,8 +96,8 @@ class TempmailService(BaseEmailService):
             token = str(data.get("token", "")).strip()
 
             if not email or not token:
-                self.update_status(False, EmailServiceError("Return data is incomplete"))
-                raise EmailServiceError("Tempmail.lol returns incomplete data")
+                self.update_status(False, EmailServiceError("Response data is incomplete"))
+                raise EmailServiceError("Tempmail.lol returned incomplete data")
 
             # Cache email information
             email_info = {
@@ -226,7 +226,7 @@ class TempmailService(BaseEmailService):
         List all cached emails
 
         Note:
-            Tempmail.lol API does not support listing all emails, and cached emails are returned here.
+            Tempmail.lol API does not support listing all emails; cached emails are returned instead.
         """
         return list(self._email_cache.values())
 
@@ -235,7 +235,7 @@ class TempmailService(BaseEmailService):
         Delete email address
 
         Note:
-            Tempmail.lol API does not support deleting email addresses, so it will be removed from the cache here.
+            Tempmail.lol API does not support deleting email addresses; the entry is removed from cache instead.
         """
         # Find and remove from cache
         emails_to_delete = []
@@ -250,13 +250,13 @@ class TempmailService(BaseEmailService):
         return len(emails_to_delete) > 0
 
     def check_health(self) -> bool:
-        """Check whether the Tempmail.lol service is available"""
+        """Check whether the Tempmail.lol service is reachable"""
         try:
             response = self.http_client.get(
                 f"{self.config['base_url']}/inbox/create",
                 timeout=10
             )
-            # The service is considered available even if an error status code is returned (as long as it can be connected)
+            # The service is considered available as long as it responds, regardless of status code
             self.update_status(True)
             return True
         except Exception as e:
@@ -297,13 +297,13 @@ class TempmailService(BaseEmailService):
         timeout: int = 120
     ) -> Optional[str]:
         """
-        Wait for verification code and support callback function
+        Wait for verification code with callback support
 
         Args:
             email: email address
             token: email token
-            callback: callback function, receives current status information
-            timeout: timeout time
+            callback: callback function; receives current status updates
+            timeout: Timeout (seconds)
 
         Returns:
             Verification code or None

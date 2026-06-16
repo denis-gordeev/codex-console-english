@@ -147,7 +147,7 @@ EMAIL_SERVICE_DEFAULTS = {
 # Registration process constants
 # ============================================================================
 
-# Verification code related
+# Verification code constants
 OTP_CODE_PATTERN = r"(?<!\d)(\d{6})(?!\d)"
 OTP_MAX_ATTEMPTS = 40 # Maximum number of polling attempts
 

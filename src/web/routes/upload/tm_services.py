@@ -93,7 +93,7 @@ async def get_tm_service(service_id: int):
     with get_db() as db:
         svc = crud.get_tm_service_by_id(db, service_id)
         if not svc:
-            raise HTTPException(status_code=404, detail="Team Manager service does not exist")
+            raise HTTPException(status_code=404, detail="Team Manager service not found")
         return _to_response(svc)
 
 
@@ -103,7 +103,7 @@ async def update_tm_service(service_id: int, request: TmServiceUpdate):
     with get_db() as db:
         svc = crud.get_tm_service_by_id(db, service_id)
         if not svc:
-            raise HTTPException(status_code=404, detail="Team Manager service does not exist")
+            raise HTTPException(status_code=404, detail="Team Manager service not found")
 
         update_data = {}
         if request.name is not None:
@@ -127,7 +127,7 @@ async def delete_tm_service(service_id: int):
     with get_db() as db:
         svc = crud.get_tm_service_by_id(db, service_id)
         if not svc:
-            raise HTTPException(status_code=404, detail="Team Manager service does not exist")
+            raise HTTPException(status_code=404, detail="Team Manager service not found")
         crud.delete_tm_service(db, service_id)
         return {"success": True, "message": f"Team Manager service {svc.name} has been deleted"}
 
@@ -138,7 +138,7 @@ async def test_tm_service(service_id: int):
     with get_db() as db:
         svc = crud.get_tm_service_by_id(db, service_id)
         if not svc:
-            raise HTTPException(status_code=404, detail="Team Manager service does not exist")
+            raise HTTPException(status_code=404, detail="Team Manager service not found")
         success, message = test_team_manager_connection(svc.api_url, svc.api_key)
         return {"success": success, "message": message}
 

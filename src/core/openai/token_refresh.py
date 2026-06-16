@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class TokenRefreshResult:
-    """Token refresh results"""
+    """Token refresh result"""
     success: bool
     access_token: str = ""
     refresh_token: str = ""
@@ -65,7 +65,7 @@ class TokenRefreshManager:
             session_token: session token
 
         Returns:
-            TokenRefreshResult: Refresh the result
+            TokenRefreshResult: Refresh result
         """
         result = TokenRefreshResult(success=False)
 
@@ -121,7 +121,7 @@ class TokenRefreshManager:
             return result
 
         except Exception as e:
-            result.error_message = f"Session token refresh exception: {str(e)}"
+            result.error_message = f"Session token refresh error: {str(e)}"
             logger.error(result.error_message)
             return result
 
@@ -138,7 +138,7 @@ class TokenRefreshManager:
             client_id: OAuth Client ID
 
         Returns:
-            TokenRefreshResult: Refresh the result
+            TokenRefreshResult: Refresh result
         """
         result = TokenRefreshResult(success=False)
 
@@ -195,7 +195,7 @@ class TokenRefreshManager:
             return result
 
         except Exception as e:
-            result.error_message = f"OAuth token refresh exception: {str(e)}"
+            result.error_message = f"OAuth token refresh error: {str(e)}"
             logger.error(result.error_message)
             return result
 
@@ -211,19 +211,19 @@ class TokenRefreshManager:
             account: account object
 
         Returns:
-            TokenRefreshResult: Refresh the result
+            TokenRefreshResult: Refresh result
         """
         # Try Session Token first
         if account.session_token:
-            logger.info(f"Try to use Session Token to refresh account {account.email}")
+            logger.info(f"Trying Session Token to refresh account {account.email}")
             result = self.refresh_by_session_token(account.session_token)
             if result.success:
                 return result
-            logger.warning(f"Session Token refresh failed, try OAuth refresh")
+            logger.warning(f"Session Token refresh failed; trying OAuth refresh")
 
         # Try OAuth Refresh Token
         if account.refresh_token:
-            logger.info(f"Try to use OAuth Refresh Token to refresh account {account.email}")
+            logger.info(f"Trying OAuth Refresh Token to refresh account {account.email}")
             result = self.refresh_by_oauth_token(
                 refresh_token=account.refresh_token,
                 client_id=account.client_id
@@ -238,7 +238,7 @@ class TokenRefreshManager:
 
     def validate_token(self, access_token: str) -> Tuple[bool, Optional[str]]:
         """
-        Verify whether the Access Token is valid
+        Check whether the Access Token is valid
 
         Args:
             access_token: access token
@@ -269,7 +269,7 @@ class TokenRefreshManager:
                 return False, f"Authentication failed: HTTP {response.status_code}"
 
         except Exception as e:
-            return False, f"Verification exception: {str(e)}"
+            return False, f"Validation error: {str(e)}"
 
 
 def refresh_account_token(account_id: int, proxy_url: Optional[str] = None) -> TokenRefreshResult:
@@ -286,7 +286,7 @@ def refresh_account_token(account_id: int, proxy_url: Optional[str] = None) -> T
     with get_db() as db:
         account = crud.get_account_by_id(db, account_id)
         if not account:
-            return TokenRefreshResult(success=False, error_message="Account does not exist")
+            return TokenRefreshResult(success=False, error_message="Account not found")
 
         manager = TokenRefreshManager(proxy_url=proxy_url)
         result = manager.refresh_account(account)
@@ -311,7 +311,7 @@ def refresh_account_token(account_id: int, proxy_url: Optional[str] = None) -> T
 
 def validate_account_token(account_id: int, proxy_url: Optional[str] = None) -> Tuple[bool, Optional[str]]:
     """
-    Verify whether the Token of the specified account is valid
+    Check whether the specified account's token is valid
 
     Args:
         account_id: account ID
@@ -323,10 +323,10 @@ def validate_account_token(account_id: int, proxy_url: Optional[str] = None) -> 
     with get_db() as db:
         account = crud.get_account_by_id(db, account_id)
         if not account:
-            return False, "Account does not exist"
+            return False, "Account not found"
 
         if not account.access_token:
-            return False, "Account does not have access_token"
+            return False, "Account has no access_token"
 
         manager = TokenRefreshManager(proxy_url=proxy_url)
         return manager.validate_token(account.access_token)

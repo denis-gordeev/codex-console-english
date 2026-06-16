@@ -429,13 +429,13 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                                     _svc = crud.get_cpa_service_by_id(db, _sid)
                                     if not _svc:
                                         continue
-                                    log_callback(f"[CPA] is packaging the account and sending it to the service station: {_svc.name}")
+                                    log_callback(f"[CPA] Packaging account and uploading to service: {_svc.name}")
                                     _ok, _msg = upload_to_cpa(token_data, api_url=_svc.api_url, api_token=_svc.api_token)
                                     if _ok:
                                         saved_account.cpa_uploaded = True
                                         saved_account.cpa_uploaded_at = datetime.utcnow()
                                         db.commit()
-                                        log_callback(f"[CPA] was delivered successfully and the service station has signed for it: {_svc.name}")
+                                        log_callback(f"[CPA] Upload successful: {_svc.name}")
                                     else:
                                         log_callback(f"[CPA] upload failed ({_svc.name}): {_msg}")
                                 except Exception as _e:
@@ -460,7 +460,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                                     _svc = crud.get_sub2api_service_by_id(db, _sid)
                                     if not _svc:
                                         continue
-                                    log_callback(f"[Sub2API] is sending the account to the service station: {_svc.name}")
+                                    log_callback(f"[Sub2API] Uploading account to service: {_svc.name}")
                                     _ok, _msg = upload_to_sub2api([saved_account], _svc.api_url, _svc.api_key)
                                     log_callback(f"[Sub2API] {'success' if _ok else 'failure'}({_svc.name}): {_msg}")
                                 except Exception as _e:
@@ -485,7 +485,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                                     _svc = crud.get_tm_service_by_id(db, _sid)
                                     if not _svc:
                                         continue
-                                    log_callback(f"[TM] is sending the account to the service station: {_svc.name}")
+                                    log_callback(f"[TM] Uploading account to service: {_svc.name}")
                                     _ok, _msg = upload_to_team_manager(saved_account, _svc.api_url, _svc.api_key)
                                     log_callback(f"[TM] {'success' if _ok else 'failure'}({_svc.name}): {_msg}")
                                 except Exception as _e:

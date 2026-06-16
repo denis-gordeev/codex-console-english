@@ -89,7 +89,7 @@ def _parse_callback_url(callback_url: str) -> Dict[str, str]:
 
 
 def _jwt_claims_no_verify(id_token: str) -> Dict[str, Any]:
-    """Parsing JWT ID Token (does not verify signature)"""
+    """Parse JWT ID Token (without signature verification)"""
     if not id_token or id_token.count(".") < 2:
         return {}
     payload_b64 = id_token.split(".")[1]
@@ -102,7 +102,7 @@ def _jwt_claims_no_verify(id_token: str) -> Dict[str, Any]:
 
 
 def _decode_jwt_segment(seg: str) -> Dict[str, Any]:
-    """Decoding JWT fragment"""
+    """Decode JWT segment"""
     raw = (seg or "").strip()
     if not raw:
         return {}
@@ -138,7 +138,7 @@ def _post_form(
         proxy_url: proxy URL
 
     Returns:
-        Respond to JSON data
+        Response JSON data
     """
     # Build proxy configuration
     proxies = None
@@ -344,7 +344,7 @@ class OAuthManager:
         expected_state: str,
         code_verifier: str
     ) -> Dict[str, Any]:
-        """Handling OAuth callbacks"""
+        """Handle OAuth callback"""
         result_json = submit_callback_url(
             callback_url=callback_url,
             expected_state=expected_state,

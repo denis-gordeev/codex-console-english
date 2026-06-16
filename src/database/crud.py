@@ -58,12 +58,12 @@ def create_account(
 
 
 def get_account_by_id(db: Session, account_id: int) -> Optional[Account]:
-    """Get account based on ID"""
+    """Get account by ID"""
     return db.query(Account).filter(Account.id == account_id).first()
 
 
 def get_account_by_email(db: Session, email: str) -> Optional[Account]:
-    """Get account based on email"""
+    """Get account by email"""
     return db.query(Account).filter(Account.email == email).first()
 
 
@@ -177,7 +177,7 @@ def create_email_service(
 
 
 def get_email_service_by_id(db: Session, service_id: int) -> Optional[EmailService]:
-    """Get email service based on ID"""
+    """Get email service by ID"""
     return db.query(EmailService).filter(EmailService.id == service_id).first()
 
 
@@ -259,7 +259,7 @@ def create_registration_task(
 
 
 def get_registration_task_by_uuid(db: Session, task_uuid: str) -> Optional[RegistrationTask]:
-    """Get registration tasks based on UUID"""
+    """Get registration task by UUID"""
     return db.query(RegistrationTask).filter(RegistrationTask.task_uuid == task_uuid).first()
 
 
@@ -339,7 +339,7 @@ def get_setting(db: Session, key: str) -> Optional[Setting]:
 
 
 def get_settings_by_category(db: Session, category: str) -> List[Setting]:
-    """Get settings based on category"""
+    """Get settings by category"""
     return db.query(Setting).filter(Setting.category == category).all()
 
 
@@ -542,7 +542,7 @@ def create_cpa_service(
 
 
 def get_cpa_service_by_id(db: Session, service_id: int) -> Optional[CpaService]:
-    """Get CPA service based on ID"""
+    """Get CPA service by ID"""
     return db.query(CpaService).filter(CpaService.id == service_id).first()
 
 

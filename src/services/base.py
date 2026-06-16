@@ -114,7 +114,7 @@ class BaseEmailService(abc.ABC):
             email_id: ID in the email service
 
         Returns:
-            Is deletion successful?
+            True if the deletion succeeded
 
         Raises:
             EmailServiceError: Service error"""
@@ -125,7 +125,7 @@ class BaseEmailService(abc.ABC):
         """Check service health status
 
         Returns:
-            Is the service healthy?
+            True if the service is healthy
 
         Note:
             This method should not throw an exception, it should catch the exception and return False"""
@@ -138,7 +138,7 @@ class BaseEmailService(abc.ABC):
             email_id: ID in the email service
 
         Returns:
-            Email information dictionary, returns None if it does not exist"""
+            Email information dictionary, or None if not found"""
         # Default implementation: traverse the list to find
         for email_info in self.list_emails():
             if email_info.get("id") == email_id:

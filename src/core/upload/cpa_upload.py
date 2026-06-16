@@ -207,7 +207,7 @@ def batch_upload_to_cpa(
                     "id": account_id,
                     "email": None,
                     "success": False,
-                    "error": "Account does not exist"
+                    "error": "Account not found"
                 })
                 continue
 

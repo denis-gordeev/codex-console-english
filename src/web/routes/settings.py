@@ -287,7 +287,7 @@ async def backup_database():
         db_path = db_path[10:]
 
     if not os.path.exists(db_path):
-        raise HTTPException(status_code=404, detail="Database file does not exist")
+        raise HTTPException(status_code=404, detail="Database file not found")
 
     # Create backup directory
     from pathlib import Path as FilePath
@@ -359,7 +359,7 @@ async def get_recent_logs(
     log_path = Path(log_file)
 
     if not log_path.exists():
-        return {"logs": [], "message": "The log file does not exist"}
+        return {"logs": [], "message": "Log file not found"}
 
     try:
         with open(log_path, "r", encoding="utf-8") as f:

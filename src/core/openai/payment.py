@@ -1,5 +1,5 @@
 """
-Payment core logic - generate Plus/Team payment link, open browser without trace, detect subscription status
+Payment core logic - generate Plus/Team payment link, open browser in incognito mode, detect subscription status
 """
 
 import logging
@@ -66,7 +66,7 @@ def _parse_cookie_str(cookies_str: str, domain: str) -> list:
 
 
 def _open_url_system_browser(url: str) -> bool:
-    """Fallback solution: call the system browser to open in incognito mode"""
+    """Fallback: open the URL in the system browser in incognito mode"""
     platform = sys.platform
     try:
         if platform == "win32":
@@ -96,7 +96,7 @@ def generate_plus_link(
     proxy: Optional[str] = None,
     country: str = "SG",
 ) -> str:
-    """Generate Plus payment link (backend carries account cookie to send request)"""
+    """Generate Plus payment link (sends request with account cookie from backend)"""
     if not account.access_token:
         raise ValueError("Account is missing access_token")
 
@@ -145,7 +145,7 @@ def generate_team_link(
     proxy: Optional[str] = None,
     country: str = "SG",
 ) -> str:
-    """Generate Team payment link (backend carries account cookie to send request)"""
+    """Generate Team payment link (sends request with account cookie from backend)"""
     if not account.access_token:
         raise ValueError("Account is missing access_token")
 
@@ -198,7 +198,7 @@ def open_url_incognito(url: str, cookies_str: Optional[str] = None) -> bool:
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
-        logger.warning("playwright is not installed, fall back to the system browser")
+        logger.warning("Playwright is not installed; falling back to system browser")
         return _open_url_system_browser(url)
 
     def _launch():
@@ -213,7 +213,7 @@ def open_url_incognito(url: str, cookies_str: Optional[str] = None) -> bool:
                 # Keep the window open until the user closes it
                 page.wait_for_timeout(300_000) # Wait up to 5 minutes
         except Exception as e:
-            logger.warning(f"Playwright private opening failed: {e}")
+            logger.warning(f"Playwright incognito launch failed: {e}")
 
     threading.Thread(target=_launch, daemon=True).start()
     return True
@@ -251,7 +251,7 @@ def check_subscription_status(account: Account, proxy: Optional[str] = None) -> 
     if "plus" in plan.lower():
         return "plus"
 
-    # Try to judge from orgs or workspace information
+    # Try to determine from orgs or workspace information
     orgs = data.get("orgs", {}).get("data", [])
     for org in orgs:
         settings_ = org.get("settings", {})

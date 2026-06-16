@@ -55,6 +55,12 @@ This repository keeps the original structure and overall approach, while applyin
 - Replaced non-ASCII ▼ with &darr; in app.js multi-select dropdown.
 - Fixed 154 JS comment spacing issues (missing space after `//`) across all 6 frontend JS files.
 - Replaced non-ASCII em dash with ASCII `--` in session.py docstring for ASCII compatibility.
+- Fixed 54 docstring/translation artifacts: "initialization provider" → "Initialize the provider", "Respond to JSON data" → "Response JSON data", "Parsing JWT" → "Parse JWT", "Handling OAuth callbacks" → "Handle OAuth callback", "REST API interface" → "REST API", and 49 more.
+- Replaced all "does not exist" with "not found" in HTTP 404 error messages (34 occurrences across 9 files) for standard REST API conventions.
+- Replaced "based on" with "by" in CRUD docstrings (6 occurrences) for idiomatic English.
+- Polished 20 awkward log messages in registration routes and register engine for natural English.
+- Fixed formatting bug in models.py (two column definitions on one line).
+- Added missing space after emoji in settings.html.
 
 ### Next Iterations
 
@@ -63,6 +69,7 @@ This repository keeps the original structure and overall approach, while applyin
 - Add API tests for access-control edge cases such as malformed cookies and custom logout `next` targets.
 - Verify Docker environment variable examples against the actual `settings` names used by the app.
 - Add focused tests for the settings save flows and error messages returned by low-traffic API endpoints.
+- Verify that all "Account not found" / "X not found" HTTP 404 messages are consistent with test assertions.
 
 ## What This Branch Fixes
 

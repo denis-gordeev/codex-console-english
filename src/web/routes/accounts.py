@@ -202,7 +202,7 @@ async def get_account(account_id: int):
     with get_db() as db:
         account = crud.get_account_by_id(db, account_id)
         if not account:
-            raise HTTPException(status_code=404, detail="Account does not exist")
+            raise HTTPException(status_code=404, detail="Account not found")
         return account_to_response(account)
 
 
@@ -212,7 +212,7 @@ async def get_account_tokens(account_id: int):
     with get_db() as db:
         account = crud.get_account_by_id(db, account_id)
         if not account:
-            raise HTTPException(status_code=404, detail="Account does not exist")
+            raise HTTPException(status_code=404, detail="Account not found")
 
         return {
             "id": account.id,
@@ -230,7 +230,7 @@ async def update_account(account_id: int, request: AccountUpdateRequest):
     with get_db() as db:
         account = crud.get_account_by_id(db, account_id)
         if not account:
-            raise HTTPException(status_code=404, detail="Account does not exist")
+            raise HTTPException(status_code=404, detail="Account not found")
 
         update_data = {}
         if request.status:
@@ -257,7 +257,7 @@ async def get_account_cookies(account_id: int):
     with get_db() as db:
         account = crud.get_account_by_id(db, account_id)
         if not account:
-            raise HTTPException(status_code=404, detail="Account does not exist")
+            raise HTTPException(status_code=404, detail="Account not found")
         return {"account_id": account_id, "cookies": account.cookies or ""}
 
 
@@ -267,7 +267,7 @@ async def delete_account(account_id: int):
     with get_db() as db:
         account = crud.get_account_by_id(db, account_id)
         if not account:
-            raise HTTPException(status_code=404, detail="Account does not exist")
+            raise HTTPException(status_code=404, detail="Account not found")
 
         crud.delete_account(db, account_id)
         return {"success": True, "message": f"Account {account.email} has been deleted"}
@@ -735,7 +735,7 @@ async def batch_upload_accounts_to_cpa(request: BatchCPAUploadRequest):
         with get_db() as db:
             svc = crud.get_cpa_service_by_id(db, request.cpa_service_id)
             if not svc:
-                raise HTTPException(status_code=404, detail="The specified CPA service does not exist")
+                raise HTTPException(status_code=404, detail="CPA service not found")
             cpa_api_url = svc.api_url
             cpa_api_token = svc.api_token
 
@@ -763,14 +763,14 @@ async def upload_account_to_cpa(account_id: int, request: Optional[CPAUploadRequ
         with get_db() as db:
             svc = crud.get_cpa_service_by_id(db, cpa_service_id)
             if not svc:
-                raise HTTPException(status_code=404, detail="The specified CPA service does not exist")
+                raise HTTPException(status_code=404, detail="CPA service not found")
             cpa_api_url = svc.api_url
             cpa_api_token = svc.api_token
 
     with get_db() as db:
         account = crud.get_account_by_id(db, account_id)
         if not account:
-            raise HTTPException(status_code=404, detail="Account does not exist")
+            raise HTTPException(status_code=404, detail="Account not found")
 
         if not account.access_token:
             return {
@@ -823,7 +823,7 @@ async def batch_upload_accounts_to_sub2api(request: BatchSub2ApiUploadRequest):
         with get_db() as db:
             svc = crud.get_sub2api_service_by_id(db, request.service_id)
             if not svc:
-                raise HTTPException(status_code=404, detail="The specified Sub2API service does not exist")
+                raise HTTPException(status_code=404, detail="Sub2API service not found")
             api_url = svc.api_url
             api_key = svc.api_key
     else:
@@ -864,7 +864,7 @@ async def upload_account_to_sub2api(account_id: int, request: Optional[Sub2ApiUp
         with get_db() as db:
             svc = crud.get_sub2api_service_by_id(db, service_id)
             if not svc:
-                raise HTTPException(status_code=404, detail="The specified Sub2API service does not exist")
+                raise HTTPException(status_code=404, detail="Sub2API service not found")
             api_url = svc.api_url
             api_key = svc.api_key
     else:
@@ -880,7 +880,7 @@ async def upload_account_to_sub2api(account_id: int, request: Optional[Sub2ApiUp
     with get_db() as db:
         account = crud.get_account_by_id(db, account_id)
         if not account:
-            raise HTTPException(status_code=404, detail="Account does not exist")
+            raise HTTPException(status_code=404, detail="Account not found")
         if not account.access_token:
             return {"success": False, "error": "The account lacks Token and cannot be uploaded"}
 
@@ -956,7 +956,7 @@ async def upload_account_to_tm(account_id: int, request: Optional[UploadTMReques
 
         account = crud.get_account_by_id(db, account_id)
         if not account:
-            raise HTTPException(status_code=404, detail="Account does not exist")
+            raise HTTPException(status_code=404, detail="Account not found")
         success, message = upload_to_team_manager(account, api_url, api_key)
 
     return {"success": success, "message": message}
@@ -1038,7 +1038,7 @@ async def get_account_inbox_code(account_id: int):
     with get_db() as db:
         account = crud.get_account_by_id(db, account_id)
         if not account:
-            raise HTTPException(status_code=404, detail="Account does not exist")
+            raise HTTPException(status_code=404, detail="Account not found")
 
         try:
             service_type = EmailServiceType(account.email_service)

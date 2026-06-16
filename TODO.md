@@ -1,5 +1,79 @@
 # TODO
 
+## Completed In This Round (June 16, 2026 - Round 40)
+
+- Pulled `origin/main` - repository was already up to date.
+- Deep scan found 116 substantive translation artifacts (awkward English, mistranslations, inconsistent terminology) that previous rounds had missed.
+- Fixed 54 docstring/translation artifacts across outlook/providers/base.py, oauth.py, payment.py, token_refresh.py, http_client.py, tempmail.py, moe_mail.py, freemail.py, temp_mail.py, base.py, email_parser.py, email.py routes, constants.py:
+  - "initialization provider" → "Initialize the provider"
+  - "Second" → "Seconds" (unit comment)
+  - "Is the connection successful?" → "True if the connection was established"
+  - "Is it healthy and available?" → "True if healthy and available"
+  - "Parsing JWT ID Token" → "Parse JWT ID Token"
+  - "Decoding JWT fragment" → "Decode JWT segment"
+  - "Respond to JSON data" → "Response JSON data" (4 occurrences)
+  - "Handling OAuth callbacks" → "Handle OAuth callback"
+  - "open browser without trace" → "open browser in incognito mode"
+  - "Fallback solution" → "Fallback:"
+  - "backend carries account cookie to send request" → "sends request with account cookie from backend" (2 occurrences)
+  - "Playwright private opening failed" → "Playwright incognito launch failed"
+  - "Try to judge" → "Try to determine"
+  - "Token refresh results" → "Token refresh result"
+  - "Refresh the result" → "Refresh result" (4 occurrences)
+  - "token refresh exception" → "token refresh error" (2 occurrences)
+  - "Verify whether" → "Check whether" (2 occurrences)
+  - "Verification exception" → "Validation error"
+  - "Account does not exist" → "Account not found" (token_refresh.py)
+  - "Account does not have access_token" → "Account has no access_token"
+  - "HTTP client exception" → "HTTP client error"
+  - "OpenAI dedicated" → "OpenAI-specific"
+  - "Check Sentinel interception" → "Check Sentinel challenge"
+  - "Sentinel check exception" → "Sentinel check error" (2 occurrences)
+  - "Return data is incomplete" → "Response data is incomplete"
+  - "returns incomplete data" → "returned incomplete data"
+  - "and cached emails are returned here" → "; cached emails are returned instead"
+  - "so it will be removed from the cache here" → "; the entry is removed from cache instead"
+  - "available" → "reachable" (health check)
+  - "even if an error status code is returned" → "as long as it responds, regardless of status code"
+  - "Wait for verification code and support callback function" → "Wait for verification code with callback support"
+  - "receives current status information" → "receives current status updates"
+  - "timeout time" → "Timeout (seconds)"
+  - "REST API interface" → "REST API" (2 occurrences)
+  - "Is deletion successful?" → "True if the deletion succeeded" (2 occurrences)
+  - "Is the service healthy?" → "True if the service is healthy"
+  - "returns None if it does not exist" → "or None if not found"
+  - "used for deduplication" → "used for dedup tracking"
+  - "Filter sensitive configuration information" → "Filter sensitive configuration fields"
+  - "but whether the tag exists" → "but their presence is indicated"
+  - "Calculate whether there is OAuth for Outlook" → "Check whether OAuth is configured for Outlook"
+  - "Verification code related" → "Verification code constants"
+- Replaced all "does not exist" with "not found" in HTTP 404 error messages across accounts.py (13 occurrences), payment.py (2 occurrences), settings.py (2 occurrences), cpa_services.py (5 occurrences), sub2api_services.py (5 occurrences), tm_services.py (4 occurrences), cpa_upload.py (1 occurrence), sub2api_upload.py (1 occurrence), team_manager_upload.py (1 occurrence) — 34 total.
+- Replaced "based on" with "by" in CRUD docstrings (6 occurrences in crud.py).
+- Polished 20 awkward log messages in registration.py and register.py:
+  - "[CPA] is packaging the account and sending it to the service station" → "[CPA] Packaging account and uploading to service"
+  - "[CPA] was delivered successfully and the service station has signed for it" → "[CPA] Upload successful"
+  - "[Sub2API] is sending the account to the service station" → "[Sub2API] Uploading account to service"
+  - "[TM] is sending the account to the service station" → "[TM] Uploading account to service"
+  - "playwright is not installed, fall back to" → "Playwright is not installed; falling back to"
+  - "Incomplete information returned" → "Incomplete information in response"
+  - "Sentinel token obtained successfully" → "Sentinel token obtained"
+  - "token not obtained" → "no token received"
+  - "Sentinel check exception" → "Sentinel check error"
+  - "registration portal form" → "registration entry form"
+  - "Failed to re-login to submit email" → "Failed to submit email on re-login"
+  - "Failed to re-login and submit password" → "Failed to submit password on re-login"
+  - "Authorization cookie format error" → "Invalid authorization cookie format"
+  - "No workspace information" → "No workspace data"
+  - "Unable to resolve workspace ID" → "Could not resolve workspace ID"
+  - "Registration password failed" → "Password registration failed"
+  - "The account has been stored in the database, it is safe to leave it" → "Account saved to database"
+  - "Try to use Session Token" → "Trying Session Token"
+  - "Session Token refresh failed, try OAuth refresh" → "Session Token refresh failed; trying OAuth refresh"
+  - "Try to use OAuth Refresh Token" → "Trying OAuth Refresh Token"
+- Fixed formatting bug in models.py: split `last_used` and `created_at` onto separate lines.
+- Added missing space after emoji in settings.html: `🚀Team` → `🚀 Team`.
+- Verified all 32 tests pass successfully (pytest on Python 3.10 via .venv).
+
 ## Completed In This Round (June 15, 2026 - Round 39)
 
 - Pulled `origin/main` - repository was already up to date.
@@ -382,4 +456,5 @@
 - Add API tests for access-control edge cases such as malformed cookies and custom logout `next` targets.
 - Verify Docker environment variable examples against the actual `settings` names used by the app.
 - Add focused tests for the settings save flows and error messages returned by low-traffic API endpoints.
+- Verify that all "not found" HTTP 404 messages are consistent with test assertions after the "does not exist" → "not found" bulk replacement.
 - Authenticate `gh` in a future round if issue and PR inspection is required, since GitHub GraphQL access is currently unavailable in this environment.
