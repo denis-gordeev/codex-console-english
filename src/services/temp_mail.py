@@ -31,7 +31,7 @@ class TempMailService(BaseEmailService):
 
         Args:
             config: configuration dictionary, supports the following keys:
-                - base_url: Worker domain address, such as https://mail.example.com (required)
+                - base_url: Worker URL, such as https://mail.example.com (required)
                 - admin_password: Admin password, corresponding to x-admin-auth header (required)
                 - domain: email domain, such as example.com (required)
                 - enable_prefix: Enable prefix (default: True)
@@ -249,7 +249,7 @@ class TempMailService(BaseEmailService):
                 "created_at": time.time(),
             }
 
-            # Cache JWT for use when retrieving verification codes
+            # Cache JWT for use when retrieving OTPs
             self._email_cache[address] = email_info
 
             logger.info(f"TempMail email address created successfully: {address}")
@@ -270,18 +270,18 @@ class TempMailService(BaseEmailService):
         pattern: str = OTP_CODE_PATTERN,
         otp_sent_at: Optional[float] = None,
     ) -> Optional[str]:
-        """Get verification code from TempMail email
+        """Get OTP from TempMail email
 
         Args:
             email: email address
             email_id: Unused, reserved for API compatibility
             timeout: timeout (seconds)
-            pattern: Verification code regex pattern
+            pattern: OTP regex pattern
             otp_sent_at: OTP sending timestamp (not used yet)
 
         Returns:
-            Verification code string, returns None when timeout"""
-        logger.info(f"Retrieving verification code from TempMail email address {email}...")
+            OTP string, returns None when timeout"""
+        logger.info(f"Retrieving OTP from TempMail email address {email}...")
 
         start_time = time.time()
         seen_mail_ids: set = set()
@@ -333,7 +333,7 @@ class TempMailService(BaseEmailService):
                     match = re.search(pattern, content)
                     if match:
                         code = match.group(1)
-                        logger.info(f"Verification code found from TempMail email {email}: {code}")
+                        logger.info(f"OTP found from TempMail email {email}: {code}")
                         self.update_status(True)
                         return code
 
@@ -342,7 +342,7 @@ class TempMailService(BaseEmailService):
 
             time.sleep(3)
 
-        logger.warning(f"Timeout waiting for TempMail verification code: {email}")
+        logger.warning(f"Timeout waiting for TempMail OTP: {email}")
         return None
 
     def list_emails(self, limit: int = 100, offset: int = 0, **kwargs) -> List[Dict[str, Any]]:

@@ -284,7 +284,7 @@ class DuckMailService(BaseEmailService):
                         self.update_status(True)
                         return match.group(1)
             except Exception as e:
-                logger.debug(f"DuckMail polling verification code failed: {e}")
+                logger.debug(f"DuckMail polling for OTP failed: {e}")
 
             time.sleep(3)
 

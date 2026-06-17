@@ -405,7 +405,7 @@ function updatePagination() {
     elements.pageInfo.textContent = `Page ${currentPage} / Total Page ${totalPages}`;
 }
 
-// Reset the status of all selected pages
+// Reset all selected pages
 function resetSelectAllPages() {
     selectAllPages = false;
     selectedAccounts.clear();
@@ -1219,7 +1219,7 @@ async function saveCookies(id) {
     }
 }
 
-// Query the inbox verification code
+// Query the inbox OTP
 async function checkInboxCode(id) {
     toast.info('Querying inbox...');
     try {
@@ -1238,13 +1238,13 @@ function showInboxCodeResult(code, email) {
     elements.modalBody.innerHTML = `
         <div style="text-align:center; padding:24px 16px;">
             <div style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">
-                ${escapeHtml(email)} latest verification code
+                ${escapeHtml(email)} latest OTP
             </div>
             <div style="font-size:36px;font-weight:700;letter-spacing:8px;
                         color:var(--primary);font-family:monospace;margin-bottom:20px;">
                 ${escapeHtml(code)}
             </div>
-            <button class="btn btn-primary" onclick="copyToClipboard('${escapeHtml(code)}')">Copy verification code</button>
+            <button class="btn btn-primary" onclick="copyToClipboard('${escapeHtml(code)}')">Copy OTP</button>
         </div>
     `;
     elements.detailModal.classList.add('active');

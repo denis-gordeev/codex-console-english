@@ -388,7 +388,7 @@ function getStatusIcon(status) {
 // Confirmation dialog
 // ============================================
 
-function confirm(message, title = 'Confirm operation') {
+function confirm(message, title = 'Confirm') {
     return new Promise((resolve) => {
         const modal = document.createElement('div');
         modal.className = 'modal active';

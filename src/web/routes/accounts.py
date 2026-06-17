@@ -633,7 +633,7 @@ async def batch_refresh_tokens(request: BatchRefreshRequest, background_tasks: B
 
 @router.post("/{account_id}/refresh")
 async def refresh_account_token(account_id: int, request: Optional[TokenRefreshRequest] = Body(default=None)):
-    """Refresh the Token of a single account"""
+    """Refresh a single account's token"""
     proxy = _get_proxy(request.proxy if request else None)
     result = do_refresh(account_id, proxy)
 
@@ -1032,7 +1032,7 @@ def _build_inbox_config(db, service_type, email: str) -> dict:
 
 @router.post("/{account_id}/inbox-code")
 async def get_account_inbox_code(account_id: int):
-    """Check the latest verification code in the account email inbox"""
+    """Check the latest OTP in the account email inbox"""
     from ...services import EmailServiceFactory, EmailServiceType
 
     with get_db() as db:

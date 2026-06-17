@@ -179,7 +179,7 @@ class RegistrationEngine:
     def _create_email(self) -> bool:
         """Create an email address for the registration flow."""
         try:
-            self._log(f"Creating a {self.email_service.service_type.value} email address...")
+            self._log(f"Create a {self.email_service.service_type.value} email address...")
             self.email_info = self.email_service.create_email()
 
             if not self.email_info or "email" not in self.email_info:
@@ -257,7 +257,7 @@ class RegistrationEngine:
         try:
             sen_token = self.http_client.check_sentinel(did)
             if sen_token:
-                self._log(f"Sentinel token obtained")
+                self._log("Sentinel token retrieved")
                 return sen_token
             self._log("Sentinel check failed: no token received", "warning")
             return None
@@ -335,7 +335,7 @@ class RegistrationEngine:
                         self._log("Detected an existing account; switching to the login flow automatically")
                         self._is_existing_account = True
                     else:
-                        self._log("Login flow started; waiting for the verification code sent automatically by the system")
+                        self._log("Login flow started; waiting for the OTP sent automatically by the system")
 
                 return SignupFormResult(
                     success=True,
@@ -409,7 +409,7 @@ class RegistrationEngine:
             is_existing = page_type == OPENAI_PAGE_TYPES["EMAIL_OTP_VERIFICATION"]
             if is_existing:
                 self._otp_sent_at = time.time()
-                self._log("Login password accepted; waiting for the verification code sent automatically by the system")
+                self._log("Login password accepted; waiting for the OTP sent automatically by the system")
 
             return SignupFormResult(
                 success=True,
@@ -432,7 +432,7 @@ class RegistrationEngine:
 
     def _prepare_authorize_flow(self, label: str) -> Tuple[Optional[str], Optional[str]]:
         """Initialize the authorization process at the current stage and return device id and sentinel token."""
-        self._log(f"{label}: Initializing session...")
+        self._log(f"{label}: Initialize session...")
         if not self._init_session():
             return None, None
 
@@ -455,10 +455,10 @@ class RegistrationEngine:
 
     def _complete_token_exchange(self, result: RegistrationResult) -> bool:
         """After the login state has been established, complete the workspace and OAuth token retrieval."""
-        self._log("Waiting for the login verification code...")
+        self._log("Wait for the login OTP...")
         code = self._get_verification_code()
         if not code:
-            result.error_message = "Failed to get verification code"
+            result.error_message = "Failed to get OTP"
             return False
 
         self._log("Verifying the login code...")
@@ -486,7 +486,7 @@ class RegistrationEngine:
             result.error_message = "Failed to follow redirect chain"
             return False
 
-        self._log("Processing OAuth callback, preparing to request token...")
+        self._log("Process OAuth callback, preparing to request token...")
         token_info = self._handle_oauth_callback(callback_url)
         if not token_info:
             result.error_message = "Failed to handle OAuth callback"
@@ -529,7 +529,7 @@ class RegistrationEngine:
         if not password_result.success:
             return False, f"Failed to submit password on re-login: {password_result.error_message}"
         if not password_result.is_existing_account:
-            return False, f"Re-login did not reach the verification code page: {password_result.page_type or 'unknown'}"
+            return False, f"Re-login did not reach the OTP page: {password_result.page_type or 'unknown'}"
         return True, ""
 
     def _register_password(self) -> Tuple[bool, Optional[str]]:
@@ -606,7 +606,7 @@ class RegistrationEngine:
             logger.warning(f"Failed to mark email address status: {e}")
 
     def _send_verification_code(self) -> bool:
-        """Send the verification code."""
+        """Send the OTP."""
         try:
             # Record sending timestamp
             self._otp_sent_at = time.time()
@@ -619,17 +619,17 @@ class RegistrationEngine:
                 },
             )
 
-            self._log(f"Send verification code status: {response.status_code}")
+            self._log(f"Send OTP status: {response.status_code}")
             return response.status_code == 200
 
         except Exception as e:
-            self._log(f"Failed to send verification code: {e}", "error")
+            self._log(f"Failed to send OTP: {e}", "error")
             return False
 
     def _get_verification_code(self) -> Optional[str]:
-        """Get the verification code."""
+        """Get the OTP."""
         try:
-            self._log(f"Waiting for the verification code for {self.email}...")
+            self._log(f"Waiting for the OTP for {self.email}...")
 
             email_id = self.email_info.get("service_id") if self.email_info else None
             code = self.email_service.get_verification_code(
@@ -644,15 +644,15 @@ class RegistrationEngine:
                 self._log(f"Verification code received: {code}")
                 return code
             else:
-                self._log("Timeout waiting for verification code", "error")
+                self._log("Timeout waiting for OTP", "error")
                 return None
 
         except Exception as e:
-            self._log(f"Failed to get verification code: {e}", "error")
+            self._log(f"Failed to get OTP: {e}", "error")
             return None
 
     def _validate_verification_code(self, code: str) -> bool:
-        """Validate the verification code."""
+        """Validate the OTP."""
         try:
             code_body = f'{{"code":"{code}"}}'
 
@@ -666,11 +666,11 @@ class RegistrationEngine:
                 data=code_body,
             )
 
-            self._log(f"Verification code validation status: {response.status_code}")
+            self._log(f"OTP validation status: {response.status_code}")
             return response.status_code == 200
 
         except Exception as e:
-            self._log(f"Failed to validate verification code: {e}", "error")
+            self._log(f"Failed to validate OTP: {e}", "error")
             return False
 
     def _create_user_account(self) -> bool:
@@ -808,7 +808,7 @@ class RegistrationEngine:
                 import urllib.parse
                 next_url = urllib.parse.urljoin(current_url, location)
 
-                # Check whether the callback parameters are already present
+                # Check if the callback parameters are already present
                 if "code=" in next_url and "state=" in next_url:
                     self._log(f"Callback URL found: {next_url[:100]}...")
                     return next_url
@@ -829,7 +829,7 @@ class RegistrationEngine:
                 self._log("OAuth process not initialized", "error")
                 return None
 
-            self._log("Processing OAuth callback...")
+            self._log("Process OAuth callback...")
             token_info = self.oauth_manager.handle_callback(
                 callback_url=callback_url,
                 expected_state=self.oauth_start.state,
@@ -867,7 +867,7 @@ class RegistrationEngine:
             self._log("=" * 60)
 
             # 1. Check IP geolocation
-            self._log("1. Checking IP geolocation...")
+            self._log("1. Check IP geolocation...")
             ip_ok, location = self._check_ip_location()
             if not ip_ok:
                 result.error_message = f"IP geolocation is not supported: {location}"
@@ -877,7 +877,7 @@ class RegistrationEngine:
             self._log(f"IP location: {location}")
 
             # 2. Create email
-            self._log("2. Creating email address...")
+            self._log("2. Create email address...")
             if not self._create_email():
                 result.error_message = "Failed to create email address"
                 return result
@@ -909,23 +909,21 @@ class RegistrationEngine:
                     result.error_message = "Password registration failed"
                     return result
 
-                self._log("6. Sending registration verification code...")
+                self._log("6. Send registration OTP...")
                 if not self._send_verification_code():
-                    result.error_message = "Failed to send verification code"
-                    return result
+                    result.error_message = "Failed to send OTP"
 
-                self._log("7. Waiting for the verification code...")
+                self._log("7. Wait for the OTP...")
                 code = self._get_verification_code()
                 if not code:
-                    result.error_message = "Failed to get verification code"
-                    return result
+                    result.error_message = "Failed to get OTP"
 
                 self._log("8. Verifying email code...")
                 if not self._validate_verification_code(code):
-                    result.error_message = "Failed to validate verification code"
+                    result.error_message = "Failed to validate OTP"
                     return result
 
-                self._log("9. Creating final user account profile...")
+                self._log("9. Create final user account profile...")
                 if not self._create_user_account():
                     result.error_message = "Failed to create user account"
                     return result

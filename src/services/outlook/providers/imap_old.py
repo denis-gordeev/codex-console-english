@@ -110,7 +110,7 @@ class IMAPOldProvider(OutlookProvider):
             return False
 
         try:
-            # Building the XOAUTH2 authentication string
+            # Build the XOAUTH2 authentication string
             auth_string = f"user={self.account.email}\x01auth=Bearer {token}\x01\x01"
             self._conn.authenticate("XOAUTH2", lambda _: auth_string.encode("utf-8"))
             return True

@@ -251,17 +251,17 @@ class MeoMailEmailService(BaseEmailService):
         pattern: str = OTP_CODE_PATTERN,
         otp_sent_at: Optional[float] = None,
     ) -> Optional[str]:
-        """Get verification code from custom domain email
+        """Get OTP from custom domain email
 
         Args:
             email: email address
             email_id: Email ID (if not provided, search from cache)
             timeout: timeout (seconds)
-            pattern: verification code regex pattern
+            pattern: OTP regex pattern
             otp_sent_at: OTP sending timestamp (custom domain service does not use this parameter yet)
 
         Returns:
-            Verification code string, returns None if timeout or not found"""
+            OTP string, returns None if timeout or not found"""
         # Find email ID
         target_email_id = email_id
         if not target_email_id:
@@ -272,10 +272,10 @@ class MeoMailEmailService(BaseEmailService):
                     break
 
         if not target_email_id:
-            logger.warning(f"Email ID not found for {email}; cannot retrieve verification code.")
+            logger.warning(f"Email ID not found for {email}; cannot retrieve OTP.")
             return None
 
-        logger.info(f"Fetching verification code for {email}...")
+        logger.info(f"Fetching OTP for {email}...")
 
         start_time = time.time()
         seen_message_ids = set()
@@ -312,12 +312,12 @@ class MeoMailEmailService(BaseEmailService):
                     if "openai" not in sender and "openai" not in content.lower():
                         continue
 
-                    # Extract verification code and filter out emails
+                    # Extract OTP and filter out emails
                     email_pattern = r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
                     match = re.search(pattern, re.sub(email_pattern, "", content))
                     if match:
                         code = match.group(1)
-                        logger.info(f"Found verification code for {email}: {code}")
+                        logger.info(f"Found OTP for {email}: {code}")
                         self.update_status(True)
                         return code
 
@@ -327,7 +327,7 @@ class MeoMailEmailService(BaseEmailService):
             # Wait for some time and check again
             time.sleep(3)
 
-        logger.warning(f"Timeout waiting for verification code: {email}")
+        logger.warning(f"Timeout waiting for OTP: {email}")
         return None
 
     def _get_message_content(self, email_id: str, message_id: str) -> Optional[str]:

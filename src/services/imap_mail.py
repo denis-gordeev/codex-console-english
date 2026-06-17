@@ -1,7 +1,7 @@
 """
 IMAP email service
 Supports standard IMAP protocol email service providers such as Gmail / QQ / 163 / Yahoo / Outlook.
-Only used to receive verification codes, forcing direct connection (imaplib does not support proxy).
+Only used to receive OTPs, forcing direct connection (imaplib does not support proxy).
 """
 
 import imaplib
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 class ImapMailService(BaseEmailService):
-    """Standard IMAP email service (only receives verification code, forced direct connection)"""
+    """Standard IMAP email service (only receives OTPs, forced direct connection)"""
 
     def __init__(self, config: Dict[str, Any] = None, name: str = None):
         super().__init__(EmailServiceType.IMAP_MAIL, name)
@@ -96,7 +96,7 @@ class ImapMailService(BaseEmailService):
         return False
 
     def _extract_otp(self, text: str) -> Optional[str]:
-        """Extract the 6-digit verification code from the text, giving priority to semantic matching and falling back to simple matching"""
+        """Extract the 6-digit OTP from the text, trying semantic matching first then falling back to simple matching"""
         match = re.search(OTP_CODE_SEMANTIC_PATTERN, text, re.IGNORECASE)
         if match:
             return match.group(1)
@@ -122,7 +122,7 @@ class ImapMailService(BaseEmailService):
         pattern: str = None,
         otp_sent_at: Optional[float] = None,
     ) -> Optional[str]:
-        """Poll IMAP inbox for OpenAI verification code"""
+        """Poll IMAP inbox for OpenAI OTP"""
         start_time = time.time()
         seen_ids: set = set()
         mail = None
@@ -159,14 +159,14 @@ class ImapMailService(BaseEmailService):
                         if not self._is_openai_sender(from_addr):
                             continue
 
-                        # Extract verification code
+                        # Extract OTP
                         body = self._get_text_body(msg)
                         code = self._extract_otp(body)
                         if code:
                             # Mark as read
                             mail.store(msg_id, "+FLAGS", "\\Seen")
                             self.update_status(True)
-                            logger.info(f"IMAP successfully retrieved verification code: {code}")
+                            logger.info(f"IMAP successfully retrieved OTP: {code}")
                             return code
 
                 except imaplib.IMAP4.error as e:

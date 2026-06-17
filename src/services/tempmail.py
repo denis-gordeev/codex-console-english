@@ -127,17 +127,17 @@ class TempmailService(BaseEmailService):
         otp_sent_at: Optional[float] = None,
     ) -> Optional[str]:
         """
-        Get verification code from Tempmail.lol
+        Get OTP from Tempmail.lol
 
         Args:
             email: email address
             email_id: Email token (if not provided, search from cache)
             timeout: timeout (seconds)
-            pattern: verification code regex pattern
+            pattern: OTP regex pattern
             otp_sent_at: OTP sending timestamp (Tempmail service does not use this parameter yet)
 
         Returns:
-            Verification code string, returns None if timeout or not found
+            OTP string, returns None if timeout or not found
         """
         token = email_id
         if not token:
@@ -145,14 +145,14 @@ class TempmailService(BaseEmailService):
             if email in self._email_cache:
                 token = self._email_cache[email].get("token")
             else:
-                logger.warning(f"Token for email {email} not found; cannot retrieve verification code")
+                logger.warning(f"Token for email {email} not found; cannot retrieve OTP")
                 return None
 
         if not token:
-            logger.warning(f"Email address {email} has no token; cannot retrieve verification code")
+            logger.warning(f"Email address {email} has no token; cannot retrieve OTP")
             return None
 
-        logger.info(f"Waiting for verification code for {email}...")
+        logger.info(f"Waiting for OTP for {email}...")
 
         start_time = time.time()
         seen_ids = set()
@@ -204,11 +204,11 @@ class TempmailService(BaseEmailService):
                     if "openai" not in sender and "openai" not in content.lower():
                         continue
 
-                    # Extract verification code
+                    # Extract OTP
                     match = re.search(pattern, content)
                     if match:
                         code = match.group(1)
-                        logger.info(f"Verification code found: {code}")
+                        logger.info(f"OTP found: {code}")
                         self.update_status(True)
                         return code
 
@@ -218,7 +218,7 @@ class TempmailService(BaseEmailService):
             # Wait for some time and check again
             time.sleep(3)
 
-        logger.warning(f"Waiting for the verification code until timeout: {email}")
+        logger.warning(f"Timed out waiting for OTP: {email}")
         return None
 
     def list_emails(self, **kwargs) -> List[Dict[str, Any]]:
@@ -297,7 +297,7 @@ class TempmailService(BaseEmailService):
         timeout: int = 120
     ) -> Optional[str]:
         """
-        Wait for verification code with callback support
+        Wait for OTP with callback support
 
         Args:
             email: email address
@@ -358,7 +358,7 @@ class TempmailService(BaseEmailService):
                     if "openai" not in sender and "openai" not in content.lower():
                         continue
 
-                    # Extract verification code
+                    # Extract OTP
                     match = re.search(OTP_CODE_PATTERN, content)
                     if match:
                         code = match.group(1)
@@ -367,7 +367,7 @@ class TempmailService(BaseEmailService):
                                 "status": "found",
                                 "email": email,
                                 "code": code,
-                                "message": "Verification code found"
+                                "message": "OTP found"
                             })
                         return code
 
@@ -376,7 +376,7 @@ class TempmailService(BaseEmailService):
                         "status": "waiting",
                         "email": email,
                         "check_count": check_count,
-                        "message": f"Checked {len(seen_ids)} emails, waiting for verification code..."
+                        "message": f"Checked {len(seen_ids)} emails, waiting for OTP..."
                     })
 
             except Exception as e:
@@ -395,6 +395,6 @@ class TempmailService(BaseEmailService):
             callback({
                 "status": "timeout",
                 "email": email,
-                "message": "Timeout waiting for verification code"
+                "message": "Timeout waiting for OTP"
             })
         return None

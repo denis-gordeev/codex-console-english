@@ -154,7 +154,7 @@ OTP_MAX_ATTEMPTS = 40 # Maximum number of polling attempts
 # OTP extraction patterns (enhanced)
 # Simple match: any 6-digit number
 OTP_CODE_SIMPLE_PATTERN = r"(?<!\d)(\d{6})(?!\d)"
-# Semantic matching: verification code with context (e.g., "code is 123456", "verification code 123456")
+# Semantic matching: OTP with context (e.g., "code is 123456", "verification code 123456")
 OTP_CODE_SEMANTIC_PATTERN = r'(?:code\s+is|verification code[is]?\s*[::]?\s*)(\d{6})'
 
 # OpenAI verify email sender
@@ -204,7 +204,7 @@ def generate_random_user_info() -> dict:
     current_year = datetime.now().year
     birth_year = random.randint(current_year - 45, current_year - 18)
     birth_month = random.randint(1, 12)
-    # Determine the number of days in the month
+    # Determine the days in the month
     if birth_month in [1, 3, 5, 7, 8, 10, 12]:
         birth_day = random.randint(1, 31)
     elif birth_month in [4, 6, 9, 11]:

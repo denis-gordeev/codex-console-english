@@ -238,7 +238,7 @@ class TokenRefreshManager:
 
     def validate_token(self, access_token: str) -> Tuple[bool, Optional[str]]:
         """
-        Check whether the Access Token is valid
+        Check if the Access Token is valid
 
         Args:
             access_token: access token
@@ -274,7 +274,7 @@ class TokenRefreshManager:
 
 def refresh_account_token(account_id: int, proxy_url: Optional[str] = None) -> TokenRefreshResult:
     """
-    Refresh the token of the specified account and update the database
+    Refresh the specified account's token and update the database
 
     Args:
         account_id: account ID

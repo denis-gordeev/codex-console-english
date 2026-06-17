@@ -204,7 +204,7 @@ class HTTPClient:
             test_url: test URL
 
         Returns:
-            bool: whether the proxy is available
+            bool: True if the proxy is available
         """
         if not self.proxy_url:
             return False

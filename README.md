@@ -74,6 +74,13 @@ This repository keeps the original structure and overall approach, while applyin
 - Replaced "collection" → "set" (Chinese 集合 mistranslation) and "dedup" → "deduplication" in JS.
 - Fixed "Is the connection successful?" → "True if connection is successful" across 3 provider docstrings.
 - Fixed 4 missing spaces after # in Python comments and 1 missing space after emoji in index.html.
+- Replaced all remaining "verification code" with "OTP" across backend services, routes, and frontend (~100 occurrences).
+- Replaced "whether" → "if/True if" in 12 docstrings, comments, and JS strings.
+- Fixed gerund-as-imperative patterns in 11 log messages and comments ("Creating" → "Create", "Processing" → "Process", etc.).
+- Fixed stilted phrasing in 22 locations ("Get the definition of" → "Get a", "the connection of the first account" → "the first account's connection", etc.).
+- Replaced "obtain" → "get/retrieve" in 7 locations across JS and Python.
+- Standardized batch task completion messages ("[Complete]" → "[Done]", "Success/Failure" → "Succeeded/Failed").
+- Fixed "Database backup succeeded" → "Database backup successful" and similar standalone message patterns.
 
 ### Next Iterations
 

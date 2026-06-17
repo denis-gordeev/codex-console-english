@@ -35,7 +35,7 @@ DEFAULT_PROVIDER_PRIORITY = [
 
 
 def get_email_code_settings() -> dict:
-    """Get verification code and wait for configuration"""
+    """Get OTP and wait for configuration"""
     settings = get_settings()
     return {
         "timeout": settings.email_code_timeout,
@@ -300,17 +300,17 @@ class OutlookService(BaseEmailService):
         otp_sent_at: Optional[float] = None,
     ) -> Optional[str]:
         """
-        Get verification code from Outlook email
+        Get OTP from Outlook email
 
         Args:
             email: email address
             email_id: Not used
             timeout: timeout (seconds)
-            pattern: Verification code regex pattern (not used)
+            pattern: OTP regex pattern (not used)
             otp_sent_at: OTP sending timestamp
 
         Returns:
-            Verification code string
+            OTP string
         """
         # Find the corresponding account
         account = None
@@ -329,7 +329,7 @@ class OutlookService(BaseEmailService):
         poll_interval = code_settings["poll_interval"]
 
         logger.info(
-            f"[{email}] fetching verification code, timeout {actual_timeout}s,"
+            f"[{email}] fetching OTP, timeout {actual_timeout}s,"
             f"Provider priority: {[p.value for p in self.provider_priority]}"
         )
 
@@ -363,7 +363,7 @@ class OutlookService(BaseEmailService):
                         f"[{email}] fetched {len(emails)} emails in poll #{poll_count}"
                     )
 
-                    # Find the verification code from the email
+                    # Find the OTP in the email
                     code = self.email_parser.find_verification_code_in_emails(
                         emails,
                         target_email=email,
@@ -375,7 +375,7 @@ class OutlookService(BaseEmailService):
                         used_codes.add(code)
                         elapsed = int(time.time() - start_time)
                         logger.info(
-                            f"[{email}] found verification code: {code},"
+                            f"[{email}] found OTP: {code},"
                             f"Total time spent {elapsed}s, polling {poll_count} times"
                         )
                         self.update_status(True)
@@ -388,7 +388,7 @@ class OutlookService(BaseEmailService):
             time.sleep(poll_interval)
 
         elapsed = int(time.time() - start_time)
-        logger.warning(f"[{email}] verification code timeout ({actual_timeout}s), total polling {poll_count} times")
+        logger.warning(f"[{email}] OTP timeout ({actual_timeout}s), total polling {poll_count} times")
         return None
 
     def list_emails(self, **kwargs) -> List[Dict[str, Any]]:
@@ -414,7 +414,7 @@ class OutlookService(BaseEmailService):
             self.update_status(False, EmailServiceError("No account configured"))
             return False
 
-        # Test the connection of the first account
+        # Test the first account's connection
         test_account = self.accounts[0]
 
         # Try any provider connection
@@ -478,7 +478,7 @@ class OutlookService(BaseEmailService):
         logger.info("All provider health statuses have been reset")
 
     def force_provider(self, provider_type: ProviderType):
-        """Force the use of the specified provider"""
+        """Force use of the specified provider"""
         self.health_checker.force_enable(provider_type)
         # Disable other providers
         for pt in ProviderType:

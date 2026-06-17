@@ -200,7 +200,7 @@ def retry_with_backoff(
         base_delay: base delay (seconds)
         max_delay: maximum delay (seconds)
         backoff_factor: backoff factor
-        exceptions: the type of exceptions to be caught
+        exceptions: the exception types to catch
 
     Returns:
         function return value

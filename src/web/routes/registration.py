@@ -654,13 +654,13 @@ async def run_batch_parallel(
                         add_batch_log(f"{prefix} [Success] Registration successful")
                     elif t.status == "failed":
                         new_failed += 1
-                        add_batch_log(f"{prefix} [Failure] Registration failed: {t.error_message}")
+                        add_batch_log(f"{prefix} [Failed] Registration failed: {t.error_message}")
                     update_batch_status(completed=new_completed, success=new_success, failed=new_failed)
 
     try:
         await asyncio.gather(*[_run_one(i, u) for i, u in enumerate(task_uuids)], return_exceptions=True)
         if not task_manager.is_batch_cancelled(batch_id):
-            add_batch_log(f"[Complete] Batch task completed! Success: {batch_tasks[batch_id]['success']}, Failure: {batch_tasks[batch_id]['failed']}")
+            add_batch_log(f"[Done] Batch task completed! Succeeded: {batch_tasks[batch_id]['success']}, Failed: {batch_tasks[batch_id]['failed']}")
             update_batch_status(finished=True, status="completed")
         else:
             update_batch_status(finished=True, status="cancelled")
@@ -751,7 +751,7 @@ async def run_batch_pipeline(
             await asyncio.gather(*running_tasks_list, return_exceptions=True)
 
         if not task_manager.is_batch_cancelled(batch_id):
-            add_batch_log(f"[Complete] Batch task completed! Success: {batch_tasks[batch_id]['success']}, Failure: {batch_tasks[batch_id]['failed']}")
+            add_batch_log(f"[Done] Batch task completed! Succeeded: {batch_tasks[batch_id]['success']}, Failed: {batch_tasks[batch_id]['failed']}")
             update_batch_status(finished=True, status="completed")
     except Exception as e:
         logger.error(f"Batch task {batch_id} exception: {e}")

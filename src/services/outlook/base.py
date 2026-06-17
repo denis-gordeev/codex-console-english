@@ -116,11 +116,11 @@ class ProviderHealth:
         self.last_error = error
 
     def should_disable(self, threshold: int = 3) -> bool:
-        """Return whether the provider should be disabled."""
+        """Return True if the provider should be disabled."""
         return self.failure_count >= threshold
 
     def is_disabled(self) -> bool:
-        """Return whether the provider is currently disabled."""
+        """Return True if the provider is currently disabled."""
         if self.disabled_until and datetime.now() < self.disabled_until:
             return True
         return False

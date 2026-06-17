@@ -76,17 +76,17 @@ class BaseEmailService(abc.ABC):
         pattern: str = r"(?<!\d)(\d{6})(?!\d)",
         otp_sent_at: Optional[float] = None,
     ) -> Optional[str]:
-        """Get verification code
+        """Get OTP
 
         Args:
             email: email address
             email_id: ID in the email service (if required)
             timeout: timeout (seconds)
-            pattern: verification code regex pattern
+            pattern: OTP regex pattern
             otp_sent_at: OTP sending timestamp, used to filter old emails
 
         Returns:
-            Verification code string, returns None if timeout or not found
+            OTP string, returns None if timeout or not found
 
         Raises:
             EmailServiceError: Service error"""
@@ -220,7 +220,7 @@ class BaseEmailService(abc.ABC):
         return None
 
     def get_email_messages(self, email_id: str, **kwargs) -> List[Dict[str, Any]]:
-        """Get the list of messages in the email (optional implementation)
+        """Get the email message list (optional implementation)
 
         Args:
             email_id: ID in the email service

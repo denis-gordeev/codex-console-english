@@ -113,7 +113,7 @@ function copyLink() {
     });
 }
 
-// Open the browser without trace (carry account cookie)
+// Open in incognito mode (with account cookie)
 async function openIncognito() {
     if (!generatedLink) {
         ui.showToast('Please generate a link first', 'warning');

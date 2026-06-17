@@ -33,7 +33,7 @@ from ..config.settings import get_settings
 
 def get_email_code_settings() -> dict:
     """
-    Get verification code and wait for configuration
+    Get OTP and wait for configuration
 
     Returns:
         dict: Dictionary containing timeout and poll_interval
@@ -465,17 +465,17 @@ class OutlookService(BaseEmailService):
         otp_sent_at: Optional[float] = None,
     ) -> Optional[str]:
         """
-        Get verification code from Outlook email
+        Get OTP from Outlook email
 
         Args:
             email: email address
             email_id: Not used (for Outlook, email is the ID)
             timeout: Timeout (seconds); defaults to configured value
-            pattern: verification code regex pattern
+            pattern: OTP regex pattern
             otp_sent_at: OTP sending timestamp, used to filter old emails
 
         Returns:
-            Verification code string, returns None if timeout or not found
+            OTP string, returns None if timeout or not found
         """
         # Find the corresponding account
         account = None
@@ -493,7 +493,7 @@ class OutlookService(BaseEmailService):
         actual_timeout = timeout or code_settings["timeout"]
         poll_interval = code_settings["poll_interval"]
 
-        logger.info(f"[{email}] fetching verification code, timeout {actual_timeout}s, OTP sending time: {otp_sent_at}")
+        logger.info(f"[{email}] fetching OTP, timeout {actual_timeout}s, OTP sending time: {otp_sent_at}")
 
         # Initialize OTP deduplication set
         if email not in self._used_codes:
@@ -542,17 +542,17 @@ class OutlookService(BaseEmailService):
                             if not self._is_openai_verification_mail(mail, email):
                                 continue
 
-                            # Extract verification code
+                            # Extract OTP
                             code = self._extract_code_from_mail(mail, pattern)
                             if code:
                                 # Deduplication check
                                 if code in used_codes:
-                                    logger.debug(f"[{email}] Skipping already-used verification code: {code}")
+                                    logger.debug(f"[{email}] Skipping already-used OTP: {code}")
                                     continue
 
                                 used_codes.add(code)
                                 elapsed = int(time.time() - start_time)
-                                logger.info(f"[{email}] found verification code: {code}, total time spent {elapsed}s, polling {poll_count} times")
+                                logger.info(f"[{email}] found OTP: {code}, total time spent {elapsed}s, polling {poll_count} times")
                                 self.update_status(True)
                                 return code
 
@@ -564,7 +564,7 @@ class OutlookService(BaseEmailService):
             time.sleep(poll_interval)
 
         elapsed = int(time.time() - start_time)
-        logger.warning(f"[{email}] verification code timeout ({actual_timeout}s), total polling {poll_count} times")
+        logger.warning(f"[{email}] OTP timeout ({actual_timeout}s), total polling {poll_count} times")
         return None
 
     def list_emails(self, **kwargs) -> List[Dict[str, Any]]:
@@ -603,7 +603,7 @@ class OutlookService(BaseEmailService):
             self.update_status(False, EmailServiceError("No account configured"))
             return False
 
-        # Test the connection of the first account
+        # Test the first account's connection
         test_account = self.accounts[0]
         try:
             with self._imap_semaphore:
@@ -641,7 +641,7 @@ class OutlookService(BaseEmailService):
             target_email: target email address (used to verify recipients)
 
         Returns:
-            Whether the email is verified as being from OpenAI
+            True if the email is verified as being from OpenAI
         """
         sender = mail.get("from", "").lower()
 
@@ -676,7 +676,7 @@ class OutlookService(BaseEmailService):
         fallback_pattern: str = OTP_CODE_PATTERN
     ) -> Optional[str]:
         """
-        Extract verification code from email
+        Extract OTP from email
 
         Priority:
         1. Extract from subject (6 digits)
@@ -688,7 +688,7 @@ class OutlookService(BaseEmailService):
             fallback_pattern: fallback regex pattern
 
         Returns:
-            Verification code string, returns None if not found
+            OTP string, returns None if not found
         """
         # Compile regex patterns
         re_simple = re.compile(OTP_CODE_SIMPLE_PATTERN)
@@ -699,7 +699,7 @@ class OutlookService(BaseEmailService):
         match = re_simple.search(subject)
         if match:
             code = match.group(1)
-            logger.debug(f"Extract verification code from subject: {code}")
+            logger.debug(f"Extract OTP from subject: {code}")
             return code
 
         # 2. Text semantic matching
@@ -707,14 +707,14 @@ class OutlookService(BaseEmailService):
         match = re_semantic.search(body)
         if match:
             code = match.group(1)
-            logger.debug(f"Extract verification code from text semantics: {code}")
+            logger.debug(f"Extract OTP from text semantics: {code}")
             return code
 
         # 3. Fallback: any 6-digit number
         match = re_simple.search(body)
         if match:
             code = match.group(1)
-            logger.debug(f"Extract the verification code from the bottom of the text: {code}")
+            logger.debug(f"Extract OTP from the end of the text: {code}")
             return code
 
         return None

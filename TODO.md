@@ -1,5 +1,65 @@
 # TODO
 
+## Completed In This Round (June 17, 2026 - Round 42)
+
+- Pulled `origin/main` - repository was already up to date.
+- Deep scan found ~162 substantive translation artifacts (awkward English, mistranslations, inconsistent terminology) that previous rounds had missed.
+- Replaced all remaining "verification code" compound terms with "OTP" across backend and frontend (~100 occurrences):
+  - base.py: "Get verification code" → "Get OTP", "verification code regex pattern" → "OTP regex pattern", "Verification code string" → "OTP string"
+  - imap_mail.py: module docstring, class docstring, method docstrings, log messages, comments
+  - tempmail.py: method docstrings, log messages, warning messages, callback messages
+  - temp_mail.py: method docstrings, log messages, warning messages, config description ("Worker domain address" → "Worker URL")
+  - moe_mail.py: method docstrings, log messages, warning messages
+  - freemail.py: method docstrings, log messages, config description ("Worker domain address" → "Worker URL")
+  - duck_mail.py: log messages ("polling verification code" → "polling for OTP")
+  - outlook_legacy_mail.py: function docstrings, method docstrings, log messages, debug messages
+  - outlook/service.py: function docstrings, method docstrings, log messages
+  - outlook/email_parser.py: module docstring, class docstring, method docstrings, log messages, debug messages
+  - email.py routes: IMAP description ("verification codes" → "OTPs")
+  - accounts.py routes: "latest verification code" → "latest OTP"
+  - register.py: step-by-step log messages, method docstrings, error messages
+  - constants.py: comment ("verification code with context" → "OTP with context")
+  - accounts.js: "inbox verification code" → "inbox OTP", "latest verification code" → "latest OTP", "Copy verification code" → "Copy OTP"
+  - settings.html: "Maximum time to wait for verification code" → "Maximum time to wait for OTP"
+- Replaced "whether" → "if/True if" in 12 locations across backend and frontend:
+  - outlook/base.py: "Return whether" → "Return True if" (2 occurrences)
+  - outlook_legacy_mail.py: "Whether the email" → "True if the email"
+  - register.py: "Check whether" → "Check if"
+  - token_refresh.py: "Check whether" → "Check if" (2 occurrences)
+  - http_client.py: "whether the proxy" → "True if the proxy"
+  - app.js: "Mark whether" → "Track if" (2 occurrences), "check whether" → "check if" (3 occurrences)
+- Fixed gerund-as-imperative patterns in 11 log messages and comments:
+  - register.py: "Creating a" → "Create a", "Initializing session" → "Initialize session", "Processing OAuth callback" → "Process OAuth callback", "Checking IP geolocation" → "Check IP geolocation", "Creating email address" → "Create email address", "Sending registration verification code" → "Send registration OTP", "Creating final user account profile" → "Create final user account profile"
+  - imap_new.py, imap_old.py: "Building the XOAUTH2 authentication string" → "Build the XOAUTH2 authentication string"
+- Fixed stilted phrasing in 22 locations:
+  - settings.py: "Get the definition of a setting" → "Get a setting definition", "Get the definitions of all settings" → "Get all setting definitions"
+  - utils.py: "the type of exceptions to be caught" → "the exception types to catch"
+  - accounts.py routes: "Refresh the Token of a single account" → "Refresh a single account's token"
+  - token_refresh.py: "Refresh the token of the specified account" → "Refresh the specified account's token"
+  - outlook_legacy_mail.py, outlook/service.py: "Test the connection of the first account" → "Test the first account's connection"
+  - outlook_legacy_mail.py: "Extract the verification code from the bottom of the text" → "Extract OTP from the end of the text"
+  - outlook/service.py: "Force the use of" → "Force use of"
+  - base.py: "Get the list of messages in the email" → "Get the email message list"
+  - constants.py: "Determine the number of days" → "Determine the days"
+  - app.js: "Get the list of service IDs selected in the custom multi-select drop-down" → "Get the service IDs selected in the custom multi-select dropdown"
+  - app.js: "use the hash of the message content as the key" → "use the message content hash as the key"
+  - app.js: "Limit the size of the dedup set" → "Limit the dedup set size", "Limit the number of log lines" → "Limit the log line count"
+  - app.js: "handling the situation of returning" → "handles returning"
+  - accounts.js: "Reset the status of all selected pages" → "Reset all selected pages"
+  - payment.html: "Corresponding currency" → "Currency", "Open the browser incognito" → "Open in incognito mode"
+  - utils.js: "Confirm operation" → "Confirm"
+  - payment.js: "Open the browser without trace (carry account cookie)" → "Open in incognito mode (with account cookie)"
+- Replaced "obtain" → "get" in 7 locations:
+  - register.py: "Sentinel token obtained" → "Sentinel token retrieved"
+  - settings.js: "Failed to obtain service information" → "Failed to get service information" (2 occurrences)
+  - email_services.js: "Failed to obtain service information" → "Failed to get service information" (3 occurrences)
+  - settings.html: "Call this API to obtain the proxy URL each time the registration task is started" → "Call this API to get the proxy URL each time the registration task starts"
+- Fixed batch task completion messages:
+  - "[Failure] Registration failed" → "[Failed] Registration failed"
+  - "[Complete] Batch task completed! Success: ..., Failure: ..." → "[Done] Batch task completed! Succeeded: ..., Failed: ..." (2 occurrences)
+- Fixed "Database backup succeeded" → "Database backup successful" in settings.py route.
+- Verified all 32 tests pass successfully (pytest on Python 3.10 via .venv).
+
 ## Completed In This Round (June 16, 2026 - Round 41)
 
 - Pulled `origin/main` - repository was already up to date.

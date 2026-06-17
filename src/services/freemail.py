@@ -29,7 +29,7 @@ class FreemailService(BaseEmailService):
 
         Args:
             config: configuration dictionary, supports the following keys:
-                - base_url: Worker domain address (required)
+                - base_url: Worker URL (required)
                 - admin_token: Admin Token, corresponding to JWT_TOKEN (required)
                 - domain: email domain, such as example.com
                 - timeout: request timeout, default 30
@@ -186,19 +186,19 @@ class FreemailService(BaseEmailService):
         otp_sent_at: Optional[float] = None,
     ) -> Optional[str]:
         """
-        Get verification code from Freemail email
+        Get OTP from Freemail email
 
         Args:
             email: email address
             email_id: Unused, reserved for API compatibility
             timeout: timeout (seconds)
-            pattern: Verification code regex pattern
+            pattern: OTP regex pattern
             otp_sent_at: OTP sending timestamp (not used yet)
 
         Returns:
-            Verification code string, returns None when timeout
+            OTP string, returns None when timeout
         """
-        logger.info(f"Getting verification code from Freemail email address {email}...")
+        logger.info(f"Getting OTP from Freemail email address {email}...")
 
         start_time = time.time()
         seen_mail_ids: set = set()
@@ -226,10 +226,10 @@ class FreemailService(BaseEmailService):
                     if "openai" not in content.lower():
                         continue
 
-                    # Try to use the verification code extracted by Freemail directly
+                    # Try to use the OTP extracted by Freemail directly
                     v_code = mail.get("verification_code")
                     if v_code:
-                        logger.info(f"Found verification code for Freemail email {email}: {v_code}")
+                        logger.info(f"Found OTP for Freemail email {email}: {v_code}")
                         self.update_status(True)
                         return v_code
 
@@ -237,7 +237,7 @@ class FreemailService(BaseEmailService):
                     match = re.search(pattern, content)
                     if match:
                         code = match.group(1)
-                        logger.info(f"Found verification code for Freemail email {email}: {code}")
+                        logger.info(f"Found OTP for Freemail email {email}: {code}")
                         self.update_status(True)
                         return code
 
@@ -248,7 +248,7 @@ class FreemailService(BaseEmailService):
                         match = re.search(pattern, full_content)
                         if match:
                             code = match.group(1)
-                            logger.info(f"Found verification code for Freemail email {email}: {code}")
+                            logger.info(f"Found OTP for Freemail email {email}: {code}")
                             self.update_status(True)
                             return code
                     except Exception as e:
@@ -259,7 +259,7 @@ class FreemailService(BaseEmailService):
 
             time.sleep(3)
 
-        logger.warning(f"Timeout waiting for Freemail verification code: {email}")
+        logger.warning(f"Timeout waiting for Freemail OTP: {email}")
         return None
 
     def list_emails(self, **kwargs) -> List[Dict[str, Any]]:

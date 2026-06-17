@@ -237,7 +237,7 @@ async def get_service_types():
             {
                 "value": "imap_mail",
                 "label": "IMAP email",
-                "description": "Standard IMAP email (Gmail/QQ/163, etc.) used only for verification codes and always connected directly",
+                "description": "Standard IMAP email (Gmail/QQ/163, etc.) used only for OTPs and always connected directly",
                 "config_fields": [
                     {"name": "host", "label": "IMAP Server", "required": True, "placeholder": "imap.gmail.com"},
                     {"name": "port", "label": "port", "required": False, "default": 993},

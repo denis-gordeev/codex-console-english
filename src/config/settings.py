@@ -760,10 +760,10 @@ def get_database_url() -> str:
 
 
 def get_setting_definition(attr_name: str) -> Optional[SettingDefinition]:
-    """Get the definition of a setting"""
+    """Get a setting definition"""
     return SETTING_DEFINITIONS.get(attr_name)
 
 
 def get_all_setting_definitions() -> Dict[str, SettingDefinition]:
-    """Get the definitions of all settings"""
+    """Get all setting definitions"""
     return SETTING_DEFINITIONS.copy()

@@ -12,8 +12,8 @@ let accountsPollingInterval = null;
 let isBatchMode = false;
 let isOutlookBatchMode = false;
 let outlookAccounts = [];
-let taskCompleted = false; // Mark whether the task is completed
-let batchCompleted = false; // Mark whether the batch task has been completed
+let taskCompleted = false; // Track if the task is completed
+let batchCompleted = false; // Track if the batch task is completed
 let taskFinalStatus = null; // Save the final status of the task
 let batchFinalStatus = null; // Save the final status of the batch task
 let displayedLogs = new Set(); // Used for log deduplication
@@ -179,7 +179,7 @@ function updateMsdLabel(ddId) {
     else label.textContent = Array.from(checked).map(c => c.nextElementSibling.textContent).join(', ');
 }
 
-// Get the list of service IDs selected in the custom multi-select drop-down
+// Get the service IDs selected in the custom multi-select dropdown
 function getSelectedServiceIds(container) {
     if (!container) return [];
     return Array.from(container.querySelectorAll('.msd-item input:checked')).map(cb => parseInt(cb.value));
@@ -438,7 +438,7 @@ function handleModeChange(e) {
 function handleConcurrencyModeChange(selectEl, hintEl, intervalGroupEl) {
     const mode = selectEl.value;
     if (mode === 'parallel') {
-        hintEl.textContent = 'All tasks are divided into N concurrent batches and executed simultaneously';
+        hintEl.textContent = 'All tasks are divided into N concurrent batches and run simultaneously';
         intervalGroupEl.style.display = 'none';
     } else {
         hintEl.textContent = 'Run up to N tasks at the same time and start new tasks every interval seconds';
@@ -989,14 +989,14 @@ function startAccountsPolling() {
 
 // Add log
 function addLog(type, message) {
-    // Log deduplication: use the hash of the message content as the key
+    // Log deduplication: use the message content hash as the key
     const logKey = `${type}:${message}`;
     if (displayedLogs.has(logKey)) {
         return; // Already displayed, skip
     }
     displayedLogs.add(logKey);
 
-    // Limit the size of the dedup set to avoid memory leaks
+    // Limit the dedup set size to avoid memory leaks
     if (displayedLogs.size > 1000) {
         // Clear half of the records
         const keys = Array.from(displayedLogs);
@@ -1019,7 +1019,7 @@ function addLog(type, message) {
     // Automatically scroll to the bottom
     elements.consoleLog.scrollTop = elements.consoleLog.scrollHeight;
 
-    // Limit the number of log lines
+    // Limit the log line count
     const lines = elements.consoleLog.querySelectorAll('.log-line');
     if (lines.length > 500) {
         lines[0].remove();
@@ -1413,7 +1413,7 @@ function initVisibilityReconnect() {
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState !== 'visible') return;
 
-        // When the page becomes visible again, check whether reconnection is required (for the scenario of label switching on the same page)
+        // When the page becomes visible again, check if reconnection is needed (for same-page tab switching)
         const wsDisconnected = !webSocket || webSocket.readyState === WebSocket.CLOSED;
         const batchWsDisconnected = !batchWebSocket || batchWebSocket.readyState === WebSocket.CLOSED;
 
@@ -1433,7 +1433,7 @@ function initVisibilityReconnect() {
     });
 }
 
-// Resume ongoing tasks when the page loads (handling the situation of returning to the registration page after cross-page navigation)
+        // Resume ongoing tasks when the page loads (handles returning to the registration page after cross-page navigation)
 async function restoreActiveTask() {
     const saved = sessionStorage.getItem('activeTask');
     if (!saved) return;
@@ -1449,7 +1449,7 @@ async function restoreActiveTask() {
     const { mode, task_uuid, batch_id, total } = state;
 
     if (mode === 'single' && task_uuid) {
-        // Check whether the task is still running
+        // Check if the task is still running
         try {
             const data = await api.get(`/registration/tasks/${task_uuid}`);
             if (['completed', 'failed', 'cancelled'].includes(data.status)) {
@@ -1473,7 +1473,7 @@ async function restoreActiveTask() {
             sessionStorage.removeItem('activeTask');
         }
     } else if ((mode === 'batch' || mode === 'outlook_batch') && batch_id) {
-        // Query whether the batch task is still running
+        // Check if the batch task is still running
         const endpoint = mode === 'outlook_batch'
             ? `/registration/outlook-batch/${batch_id}`
             : `/registration/batch/${batch_id}`;

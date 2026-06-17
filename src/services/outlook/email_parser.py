@@ -1,5 +1,5 @@
 """
-Email parsing and verification code extraction
+Email parsing and OTP extraction
 """
 
 import logging
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 class EmailParser:
     """
     Email parser
-    Used to identify OpenAI verification emails and extract verification codes
+    Used to identify OpenAI verification emails and extract OTPs
     """
 
     def __init__(self):
@@ -69,7 +69,7 @@ class EmailParser:
         email: EmailMessage,
     ) -> Optional[str]:
         """
-        Extract verification code from email
+        Extract OTP from email
 
         Priority:
         1. Extract from subject (6 digits)
@@ -80,44 +80,44 @@ class EmailParser:
             email: email object
 
         Returns:
-            Verification code string, returns None if not found
+            OTP string, returns None if not found
         """
         # 1. Subject priority
         code = self._extract_from_subject(email.subject)
         if code:
-            logger.debug(f"Extract verification code from subject: {code}")
+            logger.debug(f"Extract OTP from subject: {code}")
             return code
 
         # 2. Text semantic matching
         code = self._extract_semantic(email.body)
         if code:
-            logger.debug(f"Extract verification code from text semantics: {code}")
+            logger.debug(f"Extract OTP from text semantics: {code}")
             return code
 
         # 3. Fallback: any 6-digit number in the text
         code = self._extract_simple(email.body)
         if code:
-            logger.debug(f"Extracted verification code from text fallback: {code}")
+            logger.debug(f"Extracted OTP from text fallback: {code}")
             return code
 
         return None
 
     def _extract_from_subject(self, subject: str) -> Optional[str]:
-        """Extract verification code from subject"""
+        """Extract OTP from subject"""
         match = self._simple_pattern.search(subject)
         if match:
             return match.group(1)
         return None
 
     def _extract_semantic(self, body: str) -> Optional[str]:
-        """Extract verification code using semantic matching"""
+        """Extract OTP using semantic matching"""
         match = self._semantic_pattern.search(body)
         if match:
             return match.group(1)
         return None
 
     def _extract_simple(self, body: str) -> Optional[str]:
-        """Extract verification code using simple matching"""
+        """Extract OTP using simple matching"""
         match = self._simple_pattern.search(body)
         if match:
             return match.group(1)
@@ -131,7 +131,7 @@ class EmailParser:
         used_codes: Optional[set] = None,
     ) -> Optional[str]:
         """
-        Find verification code in list of emails
+        Find OTP in list of emails
 
         Args:
             emails: list of emails
@@ -140,7 +140,7 @@ class EmailParser:
             used_codes: set of used OTPs (for deduplication tracking)
 
         Returns:
-            Verification code string, returns None if not found
+            OTP string, returns None if not found
         """
         used_codes = used_codes or set()
 
@@ -155,16 +155,16 @@ class EmailParser:
             if not self.is_openai_verification_email(email, target_email):
                 continue
 
-            # Extract verification code
+            # Extract OTP
             code = self.extract_verification_code(email)
             if code:
                 # Deduplication check
                 if code in used_codes:
-                    logger.debug(f"Skipping already-used verification code: {code}")
+                    logger.debug(f"Skipping already-used OTP: {code}")
                     continue
 
                 logger.info(
-                    f"[{target_email or 'unknown'}] Found verification code: {code}, "
+                    f"[{target_email or 'unknown'}] Found OTP: {code}, "
                     f"Email subject: {email.subject[:30]}"
                 )
                 return code

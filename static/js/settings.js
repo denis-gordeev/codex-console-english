@@ -1112,7 +1112,7 @@ async function editTmService(id) {
         const service = await api.get(`/tm-services/${id}`);
         openTmServiceModal(service);
     } catch (e) {
-        toast.error('Failed to obtain service information: ' + e.message);
+        toast.error('Failed to get service information: ' + e.message);
     }
 }
 
@@ -1268,7 +1268,7 @@ async function editCpaService(id) {
         const service = await api.get(`/cpa-services/${id}`);
         openCpaServiceModal(service);
     } catch (e) {
-        toast.error('Failed to obtain service information: ' + e.message);
+        toast.error('Failed to get service information: ' + e.message);
     }
 }
 

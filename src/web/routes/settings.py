@@ -303,7 +303,7 @@ async def backup_database():
 
     return {
         "success": True,
-        "message": "Database backup succeeded",
+        "message": "Database backup successful",
         "backup_path": str(backup_path)
     }
 
