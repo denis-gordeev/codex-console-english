@@ -1,5 +1,32 @@
 # TODO
 
+## Completed In This Round (June 17, 2026 - Round 43)
+
+- Pulled `origin/main` - SSH connection reset; proceeding with local content.
+- Deep scan found ~35 remaining translation artifacts (awkward English, inconsistent terminology) that previous rounds had missed.
+- Replaced all remaining "Verification code" with "OTP" in user-facing messages and comments (5 occurrences):
+  - register.py: "Verification code validation failed" → "OTP validation failed"
+  - register.py: "Verification code received: {code}" → "OTP received: {code}"
+  - outlook/service.py: "Verification code dedup tracking" → "OTP dedup tracking"
+  - tempmail.py: "Verification code or None" → "OTP or None"
+  - constants.py: "OpenAI verification email keywords" → "OpenAI OTP email keywords"
+- Replaced "whether" → "if/True if" in 12 locations across backend:
+  - token_refresh.py: "Check whether" → "Check if"
+  - register.py: "Check whether" → "Check if"
+  - base.py: "whether the operation was successful" → "True if the operation was successful"
+  - outlook/account.py: "Whether OAuth2 is supported" → "True if OAuth2 is supported"
+  - outlook_legacy_mail.py: "Whether OAuth2 is supported" → "True if OAuth2 is supported"
+  - outlook_legacy_mail.py: "Strictly judge whether" → "Check if"
+  - tempmail.py: "Check whether" → "Check if"
+  - email.py routes: "Check whether" → "Check if", "Test whether" → "Test if" (3 occurrences)
+  - registration.py routes: "Check whether" → "Check if", "checks whether" → "checks if" (3 occurrences)
+- Replaced "email information" → "email data" across all service modules (10 occurrences in base.py, freemail.py, moe_mail.py, temp_mail.py, tempmail.py, outlook/service.py, outlook_legacy_mail.py, app.js).
+- Replaced "the health status of all providers" → "all provider health statuses" in health_checker.py and outlook/service.py (4 occurrences: track, initialize, get, reset).
+- Replaced "Regular expressions" → "Regex patterns" in constants.py section header.
+- Replaced "Get the message list in your email" → "Get the email message list" in moe_mail.py.
+- Replaced "Synchronous registration tasks executed in the thread pool" → "Synchronous registration task run in the thread pool" in registration.py.
+- Verified all 32 tests pass successfully (pytest on Python 3.10 via .venv).
+
 ## Completed In This Round (June 17, 2026 - Round 42)
 
 - Pulled `origin/main` - repository was already up to date.

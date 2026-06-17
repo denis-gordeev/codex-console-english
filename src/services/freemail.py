@@ -125,7 +125,7 @@ class FreemailService(BaseEmailService):
         Create temporary email address via API
 
         Returns:
-            Dictionary containing email information:
+            Dictionary containing email data:
             - email: email address
             - service_id: same as email (used as identifier)
         """

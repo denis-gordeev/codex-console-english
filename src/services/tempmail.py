@@ -70,7 +70,7 @@ class TempmailService(BaseEmailService):
             config: Configuration options (Tempmail.lol does not support custom configuration)
 
         Returns:
-            Dictionary containing email information:
+            Dictionary containing email data:
             - email: email address
             - service_id: email token
             - token: email token (same as service_id)
@@ -99,7 +99,7 @@ class TempmailService(BaseEmailService):
                 self.update_status(False, EmailServiceError("Response data is incomplete"))
                 raise EmailServiceError("Tempmail.lol returned incomplete data")
 
-            # Cache email information
+            # Cache email data
             email_info = {
                 "email": email,
                 "service_id": token,
@@ -250,7 +250,7 @@ class TempmailService(BaseEmailService):
         return len(emails_to_delete) > 0
 
     def check_health(self) -> bool:
-        """Check whether the Tempmail.lol service is reachable"""
+        """Check if the Tempmail.lol service is reachable"""
         try:
             response = self.http_client.get(
                 f"{self.config['base_url']}/inbox/create",
@@ -306,7 +306,7 @@ class TempmailService(BaseEmailService):
             timeout: Timeout (seconds)
 
         Returns:
-            Verification code or None
+            OTP or None
         """
         start_time = time.time()
         seen_ids = set()

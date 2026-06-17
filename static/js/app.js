@@ -763,7 +763,7 @@ function startLogPolling(taskUuid) {
             // Update task status
             updateTaskStatus(data.status);
 
-            // Update email information
+            // Update email data
             if (data.email) {
                 elements.taskEmail.textContent = data.email;
             }

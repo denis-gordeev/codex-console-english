@@ -74,7 +74,7 @@ class OutlookAccount:
         )
 
     def has_oauth(self) -> bool:
-        """Whether OAuth2 is supported"""
+        """True if OAuth2 is supported"""
         return bool(self.client_id and self.refresh_token)
 
     def validate(self) -> bool:
@@ -429,7 +429,7 @@ class OutlookService(BaseEmailService):
             config: Configuration options (currently unused)
 
         Returns:
-            Dictionary containing email information:
+            Dictionary containing email data:
             - email: email address
             - service_id: account email (same as email)
             - account: account information
@@ -634,7 +634,7 @@ class OutlookService(BaseEmailService):
         target_email: str = None
     ) -> bool:
         """
-        Strictly judge whether it is an OpenAI verification email
+        Check if this is an OpenAI verification email
 
         Args:
             mail: mail info dict

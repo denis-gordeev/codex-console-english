@@ -98,7 +98,7 @@ def filter_sensitive_config(config: Dict[str, Any]) -> Dict[str, Any]:
         else:
             filtered[key] = value
 
-    # Check whether OAuth is configured for Outlook
+    # Check if OAuth is configured for Outlook
     if config.get('client_id') and config.get('refresh_token'):
         filtered['has_oauth'] = True
 
@@ -381,7 +381,7 @@ async def delete_email_service(service_id: int):
 
 @router.post("/{service_id}/test", response_model=ServiceTestResult)
 async def test_email_service(service_id: int):
-    """Test whether the email service is available"""
+    """Test if the email service is available"""
     with get_db() as db:
         service = db.query(EmailServiceModel).filter(EmailServiceModel.id == service_id).first()
         if not service:
@@ -585,7 +585,7 @@ class TempmailTestRequest(BaseModel):
 
 @router.post("/test-tempmail")
 async def test_tempmail_service(request: TempmailTestRequest):
-    """Test whether the Tempmail service is available"""
+    """Test if the Tempmail service is available"""
     try:
         from ...services import EmailServiceFactory, EmailServiceType
         from ...config.settings import get_settings

@@ -187,7 +187,7 @@ class MeoMailEmailService(BaseEmailService):
                 - domain: email domain (optional)
 
         Returns:
-            Dictionary containing email information:
+            Dictionary containing email data:
             - email: email address
             - service_id: Email ID
             - id: Email ID (same as service_id)
@@ -230,7 +230,7 @@ class MeoMailEmailService(BaseEmailService):
                 "raw_response": response,
             }
 
-            # Caching email information
+            # Caching email data
             self._emails_cache[email_id] = email_info
 
             logger.info(f"Created custom domain email: {email} (ID: {email_id})")
@@ -425,7 +425,7 @@ class MeoMailEmailService(BaseEmailService):
             return False
 
     def get_email_messages(self, email_id: str, cursor: str = None) -> List[Dict[str, Any]]:
-        """Get the message list in your email
+        """Get the email message list
 
         Args:
             email_id: Email ID

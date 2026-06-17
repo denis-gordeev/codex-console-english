@@ -222,7 +222,7 @@ def _normalize_email_service_config(
 
 def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: Optional[str], email_service_config: Optional[dict], email_service_id: Optional[int] = None, log_prefix: str = "", batch_id: str = "", auto_upload_cpa: bool = False, cpa_service_ids: List[int] = None, auto_upload_sub2api: bool = False, sub2api_service_ids: List[int] = None, auto_upload_tm: bool = False, tm_service_ids: List[int] = None):
     """
-    Synchronous registration tasks executed in the thread pool
+    Synchronous registration task run in the thread pool
 
     This function will be called by run_in_executor and runs in a separate thread
     """
@@ -328,7 +328,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                         email = svc.config.get("email") if svc.config else None
                         if not email:
                             continue
-                        # Check whether it is registered in the accounts table
+                        # Check if it is registered in the accounts table
                         existing = db.query(Account).filter(Account.email == email).first()
                         if not existing:
                             selected_service = svc
@@ -1266,7 +1266,7 @@ async def get_outlook_accounts_for_registration():
     """
     Get a list of Outlook accounts available for registration
 
-    Returns all enabled Outlook services and checks whether each email is registered in the accounts table
+    Returns all enabled Outlook services and checks if each email is registered in the accounts table
     """
     from ...database.models import EmailService as EmailServiceModel
     from ...database.models import Account
@@ -1286,7 +1286,7 @@ async def get_outlook_accounts_for_registration():
             config = service.config or {}
             email = config.get("email") or service.name
 
-            # Check whether it has been registered (query the accounts table)
+            # Check if it has been registered (query the accounts table)
             existing_account = db.query(Account).filter(
                 Account.email == email
             ).first()

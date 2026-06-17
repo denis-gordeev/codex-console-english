@@ -463,7 +463,7 @@ class RegistrationEngine:
 
         self._log("Verifying the login code...")
         if not self._validate_verification_code(code):
-            result.error_message = "Verification code validation failed"
+            result.error_message = "OTP validation failed"
             return False
 
         self._log("Fetching Workspace ID...")
@@ -588,7 +588,7 @@ class RegistrationEngine:
         """Mark the email address as already registered to avoid repeated attempts."""
         try:
             with get_db() as db:
-                # Check whether a record of this email address already exists
+                # Check if a record of this email address already exists
                 existing = crud.get_account_by_email(db, self.email)
                 if not existing:
                     # Create a failed record and mark the email address as already registered
@@ -641,7 +641,7 @@ class RegistrationEngine:
             )
 
             if code:
-                self._log(f"Verification code received: {code}")
+                self._log(f"OTP received: {code}")
                 return code
             else:
                 self._log("Timeout waiting for OTP", "error")

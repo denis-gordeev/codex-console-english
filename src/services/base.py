@@ -132,7 +132,7 @@ class BaseEmailService(abc.ABC):
         pass
 
     def get_email_info(self, email_id: str) -> Optional[Dict[str, Any]]:
-        """Get email information (optional implementation)
+        """Get email data (optional implementation)
 
         Args:
             email_id: ID in the email service
@@ -198,7 +198,7 @@ class BaseEmailService(abc.ABC):
                         if expected_subject and expected_subject not in message.get("subject", ""):
                             continue
 
-                        # Return email information
+                        # Return email data
                         return {
                             "id": message.get("id"),
                             "from": message.get("from"),
@@ -251,7 +251,7 @@ class BaseEmailService(abc.ABC):
         """Update service status
 
         Args:
-            success: whether the operation was successful
+            success: True if the operation was successful
             error: error message"""
         if success:
             self._status = EmailServiceStatus.HEALTHY

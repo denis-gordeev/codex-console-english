@@ -141,7 +141,7 @@ class OutlookService(BaseEmailService):
         # IMAP connection limit (prevent rate limiting)
         self._imap_semaphore = threading.Semaphore(5)
 
-        # Verification code dedup tracking
+        # OTP dedup tracking
         self._used_codes: Dict[str, set] = {}
 
     def _get_provider(
@@ -267,7 +267,7 @@ class OutlookService(BaseEmailService):
             config: Configuration options (unused)
 
         Returns:
-            Dictionary containing email information
+            Dictionary containing email data
         """
         if not self.accounts:
             self.update_status(False, EmailServiceError("No Outlook account available"))
@@ -473,7 +473,7 @@ class OutlookService(BaseEmailService):
         return False
 
     def reset_provider_health(self):
-        """Reset the health status of all providers"""
+        """Reset all provider health statuses"""
         self.health_checker.reset_all()
         logger.info("All provider health statuses have been reset")
 

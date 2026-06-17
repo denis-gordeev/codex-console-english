@@ -80,6 +80,13 @@ This repository keeps the original structure and overall approach, while applyin
 - Fixed stilted phrasing in 22 locations ("Get the definition of" → "Get a", "the connection of the first account" → "the first account's connection", etc.).
 - Replaced "obtain" → "get/retrieve" in 7 locations across JS and Python.
 - Standardized batch task completion messages ("[Complete]" → "[Done]", "Success/Failure" → "Succeeded/Failed").
+- Replaced remaining "Verification code" with "OTP" in error messages, log messages, comments, and section headers (5 occurrences).
+- Replaced "whether" → "if/True if" in 12 more docstrings, comments, and route descriptions.
+- Replaced "email information" → "email data" across all service modules and frontend JS (10 occurrences).
+- Replaced "the health status of all providers" → "all provider health statuses" for consistent possessive form (4 occurrences).
+- Replaced "Regular expressions" → "Regex patterns" in constants.py section header.
+- Replaced "Get the message list in your email" → "Get the email message list" in moe_mail.py.
+- Fixed "Synchronous registration tasks executed in the thread pool" → "Synchronous registration task run in the thread pool".
 - Fixed "Database backup succeeded" → "Database backup successful" and similar standalone message patterns.
 
 ### Next Iterations

@@ -210,7 +210,7 @@ class TempMailService(BaseEmailService):
         """Create temporary email address via admin API
 
         Returns:
-            Dictionary containing email information:
+            Dictionary containing email data:
             - email: email address
             - jwt: user-level JWT token
             - service_id: same as email (used as identifier)"""

@@ -311,7 +311,7 @@ def refresh_account_token(account_id: int, proxy_url: Optional[str] = None) -> T
 
 def validate_account_token(account_id: int, proxy_url: Optional[str] = None) -> Tuple[bool, Optional[str]]:
     """
-    Check whether the specified account's token is valid
+    Check if the specified account's token is valid
 
     Args:
         account_id: account ID

@@ -165,7 +165,7 @@ OPENAI_EMAIL_SENDERS = [
     ".openai.com", # Subdomain match (e.g., otp@tm1.openai.com)
 ]
 
-# OpenAI verification email keywords
+# OpenAI OTP email keywords
 OPENAI_VERIFICATION_KEYWORDS = [
     "verify your email",
     "verification code",
@@ -342,7 +342,7 @@ ERROR_MESSAGES = {
 }
 
 # ============================================================================
-# Regular expressions
+# Regex patterns
 # ============================================================================
 
 REGEX_PATTERNS = {

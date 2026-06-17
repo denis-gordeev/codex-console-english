@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class HealthChecker:
     """
     Health Check Manager
-    Track the health status of each provider and manage failover
+    Track each provider's health status and manage failover
     """
 
     def __init__(
@@ -43,7 +43,7 @@ class HealthChecker:
         self._health_status: Dict[ProviderType, ProviderHealth] = {}
         self._lock = threading.Lock()
 
-        # Initialize the health status of all providers
+        # Initialize all provider health statuses
         for provider_type in ProviderType:
             self._health_status[provider_type] = ProviderHealth(
                 provider_type=provider_type
@@ -171,7 +171,7 @@ class HealthChecker:
 
     def get_all_health_status(self) -> Dict[str, Any]:
         """
-        Get the health status of all providers
+        Get all provider health statuses
 
         Returns:
             health status dictionary
@@ -197,7 +197,7 @@ class HealthChecker:
                         logger.info(f"{provider_type.value} has been automatically restored")
 
     def reset_all(self):
-        """Reset the health status of all providers"""
+        """Reset all provider health statuses"""
         with self._lock:
             for provider_type in ProviderType:
                 self._health_status[provider_type] = ProviderHealth(
