@@ -44,7 +44,7 @@ This repository keeps the original structure and overall approach, while applyin
 - Fixed remaining "Agent" → "Proxy" mistranslation in settings.js and settings.html (user-facing strings, comments, toast messages).
 - Replaced "self-deployed" → "self-hosted" across all frontend and backend files for standard English terminology.
 - Replaced "mailing list" → "list of emails" / "email list" across all Outlook and email service modules.
-- Replaced "interface" → "API"/"endpoint" where Chinese "接口" was mistranslated in REST API context.
+- Replaced "interface" → "API"/"endpoint" where the Chinese term for "interface" was mistranslated in REST API context.
 - Replaced "private domain" → "custom domain" in DuckMail service description.
 - Fixed "Verification code waiting for configuration" → "Verification code retrieval configuration" for clarity.
 - Replaced "deduplication mechanism/collection" → "dedup tracking/set" for concise terminology.
@@ -64,14 +64,14 @@ This repository keeps the original structure and overall approach, while applyin
 - Replaced "automatic registration system" with "Auto-Registration System" for title-case consistency across 6 files.
 - Replaced all "Verification code" compound terms with "OTP" (34 occurrences) for concise standard terminology.
 - Replaced "obtain" with "get" in 21 log messages and docstrings for natural English.
-- Fixed "topic" → "subject" mistranslation (Chinese 主题) in email parser and settings (6 occurrences).
+- Fixed "topic" → "subject" mistranslation (Chinese for "topic") in email parser and settings (6 occurrences).
 - Replaced "covert matching" → "fallback matching" and "Bottom line" → "Fallback" in email extraction strategy.
 - Replaced "Mail parser" → "Email parser" and "New version of IMAP" → "New IMAP" for conciseness.
 - Standardized "Whether the X" → statement form in 13 comments/docstrings.
 - Replaced "Verification" → "Validation" / "Authentication" in 12 UI and API contexts (login page, token validation, sender validation).
 - Replaced "Execute" → "Run", "synchronization tasks" → "synchronous tasks" in registration routes.
 - Replaced "configuration items/parameters" → "settings/options" across 9 occurrences.
-- Replaced "collection" → "set" (Chinese 集合 mistranslation) and "dedup" → "deduplication" in JS.
+- Replaced "collection" → "set" (mistranslation of the Chinese term for "set") and "dedup" → "deduplication" in JS.
 - Fixed "Is the connection successful?" → "True if connection is successful" across 3 provider docstrings.
 - Fixed 4 missing spaces after # in Python comments and 1 missing space after emoji in index.html.
 - Replaced all remaining "verification code" with "OTP" across backend services, routes, and frontend (~100 occurrences).
