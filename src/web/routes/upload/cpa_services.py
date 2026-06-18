@@ -147,7 +147,7 @@ async def delete_cpa_service(service_id: int):
         if not service:
             raise HTTPException(status_code=404, detail="CPA service not found")
         crud.delete_cpa_service(db, service_id)
-        return {"success": True, "message": f"CPA service {service.name} has been deleted"}
+        return {"success": True, "message": f"CPA service {service.name} deleted"}
 
 
 @router.post("/{service_id}/test")

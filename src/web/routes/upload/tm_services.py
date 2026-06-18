@@ -129,7 +129,7 @@ async def delete_tm_service(service_id: int):
         if not svc:
             raise HTTPException(status_code=404, detail="Team Manager service not found")
         crud.delete_tm_service(db, service_id)
-        return {"success": True, "message": f"Team Manager service {svc.name} has been deleted"}
+        return {"success": True, "message": f"Team Manager service {svc.name} deleted"}
 
 
 @router.post("/{service_id}/test")

@@ -154,7 +154,7 @@ async def delete_sub2api_service(service_id: int):
         if not svc:
             raise HTTPException(status_code=404, detail="Sub2API service not found")
         crud.delete_sub2api_service(db, service_id)
-        return {"success": True, "message": f"Sub2API service {svc.name} has been deleted"}
+        return {"success": True, "message": f"Sub2API service {svc.name} deleted"}
 
 
 @router.post("/{service_id}/test")

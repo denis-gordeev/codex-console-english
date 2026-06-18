@@ -16,7 +16,7 @@ let taskCompleted = false; // Track if the task is completed
 let batchCompleted = false; // Track if the batch task is completed
 let taskFinalStatus = null; // Save the final status of the task
 let batchFinalStatus = null; // Save the final status of the batch task
-let displayedLogs = new Set(); // Used for log deduplication
+let displayedLogs = new Set(); // Used for log dedup
 let toastShown = false; // Tracks whether toast has been shown
 let availableServices = {
     tempmail: { available: true, services: [] },
@@ -126,7 +126,7 @@ async function loadServiceSelect(apiPath, container, checkbox, selectGroup) {
 
     if (!services || services.length === 0) {
         checkbox.disabled = true;
-        checkbox.title = 'Please add the corresponding service in the settings first';
+        checkbox.title = 'Please add the matching service in Settings first';
         const label = checkbox.closest('label');
         if (label) label.style.opacity = '0.5';
         container.innerHTML = '<div class="msd-empty">No service available</div>';
@@ -201,8 +201,8 @@ function initEventListeners() {
 
     // Clear the log
     elements.clearLogBtn.addEventListener('click', () => {
-        elements.consoleLog.innerHTML = '<div class="log-line info">[System] Log has been cleared</div>';
-        displayedLogs.clear(); // Clear the log deduplication set
+        elements.consoleLog.innerHTML = '<div class="log-line info">[System] Log cleared</div>';
+        displayedLogs.clear(); // Clear the log dedup set
     });
 
     // Refresh the account list
@@ -229,7 +229,7 @@ async function loadAvailableServices() {
         // Update the email service selection box
         updateEmailServiceOptions();
 
-        addLog('info', '[System] Email service list has been loaded');
+        addLog('info', '[System] Email service list loaded');
     } catch (error) {
         console.error('Failed to load email service list:', error);
         addLog('warning', '[Warning] Failed to load email service list');
@@ -499,7 +499,7 @@ async function handleSingleRegistration(requestData) {
     // Reset task status
     taskCompleted = false;
     taskFinalStatus = null;
-    displayedLogs.clear(); // Clear the log deduplication set
+    displayedLogs.clear(); // Clear the log dedup set
     toastShown = false; // Reset toast flag
 
     addLog('info', '[System] is starting the registration task...');
@@ -509,9 +509,9 @@ async function handleSingleRegistration(requestData) {
 
         currentTask = data;
         activeTaskUuid = data.task_uuid; // Save for reconnection
-        // Persist to sessionStorage and can be restored after cross-page navigation
+        // Persist to sessionStorage and can be restored after navigating away and back
         sessionStorage.setItem('activeTask', JSON.stringify({ task_uuid: data.task_uuid, mode: 'single' }));
-        addLog('info', `[System] task has been created: ${data.task_uuid}`);
+        addLog('info', `[System] task created: ${data.task_uuid}`);
         showTaskStatus(data);
         updateTaskStatus('running');
 
@@ -578,7 +578,7 @@ function connectWebSocket(taskUuid) {
                             addLog('error', '[Error] Registration failed');
                             toast.error('Registration failed');
                         } else if (data.status === 'cancelled' || data.status === 'cancelling') {
-                            addLog('warning', '[Warning] Task has been canceled');
+                            addLog('warning', '[Warning] Task canceled');
                         }
                     }
                 }
@@ -594,7 +594,7 @@ function connectWebSocket(taskUuid) {
             // Only switch to polling if the task is not completed and the final status is not completed
             // Use taskFinalStatus instead of currentTask.status because currentTask may have been reset
             const shouldPoll = !taskCompleted &&
-                               taskFinalStatus === null; // If taskFinalStatus has a value, the task has been completed
+                               taskFinalStatus === null; // If taskFinalStatus has a value, the task is complete
 
             if (shouldPoll && currentTask) {
                 console.log('Switch to polling mode');
@@ -657,7 +657,7 @@ async function handleBatchRegistration(requestData) {
     // Reset batch task status
     batchCompleted = false;
     batchFinalStatus = null;
-    displayedLogs.clear(); // Clear the log deduplication set
+    displayedLogs.clear(); // Clear the log dedup set
     toastShown = false; // Reset toast flag
 
     const count = parseInt(elements.batchCount.value) || 5;
@@ -679,10 +679,10 @@ async function handleBatchRegistration(requestData) {
 
         currentBatch = data;
         activeBatchId = data.batch_id; // Save for reconnection
-        // Persist to sessionStorage and can be restored after cross-page navigation
+        // Persist to sessionStorage and can be restored after navigating away and back
         sessionStorage.setItem('activeTask', JSON.stringify({ batch_id: data.batch_id, mode: 'batch', total: data.count }));
-        addLog('info', `[System] Batch task has been created: ${data.batch_id}`);
-        addLog('info', `[System] A total of ${data.count} tasks have been added to the queue`);
+        addLog('info', `[System] Batch task created: ${data.batch_id}`);
+        addLog('info', `[System] ${data.count} tasks added to queue`);
         showBatchStatus(data);
 
         // Prefer using WebSocket
@@ -707,8 +707,8 @@ async function handleCancelTask() {
             // Cancel via WebSocket first
             if (batchWebSocket && batchWebSocket.readyState === WebSocket.OPEN) {
                 batchWebSocket.send(JSON.stringify({ type: 'cancel' }));
-                addLog('warning', '[Warning] Batch task cancellation request has been submitted');
-                toast.info('Task cancellation request has been submitted');
+                addLog('warning', '[Warning] Batch cancellation submitted');
+                toast.info('Cancellation submitted');
             } else {
                 // Downgrade to REST API
                 const endpoint = isOutlookBatchMode
@@ -716,8 +716,8 @@ async function handleCancelTask() {
                     : `/registration/batch/${currentBatch.batch_id}/cancel`;
 
                 await api.post(endpoint);
-                addLog('warning', '[Warning] Batch task cancellation request has been submitted');
-                toast.info('Task cancellation request has been submitted');
+                addLog('warning', '[Warning] Batch cancellation submitted');
+                toast.info('Cancellation submitted');
                 stopBatchPolling();
                 resetButtons();
             }
@@ -727,12 +727,12 @@ async function handleCancelTask() {
             // Cancel via WebSocket first
             if (webSocket && webSocket.readyState === WebSocket.OPEN) {
                 webSocket.send(JSON.stringify({ type: 'cancel' }));
-                addLog('warning', '[Warning] Task cancellation request has been submitted');
-                toast.info('Task cancellation request has been submitted');
+                addLog('warning', '[Warning] Cancellation submitted');
+                toast.info('Cancellation submitted');
             } else {
                 // Downgrade to REST API
                 await api.post(`/registration/tasks/${currentTask.task_uuid}/cancel`);
-                addLog('warning', '[Warning] Task has been canceled');
+                addLog('warning', '[Warning] Task canceled');
                 toast.info('Task canceled');
                 stopLogPolling();
                 resetButtons();
@@ -797,7 +797,7 @@ function startLogPolling(taskUuid) {
                         addLog('error', '[Error] Registration failed');
                         toast.error('Registration failed');
                     } else if (data.status === 'cancelled') {
-                        addLog('warning', '[Warning] Task has been canceled');
+                        addLog('warning', '[Warning] Task canceled');
                     }
                 }
             }
@@ -830,7 +830,7 @@ function startBatchPolling(batchId) {
                 // Show toast only once
                 if (!toastShown) {
                     toastShown = true;
-                    addLog('info', `[Complete] The batch task is completed! Success: ${data.success}, Failure: ${data.failed}`);
+                    addLog('info', `[Done] Batch task completed! Succeeded: ${data.success}, Failed: ${data.failed}`);
                     if (data.success > 0) {
                         toast.success(`Batch registration completed, ${data.success} successful`);
                         // Refresh the account list
@@ -989,7 +989,7 @@ function startAccountsPolling() {
 
 // Add log
 function addLog(type, message) {
-    // Log deduplication: use the message content hash as the key
+    // Log dedup: use the message content hash as the key
     const logKey = `${type}:${message}`;
     if (displayedLogs.has(logKey)) {
         return; // Already displayed, skip
@@ -1092,7 +1092,7 @@ async function loadOutlookAccounts() {
 
     } catch (error) {
         console.error('Failed to load Outlook account list:', error);
-        elements.outlookAccountsContainer.innerHTML = `<div style="text-align: center; padding: var(--spacing-md); color: var(--text-muted);">Loading failed: ${error.message}</div>`;
+        elements.outlookAccountsContainer.innerHTML = `<div style="text-align: center; padding: var(--spacing-md); color: var(--text-muted);">Failed to load: ${error.message}</div>`;
         addLog('error', `[Error] Failed to load Outlook account list: ${error.message}`);
     }
 }
@@ -1150,7 +1150,7 @@ async function handleOutlookBatchRegistration() {
     // Reset batch task status
     batchCompleted = false;
     batchFinalStatus = null;
-    displayedLogs.clear(); // Clear the log deduplication set
+    displayedLogs.clear(); // Clear the log dedup set
     toastShown = false; // Reset toast flag
 
     // Get the selected account
@@ -1198,17 +1198,17 @@ async function handleOutlookBatchRegistration() {
         const data = await api.post('/registration/outlook-batch', requestData);
 
         if (data.to_register === 0) {
-            addLog('warning', '[Warning] All selected email addresses have been registered, no need to register again');
-            toast.warning('All selected email addresses have been registered');
+            addLog('warning', '[Warning] All selected emails are already registered, no need to register again');
+            toast.warning('All selected emails are already registered');
             resetButtons();
             return;
         }
 
         currentBatch = { batch_id: data.batch_id, ...data };
         activeBatchId = data.batch_id; // Save for reconnection
-        // Persist to sessionStorage and can be restored after cross-page navigation
+        // Persist to sessionStorage and can be restored after navigating away and back
         sessionStorage.setItem('activeTask', JSON.stringify({ batch_id: data.batch_id, mode: isOutlookBatchMode ? 'outlook_batch' : 'batch', total: data.to_register }));
-        addLog('info', `[System] Batch task has been created: ${data.batch_id}`);
+        addLog('info', `[System] Batch task created: ${data.batch_id}`);
         addLog('info', `[System] Total: ${data.total}, Skip registered: ${data.skipped}, To be registered: ${data.to_register}`);
 
         // Initialize batch status display
@@ -1286,7 +1286,7 @@ function connectBatchWebSocket(batchId) {
                             addLog('error', '[Error] Batch task execution failed');
                             toast.error('Batch task execution failed');
                         } else if (data.status === 'cancelled' || data.status === 'cancelling') {
-                            addLog('warning', '[Warning] The batch task has been canceled');
+                            addLog('warning', '[Warning] Batch task canceled');
                         }
                     }
                 }
@@ -1302,7 +1302,7 @@ function connectBatchWebSocket(batchId) {
             // Only switch to polling if the task is not completed and the final status is not completed
             // Use batchFinalStatus instead of currentBatch.status because currentBatch may have been reset
             const shouldPoll = !batchCompleted &&
-                               batchFinalStatus === null; // If batchFinalStatus has a value, the task has been completed
+                               batchFinalStatus === null; // If batchFinalStatus has a value, the task is complete
 
             if (shouldPoll && currentBatch) {
                 console.log('Switch to polling mode');
@@ -1357,7 +1357,7 @@ function cancelBatchViaWebSocket() {
     }
 }
 
-// Start polling Outlook batch status (downgrade scenario)
+// Start polling Outlook batch status (fallback scenario)
 function startOutlookBatchPolling(batchId) {
     batchPollingInterval = setInterval(async () => {
         try {
@@ -1420,20 +1420,20 @@ function initVisibilityReconnect() {
         // Single task reconnection
         if (activeTaskUuid && !taskCompleted && wsDisconnected) {
             console.log('[Reconnect] The page is visible again, reconnect the single task WebSocket:', activeTaskUuid);
-            addLog('info', '[System] page has been reactivated and task monitoring is being reconnected...');
+            addLog('info', '[System] page reactivated, reconnecting task monitoring...');
             connectWebSocket(activeTaskUuid);
         }
 
         // Batch task reconnection
         if (activeBatchId && !batchCompleted && batchWsDisconnected) {
             console.log('[Reconnect] The page is visible again, reconnect the batch task WebSocket:', activeBatchId);
-            addLog('info', '[System] page has been reactivated, reconnecting to batch task monitoring...');
+            addLog('info', '[System] page reactivated, reconnecting batch task monitoring...');
             connectBatchWebSocket(activeBatchId);
         }
     });
 }
 
-        // Resume ongoing tasks when the page loads (handles returning to the registration page after cross-page navigation)
+        // Resume ongoing tasks when the page loads (handles returning to the registration page after navigating away)
 async function restoreActiveTask() {
     const saved = sessionStorage.getItem('activeTask');
     if (!saved) return;

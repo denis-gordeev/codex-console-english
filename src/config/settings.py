@@ -414,7 +414,7 @@ SETTING_TYPES: Dict[str, Type] = {
     "outlook_health_disable_duration": int,
 }
 
-# Fields that need to be processed as SecretStr
+# Fields stored as SecretStr
 SECRET_FIELDS = {name for name, defn in SETTING_DEFINITIONS.items() if defn.is_secret}
 
 

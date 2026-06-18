@@ -29,7 +29,7 @@ class TempmailService(BaseEmailService):
         Initialize Tempmail service
 
         Args:
-            config: configuration dictionary, supports the following keys:
+            config: configuration dictionary with the following keys:
                 - base_url: API base address (default: https://api.tempmail.lol/v2)
                 - timeout: request timeout (default: 30)
                 - max_retries: Maximum number of retries (default: 3)
@@ -137,7 +137,7 @@ class TempmailService(BaseEmailService):
             otp_sent_at: OTP sending timestamp (Tempmail service does not use this parameter yet)
 
         Returns:
-            OTP string, returns None if timeout or not found
+            OTP string, or None on timeout / not found
         """
         token = email_id
         if not token:

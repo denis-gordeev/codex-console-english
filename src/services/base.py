@@ -83,10 +83,10 @@ class BaseEmailService(abc.ABC):
             email_id: ID in the email service (if required)
             timeout: timeout (seconds)
             pattern: OTP regex pattern
-            otp_sent_at: OTP sending timestamp, used to filter old emails
+            otp_sent_at: Timestamp when the OTP was sent, used to filter old emails
 
         Returns:
-            OTP string, returns None if timeout or not found
+            OTP string, or None on timeout / not found
 
         Raises:
             EmailServiceError: Service error"""
@@ -262,7 +262,7 @@ class BaseEmailService(abc.ABC):
                 self._last_error = str(error)
 
     def __str__(self) -> str:
-        """string representation"""
+        """Return a human-readable string representation."""
         return f"{self.name} ({self.service_type.value})"
 
 
@@ -328,7 +328,7 @@ class EmailServiceFactory:
             service_type: service type
 
         Returns:
-            Service class, returns None if not registered"""
+            Service class, or None if not registered"""
         return cls._registry.get(service_type)
 
 

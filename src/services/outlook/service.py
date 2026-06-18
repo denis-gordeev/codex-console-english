@@ -54,11 +54,11 @@ class OutlookService(BaseEmailService):
         Initialize the Outlook service
 
         Args:
-            config: configuration dictionary, supports the following keys:
+            config: configuration dictionary with the following keys:
                 - accounts: Outlook account list
                 - provider_priority: provider priority list
-                - health_failure_threshold: Consecutive failure threshold
-                - health_disable_duration: Duration to disable the provider (seconds)
+                - health_failure_threshold: Consecutive failure count threshold
+                - health_disable_duration: How long to disable the provider (seconds)
                 - timeout: request timeout
                 - proxy_url: proxy URL
             name: service name
@@ -197,7 +197,7 @@ class OutlookService(BaseEmailService):
         if account.has_oauth():
             return self.provider_priority
         else:
-            # No OAuth, go directly to the old version of IMAP (password authentication), skip the provider that requires OAuth
+            # No OAuth -- fall back to legacy IMAP (password authentication), skip providers that require OAuth
             return [ProviderType.IMAP_OLD]
 
     def _try_providers_for_emails(
@@ -307,12 +307,12 @@ class OutlookService(BaseEmailService):
             email_id: Not used
             timeout: timeout (seconds)
             pattern: OTP regex pattern (not used)
-            otp_sent_at: OTP sending timestamp
+            otp_sent_at: OTP send timestamp
 
         Returns:
             OTP string
         """
-        # Find the corresponding account
+        # Find the matching account
         account = None
         for acc in self.accounts:
             if acc.email.lower() == email.lower():
@@ -333,7 +333,7 @@ class OutlookService(BaseEmailService):
             f"Provider priority: {[p.value for p in self.provider_priority]}"
         )
 
-        # Initialize OTP deduplication set
+        # Initialize OTP dedup set
         if email not in self._used_codes:
             self._used_codes[email] = set()
         used_codes = self._used_codes[email]
@@ -475,7 +475,7 @@ class OutlookService(BaseEmailService):
     def reset_provider_health(self):
         """Reset all provider health statuses"""
         self.health_checker.reset_all()
-        logger.info("All provider health statuses have been reset")
+        logger.info("All provider health statuses reset")
 
     def force_provider(self, provider_type: ProviderType):
         """Force use of the specified provider"""
@@ -484,4 +484,4 @@ class OutlookService(BaseEmailService):
         for pt in ProviderType:
             if pt != provider_type:
                 self.health_checker.force_disable(pt, 60)
-        logger.info(f"Provider has been forced to use: {provider_type.value}")
+        logger.info(f"Provider force-set to: {provider_type.value}")

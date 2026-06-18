@@ -152,7 +152,7 @@ def parse_datetime(dt_str: str, fmt: str = "%Y-%m-%d %H:%M:%S") -> Optional[date
         fmt: format string
 
     Returns:
-        Datetime object, returns None if parsing fails
+        Datetime object, or None if parsing fails
     """
     try:
         return datetime.strptime(dt_str, fmt)
@@ -331,7 +331,7 @@ def read_json_file(filepath: str) -> Optional[Dict[str, Any]]:
         filepath: file path
 
     Returns:
-        JSON data, returns None if reading fails
+        JSON data, or None if reading fails
     """
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
@@ -373,7 +373,7 @@ def get_project_root() -> Path:
     Returns:
         Project root directory Path object
     """
-    # Directory where the current file is located
+    # Current file's directory
     current_dir = Path(__file__).parent
 
     # Search upward until you find the project root directory (containing pyproject.toml or setup.py)

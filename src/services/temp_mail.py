@@ -30,9 +30,9 @@ class TempMailService(BaseEmailService):
         """Initialize TempMail service
 
         Args:
-            config: configuration dictionary, supports the following keys:
+            config: configuration dictionary with the following keys:
                 - base_url: Worker URL, such as https://mail.example.com (required)
-                - admin_password: Admin password, corresponding to x-admin-auth header (required)
+                - admin_password: Admin password for the x-admin-auth header (required)
                 - domain: email domain, such as example.com (required)
                 - enable_prefix: Enable prefix (default: True)
                 - timeout: request timeout, default 30
@@ -154,7 +154,7 @@ class TempMailService(BaseEmailService):
         }
 
     def _admin_headers(self) -> Dict[str, str]:
-        """Construct admin request header"""
+        """Build admin request headers"""
         return {
             "x-admin-auth": self.config["admin_password"],
             "Content-Type": "application/json",

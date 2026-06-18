@@ -272,7 +272,7 @@ async function loadOutlookServices() {
 
     } catch (error) {
         console.error('Failed to load Outlook service:', error);
-        elements.outlookTable.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="empty-state-icon">❌</div><div class="empty-state-title">Loading failed</div></div></td></tr>`;
+        elements.outlookTable.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="empty-state-icon">❌</div><div class="empty-state-title">Failed to load</div></div></td></tr>`;
     }
 }
 
@@ -493,7 +493,7 @@ async function handleAddCustom(e) {
         loadCustomServices();
         loadStats();
     } catch (error) {
-        toast.error('Add failed: ' + error.message);
+        toast.error('Failed to add: ' + error.message);
     }
 }
 
@@ -534,7 +534,7 @@ async function deleteService(id, name) {
         loadCustomServices();
         loadStats();
     } catch (error) {
-        toast.error('Deletion failed: ' + error.message);
+        toast.error('Failed to delete: ' + error.message);
     }
 }
 
@@ -553,7 +553,7 @@ async function handleBatchDeleteOutlook() {
         loadOutlookServices();
         loadStats();
     } catch (error) {
-        toast.error('Deletion failed: ' + error.message);
+        toast.error('Failed to delete: ' + error.message);
     }
 }
 
@@ -567,7 +567,7 @@ async function handleSaveTempmail(e) {
         });
         toast.success('Configuration saved');
     } catch (error) {
-        toast.error('Save failed: ' + error.message);
+        toast.error('Failed to save: ' + error.message);
     }
 }
 

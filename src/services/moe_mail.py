@@ -24,7 +24,7 @@ class MeoMailEmailService(BaseEmailService):
         """Initialize custom domain email service
 
         Args:
-            config: configuration dictionary, supports the following keys:
+            config: configuration dictionary with the following keys:
                 - base_url: API base address (required)
                 - api_key: API key (required)
                 - api_key_header: API key request header name (default: X-API-Key)
@@ -261,7 +261,7 @@ class MeoMailEmailService(BaseEmailService):
             otp_sent_at: OTP sending timestamp (custom domain service does not use this parameter yet)
 
         Returns:
-            OTP string, returns None if timeout or not found"""
+            OTP string, or None on timeout / not found"""
         # Find email ID
         target_email_id = email_id
         if not target_email_id:

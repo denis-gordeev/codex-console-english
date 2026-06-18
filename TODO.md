@@ -1,13 +1,48 @@
 # TODO
 
-## Completed In This Round (June 18, 2026 - Round 44)
+## Completed In This Round (June 18, 2026 - Round 45)
 
 - Pulled `origin/main` - repository was already up to date.
-- Replaced remaining Chinese characters in meta-documentation with English equivalents:
-  - README.md: replaced Chinese characters with English descriptions (3 occurrences: "interface", "topic", "set" terms).
-  - TODO.md: Same 3 terms replaced across 3 lines.
-- Zero non-English text now remains in the repository.
-- Verified all tests pass successfully.
+- Deep scan found ~233 substantive translation artifacts (awkward English, Chinese-style passive constructions, inconsistent terminology) that previous rounds had missed.
+- Replaced all "has been" + past participle Chinese-style passive constructions with natural English active forms across backend and frontend (~65 occurrences):
+  - Python: "Task has been canceled" → "Task canceled", "has been deleted" → "deleted", "has been initialized" → "initialized", "has been marked as canceled" → "marked as canceled", "has been disabled" → "disabled", "has been forcibly disabled" → "was force-disabled", "has been automatically restored" → "was automatically re-enabled", "has been forced to use" → "force-set to", "has been added to the queue" → "added to queue", etc.
+  - JS: "Log has been cleared" → "Log cleared", "Service has been deleted" → "Service deleted", "Service has been updated" → "Service updated", "Email service has been added" → "Email service added", "Batch task has been created" → "Batch task created", "Task cancellation request has been submitted" → "Cancellation submitted", etc.
+- Replaced "Noun + failed" Chinese-English pattern with "Failed to + verb" across all JS files (~31 occurrences):
+  - "Save failed" → "Failed to save", "Add failed" → "Failed to add", "Deletion failed" → "Failed to delete", "Loading failed" → "Failed to load", "Mark failed" → "Failed to mark subscription"
+- Replaced "concurrencies" / "number of concurrency" with "concurrent tasks" / "concurrency" (4 occurrences in registration.py).
+- Replaced "in an orderly manner" with "gracefully" in cancellation messages (2 occurrences in registration.py).
+- Replaced "corresponding" with "matching"/"for" where the Chinese term 对应的 was mistranslated (4 occurrences in temp_mail.py, freemail.py, outlook_legacy_mail.py, service.py, app.js).
+- Replaced "according to" → "by" in accounts.py (2 occurrences).
+- Replaced "lacks Token" → "has no token" across accounts.py and upload modules (4 occurrences).
+- Fixed Chinese-style docstring patterns: "Is it available" → "True if available", "Check if it is healthy" → "Whether the provider is healthy" in base.py and health_checker.py.
+- Replaced "returns None if" → "or None if/on" in docstrings across base.py, tempmail.py, moe_mail.py, outlook_legacy_mail.py, email_parser.py, utils.py, health_checker.py (~13 occurrences).
+- Replaced "front end" → "frontend" in registration.py and task_manager.py (2 occurrences).
+- Replaced "Logout WebSocket" → "Unregister/disconnect WebSocket" in task_manager.py (4 occurrences).
+- Replaced "real-time push" → "live delivery/updates" in task_manager.py and websocket.py (4 occurrences).
+- Replaced "at the same time" → "simultaneously" in registration.py (2 occurrences).
+- Replaced "parallel mode startup" → "parallel mode starting" in registration.py.
+- Fixed Chinese-style descriptions: "go directly to the old version of IMAP" → "fall back to legacy IMAP", "the X of Y" → "Y's X" in service.py, register.py, webui.py, utils.py.
+- Replaced "can also be set through the WEBUI_HOST environment variable" → "or set WEBUI_HOST env var" in webui.py (3 occurrences).
+- Replaced "restore" → "re-enable" in health_checker.py for disabled provider recovery context (4 occurrences).
+- Replaced "Operation successful/failed" → "operation succeeded/failed" in base.py (2 occurrences).
+- Replaced "Construct admin request header" → "Build admin request headers" in temp_mail.py and freemail.py.
+- Replaced "configuration dictionary, supports the following keys:" → "configuration dictionary with the following keys:" across all service modules (6 occurrences).
+- Replaced "Sensitive fields, which need to be filtered" → "Sensitive fields to strip" and "are not returned" → "are omitted" in email.py.
+- Replaced "OTP sending timestamp" → "OTP send timestamp" / "Timestamp when the OTP was sent" across register.py, base.py, outlook_legacy_mail.py (5 occurrences).
+- Replaced "Extract OTP from text semantics" → "Extracted OTP via semantic match" and "Extract OTP from the end of the text" → "Extracted OTP via fallback match" in outlook_legacy_mail.py and email_parser.py.
+- Replaced "deduplication" → "dedup" in JS comments and Python log messages (10 occurrences).
+- Replaced "cross-page navigation" → "navigating away and back" in app.js (4 occurrences).
+- Replaced "downgrade scenario" → "fallback scenario" in app.js.
+- Replaced "Service connection is normal" → "Service connection OK" and "Service is enabled/disabled" → "Service enabled/disabled" in settings.js.
+- Replaced "Cancel all selection" → "Clear all selections" in accounts.js.
+- Replaced "passed in" → "provided" in registration.py and settings.py.
+- Replaced "successfully" adverb before verb (Chinese pattern) in freemail.py and imap_mail.py.
+- Fixed minimal/lazy docstrings: "task manager" → "Task manager", "failover manager" → "Failover manager", "string representation" → proper descriptions in base.py and providers/base.py.
+- Replaced "[Complete] The batch task is completed! Success/Failure" → "[Done] Batch task completed! Succeeded/Failed" in app.js.
+- Replaced "All selected email addresses have been registered" → "All selected emails are already registered" in app.js.
+- Replaced "Account information needs to be configured" → "account credentials required" in email.py and registration.py.
+- Replaced "Fields that need to be processed as SecretStr" → "Fields stored as SecretStr" in settings.py.
+- Verified all 32 tests pass successfully.
 
 ## Completed In This Round (June 17, 2026 - Round 43)
 
@@ -607,4 +642,4 @@
 - Add focused tests for the settings save flows and error messages returned by low-traffic API endpoints.
 - Verify that all "not found" HTTP 404 messages are consistent with test assertions after the "does not exist" → "not found" bulk replacement.
 - Authenticate `gh` in a future round if issue and PR inspection is required, since GitHub GraphQL access is currently unavailable in this environment.
-- Review remaining "verification code" occurrences that may need "OTP" in less-visible code paths.
+- Review remaining subtle Chinese-English patterns: "the X of Y" constructions, remaining passive voice, and inconsistent use of "dedup" vs "deduplication".

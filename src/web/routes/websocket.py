@@ -40,7 +40,7 @@ async def task_websocket(websocket: WebSocket, task_uuid: str):
                 **status
             })
 
-        # Send historical logs (only send logs that already exist at the time of registration to avoid duplication with real-time push)
+        # Send historical logs (only send logs that already exist when the WebSocket connects to avoid duplicates with live updates)
         history_logs = task_manager.get_unsent_logs(task_uuid, websocket)
         for log in history_logs:
             await websocket.send_json({
@@ -121,7 +121,7 @@ async def batch_websocket(websocket: WebSocket, batch_id: str):
                 **status
             })
 
-        # Send historical logs (only send logs that already exist at the time of registration to avoid duplication with real-time push)
+        # Send historical logs (only send logs that already exist when the WebSocket connects to avoid duplicates with live updates)
         history_logs = task_manager.get_unsent_batch_logs(batch_id, websocket)
         for log in history_logs:
             await websocket.send_json({

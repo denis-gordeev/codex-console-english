@@ -125,7 +125,7 @@ def upload_to_cpa(
         (success sign, message or error message)"""
     settings = get_settings()
 
-    # Priority is given to using the parameters passed in, otherwise it returns to the global configuration.
+    # Use provided parameters first, falling back to global configuration.
     effective_url = api_url or settings.cpa_api_url
     effective_token = api_token or (settings.cpa_api_token.get_secret_value() if settings.cpa_api_token else "")
 

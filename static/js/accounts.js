@@ -254,7 +254,7 @@ async function loadAccounts() {
                 <td colspan="9">
                     <div class="empty-state">
                         <div class="empty-state-icon">❌</div>
-                        <div class="empty-state-title">Loading failed</div>
+                        <div class="empty-state-title">Failed to load</div>
                         <div class="empty-state-description">Please check the network connection and try again</div>
                     </div>
                 </td>
@@ -456,9 +456,9 @@ function renderSelectAllBanner() {
     }
 
     if (selectAllPages) {
-        banner.innerHTML = `All <strong>${totalAccounts}</strong> records selected. <button onclick="resetSelectAllPages()" style="margin-left:8px;color:var(--primary-color,#1a73e8);background:none;border:none;cursor:pointer;text-decoration:underline;">Cancel all selection</button>`;
+        banner.innerHTML = `All <strong>${totalAccounts}</strong> records selected. <button onclick="resetSelectAllPages()" style="margin-left:8px;color:var(--primary-color,#1a73e8);background:none;border:none;cursor:pointer;text-decoration:underline;">Clear all selections</button>`;
     } else {
-        banner.innerHTML = `All <strong>${checkedOnPage}</strong> items on the current page have been selected. <button onclick="selectAllPagesAction()" style="margin-left:8px;color:var(--primary-color,#1a73e8);background:none;border:none;cursor:pointer;text-decoration:underline;">Select all ${totalAccounts} items</button>`;
+        banner.innerHTML = `All <strong>${checkedOnPage}</strong> items on the current page are selected. <button onclick="selectAllPagesAction()" style="margin-left:8px;color:var(--primary-color,#1a73e8);background:none;border:none;cursor:pointer;text-decoration:underline;">Select all ${totalAccounts} items</button>`;
     }
 }
 
@@ -658,12 +658,12 @@ async function deleteAccount(id, email) {
 
     try {
         await api.delete(`/accounts/${id}`);
-        toast.success('Account has been deleted');
+        toast.success('Account deleted');
         selectedAccounts.delete(id);
         loadStats();
         loadAccounts();
     } catch (error) {
-        toast.error('Deletion failed: ' + error.message);
+        toast.error('Failed to delete: ' + error.message);
     }
 }
 
@@ -683,7 +683,7 @@ async function handleBatchDelete() {
         loadStats();
         loadAccounts();
     } catch (error) {
-        toast.error('Deletion failed: ' + error.message);
+        toast.error('Failed to delete: ' + error.message);
     }
 }
 
@@ -923,10 +923,10 @@ async function markSubscription(id) {
         await api.post(`/payment/accounts/${id}/mark-subscription`, {
             subscription_type: type.trim().toLowerCase()
         });
-        toast.success('Subscription status has been updated');
+        toast.success('Subscription status updated');
         loadAccounts();
     } catch (e) {
-        toast.error('Mark failed: ' + e.message);
+        toast.error('Failed to mark subscription: ' + e.message);
     }
 }
 

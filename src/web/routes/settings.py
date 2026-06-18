@@ -158,7 +158,7 @@ async def test_dynamic_proxy(request: DynamicProxySettings):
     if not request.api_url:
         raise HTTPException(status_code=400, detail="Please fill in the dynamic proxy API address")
 
-    # If api_key is not passed in, use the saved one
+    # If api_key is not provided, use the saved one
     api_key = request.api_key or ""
     if not api_key:
         settings = get_settings()

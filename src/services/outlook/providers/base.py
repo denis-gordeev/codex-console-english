@@ -61,7 +61,7 @@ class OutlookProvider(abc.ABC):
 
     @property
     def is_healthy(self) -> bool:
-        """Check if it is healthy"""
+        """Whether the provider is healthy"""
         return (
             self._health.status == ProviderStatus.HEALTHY
             and not self._health.is_disabled()
@@ -69,7 +69,7 @@ class OutlookProvider(abc.ABC):
 
     @property
     def is_connected(self) -> bool:
-        """Check if connected"""
+        """Whether the provider is connected"""
         return self._connected
 
     @abc.abstractmethod
@@ -110,17 +110,17 @@ class OutlookProvider(abc.ABC):
         pass
 
     def record_success(self):
-        """Record successful operations"""
+        """Record a successful operation"""
         self._health.record_success()
         self._last_error = None
-        logger.debug(f"[{self.account.email}] {self.provider_type.value} Operation successful")
+        logger.debug(f"[{self.account.email}] {self.provider_type.value} operation succeeded")
 
     def record_failure(self, error: str):
-        """Log failed operations"""
+        """Record a provider failure"""
         self._health.record_failure(error)
         self._last_error = error
 
-        # Check if it needs to be disabled
+        # Check whether to disable it
         if self._health.should_disable(self.config.health_failure_threshold):
             self._health.disable(self.config.health_disable_duration)
             logger.warning(
@@ -129,7 +129,7 @@ class OutlookProvider(abc.ABC):
             )
         else:
             logger.warning(
-                f"[{self.account.email}] {self.provider_type.value} Operation failed"
+                f"[{self.account.email}] {self.provider_type.value} operation failed"
                 f"({self._health.failure_count}/{self.config.health_failure_threshold}): {error}"
             )
 
@@ -142,24 +142,24 @@ class OutlookProvider(abc.ABC):
         if self._health.is_disabled():
             logger.debug(
                 f"[{self.account.email}] {self.provider_type.value} is disabled,"
-                f"Will resume after {self._health.disabled_until}"
+                f"Resumes after {self._health.disabled_until}"
             )
             return False
 
         return self._health.status in (ProviderStatus.HEALTHY, ProviderStatus.DEGRADED)
 
     def __enter__(self):
-        """Context manager entry"""
+        """Enter the context manager and connect."""
         self.connect()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """Context manager exit"""
+        """Exit the context manager and disconnect."""
         self.disconnect()
         return False
 
     def __str__(self) -> str:
-        """string representation"""
+        """Return a human-readable string representation."""
         return f"{self.__class__.__name__}({self.account.email})"
 
     def __repr__(self) -> str:

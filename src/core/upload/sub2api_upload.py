@@ -85,7 +85,7 @@ def upload_to_sub2api(
         })
 
     if not account_items:
-        return False, "All accounts lack access_token and cannot be uploaded"
+        return False, "No accounts have access_token; cannot upload"
 
     payload = {
         "data": {

@@ -360,7 +360,7 @@ class OutlookService(BaseEmailService):
         Initialize the Outlook service
 
         Args:
-            config: configuration dictionary, supports the following keys:
+            config: configuration dictionary with the following keys:
                 - accounts: Outlook account list, each account contains:
                   - email: email address
                   - password: password
@@ -418,7 +418,7 @@ class OutlookService(BaseEmailService):
         # IMAP connection limit (prevent rate limiting)
         self._imap_semaphore = threading.Semaphore(5)
 
-        # OTP deduplication tracking: email -> set of used codes
+        # OTP dedup tracking: email -> set of used codes
         self._used_codes: Dict[str, set] = {}
 
     def create_email(self, config: Dict[str, Any] = None) -> Dict[str, Any]:
@@ -472,12 +472,12 @@ class OutlookService(BaseEmailService):
             email_id: Not used (for Outlook, email is the ID)
             timeout: Timeout (seconds); defaults to configured value
             pattern: OTP regex pattern
-            otp_sent_at: OTP sending timestamp, used to filter old emails
+            otp_sent_at: Timestamp when the OTP was sent, used to filter old emails
 
         Returns:
-            OTP string, returns None if timeout or not found
+            OTP string, or None on timeout / not found
         """
-        # Find the corresponding account
+        # Find the matching account
         account = None
         for acc in self.accounts:
             if acc.email.lower() == email.lower():
@@ -493,9 +493,9 @@ class OutlookService(BaseEmailService):
         actual_timeout = timeout or code_settings["timeout"]
         poll_interval = code_settings["poll_interval"]
 
-        logger.info(f"[{email}] fetching OTP, timeout {actual_timeout}s, OTP sending time: {otp_sent_at}")
+        logger.info(f"[{email}] fetching OTP, timeout {actual_timeout}s, OTP sent at: {otp_sent_at}")
 
-        # Initialize OTP deduplication set
+        # Initialize OTP dedup set
         if email not in self._used_codes:
             self._used_codes[email] = set()
         used_codes = self._used_codes[email]
@@ -688,7 +688,7 @@ class OutlookService(BaseEmailService):
             fallback_pattern: fallback regex pattern
 
         Returns:
-            OTP string, returns None if not found
+            OTP string, or None if not found
         """
         # Compile regex patterns
         re_simple = re.compile(OTP_CODE_SIMPLE_PATTERN)
@@ -707,14 +707,14 @@ class OutlookService(BaseEmailService):
         match = re_semantic.search(body)
         if match:
             code = match.group(1)
-            logger.debug(f"Extract OTP from text semantics: {code}")
+            logger.debug(f"Extracted OTP via semantic match: {code}")
             return code
 
         # 3. Fallback: any 6-digit number
         match = re_simple.search(body)
         if match:
             code = match.group(1)
-            logger.debug(f"Extract OTP from the end of the text: {code}")
+            logger.debug(f"Extracted OTP via fallback match: {code}")
             return code
 
         return None

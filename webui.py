@@ -10,7 +10,7 @@ from pathlib import Path
 # so the executable directory is used as the project data directory.
 import os
 if getattr(sys, 'frozen', False):
-    # After packaging: use the directory where the executable file is located
+    # After packaging: use the executable's directory
     project_root = Path(sys.executable).parent
     _src_root = Path(sys._MEIPASS)
 else:
@@ -113,11 +113,11 @@ def main():
     import os
 
     parser = argparse.ArgumentParser(description="OpenAI/Codex CLI Auto-Registration System Web UI")
-    parser.add_argument("--host", help="Listening host (can also be set through the WEBUI_HOST environment variable)")
-    parser.add_argument("--port", type=int, help="Listening port (can also be set through the WEBUI_PORT environment variable)")
+    parser.add_argument("--host", help="Listen host (or set WEBUI_HOST env var)")
+    parser.add_argument("--port", type=int, help="Listen port (or set WEBUI_PORT env var)")
     parser.add_argument("--debug", action="store_true", help="Enable debug mode (can also be set via the DEBUG=1 environment variable)")
     parser.add_argument("--reload", action="store_true", help="Enable hot reload")
-    parser.add_argument("--log-level", help="Log level (can also be set through the LOG_LEVEL environment variable)")
+    parser.add_argument("--log-level", help="Log level (or set LOG_LEVEL env var)")
     parser.add_argument("--access-password", help="Web UI access key (can also be set via the WEBUI_ACCESS_PASSWORD environment variable)")
     args = parser.parse_args()
 

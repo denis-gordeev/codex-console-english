@@ -132,7 +132,7 @@ class RegistrationEngine:
         self.session: Optional[cffi_requests.Session] = None
         self.session_token: Optional[str] = None  # Session token
         self.logs: list = []
-        self._otp_sent_at: Optional[float] = None  # OTP sending timestamp
+        self._otp_sent_at: Optional[float] = None  # OTP send timestamp
         self._is_existing_account: bool = False  # Email already has an existing account
         self._token_acquisition_requires_login: bool = False  # Newly registered accounts need a second login to fetch tokens
 
@@ -601,14 +601,14 @@ class RegistrationEngine:
                         status="failed",
                         extra_data={"register_failed_reason": "email_already_registered_on_openai"}
                     )
-                    self._log(f"Email address {self.email} was marked as already registered in the database")
+                    self._log(f"Email address {self.email} was already marked as registered in the database")
         except Exception as e:
             logger.warning(f"Failed to mark email address status: {e}")
 
     def _send_verification_code(self) -> bool:
         """Send the OTP."""
         try:
-            # Record sending timestamp
+            # Record the send timestamp
             self._otp_sent_at = time.time()
 
             response = self.session.get(

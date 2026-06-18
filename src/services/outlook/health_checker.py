@@ -31,8 +31,8 @@ class HealthChecker:
         Initialize health checker
 
         Args:
-            failure_threshold: Consecutive failure threshold before the provider is disabled
-            disable_duration: Duration to disable the provider (seconds)
+            failure_threshold: Number of consecutive failures before disabling the provider
+            disable_duration: How long to disable the provider (seconds)
             recovery_check_interval: Interval between recovery checks (seconds)
         """
         self.failure_threshold = failure_threshold
@@ -55,7 +55,7 @@ class HealthChecker:
             return self._health_status.get(provider_type, ProviderHealth(provider_type=provider_type))
 
     def record_success(self, provider_type: ProviderType):
-        """Record successful operations"""
+        """Record a successful operation"""
         with self._lock:
             health = self._health_status.get(provider_type)
             if health:
@@ -63,17 +63,17 @@ class HealthChecker:
                 logger.debug(f"{provider_type.value} recorded successfully")
 
     def record_failure(self, provider_type: ProviderType, error: str):
-        """Record failed operations"""
+        """Record a provider failure"""
         with self._lock:
             health = self._health_status.get(provider_type)
             if health:
                 health.record_failure(error)
 
-                # Check if it needs to be disabled
+                # Check whether to disable it
                 if health.should_disable(self.failure_threshold):
                     health.disable(self.disable_duration)
                     logger.warning(
-                        f"{provider_type.value} has been disabled for {self.disable_duration} seconds,"
+                        f"{provider_type.value} disabled for {self.disable_duration} seconds,"
                         f"Reason: {error}"
                     )
 
@@ -85,7 +85,7 @@ class HealthChecker:
             provider_type: provider type
 
         Returns:
-            Is it available
+            True if available
         """
         health = self.get_health(provider_type)
 
@@ -93,7 +93,7 @@ class HealthChecker:
         if health.is_disabled():
             remaining = (health.disabled_until - datetime.now()).total_seconds()
             logger.debug(
-                f"{provider_type.value} has been disabled with {int(remaining)} seconds remaining"
+                f"{provider_type.value} disabled with {int(remaining)} seconds remaining"
             )
             return False
 
@@ -137,28 +137,28 @@ class HealthChecker:
             priority_order: priority order
 
         Returns:
-            Available provider types, or None if none
+        Available provider type, or None if none are available
         """
         available = self.get_available_providers(priority_order)
         return available[0] if available else None
 
     def force_disable(self, provider_type: ProviderType, duration: Optional[int] = None):
         """
-        Force disabling of provider
+        Force-disable a provider
 
         Args:
             provider_type: provider type
-            duration: Duration to disable (seconds); defaults to the configured value
+            duration: Disable duration in seconds; defaults to the configured value
         """
         with self._lock:
             health = self._health_status.get(provider_type)
             if health:
                 health.disable(duration or self.disable_duration)
-                logger.warning(f"{provider_type.value} has been forcibly disabled")
+                logger.warning(f"{provider_type.value} was force-disabled")
 
     def force_enable(self, provider_type: ProviderType):
         """
-        Force provider to be enabled
+        Force-enable a provider
 
         Args:
             provider_type: provider type
@@ -184,17 +184,17 @@ class HealthChecker:
 
     def check_and_recover(self):
         """
-        Check and restore disabled providers
+        Check and re-enable disabled providers
 
-        Automatically resume provider if disabled time has elapsed
+        Automatically re-enable the provider once the disable period has elapsed
         """
         with self._lock:
             for provider_type, health in self._health_status.items():
                 if health.is_disabled():
-                    # Check if it can be restored
+                    # Check if it can be re-enabled
                     if health.disabled_until and datetime.now() >= health.disabled_until:
                         health.enable()
-                        logger.info(f"{provider_type.value} has been automatically restored")
+                        logger.info(f"{provider_type.value} was automatically re-enabled")
 
     def reset_all(self):
         """Reset all provider health statuses"""
@@ -203,12 +203,12 @@ class HealthChecker:
                 self._health_status[provider_type] = ProviderHealth(
                     provider_type=provider_type
                 )
-            logger.info("All provider health statuses have been reset")
+            logger.info("All provider health statuses reset")
 
 
 class FailoverManager:
     """
-    failover manager
+    Failover manager
     Manage automatic switching between providers
     """
 

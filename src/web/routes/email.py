@@ -82,7 +82,7 @@ class OutlookBatchImportResponse(BaseModel):
 
 # ============== Helper Functions ==============
 
-# List of sensitive fields, which need to be filtered when returning the response
+# Sensitive fields to strip from API responses
 SENSITIVE_FIELDS = {'password', 'api_key', 'refresh_token', 'access_token', 'admin_token'}
 
 def filter_sensitive_config(config: Dict[str, Any]) -> Dict[str, Any]:
@@ -93,7 +93,7 @@ def filter_sensitive_config(config: Dict[str, Any]) -> Dict[str, Any]:
     filtered = {}
     for key, value in config.items():
         if key in SENSITIVE_FIELDS:
-            # Sensitive fields are not returned, but their presence is indicated
+            # Sensitive fields are omitted; their presence is indicated
             filtered[f"has_{key}"] = bool(value)
         else:
             filtered[key] = value
@@ -184,7 +184,7 @@ async def get_service_types():
             {
                 "value": "outlook",
                 "label": "Outlook",
-                "description": "Outlook email, account information needs to be configured",
+                "description": "Outlook email; account credentials required",
                 "config_fields": [
                     {"name": "email", "label": "Email address", "required": True},
                     {"name": "password", "label": "password", "required": True},
@@ -452,7 +452,7 @@ async def reorder_services(service_ids: List[int]):
 
         db.commit()
 
-        return {"success": True, "message": "Priority has been updated"}
+        return {"success": True, "message": "Priority updated"}
 
 
 @router.post("/outlook/batch-import", response_model=OutlookBatchImportResponse)

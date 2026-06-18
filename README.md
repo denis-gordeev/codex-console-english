@@ -88,6 +88,20 @@ This repository keeps the original structure and overall approach, while applyin
 - Replaced "Get the message list in your email" → "Get the email message list" in moe_mail.py.
 - Fixed "Synchronous registration tasks executed in the thread pool" → "Synchronous registration task run in the thread pool".
 - Fixed "Database backup succeeded" → "Database backup successful" and similar standalone message patterns.
+- Replaced all "has been" + past participle Chinese-style passive constructions with natural English active forms across backend and frontend (~65 occurrences: "Task has been canceled" → "Task canceled", "Service has been deleted" → "Service deleted", etc.).
+- Replaced "Noun + failed" Chinese-English pattern with "Failed to + verb" across all JS files (~31 occurrences: "Save failed" → "Failed to save", "Add failed" → "Failed to add", etc.).
+- Replaced "concurrencies" / "number of concurrency" → "concurrent tasks" / "concurrency" for standard English (4 occurrences).
+- Replaced "corresponding" → "matching"/"for" where the Chinese term 对应的 was mistranslated (4 occurrences).
+- Replaced "lacks Token" → "has no token" across accounts.py and upload modules (4 occurrences).
+- Replaced "real-time push" → "live delivery/updates" in task manager and WebSocket routes (4 occurrences).
+- Replaced "restore" → "re-enable" for disabled provider recovery context in health checker (4 occurrences).
+- Replaced "configuration dictionary, supports the following keys:" → "configuration dictionary with the following keys:" across all service modules (6 occurrences).
+- Replaced "Sensitive fields are not returned" → "Sensitive fields are omitted" and similar passive-to-active fixes in email.py.
+- Replaced "cross-page navigation" → "navigating away and back" in app.js (4 occurrences).
+- Replaced "downgrade scenario" → "fallback scenario" and "Service connection is normal" → "Service connection OK" in JS files.
+- Replaced "passed in" → "provided", "front end" → "frontend", "Logout WebSocket" → "Unregister/disconnect WebSocket" for consistent terminology.
+- Replaced "according to" → "by" and "concurrencies" → "concurrent tasks" for idiomatic English in routes.
+- Replaced "OTP sending timestamp" → "OTP send timestamp" / "Timestamp when the OTP was sent" for natural English (5 occurrences).
 
 ### Next Iterations
 

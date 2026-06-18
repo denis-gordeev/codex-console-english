@@ -270,7 +270,7 @@ async def delete_account(account_id: int):
             raise HTTPException(status_code=404, detail="Account not found")
 
         crud.delete_account(db, account_id)
-        return {"success": True, "message": f"Account {account.email} has been deleted"}
+        return {"success": True, "message": f"Account {account.email} deleted"}
 
 
 @router.post("/batch-delete")
@@ -775,7 +775,7 @@ async def upload_account_to_cpa(account_id: int, request: Optional[CPAUploadRequ
         if not account.access_token:
             return {
                 "success": False,
-                "error": "The account lacks Token and cannot be uploaded"
+                "error": "This account has no token and cannot be uploaded"
             }
 
         # Generate Token JSON
@@ -882,7 +882,7 @@ async def upload_account_to_sub2api(account_id: int, request: Optional[Sub2ApiUp
         if not account:
             raise HTTPException(status_code=404, detail="Account not found")
         if not account.access_token:
-            return {"success": False, "error": "The account lacks Token and cannot be uploaded"}
+            return {"success": False, "error": "This account has no token and cannot be uploaded"}
 
         success, message = upload_to_sub2api(
             [account], api_url, api_key,
@@ -999,7 +999,7 @@ def _build_inbox_config(db, service_type, email: str) -> dict:
             cfg["base_url"] = cfg.pop("api_url")
         return cfg
 
-    # Other service types: directly query the database according to service_type
+    # Other service types: query the database by service_type
     type_map = {
         EST.TEMP_MAIL: "temp_mail",
         EST.DUCK_MAIL: "duck_mail",
@@ -1016,7 +1016,7 @@ def _build_inbox_config(db, service_type, email: str) -> dict:
         EmailServiceModel.enabled == True
     )
     if service_type == EST.OUTLOOK:
-        # Match account email according to config.email
+        # Match account email by config.email
         services = query.all()
         svc = next((s for s in services if (s.config or {}).get("email") == email), None)
     else:

@@ -1,6 +1,6 @@
 """
-task manager
-Responsible for managing background tasks, log queues and WebSocket pushes
+Task manager
+Manages background tasks, log queues, and WebSocket pushes
 """
 
 import asyncio
@@ -43,7 +43,7 @@ _batch_locks: Dict[str, threading.Lock] = {}
 
 
 def _get_log_lock(task_uuid: str) -> threading.Lock:
-    """Thread-safely acquire or create task log lock"""
+    """Acquire or create the task log lock (thread-safe)"""
     if task_uuid not in _log_locks:
         with _meta_lock:
             if task_uuid not in _log_locks:
@@ -52,7 +52,7 @@ def _get_log_lock(task_uuid: str) -> threading.Lock:
 
 
 def _get_batch_lock(batch_id: str) -> threading.Lock:
-    """Thread-safely acquire or create batch task log lock"""
+    """Acquire or create the batch task log lock (thread-safe)"""
     if batch_id not in _batch_locks:
         with _meta_lock:
             if batch_id not in _batch_locks:
@@ -61,7 +61,7 @@ def _get_batch_lock(batch_id: str) -> threading.Lock:
 
 
 class TaskManager:
-    """task manager"""
+    """Task manager"""
 
     def __init__(self):
         self.executor = _executor
@@ -76,17 +76,17 @@ class TaskManager:
         return self._loop
 
     def is_cancelled(self, task_uuid: str) -> bool:
-        """Check if the task has been canceled"""
+        """Check if the task was canceled"""
         return _task_cancelled.get(task_uuid, False)
 
     def cancel_task(self, task_uuid: str):
         """Cancel task"""
         _task_cancelled[task_uuid] = True
-        logger.info(f"Task {task_uuid} has been marked as canceled")
+        logger.info(f"Task {task_uuid} marked as canceled")
 
     def add_log(self, task_uuid: str, log_message: str):
         """Add log and push to WebSocket (thread safe)"""
-        # First broadcast to WebSocket to ensure real-time push
+        # First broadcast to WebSocket to ensure live delivery
         # Then add it to the queue so that get_unsent_logs will not get this log
         if self._loop and self._loop.is_running():
             try:
@@ -149,7 +149,7 @@ class TaskManager:
         with _ws_lock:
             if task_uuid not in _ws_connections:
                 _ws_connections[task_uuid] = []
-            # Avoid registering the same connection repeatedly
+            # Prevent duplicate connection registration
             if websocket not in _ws_connections[task_uuid]:
                 _ws_connections[task_uuid].append(websocket)
                 # Record log count to avoid resending historical logs
@@ -173,7 +173,7 @@ class TaskManager:
             return unsent_logs
 
     def unregister_websocket(self, task_uuid: str, websocket):
-        """Logout WebSocket connection"""
+        """Unregister WebSocket connection"""
         with _ws_lock:
             if task_uuid in _ws_connections:
                 try:
@@ -183,7 +183,7 @@ class TaskManager:
             # Clean up the sent index
             if task_uuid in _ws_sent_index:
                 _ws_sent_index[task_uuid].pop(id(websocket), None)
-        logger.info(f"WebSocket connection logged out: {task_uuid}")
+        logger.info(f"WebSocket disconnected: {task_uuid}")
 
     def get_logs(self, task_uuid: str) -> List[str]:
         """Get all logs of the task"""
@@ -203,9 +203,9 @@ class TaskManager:
         return _task_status.get(task_uuid)
 
     def cleanup_task(self, task_uuid: str):
-        """Clean task data"""
-        # Keep the log queue for a period of time for subsequent queries
-        # Only clear the cancel flag
+        """Clean up task data"""
+        # Retain the log queue temporarily for later queries
+        # Only clear the cancellation flag
         if task_uuid in _task_cancelled:
             del _task_cancelled[task_uuid]
 
@@ -223,11 +223,11 @@ class TaskManager:
             "current_index": 0,
             "finished": False
         }
-        logger.info(f"Batch task {batch_id} has been initialized, total number: {total}")
+        logger.info(f"Batch task {batch_id} initialized, total: {total}")
 
     def add_batch_log(self, batch_id: str, log_message: str):
         """Add batch task log and push"""
-        # First broadcast to WebSocket to ensure real-time push
+        # First broadcast to WebSocket to ensure live delivery
         if self._loop and self._loop.is_running():
             try:
                 asyncio.run_coroutine_threadsafe(
@@ -310,7 +310,7 @@ class TaskManager:
             return _batch_logs.get(batch_id, []).copy()
 
     def is_batch_cancelled(self, batch_id: str) -> bool:
-        """Check if the batch task has been canceled"""
+        """Check if the batch task was canceled"""
         status = _batch_status.get(batch_id, {})
         return status.get("cancelled", False)
 
@@ -319,7 +319,7 @@ class TaskManager:
         if batch_id in _batch_status:
             _batch_status[batch_id]["cancelled"] = True
             _batch_status[batch_id]["status"] = "cancelling"
-            logger.info(f"Batch task {batch_id} has been marked as canceled")
+            logger.info(f"Batch task {batch_id} marked as canceled")
 
     def register_batch_websocket(self, batch_id: str, websocket):
         """Register batch task WebSocket connection"""
@@ -327,7 +327,7 @@ class TaskManager:
         with _ws_lock:
             if key not in _ws_connections:
                 _ws_connections[key] = []
-            # Avoid registering the same connection repeatedly
+            # Prevent duplicate connection registration
             if websocket not in _ws_connections[key]:
                 _ws_connections[key].append(websocket)
                 # Record log count to avoid resending historical logs
@@ -352,7 +352,7 @@ class TaskManager:
             return unsent_logs
 
     def unregister_batch_websocket(self, batch_id: str, websocket):
-        """Log out of batch task WebSocket connection"""
+        """Unregister batch task WebSocket connection"""
         key = f"batch_{batch_id}"
         with _ws_lock:
             if key in _ws_connections:
@@ -363,14 +363,14 @@ class TaskManager:
             # Clean up the sent index
             if key in _ws_sent_index:
                 _ws_sent_index[key].pop(id(websocket), None)
-        logger.info(f"Batch task WebSocket connection has been logged out: {batch_id}")
+        logger.info(f"Batch task WebSocket disconnected: {batch_id}")
 
     def create_log_callback(self, task_uuid: str, prefix: str = "", batch_id: str = "") -> Callable[[str], None]:
-        """Create a log callback function, which can be prefixed with the task number and pushed to the batch task channel at the same time"""
+        """Create a log callback function that prefixes the task number and also pushes to the batch task channel"""
         def callback(msg: str):
             full_msg = f"{prefix} {msg}" if prefix else msg
             self.add_log(task_uuid, full_msg)
-            # If it is a batch task, push it to the batch channel synchronously. The front end can see the detailed steps in the mixed log.
+            # If it is a batch task, push it to the batch channel as well. The frontend can see the detailed steps in the mixed log.
             if batch_id:
                 self.add_batch_log(batch_id, full_msg)
         return callback

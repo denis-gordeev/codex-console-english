@@ -60,7 +60,7 @@ class EmailParser:
             logger.debug(f"Email does not contain OTP keywords: {subject[:50]}")
             return False
 
-        # 3. Recipient check has been removed: the recipient in the IMAP header of the alias email may not match, and it is only judged by the sender + keywords.
+        # 3. Recipient check removed: alias IMAP headers may not match, so matching uses only sender + keywords.
         logger.debug(f"Identified as OpenAI verification email: {subject[:50]}")
         return True
 
@@ -80,7 +80,7 @@ class EmailParser:
             email: email object
 
         Returns:
-            OTP string, returns None if not found
+            OTP string, or None if not found
         """
         # 1. Subject priority
         code = self._extract_from_subject(email.subject)
@@ -91,7 +91,7 @@ class EmailParser:
         # 2. Text semantic matching
         code = self._extract_semantic(email.body)
         if code:
-            logger.debug(f"Extract OTP from text semantics: {code}")
+            logger.debug(f"Extracted OTP via semantic match: {code}")
             return code
 
         # 3. Fallback: any 6-digit number in the text
@@ -137,10 +137,10 @@ class EmailParser:
             emails: list of emails
             target_email: target email address
             min_timestamp: minimum timestamp (used to filter old emails)
-            used_codes: set of used OTPs (for deduplication tracking)
+            used_codes: set of used OTPs (for dedup tracking)
 
         Returns:
-            OTP string, returns None if not found
+            OTP string, or None if not found
         """
         used_codes = used_codes or set()
 

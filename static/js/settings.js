@@ -351,8 +351,8 @@ async function loadSettings() {
         }
 
     } catch (error) {
-        console.error('Loading settings failed:', error);
-        toast.error('Loading settings failed');
+        console.error('Failed to load settings:', error);
+        toast.error('Failed to load settings');
     }
 }
 
@@ -391,7 +391,7 @@ async function loadEmailServices() {
                     <td colspan="7">
                         <div class="empty-state">
                             <div class="empty-state-icon">❌</div>
-                            <div class="empty-state-title">Loading failed</div>
+                            <div class="empty-state-title">Failed to load</div>
                         </div>
                     </td>
                 </tr>
@@ -477,9 +477,9 @@ async function handleSaveRegistration(e) {
 
     try {
         await api.post('/settings/registration', data);
-        toast.success('Registration configuration has been saved');
+        toast.success('Registration configuration saved');
     } catch (error) {
-        toast.error('Save failed: ' + error.message);
+        toast.error('Failed to save: ' + error.message);
     }
 }
 
@@ -509,7 +509,7 @@ async function handleSaveEmailCode(e) {
         await api.post('/settings/email-code', data);
         toast.success('OTP configuration saved');
     } catch (error) {
-        toast.error('Save failed: ' + error.message);
+        toast.error('Failed to save: ' + error.message);
     }
 }
 
@@ -598,12 +598,12 @@ async function handleAddService(e) {
 
     try {
         await api.post('/email-services', data);
-        toast.success('Email service has been added');
+        toast.success('Email service added');
         elements.addServiceModal.classList.remove('active');
         elements.addServiceForm.reset();
         loadEmailServices();
     } catch (error) {
-        toast.error('Add failed: ' + error.message);
+        toast.error('Failed to add: ' + error.message);
     }
 }
 
@@ -612,7 +612,7 @@ async function testService(id) {
     try {
         const data = await api.post(`/email-services/${id}/test`);
         if (data.success) {
-            toast.success('Service connection is normal');
+            toast.success('Service connection OK');
         } else {
             toast.warning('Service connection failed: ' + data.message);
         }
@@ -626,7 +626,7 @@ async function toggleService(id, enabled) {
     try {
         const endpoint = enabled ? 'enable' : 'disable';
         await api.post(`/email-services/${id}/${endpoint}`);
-        toast.success(enabled ? 'Service is enabled' : 'Service is disabled');
+        toast.success(enabled ? 'Service enabled' : 'Service disabled');
         loadEmailServices();
     } catch (error) {
         toast.error('Operation failed: ' + error.message);
@@ -640,10 +640,10 @@ async function deleteService(id) {
 
     try {
         await api.delete(`/email-services/${id}`);
-        toast.success('Service has been deleted');
+        toast.success('Service deleted');
         loadEmailServices();
     } catch (error) {
-        toast.error('Deletion failed: ' + error.message);
+        toast.error('Failed to delete: ' + error.message);
     }
 }
 
@@ -774,7 +774,7 @@ async function loadProxies() {
                 <td colspan="7">
                     <div class="empty-state">
                         <div class="empty-state-icon">❌</div>
-                        <div class="empty-state-title">Loading failed</div>
+                        <div class="empty-state-title">Failed to load</div>
                     </div>
                 </td>
             </tr>
@@ -905,7 +905,7 @@ async function handleSaveProxyItem(e) {
         closeProxyModal();
         loadProxies();
     } catch (error) {
-        toast.error('Save failed: ' + error.message);
+        toast.error('Failed to save: ' + error.message);
     }
 }
 
@@ -955,7 +955,7 @@ async function deleteProxyItem(id) {
         toast.success('Proxy deleted');
         loadProxies();
     } catch (error) {
-        toast.error('Deletion failed: ' + error.message);
+        toast.error('Failed to delete: ' + error.message);
     }
 }
 
@@ -1002,7 +1002,7 @@ async function handleSaveOutlookSettings(e) {
         await api.post('/settings/outlook', data);
         toast.success('Outlook settings saved');
     } catch (error) {
-        toast.error('Save failed: ' + error.message);
+        toast.error('Failed to save: ' + error.message);
     }
 }
 
@@ -1022,7 +1022,7 @@ async function handleSaveDynamicProxy(e) {
         toast.success('Dynamic proxy settings saved');
         document.getElementById('dynamic-proxy-api-key').value = '';
     } catch (error) {
-        toast.error('Save failed: ' + error.message);
+        toast.error('Failed to save: ' + error.message);
     }
 }
 
@@ -1140,16 +1140,16 @@ async function handleSaveTmService(e) {
 
         if (id) {
             await api.patch(`/tm-services/${id}`, payload);
-            toast.success('Service has been updated');
+            toast.success('Service updated');
         } else {
             payload.api_key = apiKey;
             await api.post('/tm-services', payload);
-            toast.success('Service has been added');
+            toast.success('Service added');
         }
         closeTmServiceModal();
         loadTmServices();
     } catch (e) {
-        toast.error('Save failed: ' + e.message);
+        toast.error('Failed to save: ' + e.message);
     }
 }
 
@@ -1161,7 +1161,7 @@ async function deleteTmService(id, name) {
         toast.success('deleted');
         loadTmServices();
     } catch (e) {
-        toast.error('Deletion failed: ' + e.message);
+        toast.error('Failed to delete: ' + e.message);
     }
 }
 
@@ -1296,16 +1296,16 @@ async function handleSaveCpaService(e) {
 
         if (id) {
             await api.patch(`/cpa-services/${id}`, payload);
-            toast.success('Service has been updated');
+            toast.success('Service updated');
         } else {
             payload.api_token = apiToken;
             await api.post('/cpa-services', payload);
-            toast.success('Service has been added');
+            toast.success('Service added');
         }
         closeCpaServiceModal();
         loadCpaServices();
     } catch (e) {
-        toast.error('Save failed: ' + e.message);
+        toast.error('Failed to save: ' + e.message);
     }
 }
 
@@ -1317,7 +1317,7 @@ async function deleteCpaService(id, name) {
         toast.success('deleted');
         loadCpaServices();
     } catch (e) {
-        toast.error('Deletion failed: ' + e.message);
+        toast.error('Failed to delete: ' + e.message);
     }
 }
 
@@ -1385,7 +1385,7 @@ async function loadSub2ApiServices() {
         renderSub2ApiServices(services);
     } catch (e) {
         if (elements.sub2ApiServicesTable) {
-            elements.sub2ApiServicesTable.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">Loading failed</td></tr>';
+            elements.sub2ApiServicesTable.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">Failed to load</td></tr>';
         }
     }
 }
@@ -1437,7 +1437,7 @@ async function editSub2ApiService(id) {
         const svc = await api.get(`/sub2api-services/${id}`);
         openSub2ApiServiceModal(svc);
     } catch (e) {
-        toast.error('Loading failed: ' + e.message);
+        toast.error('Failed to load: ' + e.message);
     }
 }
 
@@ -1445,10 +1445,10 @@ async function deleteSub2ApiService(id, name) {
     if (!confirm(`Confirm to delete Sub2API service "${name}"?`)) return;
     try {
         await api.delete(`/sub2api-services/${id}`);
-        toast.success('Service has been deleted');
+        toast.success('Service deleted');
         loadSub2ApiServices();
     } catch (e) {
-        toast.error('Deletion failed: ' + e.message);
+        toast.error('Failed to delete: ' + e.message);
     }
 }
 
@@ -1471,15 +1471,15 @@ async function handleSaveSub2ApiService(e) {
     try {
         if (id) {
             await api.patch(`/sub2api-services/${id}`, data);
-            toast.success('Service has been updated');
+            toast.success('Service updated');
         } else {
             await api.post('/sub2api-services', data);
-            toast.success('Service has been added');
+            toast.success('Service added');
         }
         closeSub2ApiServiceModal();
         loadSub2ApiServices();
     } catch (e) {
-        toast.error('Save failed: ' + e.message);
+        toast.error('Failed to save: ' + e.message);
     }
 }
 

@@ -28,9 +28,9 @@ class FreemailService(BaseEmailService):
         Initialize Freemail service
 
         Args:
-            config: configuration dictionary, supports the following keys:
+            config: configuration dictionary with the following keys:
                 - base_url: Worker URL (required)
-                - admin_token: Admin Token, corresponding to JWT_TOKEN (required)
+                - admin_token: Admin Token for JWT_TOKEN (required)
                 - domain: email domain, such as example.com
                 - timeout: request timeout, default 30
                 - max_retries: Maximum number of retries, default 3
@@ -60,7 +60,7 @@ class FreemailService(BaseEmailService):
         self._domains = []
 
     def _get_headers(self) -> Dict[str, str]:
-        """Construct admin request header"""
+        """Build admin request headers"""
         return {
             "Authorization": f"Bearer {self.config['admin_token']}",
             "Content-Type": "application/json",
@@ -167,7 +167,7 @@ class FreemailService(BaseEmailService):
                 "created_at": time.time(),
             }
 
-            logger.info(f"Freemail email address successfully created: {email}")
+            logger.info(f"Freemail email address created: {email}")
             self.update_status(True)
             return email_info
 

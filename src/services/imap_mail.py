@@ -166,7 +166,7 @@ class ImapMailService(BaseEmailService):
                             # Mark as read
                             mail.store(msg_id, "+FLAGS", "\\Seen")
                             self.update_status(True)
-                            logger.info(f"IMAP successfully retrieved OTP: {code}")
+                            logger.info(f"IMAP retrieved OTP: {code}")
                             return code
 
                 except imaplib.IMAP4.error as e:

@@ -30,7 +30,7 @@ def upload_to_team_manager(
     if not api_key:
         return False, "Team Manager API Key is not configured"
     if not account.access_token:
-        return False, "Account lacks access_token"
+        return False, "Account has no access_token"
 
     url = api_url.rstrip("/") + "/admin/teams/import"
     headers = {

@@ -230,7 +230,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
         try:
             # Check if canceled
             if task_manager.is_cancelled(task_uuid):
-                logger.info(f"Task {task_uuid} has been canceled; skipping execution")
+                logger.info(f"Task {task_uuid} was canceled; skipping execution")
                 return
 
             # Update task status to running
@@ -248,8 +248,8 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
             task_manager.update_status(task_uuid, "running")
 
             # Determine the proxy to use
-            # If the front end passes in proxy parameters, use the passed in
-            # Otherwise get it from the proxy list or system settings
+            # If the frontend provides proxy parameters, use them
+            # Otherwise get them from the proxy list or system settings
             actual_proxy_url = proxy
             proxy_id = None
 
@@ -550,7 +550,7 @@ async def run_registration_task(task_uuid: str, email_service_type: str, proxy: 
 
     # Initialize TaskManager state
     task_manager.update_status(task_uuid, "pending")
-    task_manager.add_log(task_uuid, f"{log_prefix} [System] Task {task_uuid[:8]} has been added to the queue" if log_prefix else f"[System] Task {task_uuid[:8]} has been added to the queue")
+    task_manager.add_log(task_uuid, f"{log_prefix} [System] Task {task_uuid[:8]} added to queue" if log_prefix else f"[System] Task {task_uuid[:8]} added to queue")
 
     try:
         # Run synchronous tasks in the thread pool
@@ -578,7 +578,7 @@ async def run_registration_task(task_uuid: str, email_service_type: str, proxy: 
 
 
 def _init_batch_state(batch_id: str, task_uuids: List[str]):
-    """Initialize batch task memory status"""
+    """Initialize in-memory batch task state"""
     task_manager.init_batch(batch_id, len(task_uuids))
     batch_tasks[batch_id] = {
         "total": len(task_uuids),
@@ -624,13 +624,13 @@ async def run_batch_parallel(
     tm_service_ids: List[int] = None,
 ):
     """
-    Parallel mode: All tasks are submitted at the same time, and Semaphore controls the maximum number of concurrencies.
+    Parallel mode: All tasks are submitted simultaneously, and Semaphore limits the maximum number of concurrent tasks.
     """
     _init_batch_state(batch_id, task_uuids)
     add_batch_log, update_batch_status = _make_batch_helpers(batch_id)
     semaphore = asyncio.Semaphore(concurrency)
     counter_lock = asyncio.Lock()
-    add_batch_log(f"[System] parallel mode startup, number of concurrency: {concurrency}, total tasks: {len(task_uuids)}")
+    add_batch_log(f"[System] parallel mode starting, concurrency: {concurrency}, total tasks: {len(task_uuids)}")
 
     async def _run_one(idx: int, uuid: str):
         prefix = f"[task{idx + 1}]"
@@ -690,14 +690,14 @@ async def run_batch_pipeline(
     tm_service_ids: List[int] = None,
 ):
     """
-    Pipeline mode: start a new task every interval seconds, Semaphore limits the maximum number of concurrencies
+    Pipeline mode: start a new task every interval seconds, Semaphore limits the maximum number of concurrent tasks
     """
     _init_batch_state(batch_id, task_uuids)
     add_batch_log, update_batch_status = _make_batch_helpers(batch_id)
     semaphore = asyncio.Semaphore(concurrency)
     counter_lock = asyncio.Lock()
     running_tasks_list = []
-    add_batch_log(f"[System] Pipeline mode started, number of concurrency: {concurrency}, total tasks: {len(task_uuids)}")
+    add_batch_log(f"[System] Pipeline mode started, concurrency: {concurrency}, total tasks: {len(task_uuids)}")
 
     async def _run_and_release(idx: int, uuid: str, pfx: str):
         try:
@@ -731,7 +731,7 @@ async def run_batch_pipeline(
                 with get_db() as db:
                     for remaining_uuid in task_uuids[i:]:
                         crud.update_registration_task(db, remaining_uuid, status="cancelled")
-                add_batch_log("[Cancellation] Batch task has been canceled")
+                add_batch_log("[Cancellation] Batch task canceled")
                 update_batch_status(finished=True, status="cancelled")
                 break
 
@@ -811,7 +811,7 @@ async def start_registration(
 
     - email_service_type: Email service type (tempmail, outlook, moe_mail)
     - proxy: proxy address
-    - email_service_config: Email service configuration (outlook needs to provide account information)
+    - email_service_config: Email service configuration (Outlook requires account credentials)
     """
     # Verify email service type
     try:
@@ -966,7 +966,7 @@ async def cancel_batch(batch_id: str):
 
     batch["cancelled"] = True
     task_manager.cancel_batch(batch_id)
-    return {"success": True, "message": "The batch task cancellation request has been submitted and they are being completed in an orderly manner"}
+    return {"success": True, "message": "Batch cancellation submitted; remaining tasks are finishing gracefully"}
 
 
 @router.get("/tasks", response_model=TaskListResponse)
@@ -1047,7 +1047,7 @@ async def delete_task(task_uuid: str):
 
         crud.delete_registration_task(db, task_uuid)
 
-        return {"success": True, "message": "Task has been deleted"}
+        return {"success": True, "message": "Task deleted"}
 
 
 @router.get("/stats")
@@ -1286,7 +1286,7 @@ async def get_outlook_accounts_for_registration():
             config = service.config or {}
             email = config.get("email") or service.name
 
-            # Check if it has been registered (query the accounts table)
+            # Check if it is already registered (query the accounts table)
             existing_account = db.query(Account).filter(
                 Account.email == email
             ).first()
@@ -1331,9 +1331,9 @@ async def run_outlook_batch_registration(
     tm_service_ids: List[int] = None,
 ):
     """
-    Run Outlook batch registration tasks asynchronously and reuse common concurrency logic
+    Run Outlook batch registration tasks asynchronously, reusing shared concurrency logic
 
-    Map each service_id to an independent task_uuid, and then call
+    Map each service_id to a separate task_uuid, then call
     Reuses the concurrency logic from run_batch_registration
     """
     loop = task_manager.get_loop()
@@ -1354,14 +1354,14 @@ async def run_outlook_batch_registration(
             )
             task_uuids.append(task_uuid)
 
-    # Reuse common concurrency logic (outlook service type, each task locates the account through email_service_id)
+    # Reuse shared concurrency logic (outlook service type, each task finds its account by email_service_id)
     await run_batch_registration(
         batch_id=batch_id,
         task_uuids=task_uuids,
         email_service_type="outlook",
         proxy=proxy,
         email_service_config=None,
-        email_service_id=None, # Each task has been bound to an independent email_service_id
+        email_service_id=None, # Each task is bound to its own email_service_id
         interval_min=interval_min,
         interval_max=interval_max,
         concurrency=concurrency,
@@ -1519,8 +1519,8 @@ async def cancel_outlook_batch(batch_id: str):
     if batch.get("finished"):
         raise HTTPException(status_code=400, detail="Batch task completed")
 
-    # Update the cancellation status of both systems at the same time
+    # Update the cancellation status of both systems simultaneously
     batch["cancelled"] = True
     task_manager.cancel_batch(batch_id)
 
-    return {"success": True, "message": "The batch task cancellation request has been submitted and they are being completed in an orderly manner"}
+    return {"success": True, "message": "Batch cancellation submitted; remaining tasks are finishing gracefully"}
