@@ -1,7 +1,7 @@
 """
 IMAP email service
 Supports standard IMAP protocol email service providers such as Gmail / QQ / 163 / Yahoo / Outlook.
-Only used to receive OTPs, forcing direct connection (imaplib does not support proxy).
+Only used to receive OTPs, requiring a direct connection (imaplib does not support proxy).
 """
 
 import imaplib
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 class ImapMailService(BaseEmailService):
-    """Standard IMAP email service (only receives OTPs, forced direct connection)"""
+    """Standard IMAP email service (only receives OTPs, direct connection required)"""
 
     def __init__(self, config: Dict[str, Any] = None, name: str = None):
         super().__init__(EmailServiceType.IMAP_MAIL, name)

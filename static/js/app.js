@@ -17,7 +17,7 @@ let batchCompleted = false; // Track if the batch task is completed
 let taskFinalStatus = null; // Save the final status of the task
 let batchFinalStatus = null; // Save the final status of the batch task
 let displayedLogs = new Set(); // Used for log dedup
-let toastShown = false; // Tracks whether toast has been shown
+let toastShown = false; // Tracks if toast has been shown
 let availableServices = {
     tempmail: { available: true, services: [] },
     outlook: { available: false, services: [] },
@@ -836,7 +836,7 @@ function startBatchPolling(batchId) {
                         // Refresh the account list
                         loadRecentAccounts();
                     } else {
-                        toast.warning('Batch registration completed, but no account was successfully registered');
+                        toast.warning('Batch registration completed, but no accounts were registered successfully');
                     }
                 }
             }
@@ -913,10 +913,10 @@ function updateBatchProgress(data) {
         const lastFailed = parseInt(elements.batchFailed.dataset.last || '0');
 
         if (data.success > lastSuccess) {
-            addLog('success', `[Success] The ${data.success} account was successfully registered`);
+            addLog('success', `[Success] ${data.success} account(s) registered successfully`);
         }
         if (data.failed > lastFailed) {
-            addLog('error', `[Failed] The registration of the ${data.failed} account failed`);
+            addLog('error', `[Failed] Failed to register ${data.failed} account(s)`);
         }
 
         elements.batchSuccess.dataset.last = data.success;
@@ -935,7 +935,7 @@ async function loadRecentAccounts() {
                     <td colspan="5">
                         <div class="empty-state" style="padding: var(--spacing-md);">
                             <div class="empty-state-icon">📭</div>
-                            <div class="empty-state-title">No registered account yet</div>
+                            <div class="empty-state-title">No registered accounts yet</div>
                         </div>
                     </td>
                 </tr>
@@ -1198,7 +1198,7 @@ async function handleOutlookBatchRegistration() {
         const data = await api.post('/registration/outlook-batch', requestData);
 
         if (data.to_register === 0) {
-            addLog('warning', '[Warning] All selected emails are already registered, no need to register again');
+            addLog('warning', '[Warning] All selected emails are already registered');
             toast.warning('All selected emails are already registered');
             resetButtons();
             return;
@@ -1280,7 +1280,7 @@ function connectBatchWebSocket(batchId) {
                                 toast.success(`Outlook batch registration completed, ${data.success} successful`);
                                 loadRecentAccounts();
                             } else {
-                                toast.warning('Outlook batch registration completed, but no account was successfully registered');
+                                toast.warning('Outlook batch registration completed, but no accounts were registered successfully');
                             }
                         } else if (data.status === 'failed') {
                             addLog('error', '[Error] Batch task execution failed');
@@ -1395,7 +1395,7 @@ function startOutlookBatchPolling(batchId) {
                         toast.success(`Outlook batch registration completed, ${data.success} successful`);
                         loadRecentAccounts();
                     } else {
-                        toast.warning('Outlook batch registration completed, but no account was successfully registered');
+                        toast.warning('Outlook batch registration completed, but no accounts were registered successfully');
                     }
                 }
             }
@@ -1420,14 +1420,14 @@ function initVisibilityReconnect() {
         // Single task reconnection
         if (activeTaskUuid && !taskCompleted && wsDisconnected) {
             console.log('[Reconnect] The page is visible again, reconnect the single task WebSocket:', activeTaskUuid);
-            addLog('info', '[System] page reactivated, reconnecting task monitoring...');
+            addLog('info', '[System] Page became visible again, reconnecting task monitoring...');
             connectWebSocket(activeTaskUuid);
         }
 
         // Batch task reconnection
         if (activeBatchId && !batchCompleted && batchWsDisconnected) {
-            console.log('[Reconnect] The page is visible again, reconnect the batch task WebSocket:', activeBatchId);
-            addLog('info', '[System] page reactivated, reconnecting batch task monitoring...');
+            console.log('[Reconnect] The page is visible again, reconnect to the batch task WebSocket:', activeBatchId);
+            addLog('info', '[System] Page became visible again, reconnecting batch task monitoring...');
             connectBatchWebSocket(activeBatchId);
         }
     });
@@ -1495,7 +1495,7 @@ async function restoreActiveTask() {
             elements.cancelBtn.disabled = false;
             showBatchStatus({ count: total || data.total });
             updateBatchProgress(data);
-            addLog('info', `[System] has detected batch tasks in progress and is reconnecting to monitor... (${batch_id.substring(0, 8)})`);
+            addLog('info', `[System] Detected in-progress batch tasks; reconnecting to monitor... (${batch_id.substring(0, 8)})`);
             connectBatchWebSocket(batch_id);
         } catch {
             sessionStorage.removeItem('activeTask');

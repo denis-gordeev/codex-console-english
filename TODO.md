@@ -1,5 +1,71 @@
 # TODO
 
+## Completed In This Round (June 19, 2026 - Round 46)
+
+- Pulled `origin/main` - repository was already up to date.
+- Deep scan found ~100+ remaining translation artifacts (Chinese calques, inconsistent terminology, stilted English) that previous rounds had missed.
+- Replaced all "modal box" with "modal" across HTML templates and JS files (13 occurrences in settings.html, email_services.html, accounts.html, email_services.js, accounts.js, utils.js).
+- Unified "leave blank to remain unchanged" / "leave blank to not modify" / "Leave blank to keep the original value" → "leave blank to keep current" / "Leave blank to keep current" across HTML and JS (~25 occurrences).
+- Replaced "Please fill in" → "Please enter" in settings.js (8 occurrences).
+- Replaced "heartbeat detection" → "heartbeat check/ping" in websocket.py (5 occurrences).
+- Replaced "configuration" → "settings" in UI tab headers, section headings, toast messages, and comments across settings.html, email_services.html, accounts.html, settings.js, accounts.js (13 occurrences).
+- Replaced "exit IP" → "outgoing IP" in settings.py (2 occurrences).
+- Replaced "Operation failed" → "Failed" in settings.js (4 occurrences).
+- Replaced "request header name" → "header name" in settings.py, dynamic_proxy.py, moe_mail.py (4 occurrences).
+- Replaced "on re-login" → "during re-login" in register.py (4 occurrences).
+- Replaced "fill in" / "is not filled in" → "enter" / "is not provided" in settings.html, settings.js, email_services.html (11 occurrences).
+- Replaced "Key request header" → "API key header name" in settings.html.
+- Replaced "winding down" → "stopping" in websocket.py (2 occurrences).
+- Replaced Noun+failed patterns in constants.py: "Network connection failed" → "Failed to connect to network", "Parameter validation failed" → "Validation failed", "Creation of email failed" → "Failed to create email", "OpenAI authentication failed" → "Failed to authenticate with OpenAI", "Proxy connection failed" → "Failed to connect to proxy", "Proxy authentication failed" → "Failed to authenticate with proxy".
+- Replaced "Reserved parameter, not used" → "placeholder parameter (unused)" in cpa_upload.py (2 occurrences).
+- Replaced "directly connected" → "connects directly" in cpa_upload.py (2 occurrences).
+- Replaced "check network configuration" → "check your network settings" in upload modules (3 occurrences).
+- Replaced "Compatible with old field names by service type" → "Backward-compatible with old field names per service type" in registration.py.
+- Replaced "There is no X available" → "No X available" in registration.py (3 occurrences).
+- Replaced "please configure it in settings" → "please configure it in Settings" across accounts.py and registration.py (7 occurrences).
+- Replaced "registration failed" → "Failed to register" in registration.py batch messages (2 occurrences).
+- Replaced "concurrency: N" → "concurrency limit: N" in registration.py.
+- Replaced "skip repeated registration" → "skip duplicate registration" in task_manager.py (2 occurrences).
+- Replaced "Broadcast batch status failed" → "Failed to broadcast batch status" in task_manager.py.
+- Replaced "exit IP" → "outgoing IP" and "returned empty" → "returned an empty response" in settings.py.
+- Replaced "Proxy returned error status code: N" → "Proxy returned error (HTTP N)" in settings.py.
+- Replaced "Configuration after filtering sensitive information" → "Config with sensitive data removed" in email.py.
+- Replaced "Token information" → "token details" in accounts.py.
+- Replaced "Unregistered service type" → "Unknown service type" in base.py.
+- Replaced "request header name" → "header name" across settings.py, dynamic_proxy.py, moe_mail.py.
+- Replaced "expiration time information" → "expiry time", "validity period" → "validity duration", "share information" → "sharing details" in moe_mail.py (6 occurrences).
+- Replaced "no email address returned" → "no email returned" in freemail.py.
+- Replaced "no configuration provided" → "no settings provided" in moe_mail.py.
+- Replaced "transparently passed" → "forwarded" in temp_mail.py.
+- Replaced "OAuth start information" → "OAuth initiation details" in oauth.py.
+- Replaced "Parse location information" → "Parse location" in http_client.py.
+- Replaced "Check whether to disable it" → "Check if it should be disabled" in outlook providers.
+- Replaced "Consecutive failure count threshold" → "Consecutive failure threshold" in outlook service.py.
+- Replaced "based on whether the account has OAuth" → "based on if the account has OAuth" in outlook service.py.
+- Replaced "Resumes after" → "Resumes at" in outlook providers/base.py.
+- Replaced "Refer to the CPA upload mode" → "Uses the CPA upload mode" in team_manager_upload.py.
+- Replaced "Requires user configuration" → "Requires user setup" in constants.py.
+- Replaced "February; simplified handling" → "February (simplified)" in constants.py.
+- Replaced lowercase "timeout (seconds)" → "Timeout (seconds)" in constants.py DEFAULT_SETTINGS.
+- Replaced "Incomplete information in response" → "Incomplete data in response" in register.py.
+- Replaced "Sentinel POW verification failed" → "Sentinel POW challenge failed" in register.py.
+- Replaced "avoid repeated attempts" → "avoid retrying" in register.py.
+- Replaced "has been established" → "is established" in register.py docstring.
+- Replaced "For example" → "e.g.," in email_services.html placeholders (2 occurrences).
+- Replaced "password/authorization code" → "password/app password" in email_services.html and email_services.js.
+- Replaced lowercase labels "name" → "Name", "port" → "Port" in settings.html, "workspace name" → "Workspace Name" in payment.html.
+- Replaced "priority higher than the proxy list" → "taking priority over the proxy list" in settings.html.
+- Replaced "each time the registration task starts" → "whenever a registration task starts" in settings.html.
+- Replaced "original response text" → "raw response text" in settings.html.
+- Replaced "use the global configuration" → "use the global settings" in accounts.html and accounts.js.
+- Replaced "Use Global Configuration" → "Use Global Settings" in accounts.html.
+- Replaced "No available browser found" → "No browser available" in payment.py and payment.js.
+- Replaced "forced direct connection/forcing direct connection" → "direct connection required/requiring a direct connection" in imap_mail.py.
+- Replaced "page reactivated" → "Page became visible again", "no need to register again", "No registered account yet" → "No registered accounts yet", and various stilted JS patterns in app.js.
+- Replaced "Batch detection subscription" → "Batch subscription check", "Query failed" → "Failed to query", "Copy failed" → "Failed to copy" across JS files.
+- Replaced "OAuth information" → "OAuth data" in email.py.
+- Verified all 32 tests pass successfully (pytest on Python 3.10 via .venv).
+
 ## Completed In This Round (June 18, 2026 - Round 45)
 
 - Pulled `origin/main` - repository was already up to date.

@@ -164,10 +164,10 @@
                 </div>
             </div>
 
-            <!-- Temp mail configuration -->
+            <!-- Temp mail settings -->
             <div class="card">
                 <div class="card-header">
-                    <h3>🌐 Temporary email configuration</h3>
+                    <h3>🌐 Temporary email settings</h3>
                 </div>
                 <div class="card-body">
                     <form id="tempmail-form">
@@ -191,7 +191,7 @@
         </main>
     </div>
 
-    <!-- Add a custom email service modal box (including type selection) -->
+    <!-- Add a custom email service modal (including type selection) -->
     <div class="modal" id="add-custom-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -202,7 +202,7 @@
                 <form id="add-custom-form">
                     <div class="form-group">
                         <label for="custom-name">Service name</label>
-                        <input type="text" id="custom-name" name="name" required placeholder="For example: my domain email">
+                        <input type="text" id="custom-name" name="name" required placeholder="e.g., my domain email">
                     </div>
                     <div class="form-group">
                         <label for="custom-sub-type">Service type</label>
@@ -303,8 +303,8 @@
                             <input type="email" id="custom-imap-email" name="imap_email" placeholder="your@gmail.com">
                         </div>
                         <div class="form-group">
-                            <label for="custom-imap-password">Password/Authorization Code</label>
-                            <input type="password" id="custom-imap-password" name="imap_password" placeholder="Gmail requires App Password, QQ/163 requires authorization code">
+                            <label for="custom-imap-password">Password/App Password</label>
+                            <input type="password" id="custom-imap-password" name="imap_password" placeholder="Gmail requires App Password; QQ/163 requires an app-specific password">
                         </div>
                     </div>
                     <div class="form-row">
@@ -329,7 +329,7 @@
     </div>
 
 
-    <!-- Edit custom email service modal box (including type selection) -->
+    <!-- Edit custom email service modal (including type selection) -->
     <div class="modal" id="edit-custom-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -342,7 +342,7 @@
                     <input type="hidden" id="edit-custom-sub-type-hidden" name="sub_type">
                     <div class="form-group">
                         <label for="edit-custom-name">Service name</label>
-                        <input type="text" id="edit-custom-name" name="name" required placeholder="For example: my domain email">
+                        <input type="text" id="edit-custom-name" name="name" required placeholder="e.g., my domain email">
                     </div>
                     <div class="form-group">
                         <label>Service type</label>
@@ -357,7 +357,7 @@
                         <div class="form-group">
                             <label for="edit-custom-api-key">API Key</label>
                             <input type="text" id="edit-custom-api-key" name="api_key" placeholder="API Key">
-                            <small style="color: var(--text-muted);">Leave blank to keep the original value</small>
+                            <small style="color: var(--text-muted);">Leave blank to keep current</small>
                         </div>
                         <div class="form-group">
                             <label for="edit-custom-domain">Email domain</label>
@@ -372,8 +372,8 @@
                         </div>
                         <div class="form-group">
                             <label for="edit-tm-admin-password">Admin password</label>
-                            <input type="password" id="edit-tm-admin-password" name="tm_admin_password" placeholder="Leave blank to not modify">
-                            <small style="color: var(--text-muted);">Leave blank to keep the original value</small>
+                            <input type="password" id="edit-tm-admin-password" name="tm_admin_password" placeholder="Leave blank to keep current">
+                            <small style="color: var(--text-muted);">Leave blank to keep current</small>
                         </div>
                         <div class="form-group">
                             <label for="edit-tm-domain">Email domain</label>
@@ -388,8 +388,8 @@
                         </div>
                         <div class="form-group">
                             <label for="edit-dm-api-key">API Key</label>
-                            <input type="text" id="edit-dm-api-key" name="dm_api_key" placeholder="Leave blank to not modify">
-                            <small style="color: var(--text-muted);">Leave blank to keep the original value</small>
+                            <input type="text" id="edit-dm-api-key" name="dm_api_key" placeholder="Leave blank to keep current">
+                            <small style="color: var(--text-muted);">Leave blank to keep current</small>
                         </div>
                         <div class="form-group">
                             <label for="edit-dm-domain">Default domain</label>
@@ -408,8 +408,8 @@
                         </div>
                         <div class="form-group">
                             <label for="edit-fm-admin-token">Admin Token</label>
-                            <input type="password" id="edit-fm-admin-token" name="fm_admin_token" placeholder="Leave blank to not modify">
-                            <small style="color: var(--text-muted);">Leave blank to keep the original value</small>
+                            <input type="password" id="edit-fm-admin-token" name="fm_admin_token" placeholder="Leave blank to keep current">
+                            <small style="color: var(--text-muted);">Leave blank to keep current</small>
                         </div>
                         <div class="form-group">
                             <label for="edit-fm-domain">Email domain (optional)</label>
@@ -440,9 +440,9 @@
                             <input type="email" id="edit-imap-email" name="imap_email" placeholder="your@gmail.com">
                         </div>
                         <div class="form-group">
-                            <label for="edit-imap-password">Password/Authorization Code</label>
-                            <input type="password" id="edit-imap-password" name="imap_password" placeholder="Leave blank to keep the original value">
-                            <small style="color: var(--text-muted);">Leave blank to keep the original value</small>
+                            <label for="edit-imap-password">Password/App Password</label>
+                            <input type="password" id="edit-imap-password" name="imap_password" placeholder="Leave blank to keep current">
+                            <small style="color: var(--text-muted);">Leave blank to keep current</small>
                         </div>
                     </div>
                     <div class="form-row">
@@ -482,17 +482,17 @@
                     </div>
                     <div class="form-group">
                         <label for="edit-outlook-password">Password</label>
-                        <input type="password" id="edit-outlook-password" name="password" placeholder="Leave blank to keep the original value">
-                        <small style="color: var(--text-muted);">Leave blank to keep the original value</small>
+                        <input type="password" id="edit-outlook-password" name="password" placeholder="Leave blank to keep current">
+                        <small style="color: var(--text-muted);">Leave blank to keep current</small>
                     </div>
                     <div class="form-group">
                         <label for="edit-outlook-client-id">OAuth Client ID (optional)</label>
-                        <input type="text" id="edit-outlook-client-id" name="client_id" placeholder="for XOAUTH2 authentication">
+                        <input type="text" id="edit-outlook-client-id" name="client_id" placeholder="For XOAUTH2 authentication">
                     </div>
                     <div class="form-group">
                         <label for="edit-outlook-refresh-token">OAuth Refresh Token (optional)</label>
-                        <input type="text" id="edit-outlook-refresh-token" name="refresh_token" placeholder="Leave blank to keep the original value">
-                        <small style="color: var(--text-muted);">Leave blank to keep the original value</small>
+                        <input type="text" id="edit-outlook-refresh-token" name="refresh_token" placeholder="Leave blank to keep current">
+                        <small style="color: var(--text-muted);">Leave blank to keep current</small>
                     </div>
                     <div class="form-row">
                         <div class="form-group">

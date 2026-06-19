@@ -207,7 +207,7 @@ class ApiClient {
         } catch (error) {
             // Network error handling
             if (!error.response) {
-                toast.error('Network connection failed, please check the network');
+                toast.error('Network connection failed; please check your network');
             }
             throw error;
         }
@@ -460,7 +460,7 @@ async function copyToClipboard(text) {
         }
         throw new Error('execCommand failed');
     } catch (err) {
-        toast.error('Copy failed');
+        toast.error('Failed to copy');
         return false;
     }
 }
@@ -510,7 +510,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (searchInput) searchInput.focus();
         }
 
-        // Escape: Close the modal box
+        // Escape: Close the modal
         if (e.key === 'Escape') {
             const activeModal = document.querySelector('.modal.active');
             if (activeModal) activeModal.classList.remove('active');

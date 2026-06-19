@@ -183,7 +183,7 @@ class RegistrationEngine:
             self.email_info = self.email_service.create_email()
 
             if not self.email_info or "email" not in self.email_info:
-                self._log("Failed to create email address: Incomplete information in response", "error")
+                self._log("Failed to create email address: Incomplete data in response", "error")
                 return False
 
             self.email = self.email_info["email"]
@@ -454,7 +454,7 @@ class RegistrationEngine:
         return did, sen_token
 
     def _complete_token_exchange(self, result: RegistrationResult) -> bool:
-        """After the login state has been established, complete the workspace and OAuth token retrieval."""
+        """After the login state is established, complete the workspace and OAuth token retrieval."""
         self._log("Wait for the login OTP...")
         code = self._get_verification_code()
         if not code:
@@ -515,19 +515,19 @@ class RegistrationEngine:
 
         did, sen_token = self._prepare_authorize_flow("Relogin")
         if not did:
-            return False, "Failed to get Device ID on re-login"
+            return False, "Failed to get Device ID during re-login"
         if not sen_token:
-            return False, "Sentinel POW verification failed on re-login"
+            return False, "Sentinel POW challenge failed during re-login"
 
         login_start_result = self._submit_login_start(did, sen_token)
         if not login_start_result.success:
-            return False, f"Failed to submit email on re-login: {login_start_result.error_message}"
+            return False, f"Failed to submit email during re-login: {login_start_result.error_message}"
         if login_start_result.page_type != OPENAI_PAGE_TYPES["LOGIN_PASSWORD"]:
             return False, f"Re-login did not reach the password page: {login_start_result.page_type or 'unknown'}"
 
         password_result = self._submit_login_password()
         if not password_result.success:
-            return False, f"Failed to submit password on re-login: {password_result.error_message}"
+            return False, f"Failed to submit password during re-login: {password_result.error_message}"
         if not password_result.is_existing_account:
             return False, f"Re-login did not reach the OTP page: {password_result.page_type or 'unknown'}"
         return True, ""
@@ -585,7 +585,7 @@ class RegistrationEngine:
             return False, None
 
     def _mark_email_as_registered(self):
-        """Mark the email address as already registered to avoid repeated attempts."""
+        """Mark the email address as already registered to avoid retrying."""
         try:
             with get_db() as db:
                 # Check if a record of this email address already exists
@@ -890,7 +890,7 @@ class RegistrationEngine:
                 result.error_message = "Failed to get Device ID"
                 return result
             if not sen_token:
-                result.error_message = "Sentinel POW verification failed"
+                result.error_message = "Sentinel POW challenge failed"
                 return result
 
             # 4. Submit the registration email address

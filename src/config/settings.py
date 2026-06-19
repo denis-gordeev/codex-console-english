@@ -210,7 +210,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         db_key="proxy.dynamic_api_key_header",
         default_value="X-API-Key",
         category=SettingCategory.PROXY,
-        description="Dynamic proxy API key request header name"
+        description="Dynamic proxy API key header name"
     ),
     "proxy_dynamic_result_field": SettingDefinition(
         db_key="proxy.dynamic_result_field",

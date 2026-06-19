@@ -67,7 +67,7 @@ const elements = {
     editCustomTypeBadge: document.getElementById('edit-custom-type-badge'),
     editCustomSubTypeHidden: document.getElementById('edit-custom-sub-type-hidden'),
 
-    // Edit Outlook modal box
+    // Edit Outlook modal
     editOutlookModal: document.getElementById('edit-outlook-modal'),
     editOutlookForm: document.getElementById('edit-outlook-form'),
     closeEditOutlookModal: document.getElementById('close-edit-outlook-modal'),
@@ -506,7 +506,7 @@ async function toggleService(id, enabled) {
         loadCustomServices();
         loadStats();
     } catch (error) {
-        toast.error('Operation failed: ' + error.message);
+        toast.error('Failed: ' + error.message);
     }
 }
 
@@ -632,23 +632,23 @@ async function editCustomService(id, subType) {
         if (resolvedSubType === 'moemail') {
             document.getElementById('edit-custom-api-url').value = service.config?.base_url || '';
             document.getElementById('edit-custom-api-key').value = '';
-            document.getElementById('edit-custom-api-key').placeholder = service.config?.api_key ? 'Already set, leave blank to remain unchanged' : 'API Key';
+            document.getElementById('edit-custom-api-key').placeholder = service.config?.api_key ? 'Already set; leave blank to keep current' : 'API Key';
             document.getElementById('edit-custom-domain').value = service.config?.default_domain || service.config?.domain || '';
         } else if (resolvedSubType === 'tempmail') {
             document.getElementById('edit-tm-base-url').value = service.config?.base_url || '';
             document.getElementById('edit-tm-admin-password').value = '';
-            document.getElementById('edit-tm-admin-password').placeholder = service.config?.admin_password ? 'Already set, leave blank to remain unchanged' : 'Please enter the Admin password';
+            document.getElementById('edit-tm-admin-password').placeholder = service.config?.admin_password ? 'Already set; leave blank to keep current' : 'Please enter the Admin password';
             document.getElementById('edit-tm-domain').value = service.config?.domain || '';
         } else if (resolvedSubType === 'duckmail') {
             document.getElementById('edit-dm-base-url').value = service.config?.base_url || '';
             document.getElementById('edit-dm-api-key').value = '';
-            document.getElementById('edit-dm-api-key').placeholder = service.config?.api_key ? 'Already set, leave blank to remain unchanged' : 'Please enter API Key (optional)';
+            document.getElementById('edit-dm-api-key').placeholder = service.config?.api_key ? 'Already set; leave blank to keep current' : 'Please enter API Key (optional)';
             document.getElementById('edit-dm-domain').value = service.config?.default_domain || '';
             document.getElementById('edit-dm-password-length').value = service.config?.password_length || 12;
         } else if (resolvedSubType === 'freemail') {
             document.getElementById('edit-fm-base-url').value = service.config?.base_url || '';
             document.getElementById('edit-fm-admin-token').value = '';
-            document.getElementById('edit-fm-admin-token').placeholder = service.config?.admin_token ? 'Already set, leave blank to remain unchanged' : 'Please enter Admin Token';
+            document.getElementById('edit-fm-admin-token').placeholder = service.config?.admin_token ? 'Already set; leave blank to keep current' : 'Please enter Admin Token';
             document.getElementById('edit-fm-domain').value = service.config?.domain || '';
         } else {
             document.getElementById('edit-imap-host').value = service.config?.host || '';
@@ -656,7 +656,7 @@ async function editCustomService(id, subType) {
             document.getElementById('edit-imap-use-ssl').value = service.config?.use_ssl !== false ? 'true' : 'false';
             document.getElementById('edit-imap-email').value = service.config?.email || '';
             document.getElementById('edit-imap-password').value = '';
-            document.getElementById('edit-imap-password').placeholder = service.config?.password ? 'Already set, leave blank to remain unchanged' : 'Please enter the password/authorization code';
+            document.getElementById('edit-imap-password').placeholder = service.config?.password ? 'Already set; leave blank to keep current' : 'Please enter the password/app password';
         }
 
         elements.editCustomModal.classList.add('active');
@@ -739,10 +739,10 @@ async function editOutlookService(id) {
         document.getElementById('edit-outlook-id').value = service.id;
         document.getElementById('edit-outlook-email').value = service.config?.email || service.name || '';
         document.getElementById('edit-outlook-password').value = '';
-        document.getElementById('edit-outlook-password').placeholder = service.config?.password ? 'Already set, leave blank to remain unchanged' : 'Please enter the password';
+        document.getElementById('edit-outlook-password').placeholder = service.config?.password ? 'Already set; leave blank to keep current' : 'Please enter the password';
         document.getElementById('edit-outlook-client-id').value = service.config?.client_id || '';
         document.getElementById('edit-outlook-refresh-token').value = '';
-        document.getElementById('edit-outlook-refresh-token').placeholder = service.config?.refresh_token ? 'Already set, leave blank to remain unchanged': 'OAuth Refresh Token';
+        document.getElementById('edit-outlook-refresh-token').placeholder = service.config?.refresh_token ? 'Already set; leave blank to keep current': 'OAuth Refresh Token';
         document.getElementById('edit-outlook-priority').value = service.priority || 0;
         document.getElementById('edit-outlook-enabled').checked = service.enabled;
         elements.editOutlookModal.classList.add('active');

@@ -179,7 +179,7 @@ def _post_form(
 
 @dataclass(frozen=True)
 class OAuthStart:
-    """OAuth start information"""
+    """OAuth initiation details"""
     auth_url: str
     state: str
     code_verifier: str

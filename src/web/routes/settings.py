@@ -156,7 +156,7 @@ async def test_dynamic_proxy(request: DynamicProxySettings):
     from ...core.dynamic_proxy import fetch_dynamic_proxy
 
     if not request.api_url:
-        raise HTTPException(status_code=400, detail="Please fill in the dynamic proxy API address")
+        raise HTTPException(status_code=400, detail="Please enter the dynamic proxy API address")
 
     # If api_key is not provided, use the saved one
     api_key = request.api_key or ""
@@ -173,7 +173,7 @@ async def test_dynamic_proxy(request: DynamicProxySettings):
     )
 
     if not proxy_url:
-        return {"success": False, "message": "Dynamic proxy API returned empty or the request failed"}
+        return {"success": False, "message": "Dynamic proxy API returned an empty response, or the request failed"}
 
     # Test connectivity using the retrieved proxy
     import time
@@ -191,7 +191,7 @@ async def test_dynamic_proxy(request: DynamicProxySettings):
         if resp.status_code == 200:
             ip = resp.json().get("ip", "")
             return {"success": True, "proxy_url": proxy_url, "ip": ip, "response_time": elapsed,
-                    "message": f"Dynamic proxy is available, exit IP: {ip}, response time: {elapsed}ms"}
+                    "message": f"Dynamic proxy is available, outgoing IP: {ip}, response time: {elapsed}ms"}
         return {"success": False, "proxy_url": proxy_url, "message": f"Proxy connection failed: HTTP {resp.status_code}"}
     except Exception as e:
         return {"success": False, "proxy_url": proxy_url, "message": f"Proxy connection failed: {e}"}
@@ -592,12 +592,12 @@ async def test_proxy_item(proxy_id: int):
                     "success": True,
                     "ip": ip_info.get("ip", ""),
                     "response_time": round(elapsed_time * 1000),
-                    "message": f"Proxy connection successful, exit IP: {ip_info.get('ip', 'unknown')}"
+                    "message": f"Proxy connection successful, outgoing IP: {ip_info.get('ip', 'unknown')}"
                 }
             else:
                 return {
                     "success": False,
-                    "message": f"Proxy returned error status code: {response.status_code}"
+                    "message": f"Proxy returned error (HTTP {response.status_code})"
                 }
 
         except Exception as e:

@@ -53,7 +53,7 @@ async def task_websocket(websocket: WebSocket, task_uuid: str):
         while True:
             try:
                 # Use wait_for to implement timeout, but not disconnect
-                # Instead send heartbeat detection
+                # Instead send a heartbeat ping
                 data = await asyncio.wait_for(
                     websocket.receive_json(),
                     timeout=30.0 # 30 seconds timeout
@@ -70,16 +70,16 @@ async def task_websocket(websocket: WebSocket, task_uuid: str):
                         "type": "status",
                         "task_uuid": task_uuid,
                         "status": "cancelling",
-                        "message": "Cancellation request submitted; tasks are winding down"
+                        "message": "Cancellation request submitted; tasks are stopping"
                     })
 
             except asyncio.TimeoutError:
-                # Timeout, send heartbeat detection
+                # Timeout; send heartbeat ping
                 try:
                     await websocket.send_json({"type": "ping"})
                 except Exception:
-                    # Send failed; connection may have dropped
-                    logger.info(f"WebSocket heartbeat detection failed: {task_uuid}")
+                    # Ping failed; connection may have dropped
+                    logger.info(f"WebSocket heartbeat check failed: {task_uuid}")
                     break
 
     except WebSocketDisconnect:
@@ -149,15 +149,15 @@ async def batch_websocket(websocket: WebSocket, batch_id: str):
                         "type": "status",
                         "batch_id": batch_id,
                         "status": "cancelling",
-                        "message": "Cancellation request submitted; batch tasks are winding down."
+                        "message": "Cancellation request submitted; batch tasks are stopping."
                     })
 
             except asyncio.TimeoutError:
-                # Timeout, send heartbeat detection
+                # Timeout; send heartbeat ping
                 try:
                     await websocket.send_json({"type": "ping"})
                 except Exception:
-                    logger.info(f"Batch task WebSocket heartbeat detection failed: {batch_id}")
+                    logger.info(f"Batch task WebSocket heartbeat check failed: {batch_id}")
                     break
 
     except WebSocketDisconnect:

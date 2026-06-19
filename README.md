@@ -102,6 +102,20 @@ This repository keeps the original structure and overall approach, while applyin
 - Replaced "passed in" → "provided", "front end" → "frontend", "Logout WebSocket" → "Unregister/disconnect WebSocket" for consistent terminology.
 - Replaced "according to" → "by" and "concurrencies" → "concurrent tasks" for idiomatic English in routes.
 - Replaced "OTP sending timestamp" → "OTP send timestamp" / "Timestamp when the OTP was sent" for natural English (5 occurrences).
+- Replaced "modal box" → "modal" across all HTML templates and JS files (13 occurrences).
+- Unified "leave blank to remain unchanged" / "leave blank to not modify" / "Leave blank to keep the original value" → "Leave blank to keep current" (~25 occurrences).
+- Replaced "Please fill in" → "Please enter" in JS (8 occurrences).
+- Replaced "heartbeat detection" → "heartbeat check/ping" in WebSocket routes (5 occurrences).
+- Replaced "configuration" → "settings" in UI headers, toasts, and labels across HTML and JS (13 occurrences).
+- Replaced "exit IP" → "outgoing IP" in proxy test messages (2 occurrences).
+- Replaced "request header name" → "header name" in settings and service modules (4 occurrences).
+- Replaced "on re-login" → "during re-login" in registration engine (4 occurrences).
+- Replaced "fill in" / "is not filled in" → "enter" / "is not provided" in HTML and JS (11 occurrences).
+- Replaced Noun+failed patterns in error constants ("Network connection failed" → "Failed to connect to network", etc.).
+- Replaced "password/authorization code" → "password/app password" in email service UI.
+- Replaced "forced direct connection" → "direct connection required" in IMAP service.
+- Replaced "skip repeated registration" → "skip duplicate registration" in task manager.
+- Replaced various stilted JS patterns ("page reactivated" → "Page became visible again", "Batch detection" → "Batch subscription check", etc.).
 
 ### Next Iterations
 

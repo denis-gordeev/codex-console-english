@@ -93,7 +93,7 @@ function initEventListeners() {
     // Batch token validation
     elements.batchValidateBtn.addEventListener('click', handleBatchValidate);
 
-    // Batch detection subscription
+    // Batch subscription check
     elements.batchCheckSubBtn.addEventListener('click', handleBatchCheckSubscription);
 
     // Upload drop-down menu
@@ -157,7 +157,7 @@ function initEventListeners() {
         elements.exportMenu.classList.remove('active');
     });
 
-    // Close the modal box
+    // Close the modal
     elements.closeModal.addEventListener('click', () => {
         elements.detailModal.classList.remove('active');
     });
@@ -751,7 +751,7 @@ function escapeHtml(text) {
 // ============== CPA Service Selection ==============
 
 // Pop up the CPA service selection box and return Promise<{cpa_service_id: number|null}|null>
-// null means user cancellation, {cpa_service_id: null} means use global configuration
+// null means user cancellation, {cpa_service_id: null} means use global settings
 function selectCpaService() {
     return new Promise(async (resolve) => {
         const modal = document.getElementById('cpa-service-modal');
@@ -772,7 +772,7 @@ function selectCpaService() {
         }
 
         if (services.length === 0) {
-            listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:12px;">No enabled CPA services are available. The global configuration will be used.</div>';
+            listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:12px;">No enabled CPA services are available. Global settings will be used.</div>';
         } else {
             listEl.innerHTML = services.map(s => `
                 <div class="cpa-service-item" data-id="${s.id}" style="
@@ -947,7 +947,7 @@ async function handleBatchCheckSubscription() {
         toast.success(message);
         loadAccounts();
     } catch (e) {
-        toast.error('Batch detection failed: ' + e.message);
+        toast.error('Failed to check subscriptions: ' + e.message);
     } finally {
         updateBatchButtons();
     }
@@ -1227,10 +1227,10 @@ async function checkInboxCode(id) {
         if (result.success) {
             showInboxCodeResult(result.code, result.email);
         } else {
-            toast.error('Query failed: ' + (result.error || 'OTP not received'));
+            toast.error('Failed to query: ' + (result.error || 'OTP not received'));
         }
     } catch (error) {
-        toast.error('Query failed: ' + error.message);
+        toast.error('Failed to query: ' + error.message);
     }
 }
 

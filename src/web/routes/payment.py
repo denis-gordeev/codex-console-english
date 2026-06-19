@@ -117,7 +117,7 @@ def open_browser_incognito(request: OpenIncognitoRequest):
     success = open_url_incognito(request.url, cookies_str)
     if success:
         return {"success": True, "message": "Browser opened in incognito mode"}
-    return {"success": False, "message": "No available browser found, please copy the link manually"}
+    return {"success": False, "message": "No browser available; please copy the link manually"}
 
 
 # ============== Subscription status ==============

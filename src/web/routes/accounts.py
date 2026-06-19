@@ -208,7 +208,7 @@ async def get_account(account_id: int):
 
 @router.get("/{account_id}/tokens")
 async def get_account_tokens(account_id: int):
-    """Get the account's Token information"""
+    """Get the account's token details"""
     with get_db() as db:
         account = crud.get_account_by_id(db, account_id)
         if not account:
@@ -834,7 +834,7 @@ async def batch_upload_accounts_to_sub2api(request: BatchSub2ApiUploadRequest):
                 api_key = svcs[0].api_key
 
     if not api_url or not api_key:
-        raise HTTPException(status_code=400, detail="No available Sub2API service found, please configure it in the settings first")
+        raise HTTPException(status_code=400, detail="No available Sub2API service found; please configure it in Settings first")
 
     with get_db() as db:
         ids = resolve_account_ids(
@@ -875,7 +875,7 @@ async def upload_account_to_sub2api(account_id: int, request: Optional[Sub2ApiUp
                 api_key = svcs[0].api_key
 
     if not api_url or not api_key:
-        raise HTTPException(status_code=400, detail="No available Sub2API service found, please configure it in the settings first")
+        raise HTTPException(status_code=400, detail="No available Sub2API service found; please configure it in Settings first")
 
     with get_db() as db:
         account = crud.get_account_by_id(db, account_id)
@@ -921,7 +921,7 @@ async def batch_upload_accounts_to_tm(request: BatchUploadTMRequest):
             svc = svcs[0] if svcs else None
 
         if not svc:
-            raise HTTPException(status_code=400, detail="No available Team Manager service found, please configure it in settings first")
+            raise HTTPException(status_code=400, detail="No available Team Manager service found; please configure it in Settings first")
 
         api_url = svc.api_url
         api_key = svc.api_key
@@ -949,7 +949,7 @@ async def upload_account_to_tm(account_id: int, request: Optional[UploadTMReques
             svc = svcs[0] if svcs else None
 
         if not svc:
-            raise HTTPException(status_code=400, detail="No available Team Manager service found, please configure it in settings first")
+            raise HTTPException(status_code=400, detail="No available Team Manager service found; please configure it in Settings first")
 
         api_url = svc.api_url
         api_key = svc.api_key

@@ -277,7 +277,7 @@ class OpenAIHTTPClient(HTTPClient):
             response = self.get("https://cloudflare.com/cdn-cgi/trace", timeout=10)
             trace_text = response.text
 
-            # Parse location information
+            # Parse location
             import re
             loc_match = re.search(r"loc=([A-Z]+)", trace_text)
             loc = loc_match.group(1) if loc_match else None

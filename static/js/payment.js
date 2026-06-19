@@ -136,7 +136,7 @@ async function openIncognito() {
             statusEl.textContent = 'Browser opened in incognito mode';
             ui.showToast('Incognito browser is opened', 'success');
         } else {
-            statusEl.textContent = data.message || 'No available browser found, please copy the link manually';
+            statusEl.textContent = data.message || 'No browser available; please copy the link manually';
             ui.showToast(data.message || 'Browser not found', 'warning');
         }
     } catch (e) {

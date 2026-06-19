@@ -346,7 +346,7 @@ async function loadSettings() {
             const input = document.getElementById('webui-access-password');
             if (input) {
                 input.value = '';
-                input.placeholder = 'Configured, leave blank to remain unchanged';
+                input.placeholder = 'Configured; leave blank to keep current';
             }
         }
 
@@ -411,7 +411,7 @@ function renderEmailServices(services) {
                 <td colspan="7">
                     <div class="empty-state">
                         <div class="empty-state-icon">📭</div>
-                        <div class="empty-state-title">No configuration yet</div>
+                        <div class="empty-state-title">No services configured yet</div>
                         <div class="empty-state-description">Click the "Add Service" button above to add an email service</div>
                     </div>
                 </td>
@@ -477,7 +477,7 @@ async function handleSaveRegistration(e) {
 
     try {
         await api.post('/settings/registration', data);
-        toast.success('Registration configuration saved');
+        toast.success('Registration settings saved');
     } catch (error) {
         toast.error('Failed to save: ' + error.message);
     }
@@ -507,7 +507,7 @@ async function handleSaveEmailCode(e) {
 
     try {
         await api.post('/settings/email-code', data);
-        toast.success('OTP configuration saved');
+        toast.success('OTP settings saved');
     } catch (error) {
         toast.error('Failed to save: ' + error.message);
     }
@@ -542,7 +542,7 @@ async function handleCleanup() {
         toast.success(data.message);
         loadDatabaseInfo();
     } catch (error) {
-        toast.error('Cleaning failed: ' + error.message);
+        toast.error('Failed to clean: ' + error.message);
     } finally {
         elements.cleanupBtn.disabled = false;
         elements.cleanupBtn.textContent = '🧹 Clean up expired data';
@@ -629,7 +629,7 @@ async function toggleService(id, enabled) {
         toast.success(enabled ? 'Service enabled' : 'Service disabled');
         loadEmailServices();
     } catch (error) {
-        toast.error('Operation failed: ' + error.message);
+        toast.error('Failed: ' + error.message);
     }
 }
 
@@ -850,7 +850,7 @@ async function handleSetProxyDefault(id) {
         toast.success('set as default proxy');
         loadProxies();
     } catch (error) {
-        toast.error('Operation failed: ' + error.message);
+        toast.error('Failed: ' + error.message);
     }
 }
 
@@ -941,7 +941,7 @@ async function toggleProxyItem(id, enabled) {
         toast.success(enabled ? 'Proxy enabled' : 'Proxy disabled');
         loadProxies();
     } catch (error) {
-        toast.error('Operation failed: ' + error.message);
+        toast.error('Failed: ' + error.message);
     }
 }
 
@@ -1029,7 +1029,7 @@ async function handleSaveDynamicProxy(e) {
 async function handleTestDynamicProxy() {
     const apiUrl = document.getElementById('dynamic-proxy-api-url').value.trim();
     if (!apiUrl) {
-        toast.warning('Please fill in the dynamic proxy API address first');
+        toast.warning('Please enter the dynamic proxy API address first');
         return;
     }
     const btn = elements.testDynamicProxyBtn;
@@ -1095,7 +1095,7 @@ function openTmServiceModal(service = null) {
     document.getElementById('tm-service-priority').value = service ? service.priority : 0;
     document.getElementById('tm-service-enabled').checked = service ? service.enabled : true;
     if (service) {
-        document.getElementById('tm-service-key').placeholder = service.has_key ? 'Configured, leave blank to remain unchanged' : 'Please enter API Key';
+        document.getElementById('tm-service-key').placeholder = service.has_key ? 'Configured; leave blank to keep current' : 'Please enter API Key';
     } else {
         document.getElementById('tm-service-key').placeholder = 'Please enter API Key';
     }
@@ -1184,11 +1184,11 @@ async function handleTestTmService() {
     const id = document.getElementById('tm-service-id').value;
 
     if (!apiUrl) {
-        toast.error('Please fill in the API URL first');
+        toast.error('Please enter the API URL first');
         return;
     }
     if (!id && !apiKey) {
-        toast.error('Please fill in the API Key first');
+        toast.error('Please enter the API Key first');
         return;
     }
 
@@ -1340,12 +1340,12 @@ async function handleTestCpaService() {
     const id = document.getElementById('cpa-service-id').value;
 
     if (!apiUrl) {
-        toast.error('Please fill in the API URL first');
+        toast.error('Please enter the API URL first');
         return;
     }
     // There must be a token when adding a new one, and the token can be empty when editing (use the saved one)
     if (!id && !apiToken) {
-        toast.error('Please fill in the API Token first');
+        toast.error('Please enter the API Token first');
         return;
     }
 
@@ -1355,7 +1355,7 @@ async function handleTestCpaService() {
     try {
         let result;
         if (id && !apiToken) {
-            // If the token is not filled in when editing, test the saved service directly.
+            // If the token is not provided when editing, test the saved service directly.
             result = await api.post(`/cpa-services/${id}/test`);
         } else {
             result = await api.post('/cpa-services/test-connection', { api_url: apiUrl, api_token: apiToken });
@@ -1421,7 +1421,7 @@ function openSub2ApiServiceModal(svc = null) {
         document.getElementById('sub2api-service-url').value = svc.api_url || '';
         document.getElementById('sub2api-service-priority').value = svc.priority ?? 0;
         document.getElementById('sub2api-service-enabled').checked = svc.enabled !== false;
-        document.getElementById('sub2api-service-key').placeholder = svc.has_key ? 'Already configured, leave blank to remain unchanged' : 'Please enter API Key';
+        document.getElementById('sub2api-service-key').placeholder = svc.has_key ? 'Already configured; leave blank to keep current' : 'Please enter API Key';
     }
     elements.sub2ApiServiceEditModal.classList.add('active');
 }
@@ -1463,7 +1463,7 @@ async function handleSaveSub2ApiService(e) {
         enabled: document.getElementById('sub2api-service-enabled').checked,
     };
     if (!id && !data.api_key) {
-        toast.error('Please fill in the API Key');
+        toast.error('Please enter the API Key');
         return;
     }
     if (!data.api_key) delete data.api_key;
@@ -1502,11 +1502,11 @@ async function handleTestSub2ApiService() {
     const id = document.getElementById('sub2api-service-id').value;
 
     if (!apiUrl) {
-        toast.error('Please fill in the API URL first');
+        toast.error('Please enter the API URL first');
         return;
     }
     if (!id && !apiKey) {
-        toast.error('Please fill in the API Key first');
+        toast.error('Please enter the API Key first');
         return;
     }
 

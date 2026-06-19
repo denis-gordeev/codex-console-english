@@ -43,7 +43,7 @@ class EmailServiceResponse(BaseModel):
     name: str
     enabled: bool
     priority: int
-    config: Optional[Dict[str, Any]] = None # Configuration after filtering sensitive information
+    config: Optional[Dict[str, Any]] = None # Config with sensitive data removed
     last_used: Optional[str] = None
     created_at: Optional[str] = None
     updated_at: Optional[str] = None
@@ -515,7 +515,7 @@ async def batch_import_outlook(request: OutlookBatchImportRequest):
                 "password": password
             }
 
-            # Check if there is OAuth information (format 2)
+            # Check for OAuth data (format 2)
             if len(parts) >= 4:
                 client_id = parts[2].strip()
                 refresh_token = parts[3].strip()

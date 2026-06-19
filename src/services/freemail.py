@@ -158,7 +158,7 @@ class FreemailService(BaseEmailService):
 
             email = resp.get("email")
             if not email:
-                raise EmailServiceError(f"Failed to create email, no email address returned: {resp}")
+                raise EmailServiceError(f"Failed to create email, no email returned: {resp}")
 
             email_info = {
                 "email": email,

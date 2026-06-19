@@ -198,7 +198,7 @@ def _normalize_email_service_config(
     config: Optional[dict],
     proxy_url: Optional[str] = None
 ) -> dict:
-    """Compatible with old field names by service type to avoid configuration key collisions between services."""
+    """Backward-compatible with old field names per service type, preventing key collisions between services."""
     normalized = config.copy() if config else {}
 
     if 'api_url' in normalized and 'base_url' not in normalized:
@@ -309,7 +309,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                             "proxy_url": actual_proxy_url,
                         }
                     else:
-                        raise ValueError("No custom domain email service available; please configure it in settings first")
+                        raise ValueError("No custom domain email service available; please configure it in Settings first")
                 elif service_type == EmailServiceType.OUTLOOK:
                     # Check if there is an available Outlook account in the database
                     from ...database.models import EmailService as EmailServiceModel, Account
@@ -320,7 +320,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                     ).order_by(EmailServiceModel.priority.asc()).all()
 
                     if not outlook_services:
-                        raise ValueError("No Outlook account available, please import the account in settings first")
+                        raise ValueError("No Outlook account available; please import the account in Settings first")
 
                     # Find an unregistered Outlook account
                     selected_service = None
@@ -342,7 +342,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                         crud.update_registration_task(db, task_uuid, email_service_id=selected_service.id)
                         logger.info(f"Use database Outlook account: {selected_service.name}")
                     else:
-                        raise ValueError("All Outlook accounts are already registered; please add new Outlook accounts")
+                        raise ValueError("All Outlook accounts are already registered; please add more")
                 elif service_type == EmailServiceType.DUCK_MAIL:
                     from ...database.models import EmailService as EmailServiceModel
 
@@ -356,7 +356,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                         crud.update_registration_task(db, task_uuid, email_service_id=db_service.id)
                         logger.info(f"Use database DuckMail service: {db_service.name}")
                     else:
-                        raise ValueError("There is no DuckMail email service available, please add the service on the email service page first")
+                        raise ValueError("No DuckMail email service available; please add the service on the Email Services page first")
                 elif service_type == EmailServiceType.FREEMAIL:
                     from ...database.models import EmailService as EmailServiceModel
 
@@ -370,7 +370,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                         crud.update_registration_task(db, task_uuid, email_service_id=db_service.id)
                         logger.info(f"Use database Freemail service: {db_service.name}")
                     else:
-                        raise ValueError("There is no Freemail email service available, please add the service on the email service page first")
+                        raise ValueError("No Freemail email service available; please add the service on the Email Services page first")
                 elif service_type == EmailServiceType.IMAP_MAIL:
                     from ...database.models import EmailService as EmailServiceModel
 
@@ -384,7 +384,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                         crud.update_registration_task(db, task_uuid, email_service_id=db_service.id)
                         logger.info(f"Use database IMAP email service: {db_service.name}")
                     else:
-                        raise ValueError("No available IMAP email service; please add it to the email service page first")
+                        raise ValueError("No available IMAP email service; please add it on the Email Services page first")
                 else:
                     config = email_service_config or {}
 
@@ -630,7 +630,7 @@ async def run_batch_parallel(
     add_batch_log, update_batch_status = _make_batch_helpers(batch_id)
     semaphore = asyncio.Semaphore(concurrency)
     counter_lock = asyncio.Lock()
-    add_batch_log(f"[System] parallel mode starting, concurrency: {concurrency}, total tasks: {len(task_uuids)}")
+    add_batch_log(f"[System] parallel mode starting, concurrency limit: {concurrency}, total tasks: {len(task_uuids)}")
 
     async def _run_one(idx: int, uuid: str):
         prefix = f"[task{idx + 1}]"
@@ -654,7 +654,7 @@ async def run_batch_parallel(
                         add_batch_log(f"{prefix} [Success] Registration successful")
                     elif t.status == "failed":
                         new_failed += 1
-                        add_batch_log(f"{prefix} [Failed] Registration failed: {t.error_message}")
+                        add_batch_log(f"{prefix} [Failed] Failed to register: {t.error_message}")
                     update_batch_status(completed=new_completed, success=new_success, failed=new_failed)
 
     try:
@@ -720,7 +720,7 @@ async def run_batch_pipeline(
                             add_batch_log(f"{pfx} [Success] Registration successful")
                         elif t.status == "failed":
                             new_failed += 1
-                            add_batch_log(f"{pfx} [Failed] Registration failed: {t.error_message}")
+                            add_batch_log(f"{pfx} [Failed] Failed to register: {t.error_message}")
                         update_batch_status(completed=new_completed, success=new_success, failed=new_failed)
         finally:
             semaphore.release()

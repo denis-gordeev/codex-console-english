@@ -120,7 +120,7 @@ class OutlookProvider(abc.ABC):
         self._health.record_failure(error)
         self._last_error = error
 
-        # Check whether to disable it
+        # Check if it should be disabled
         if self._health.should_disable(self.config.health_failure_threshold):
             self._health.disable(self.config.health_disable_duration)
             logger.warning(
@@ -142,7 +142,7 @@ class OutlookProvider(abc.ABC):
         if self._health.is_disabled():
             logger.debug(
                 f"[{self.account.email}] {self.provider_type.value} is disabled,"
-                f"Resumes after {self._health.disabled_until}"
+                f"Resumes at {self._health.disabled_until}"
             )
             return False
 

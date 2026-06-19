@@ -157,7 +157,7 @@ class TaskManager:
                     _ws_sent_index[task_uuid][id(websocket)] = len(_log_queues.get(task_uuid, []))
                 logger.info(f"WebSocket registered, log broadcast starting: {task_uuid}")
             else:
-                logger.warning(f"WebSocket connection already exists, skip repeated registration: {task_uuid}")
+                logger.warning(f"WebSocket connection already exists, skip duplicate registration: {task_uuid}")
 
     def get_unsent_logs(self, task_uuid: str, websocket) -> List[str]:
         """Get logs not sent to this WebSocket"""
@@ -280,7 +280,7 @@ class TaskManager:
                     self._loop
                 )
             except Exception as e:
-                logger.warning(f"Broadcast batch status failed: {e}")
+                logger.warning(f"Failed to broadcast batch status: {e}")
 
     async def _broadcast_batch_status(self, batch_id: str):
         """Broadcast batch task status"""
@@ -335,7 +335,7 @@ class TaskManager:
                     _ws_sent_index[key][id(websocket)] = len(_batch_logs.get(batch_id, []))
                 logger.info(f"Batch WebSocket registered, batch log broadcast starting: {batch_id}")
             else:
-                logger.warning(f"Batch task WebSocket connection already exists, skip repeated registration: {batch_id}")
+                logger.warning(f"Batch task WebSocket connection already exists, skip duplicate registration: {batch_id}")
 
     def get_unsent_batch_logs(self, batch_id: str, websocket) -> List[str]:
         """Get batch task logs not sent to this WebSocket"""

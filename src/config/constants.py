@@ -113,7 +113,7 @@ EMAIL_SERVICE_DEFAULTS = {
         "timeout": 30,
     },
     "moe_mail": {
-        "base_url": "", # Requires user configuration
+        "base_url": "", # Requires user setup
         "api_key_header": "X-API-Key",
         "timeout": 30,
         "max_retries": 3,
@@ -210,7 +210,7 @@ def generate_random_user_info() -> dict:
     elif birth_month in [4, 6, 9, 11]:
         birth_day = random.randint(1, 30)
     else:
-        # February; simplified handling
+        # February (simplified)
         birth_day = random.randint(1, 28)
 
     birthdate = f"{birth_year}-{birth_month:02d}-{birth_day:02d}"
@@ -266,7 +266,7 @@ DEFAULT_SETTINGS = [
     ("proxy.host", "127.0.0.1", "Proxy host", "proxy"),
     ("proxy.port", "7890", "Proxy port", "proxy"),
     ("registration.max_retries", "3", "Maximum number of retries", "registration"),
-    ("registration.timeout", "120", "timeout (seconds)", "registration"),
+    ("registration.timeout", "120", "Timeout (seconds)", "registration"),
     ("registration.default_password_length", "12", "Default password length", "registration"),
     ("webui.host", "0.0.0.0", "Web UI listening host", "webui"),
     ("webui.port", "8000", "Web UI listening port", "webui"),
@@ -311,24 +311,24 @@ ERROR_MESSAGES = {
     # Common errors
     "DATABASE_ERROR": "Database operation failed",
     "CONFIG_ERROR": "Configuration error",
-    "NETWORK_ERROR": "Network connection failed",
+    "NETWORK_ERROR": "Failed to connect to network",
     "TIMEOUT": "Operation timeout",
-    "VALIDATION_ERROR": "Parameter validation failed",
+    "VALIDATION_ERROR": "Validation failed",
 
     # Email service error
     "EMAIL_SERVICE_UNAVAILABLE": "The email service is unavailable",
-    "EMAIL_CREATION_FAILED": "Creation of email failed",
+    "EMAIL_CREATION_FAILED": "Failed to create email",
     "OTP_NOT_RECEIVED": "OTP not received",
     "OTP_INVALID": "Invalid OTP",
 
     # OpenAI related errors
-    "OPENAI_AUTH_FAILED": "OpenAI authentication failed",
+    "OPENAI_AUTH_FAILED": "Failed to authenticate with OpenAI",
     "OPENAI_RATE_LIMIT": "OpenAI API rate limit",
     "OPENAI_CAPTCHA": "CAPTCHA encountered",
 
     # Proxy errors
-    "PROXY_FAILED": "Proxy connection failed",
-    "PROXY_AUTH_FAILED": "Proxy authentication failed",
+    "PROXY_FAILED": "Failed to connect to proxy",
+    "PROXY_AUTH_FAILED": "Failed to authenticate with proxy",
 
     # Account errors
     "ACCOUNT_NOT_FOUND": "Account not found",

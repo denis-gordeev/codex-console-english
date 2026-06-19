@@ -117,7 +117,7 @@ def upload_to_cpa(
 
     Args:
         token_data: Token JSON data
-        proxy: reserved parameter, not used (CPA upload is always directly connected)
+        proxy: placeholder parameter (unused); CPA upload always connects directly
         api_url: Specify CPA API URL (takes precedence over global configuration)
         api_token: Specify CPA API Token (takes precedence over global configuration)
 
@@ -259,7 +259,7 @@ def test_cpa_connection(api_url: str, api_token: str, proxy: str = None) -> Tupl
     Args:
         api_url: CPA API URL
         api_token: CPA API Token
-        proxy: reserved parameter, not used (CPA is always directly connected)
+        proxy: placeholder parameter (unused); CPA always connects directly
 
     Returns:
         (success sign, message)"""
@@ -297,6 +297,6 @@ def test_cpa_connection(api_url: str, api_token: str, proxy: str = None) -> Tupl
     except cffi_requests.exceptions.ConnectionError as e:
         return False, f"Unable to connect to server: {str(e)}"
     except cffi_requests.exceptions.Timeout:
-        return False, "Connection timed out, please check network configuration"
+        return False, "Connection timed out; please check your network settings"
     except Exception as e:
         return False, f"Connection test failed: {str(e)}"

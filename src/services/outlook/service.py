@@ -57,7 +57,7 @@ class OutlookService(BaseEmailService):
             config: configuration dictionary with the following keys:
                 - accounts: Outlook account list
                 - provider_priority: provider priority list
-                - health_failure_threshold: Consecutive failure count threshold
+                - health_failure_threshold: Consecutive failure threshold
                 - health_disable_duration: How long to disable the provider (seconds)
                 - timeout: request timeout
                 - proxy_url: proxy URL
@@ -193,7 +193,7 @@ class OutlookService(BaseEmailService):
             raise ValueError(f"Unknown provider type: {provider_type}")
 
     def _get_provider_priority_for_account(self, account: OutlookAccount) -> List[ProviderType]:
-        """Returns a prioritized list of suitable providers based on whether the account has OAuth"""
+        """Returns a prioritized list of suitable providers based on if the account has OAuth"""
         if account.has_oauth():
             return self.provider_priority
         else:

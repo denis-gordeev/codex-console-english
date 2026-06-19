@@ -351,7 +351,7 @@ class TempMailService(BaseEmailService):
         Args:
             limit: the upper limit of the returned quantity
             offset: paging offset
-            **kwargs: additional query parameters, transparently passed to the admin API
+            **kwargs: additional query parameters, forwarded to the admin API
 
         Returns:
             Email list"""

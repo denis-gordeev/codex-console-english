@@ -303,7 +303,7 @@ class EmailServiceFactory:
         Raises:
             ValueError: The service type is not registered or the configuration is invalid"""
         if service_type not in cls._registry:
-            raise ValueError(f"Unregistered service type: {service_type.value}")
+            raise ValueError(f"Unknown service type: {service_type.value}")
 
         service_class = cls._registry[service_type]
         try:

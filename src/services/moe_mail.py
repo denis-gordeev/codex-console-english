@@ -27,7 +27,7 @@ class MeoMailEmailService(BaseEmailService):
             config: configuration dictionary with the following keys:
                 - base_url: API base address (required)
                 - api_key: API key (required)
-                - api_key_header: API key request header name (default: X-API-Key)
+                - api_key_header: API key header name (default: X-API-Key)
                 - timeout: request timeout (default: 30)
                 - max_retries: Maximum number of retries (default: 3)
                 - proxy_url: proxy URL
@@ -183,7 +183,7 @@ class MeoMailEmailService(BaseEmailService):
         Args:
             config: configuration options:
                 - name: email prefix (optional)
-                - expiryTime: validity period (milliseconds) (optional)
+                - expiryTime: validity duration (milliseconds) (optional)
                 - domain: email domain (optional)
 
         Returns:
@@ -191,7 +191,7 @@ class MeoMailEmailService(BaseEmailService):
             - email: email address
             - service_id: Email ID
             - id: Email ID (same as service_id)
-            - expiry: expiration time information"""
+            - expiry: expiry time"""
         # Get default configuration
         sys_config = self.get_config()
         default_domain = self.config.get("default_domain")
@@ -416,7 +416,7 @@ class MeoMailEmailService(BaseEmailService):
                 self.update_status(True)
                 return True
             else:
-                logger.warning("Custom domain email health check failed: no configuration provided")
+                logger.warning("Custom domain email health check failed: no settings provided")
                 self.update_status(False, EmailServiceError("No configuration provided"))
                 return False
         except Exception as e:
@@ -471,10 +471,10 @@ class MeoMailEmailService(BaseEmailService):
 
         Args:
             email_id: Email ID
-            expires_in: validity period (milliseconds)
+            expires_in: validity duration (milliseconds)
 
         Returns:
-            share information"""
+            sharing details"""
         try:
             response = self._make_request(
                 "POST",
@@ -499,10 +499,10 @@ class MeoMailEmailService(BaseEmailService):
         Args:
             email_id: Email ID
             message_id: email ID
-            expires_in: validity period (milliseconds)
+            expires_in: validity duration (milliseconds)
 
         Returns:
-            share information"""
+            sharing details"""
         try:
             response = self._make_request(
                 "POST",

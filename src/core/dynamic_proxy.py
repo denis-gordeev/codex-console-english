@@ -14,7 +14,7 @@ def fetch_dynamic_proxy(api_url: str, api_key: str = "", api_key_header: str = "
     Args:
         api_url: proxy API address; the response should be a proxy URL string or JSON containing the proxy URL
         api_key: API key (optional)
-        api_key_header: API key request header name
+        api_key_header: API key header name
         result_field: Dot-notation field path to extract the proxy URL from the JSON response (e.g. "data.proxy"). If left blank, the raw response text is used.
 
     Returns:

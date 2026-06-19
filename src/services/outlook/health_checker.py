@@ -69,7 +69,7 @@ class HealthChecker:
             if health:
                 health.record_failure(error)
 
-                # Check whether to disable it
+                # Check if it should be disabled
                 if health.should_disable(self.failure_threshold):
                     health.disable(self.disable_duration)
                     logger.warning(
