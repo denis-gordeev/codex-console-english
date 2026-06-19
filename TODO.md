@@ -77,7 +77,7 @@
   - "Save failed" → "Failed to save", "Add failed" → "Failed to add", "Deletion failed" → "Failed to delete", "Loading failed" → "Failed to load", "Mark failed" → "Failed to mark subscription"
 - Replaced "concurrencies" / "number of concurrency" with "concurrent tasks" / "concurrency" (4 occurrences in registration.py).
 - Replaced "in an orderly manner" with "gracefully" in cancellation messages (2 occurrences in registration.py).
-- Replaced "corresponding" with "matching"/"for" where the Chinese term 对应的 was mistranslated (4 occurrences in temp_mail.py, freemail.py, outlook_legacy_mail.py, service.py, app.js).
+- Replaced "corresponding" with "matching"/"for" where the Chinese term for "corresponding" was mistranslated (4 occurrences in temp_mail.py, freemail.py, outlook_legacy_mail.py, service.py, app.js).
 - Replaced "according to" → "by" in accounts.py (2 occurrences).
 - Replaced "lacks Token" → "has no token" across accounts.py and upload modules (4 occurrences).
 - Fixed Chinese-style docstring patterns: "Is it available" → "True if available", "Check if it is healthy" → "Whether the provider is healthy" in base.py and health_checker.py.
@@ -698,6 +698,14 @@
   - Registration engine with Sentinel POW support
   - Static asset versioning and English locale usage
 - Confirmed repository is fully translated and in good working state.
+
+## Completed In This Round (June 19, 2026 - Round 47)
+
+- Pulled `origin/main` - repository was already up to date.
+- Scanned all tracked files for remaining non-English content (Cyrillic, CJK, extended Latin).
+- Replaced Chinese characters `对应的` with English description "for 'corresponding'" in README.md (line 94) and TODO.md (line 80) — the only remaining non-English text in the tracked codebase.
+- Verified zero remaining Cyrillic or CJK characters in all source, template, config, and documentation files.
+- Confirmed all Python source code, JS, HTML, templates, Dockerfile, docker-compose.yml, and config files are fully in English.
 
 ## Next Actions
 

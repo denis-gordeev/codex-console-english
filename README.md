@@ -91,7 +91,7 @@ This repository keeps the original structure and overall approach, while applyin
 - Replaced all "has been" + past participle Chinese-style passive constructions with natural English active forms across backend and frontend (~65 occurrences: "Task has been canceled" → "Task canceled", "Service has been deleted" → "Service deleted", etc.).
 - Replaced "Noun + failed" Chinese-English pattern with "Failed to + verb" across all JS files (~31 occurrences: "Save failed" → "Failed to save", "Add failed" → "Failed to add", etc.).
 - Replaced "concurrencies" / "number of concurrency" → "concurrent tasks" / "concurrency" for standard English (4 occurrences).
-- Replaced "corresponding" → "matching"/"for" where the Chinese term 对应的 was mistranslated (4 occurrences).
+- Replaced "corresponding" → "matching"/"for" where the Chinese term for "corresponding" was mistranslated (4 occurrences).
 - Replaced "lacks Token" → "has no token" across accounts.py and upload modules (4 occurrences).
 - Replaced "real-time push" → "live delivery/updates" in task manager and WebSocket routes (4 occurrences).
 - Replaced "restore" → "re-enable" for disabled provider recovery context in health checker (4 occurrences).
