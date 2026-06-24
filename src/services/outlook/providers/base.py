@@ -61,7 +61,7 @@ class OutlookProvider(abc.ABC):
 
     @property
     def is_healthy(self) -> bool:
-        """Whether the provider is healthy"""
+        """True if the provider is healthy"""
         return (
             self._health.status == ProviderStatus.HEALTHY
             and not self._health.is_disabled()
@@ -69,7 +69,7 @@ class OutlookProvider(abc.ABC):
 
     @property
     def is_connected(self) -> bool:
-        """Whether the provider is connected"""
+        """True if the provider is connected"""
         return self._connected
 
     @abc.abstractmethod

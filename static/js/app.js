@@ -17,7 +17,7 @@ let batchCompleted = false; // Track if the batch task is completed
 let taskFinalStatus = null; // Save the final status of the task
 let batchFinalStatus = null; // Save the final status of the batch task
 let displayedLogs = new Set(); // Used for log dedup
-let toastShown = false; // Tracks if toast has been shown
+let toastShown = false; // Tracks if toast was shown
 let availableServices = {
     tempmail: { available: true, services: [] },
     outlook: { available: false, services: [] },

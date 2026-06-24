@@ -77,7 +77,7 @@ class FakeEmailService(BaseEmailService):
             "otp_sent_at": otp_sent_at,
         })
         if not self.codes:
-            raise AssertionError("no verification code queued")
+            raise AssertionError("no OTP queued")
         return self.codes.pop(0)
 
     def list_emails(self, **kwargs):
