@@ -64,7 +64,7 @@ class BaseEmailService(abc.ABC):
             - token/credentials: access credentials (if required)
 
         Raises:
-            EmailServiceError: Email creation failed"""
+            EmailServiceError: Failed to create email"""
         pass
 
     @abc.abstractmethod

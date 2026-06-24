@@ -60,7 +60,7 @@ class HealthChecker:
             health = self._health_status.get(provider_type)
             if health:
                 health.record_success()
-                logger.debug(f"{provider_type.value} recorded successfully")
+                logger.debug(f"{provider_type.value} recorded")
 
     def record_failure(self, provider_type: ProviderType, error: str):
         """Record a provider failure"""

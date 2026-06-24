@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class MeoMailEmailService(BaseEmailService):
-    """Custom domain email service
+    """Custom-domain email service
     Based on the REST API"""
 
     def __init__(self, config: Dict[str, Any] = None, name: str = None):
@@ -394,7 +394,7 @@ class MeoMailEmailService(BaseEmailService):
             if success:
                 # Remove from cache
                 self._emails_cache.pop(email_id, None)
-                logger.info(f"Email deleted successfully: {email_id}")
+                logger.info(f"Email deleted: {email_id}")
             else:
                 logger.warning(f"Failed to delete email address: {email_id}")
 
@@ -412,15 +412,15 @@ class MeoMailEmailService(BaseEmailService):
             # Try to get configuration
             config = self.get_config(force_refresh=True)
             if config:
-                logger.debug(f"Custom domain email health check passed, configuration: {config.get('defaultRole', 'N/A')}")
+                logger.debug(f"Custom-domain email health check passed, config: {config.get('defaultRole', 'N/A')}")
                 self.update_status(True)
                 return True
             else:
-                logger.warning("Custom domain email health check failed: no settings provided")
-                self.update_status(False, EmailServiceError("No configuration provided"))
+                logger.warning("Custom-domain email health check failed: no settings provided")
+                self.update_status(False, EmailServiceError("No settings provided"))
                 return False
         except Exception as e:
-            logger.warning(f"Custom domain email service health check failed: {e}")
+            logger.warning(f"Custom-domain email service health check failed: {e}")
             self.update_status(False, e)
             return False
 

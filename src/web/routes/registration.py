@@ -135,7 +135,7 @@ class OutlookAccountForRegistration(BaseModel):
     id: int # ID of EmailService table
     email: str
     name: str
-    has_oauth: bool # Has OAuth configuration
+    has_oauth: bool # Has OAuth credentials
     is_registered: bool # Already registered
     registered_account_id: Optional[int] = None
 

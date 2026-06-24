@@ -179,7 +179,7 @@ OPENAI_VERIFICATION_KEYWORDS = [
 PASSWORD_CHARSET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 DEFAULT_PASSWORD_LENGTH = 12
 
-# User information generation (for registration)
+# User profile generation (for registration)
 
 # Common English names
 FIRST_NAMES = [
@@ -192,7 +192,7 @@ FIRST_NAMES = [
 
 def generate_random_user_info() -> dict:
     """
-    Generate random user information
+    Generate random user profile
 
     Returns:
         Dictionary containing name and birthdate
@@ -312,7 +312,7 @@ ERROR_MESSAGES = {
     "DATABASE_ERROR": "Database operation failed",
     "CONFIG_ERROR": "Configuration error",
     "NETWORK_ERROR": "Failed to connect to network",
-    "TIMEOUT": "Operation timeout",
+    "TIMEOUT": "Operation timed out",
     "VALIDATION_ERROR": "Validation failed",
 
     # Email service error

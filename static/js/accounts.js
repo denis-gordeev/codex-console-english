@@ -493,13 +493,13 @@ async function refreshToken(id) {
         const result = await api.post(`/accounts/${id}/refresh`);
 
         if (result.success) {
-            toast.success('Token refreshed successfully');
+            toast.success('Token refreshed');
             loadAccounts();
         } else {
-            toast.error('Refresh failed: ' + (result.error || 'Unknown error'));
+            toast.error('Failed to refresh: ' + (result.error || 'Unknown error'));
         }
     } catch (error) {
-        toast.error('Refresh failed: ' + error.message);
+        toast.error('Failed to refresh: ' + error.message);
     }
 }
 
@@ -519,7 +519,7 @@ async function handleBatchRefresh() {
         toast.success(`Successfully refreshed ${result.success_count} items, failed ${result.failed_count} items`);
         loadAccounts();
     } catch (error) {
-        toast.error('Batch refresh failed: ' + error.message);
+        toast.error('Failed to batch-refresh: ' + error.message);
     } finally {
         updateBatchButtons();
     }
@@ -537,7 +537,7 @@ async function handleBatchValidate() {
         toast.info(`Valid: ${result.valid_count}, invalid: ${result.invalid_count}`);
         loadAccounts();
     } catch (error) {
-        toast.error('Batch validation failed: ' + error.message);
+        toast.error('Failed to batch-validate: ' + error.message);
     } finally {
         updateBatchButtons();
     }

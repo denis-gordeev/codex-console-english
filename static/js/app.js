@@ -519,7 +519,7 @@ async function handleSingleRegistration(requestData) {
         connectWebSocket(data.task_uuid);
 
     } catch (error) {
-        addLog('error', `[Error] Startup failed: ${error.message}`);
+        addLog('error', `[Error] Failed to start: ${error.message}`);
         toast.error(error.message);
         resetButtons();
     }
@@ -575,8 +575,8 @@ function connectWebSocket(taskUuid) {
                             // Refresh the account list
                             loadRecentAccounts();
                         } else if (data.status === 'failed') {
-                            addLog('error', '[Error] Registration failed');
-                            toast.error('Registration failed');
+                            addLog('error', '[Error] Failed to register');
+                            toast.error('Failed to register');
                         } else if (data.status === 'cancelled' || data.status === 'cancelling') {
                             addLog('warning', '[Warning] Task canceled');
                         }
@@ -689,7 +689,7 @@ async function handleBatchRegistration(requestData) {
         connectBatchWebSocket(data.batch_id);
 
     } catch (error) {
-        addLog('error', `[Error] Startup failed: ${error.message}`);
+        addLog('error', `[Error] Failed to start: ${error.message}`);
         toast.error(error.message);
         resetButtons();
     }
@@ -745,7 +745,7 @@ async function handleCancelTask() {
             resetButtons();
         }
     } catch (error) {
-        addLog('error', `[Error] Cancellation failed: ${error.message}`);
+        addLog('error', `[Error] Failed to cancel: ${error.message}`);
         toast.error(error.message);
         // Restore the cancel button and allow retries
         elements.cancelBtn.disabled = false;
@@ -794,15 +794,15 @@ function startLogPolling(taskUuid) {
                         // Refresh the account list
                         loadRecentAccounts();
                     } else if (data.status === 'failed') {
-                        addLog('error', '[Error] Registration failed');
-                        toast.error('Registration failed');
+                        addLog('error', '[Error] Failed to register');
+                        toast.error('Failed to register');
                     } else if (data.status === 'cancelled') {
                         addLog('warning', '[Warning] Task canceled');
                     }
                 }
             }
         } catch (error) {
-            console.error('Polling log failed:', error);
+            console.error('Failed to poll logs:', error);
         }
     }, 1000);
 }
@@ -836,12 +836,12 @@ function startBatchPolling(batchId) {
                         // Refresh the account list
                         loadRecentAccounts();
                     } else {
-                        toast.warning('Batch registration completed, but no accounts were registered successfully');
+                        toast.warning('Batch registration completed, but no accounts were registered');
                     }
                 }
             }
         } catch (error) {
-            console.error('Polling batch status failed:', error);
+            console.error('Failed to poll batch status:', error);
         }
     }, 2000);
 }
@@ -913,7 +913,7 @@ function updateBatchProgress(data) {
         const lastFailed = parseInt(elements.batchFailed.dataset.last || '0');
 
         if (data.success > lastSuccess) {
-            addLog('success', `[Success] ${data.success} account(s) registered successfully`);
+            addLog('success', `[Success] ${data.success} account(s) registered`);
         }
         if (data.failed > lastFailed) {
             addLog('error', `[Failed] Failed to register ${data.failed} account(s)`);
@@ -1218,7 +1218,7 @@ async function handleOutlookBatchRegistration() {
         connectBatchWebSocket(data.batch_id);
 
     } catch (error) {
-        addLog('error', `[Error] Startup failed: ${error.message}`);
+        addLog('error', `[Error] Failed to start: ${error.message}`);
         toast.error(error.message);
         resetButtons();
     }
@@ -1235,7 +1235,7 @@ function connectBatchWebSocket(batchId) {
         batchWebSocket = new WebSocket(wsUrl);
 
         batchWebSocket.onopen = () => {
-            console.log('Batch task WebSocket connection successful');
+            console.log('Batch task WebSocket connected');
             // Stop polling (if any)
             stopBatchPolling();
             // Start heartbeat
@@ -1275,16 +1275,16 @@ function connectBatchWebSocket(batchId) {
                     if (!toastShown) {
                         toastShown = true;
                         if (data.status === 'completed') {
-                            addLog('success', `[Complete] Outlook batch task completed! Success: ${data.success}, Failure: ${data.failed}, Skip: ${data.skipped || 0}`);
+                            addLog('success', `[Done] Outlook batch task completed! Succeeded: ${data.success}, Failed: ${data.failed}, Skipped: ${data.skipped || 0}`);
                             if (data.success > 0) {
                                 toast.success(`Outlook batch registration completed, ${data.success} successful`);
                                 loadRecentAccounts();
                             } else {
-                                toast.warning('Outlook batch registration completed, but no accounts were registered successfully');
+                                toast.warning('Outlook batch registration completed, but no accounts were registered');
                             }
                         } else if (data.status === 'failed') {
-                            addLog('error', '[Error] Batch task execution failed');
-                            toast.error('Batch task execution failed');
+                            addLog('error', '[Error] Failed to execute batch task');
+                            toast.error('Failed to execute batch task');
                         } else if (data.status === 'cancelled' || data.status === 'cancelling') {
                             addLog('warning', '[Warning] Batch task canceled');
                         }
@@ -1390,17 +1390,17 @@ function startOutlookBatchPolling(batchId) {
                 // Show toast only once
                 if (!toastShown) {
                     toastShown = true;
-                    addLog('info', `[Complete] Outlook batch task completed! Success: ${data.success}, Failure: ${data.failed}, Skip: ${data.skipped || 0}`);
+                    addLog('info', `[Done] Outlook batch task completed! Succeeded: ${data.success}, Failed: ${data.failed}, Skipped: ${data.skipped || 0}`);
                     if (data.success > 0) {
                         toast.success(`Outlook batch registration completed, ${data.success} successful`);
                         loadRecentAccounts();
                     } else {
-                        toast.warning('Outlook batch registration completed, but no accounts were registered successfully');
+                        toast.warning('Outlook batch registration completed, but no accounts were registered');
                     }
                 }
             }
         } catch (error) {
-            console.error('Polling Outlook batch status failed:', error);
+            console.error('Failed to poll Outlook batch status:', error);
         }
     }, 2000);
 

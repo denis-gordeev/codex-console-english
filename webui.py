@@ -73,7 +73,7 @@ def setup_application():
     )
 
     logger = logging.getLogger(__name__)
-    logger.info("Database initialization completed successfully")
+    logger.info("Database initialization completed")
     logger.info("Using data directory: %s", data_dir)
     logger.info("Using log directory: %s", logs_dir)
     logger.info("Application setup completed")

@@ -47,7 +47,7 @@ class Account(Base):
     proxy_used = Column(String(255))
     registered_at = Column(DateTime, default=datetime.utcnow)
     last_refresh = Column(DateTime) # Last refresh time
-    expires_at = Column(DateTime) # Token expiration time
+    expires_at = Column(DateTime) # Token expiry time
     status = Column(String(20), default='active')  # 'active', 'expired', 'banned', 'failed'
     extra_data = Column(JSONEncodedDict) # Additional data
     cpa_uploaded = Column(Boolean, default=False) # Uploaded to CPA

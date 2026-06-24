@@ -175,7 +175,7 @@ async def get_service_types():
             {
                 "value": "tempmail",
                 "label": "Tempmail.lol",
-                "description": "Tempmail temporary email service, no configuration required",
+                "description": "Tempmail.lol email service, no setup required",
                 "config_fields": [
                     {"name": "base_url", "label": "API address", "default": "https://api.tempmail.lol/v2", "required": False},
                     {"name": "timeout", "label": "timeout", "default": 30, "required": False},
@@ -195,7 +195,7 @@ async def get_service_types():
             {
                 "value": "moe_mail",
                 "label": "MoeMail",
-                "description": "Custom domain email service",
+                "description": "Custom-domain email service",
                 "config_fields": [
                     {"name": "base_url", "label": "API address", "required": True},
                     {"name": "api_key", "label": "API Key", "required": True},
@@ -402,11 +402,11 @@ async def test_email_service(service_id: int):
             else:
                 return ServiceTestResult(
                     success=False,
-                    message="Service connection failed"
+                    message="Failed to connect to service"
                 )
 
         except Exception as e:
-            logger.error(f"Test email service failed: {e}")
+            logger.error(f"Failed to test email service: {e}")
             return ServiceTestResult(
                 success=False,
                 message=f"Test failed: {str(e)}"
@@ -546,7 +546,7 @@ async def batch_import_outlook(request: OutlookBatchImportRequest):
 
             except Exception as e:
                 failed += 1
-                errors.append(f"Line {i+1}: Email creation failed: {str(e)}")
+                errors.append(f"Line {i+1}: Failed to create email: {str(e)}")
                 db.rollback()
 
     return OutlookBatchImportResponse(

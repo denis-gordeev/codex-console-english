@@ -118,14 +118,14 @@ def upload_to_cpa(
     Args:
         token_data: Token JSON data
         proxy: placeholder parameter (unused); CPA upload always connects directly
-        api_url: Specify CPA API URL (takes precedence over global configuration)
-        api_token: Specify CPA API Token (takes precedence over global configuration)
+        api_url: Specify CPA API URL (takes precedence over global settings)
+        api_token: Specify CPA API Token (takes precedence over global settings)
 
     Returns:
         (success sign, message or error message)"""
     settings = get_settings()
 
-    # Use provided parameters first, falling back to global configuration.
+    # Use provided parameters first, falling back to global settings.
     effective_url = api_url or settings.cpa_api_url
     effective_token = api_token or (settings.cpa_api_token.get_secret_value() if settings.cpa_api_token else "")
 
@@ -185,8 +185,8 @@ def batch_upload_to_cpa(
     Args:
         account_ids: Account ID list
         proxy: optional proxy URL
-        api_url: Specify CPA API URL (takes precedence over global configuration)
-        api_token: Specify CPA API Token (takes precedence over global configuration)
+        api_url: Specify CPA API URL (takes precedence over global settings)
+        api_token: Specify CPA API Token (takes precedence over global settings)
 
     Returns:
         Dictionary containing success/failure statistics and details"""
@@ -297,6 +297,6 @@ def test_cpa_connection(api_url: str, api_token: str, proxy: str = None) -> Tupl
     except cffi_requests.exceptions.ConnectionError as e:
         return False, f"Unable to connect to server: {str(e)}"
     except cffi_requests.exceptions.Timeout:
-        return False, "Connection timed out; please check your network settings"
+        return False, "Connection timed out; check your connection"
     except Exception as e:
         return False, f"Connection test failed: {str(e)}"

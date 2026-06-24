@@ -252,7 +252,7 @@ class TempMailService(BaseEmailService):
             # Cache JWT for use when retrieving OTPs
             self._email_cache[address] = email_info
 
-            logger.info(f"TempMail email address created successfully: {address}")
+            logger.info(f"TempMail email address created: {address}")
             self.update_status(True)
             return email_info
 

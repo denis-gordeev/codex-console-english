@@ -35,7 +35,7 @@ DEFAULT_PROVIDER_PRIORITY = [
 
 
 def get_email_code_settings() -> dict:
-    """Get OTP and wait for configuration"""
+    """Get OTP polling settings (timeout and interval)"""
     settings = get_settings()
     return {
         "timeout": settings.email_code_timeout,

@@ -503,7 +503,7 @@ class RegistrationEngine:
         if session_cookie:
             self.session_token = session_cookie
             result.session_token = session_cookie
-            self._log("Session token retrieved successfully")
+            self._log("Session token retrieved")
 
         return True
 
@@ -836,7 +836,7 @@ class RegistrationEngine:
                 code_verifier=self.oauth_start.code_verifier
             )
 
-            self._log("OAuth authorization completed successfully")
+            self._log("OAuth authorization completed")
             return token_info
 
         except Exception as e:

@@ -707,12 +707,34 @@
 - Verified zero remaining Cyrillic or CJK characters in all source, template, config, and documentation files.
 - Confirmed all Python source code, JS, HTML, templates, Dockerfile, docker-compose.yml, and config files are fully in English.
 
-## Completed In This Round (June 23, 2026 - Round 48)
+## Completed In This Round (June 24, 2026 - Round 49)
 
 - Pulled `origin/main` - repository was already up to date.
-- Found and removed the last remaining non-English text: Chinese characters `对应的` in TODO.md line 706 (self-referential documentation entry). Replaced with English-only description.
-- Full non-English scan across all tracked files: zero Cyrillic, CJK, Arabic, Thai, or Hangul characters remain.
-- Confirmed no remaining "the X of the Y" or "has been Xed" Chinese-English patterns in Python source.
+- Replaced last Chinese characters in TODO.md line 713 with English-only description.
+- Fixed ~26 "Noun + failed" Chinese-English patterns across JS and Python:
+  - JS: "Registration failed" → "Failed to register", "Startup failed" → "Failed to start", "Cancellation failed" → "Failed to cancel", "Update failed" → "Failed to update", "Batch refresh failed" → "Failed to batch-refresh", "Batch validation failed" → "Failed to batch-validate", "Backup failed" → "Failed to back up", "Connection failed" → "Failed to connect", "Batch task execution failed" → "Failed to execute batch task"
+  - Python: "Service connection failed" → "Failed to connect to service", "Email creation failed" → "Failed to create email", "Test email service failed" → "Failed to test email service"
+- Fixed ~22 redundant "successfully" Chinese-style patterns:
+  - JS: "Service added successfully" → "Service added", "Account updated successfully" → "Account updated", "Token refreshed successfully" → "Token refreshed", "Payment link generated successfully" → "Payment link generated"
+  - Python: "Session token retrieved successfully" → "Session token retrieved", "OAuth authorization completed successfully" → "OAuth authorization completed", "TempMail email address created successfully" → "TempMail email address created", etc.
+- Fixed "Operation timeout" → "Operation timed out" in constants.py.
+- Fixed "Concurrency count" → "Concurrency limit" in index.html (2 occurrences).
+- Fixed "Number of X" → concise labels in settings.html: "Number of accounts" → "Accounts", "Number of email services" → "Email services", "Number of task records" → "Task records".
+- Fixed "Database information" → "Database info" in settings.html and settings.js.
+- Fixed "Failed to get service information" → "Failed to get service details" across JS (5 occurrences).
+- Fixed "please check your network settings" → "check your connection" across upload modules (3 occurrences).
+- Fixed "expiration time" → "expires at"/"expiry time" in token_refresh.py log messages and models.py comment.
+- Fixed nonsensical docstring "Get OTP and wait for configuration" → "Get OTP polling settings (timeout and interval)" in outlook/service.py.
+- Fixed "Has OAuth configuration" → "Has OAuth credentials" in registration.py.
+- Fixed "Tempmail temporary email service, no configuration required" → "Tempmail.lol email service, no setup required" in email.py.
+- Fixed "Custom domain email" → "Custom-domain email" across moe_mail.py and email.py (5 occurrences).
+- Fixed "global configuration" → "global settings" in cpa_upload.py and accounts.py (5 occurrences).
+- Fixed "the complete configuration of X service" → "the full X service config" in upload routes.
+- Fixed "User information generation" → "User profile generation" in constants.py.
+- Fixed batch status messages: "Success/Failure/Skip" → "Succeeded/Failed/Skipped" for consistency.
+- Fixed polling error messages: "Polling X failed" → "Failed to poll X" in app.js.
+- Fixed "connection successful" → "connected" in app.js WebSocket log.
+- Updated test assertion for "Session token retrieved" message change.
 - All 32 tests pass.
 
 ## Next Actions

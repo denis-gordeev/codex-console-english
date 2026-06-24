@@ -89,7 +89,7 @@ async function generateLink() {
             document.getElementById('link-text').value = data.link;
             document.getElementById('link-box').classList.add('show');
             document.getElementById('open-status').textContent = '';
-            ui.showToast('Payment link generated successfully', 'success');
+            ui.showToast('Payment link generated', 'success');
         } else {
             ui.showToast(data.detail || 'Failed to generate link', 'error');
         }

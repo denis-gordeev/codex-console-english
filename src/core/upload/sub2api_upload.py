@@ -219,6 +219,6 @@ def test_sub2api_connection(api_url: str, api_key: str) -> Tuple[bool, str]:
     except cffi_requests.exceptions.ConnectionError as e:
         return False, f"Unable to connect to server: {str(e)}"
     except cffi_requests.exceptions.Timeout:
-        return False, "Connection timed out; please check your network settings"
+        return False, "Connection timed out; check your connection"
     except Exception as e:
         return False, f"Connection test failed: {str(e)}"

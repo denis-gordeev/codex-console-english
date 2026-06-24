@@ -78,7 +78,7 @@ def fetch_dynamic_proxy(api_url: str, api_key: str = "", api_key_header: str = "
         if not re.match(r'^(http|socks5)://', proxy_url):
             proxy_url = "http://" + proxy_url
 
-        logger.info(f"Dynamic proxy fetched successfully: {proxy_url[:40]}..." if len(proxy_url) > 40 else f"Dynamic proxy fetched successfully: {proxy_url}")
+        logger.info(f"Dynamic proxy fetched: {proxy_url[:40]}..." if len(proxy_url) > 40 else f"Dynamic proxy fetched: {proxy_url}")
         return proxy_url
 
     except Exception as e:

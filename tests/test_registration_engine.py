@@ -255,7 +255,7 @@ def test_run_registers_then_relogs_to_fetch_token():
     assert result.metadata["token_acquired_via_relogin"] is True
     assert any("Starting registration flow" in entry for entry in result.logs)
     assert any("Registration completed; restarting the login flow to fetch tokens..." in entry for entry in result.logs)
-    assert any("Session token retrieved successfully" in entry for entry in result.logs)
+    assert any("Session token retrieved" in entry for entry in result.logs)
     assert not any("open the champagne" in entry for entry in result.logs)
 
 

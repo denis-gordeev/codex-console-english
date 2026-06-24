@@ -640,7 +640,7 @@ async def refresh_account_token(account_id: int, request: Optional[TokenRefreshR
     if result.success:
         return {
             "success": True,
-            "message": "Token refreshed successfully",
+            "message": "Token refreshed",
             "expires_at": result.expires_at.isoformat() if result.expires_at else None
         }
     else:
@@ -708,7 +708,7 @@ async def validate_account_token(account_id: int, request: Optional[TokenValidat
 class CPAUploadRequest(BaseModel):
     """CPA upload request"""
     proxy: Optional[str] = None
-    cpa_service_id: Optional[int] = None  # Specify the CPA service ID. If not passed, the global configuration will be used.
+    cpa_service_id: Optional[int] = None  # Specify the CPA service ID. If not passed, the global settings will be used.
 
 
 class BatchCPAUploadRequest(BaseModel):
@@ -719,7 +719,7 @@ class BatchCPAUploadRequest(BaseModel):
     status_filter: Optional[str] = None
     email_service_filter: Optional[str] = None
     search_filter: Optional[str] = None
-    cpa_service_id: Optional[int] = None  # Specify the CPA service ID. If not passed, the global configuration will be used.
+    cpa_service_id: Optional[int] = None  # Specify the CPA service ID. If not passed, the global settings will be used.
 
 
 @router.post("/batch-upload-cpa")
@@ -1047,7 +1047,7 @@ async def get_account_inbox_code(account_id: int):
 
         config = _build_inbox_config(db, service_type, account.email)
         if config is None:
-            return {"success": False, "error": "No available email service configuration found"}
+            return {"success": False, "error": "No available email service found"}
 
         try:
             svc = EmailServiceFactory.create(service_type, config)

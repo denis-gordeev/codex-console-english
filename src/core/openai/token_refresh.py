@@ -104,7 +104,7 @@ class TokenRefreshManager:
                 logger.warning(result.error_message)
                 return result
 
-            # Extract expiration time
+            # Extract expiry time
             expires_at = None
             expires_str = data.get("expires")
             if expires_str:
@@ -117,7 +117,7 @@ class TokenRefreshManager:
             result.access_token = access_token
             result.expires_at = expires_at
 
-            logger.info(f"Session token refreshed successfully, expiration time: {expires_at}")
+            logger.info(f"Session token refreshed, expires at: {expires_at}")
             return result
 
         except Exception as e:
@@ -183,7 +183,7 @@ class TokenRefreshManager:
                 logger.warning(result.error_message)
                 return result
 
-            # Calculate expiration time
+            # Calculate expiry time
             expires_at = datetime.utcnow() + timedelta(seconds=expires_in)
 
             result.success = True
@@ -191,7 +191,7 @@ class TokenRefreshManager:
             result.refresh_token = new_refresh_token
             result.expires_at = expires_at
 
-            logger.info(f"OAuth token refreshed successfully, expiration time: {expires_at}")
+            logger.info(f"OAuth token refreshed, expires at: {expires_at}")
             return result
 
         except Exception as e:

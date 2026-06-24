@@ -173,7 +173,7 @@ class TokenManager:
             # Parse the response.
             token = TokenInfo.from_response(response_data, self.scope)
             logger.info(
-                f"[{self.account.email}] Token refreshed successfully ({self.provider_type.value}), "
+                f"[{self.account.email}] Token refreshed ({self.provider_type.value}), "
                 f"valid for {int(token.expires_at - time.time())} seconds"
             )
             return token

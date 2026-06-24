@@ -448,7 +448,7 @@ function renderEmailServices(services) {
     `).join('');
 }
 
-// Load database information
+// Load database info
 async function loadDatabaseInfo() {
     try {
         const data = await api.get('/settings/database');
@@ -459,7 +459,7 @@ async function loadDatabaseInfo() {
         document.getElementById('db-tasks').textContent = format.number(data.tasks_count);
 
     } catch (error) {
-        console.error('Failed to load database information:', error);
+        console.error('Failed to load database info:', error);
     }
 }
 
@@ -522,7 +522,7 @@ async function handleBackup() {
         const data = await api.post('/settings/database/backup');
         toast.success(`Backup successful: ${data.backup_path}`);
     } catch (error) {
-        toast.error('Backup failed: ' + error.message);
+        toast.error('Failed to back up: ' + error.message);
     } finally {
         elements.backupBtn.disabled = false;
         elements.backupBtn.textContent = '💾 Backup database';
@@ -614,7 +614,7 @@ async function testService(id) {
         if (data.success) {
             toast.success('Service connection OK');
         } else {
-            toast.warning('Service connection failed: ' + data.message);
+            toast.warning('Failed to connect to service: ' + data.message);
         }
     } catch (error) {
         toast.error('Test failed: ' + error.message);
@@ -635,7 +635,7 @@ async function toggleService(id, enabled) {
 
 // Delete service
 async function deleteService(id) {
-    const confirmed = await confirm('Are you sure you want to delete this email service configuration?');
+    const confirmed = await confirm('Are you sure you want to delete this email service?');
     if (!confirmed) return;
 
     try {
@@ -1112,7 +1112,7 @@ async function editTmService(id) {
         const service = await api.get(`/tm-services/${id}`);
         openTmServiceModal(service);
     } catch (e) {
-        toast.error('Failed to get service information: ' + e.message);
+        toast.error('Failed to get service details: ' + e.message);
     }
 }
 
@@ -1268,7 +1268,7 @@ async function editCpaService(id) {
         const service = await api.get(`/cpa-services/${id}`);
         openCpaServiceModal(service);
     } catch (e) {
-        toast.error('Failed to get service information: ' + e.message);
+        toast.error('Failed to get service details: ' + e.message);
     }
 }
 

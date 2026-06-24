@@ -106,7 +106,7 @@ async def get_sub2api_service(service_id: int):
 
 @router.get("/{service_id}/full")
 async def get_sub2api_service_full(service_id: int):
-    """Get the complete configuration of Sub2API service (including API Key)"""
+    """Get the full Sub2API service config (including API Key)"""
     with get_db() as db:
         svc = crud.get_sub2api_service_by_id(db, service_id)
         if not svc:

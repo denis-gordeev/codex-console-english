@@ -487,7 +487,7 @@ async function handleAddCustom(e) {
 
     try {
         await api.post('/email-services', data);
-        toast.success('Service added successfully');
+        toast.success('Service added');
         elements.addCustomModal.classList.remove('active');
         e.target.reset();
         loadCustomServices();
@@ -580,7 +580,7 @@ async function handleTestTempmail() {
             api_url: elements.tempmailApi.value
         });
         if (result.success) toast.success('The temp mail connection is normal');
-        else toast.error('Connection failed: ' + (result.error || 'Unknown error'));
+        else toast.error('Failed to connect: ' + (result.error || 'Unknown error'));
     } catch (error) {
         toast.error('Test failed: ' + error.message);
     } finally {
@@ -661,7 +661,7 @@ async function editCustomService(id, subType) {
 
         elements.editCustomModal.classList.add('active');
     } catch (error) {
-        toast.error('Failed to get service information: ' + error.message);
+        toast.error('Failed to get service details: ' + error.message);
     }
 }
 
@@ -728,7 +728,7 @@ async function handleEditCustom(e) {
         loadCustomServices();
         loadStats();
     } catch (error) {
-        toast.error('Update failed: ' + error.message);
+        toast.error('Failed to update: ' + error.message);
     }
 }
 
@@ -747,7 +747,7 @@ async function editOutlookService(id) {
         document.getElementById('edit-outlook-enabled').checked = service.enabled;
         elements.editOutlookModal.classList.add('active');
     } catch (error) {
-        toast.error('Failed to get service information: ' + error.message);
+        toast.error('Failed to get service details: ' + error.message);
     }
 }
 
@@ -761,7 +761,7 @@ async function handleEditOutlook(e) {
     try {
         currentService = await api.get(`/email-services/${id}/full`);
     } catch (error) {
-        toast.error('Failed to get service information');
+        toast.error('Failed to get service details');
         return;
     }
 
@@ -779,11 +779,11 @@ async function handleEditOutlook(e) {
 
     try {
         await api.patch(`/email-services/${id}`, updateData);
-        toast.success('Account updated successfully');
+        toast.success('Account updated');
         elements.editOutlookModal.classList.remove('active');
         loadOutlookServices();
         loadStats();
     } catch (error) {
-        toast.error('Update failed: ' + error.message);
+        toast.error('Failed to update: ' + error.message);
     }
 }

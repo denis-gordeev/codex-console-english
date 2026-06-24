@@ -207,7 +207,7 @@ class ApiClient {
         } catch (error) {
             // Network error handling
             if (!error.response) {
-                toast.error('Network connection failed; please check your network');
+                toast.error('Failed to connect; please check your connection');
             }
             throw error;
         }

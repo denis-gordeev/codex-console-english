@@ -108,7 +108,7 @@ class TempmailService(BaseEmailService):
             }
             self._email_cache[email] = email_info
 
-            logger.info(f"Tempmail.lol email address created successfully: {email}")
+            logger.info(f"Tempmail.lol email address created: {email}")
             self.update_status(True)
             return email_info
 

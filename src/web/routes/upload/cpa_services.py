@@ -99,7 +99,7 @@ async def get_cpa_service(service_id: int):
 
 @router.get("/{service_id}/full")
 async def get_cpa_service_full(service_id: int):
-    """Get the complete configuration of CPA service (including token)"""
+    """Get the full CPA service config (including token)"""
     with get_db() as db:
         service = crud.get_cpa_service_by_id(db, service_id)
         if not service:
