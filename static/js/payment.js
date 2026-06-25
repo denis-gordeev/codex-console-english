@@ -94,7 +94,7 @@ async function generateLink() {
             ui.showToast(data.detail || 'Failed to generate link', 'error');
         }
     } catch (e) {
-        ui.showToast('Request failed: ' + e.message, 'error');
+        ui.showToast('Failed to make request: ' + e.message, 'error');
     } finally {
         if (btn) { btn.disabled = false; btn.textContent = 'Generate payment link'; }
     }
@@ -140,7 +140,7 @@ async function openIncognito() {
             ui.showToast(data.message || 'Browser not found', 'warning');
         }
     } catch (e) {
-        statusEl.textContent = 'Request failed: ' + e.message;
-        ui.showToast('Request failed', 'error');
+        statusEl.textContent = 'Failed to make request: ' + e.message;
+        ui.showToast('Failed to make request', 'error');
     }
 }

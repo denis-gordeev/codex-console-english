@@ -168,13 +168,13 @@ def _post_form(
 
         if response.status_code != 200:
             raise RuntimeError(
-                f"token exchange failed: {response.status_code}: {response.text}"
+                f"Failed to exchange token: {response.status_code}: {response.text}"
             )
 
         return response.json()
 
     except cffi_requests.RequestsError as e:
-        raise RuntimeError(f"token exchange failed: network error: {e}") from e
+        raise RuntimeError(f"Failed to exchange token: network error: {e}") from e
 
 
 @dataclass(frozen=True)
@@ -251,7 +251,7 @@ def submit_callback_url(
         proxy_url: proxy URL
 
     Returns:
-        A JSON string containing information such as the access token
+        A JSON string containing data such as the access token
 
     Raises:
         RuntimeError: OAuth error
@@ -357,7 +357,7 @@ class OAuthManager:
         return json.loads(result_json)
 
     def extract_account_info(self, id_token: str) -> Dict[str, Any]:
-        """Extract account information from ID Token"""
+        """Extract account details from ID Token"""
         claims = _jwt_claims_no_verify(id_token)
         email = str(claims.get("email") or "").strip()
         auth_claims = claims.get("https://api.openai.com/auth") or {}

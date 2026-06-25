@@ -409,7 +409,7 @@ async def test_email_service(service_id: int):
             logger.error(f"Failed to test email service: {e}")
             return ServiceTestResult(
                 success=False,
-                message=f"Test failed: {str(e)}"
+                message=f"Failed to test: {str(e)}"
             )
 
 
@@ -602,8 +602,8 @@ async def test_tempmail_service(request: TempmailTestRequest):
         if health:
             return {"success": True, "message": "Tempmail connection is working"}
         else:
-            return {"success": False, "message": "Tempmail connection failed"}
+            return {"success": False, "message": "Failed to connect to Tempmail"}
 
     except Exception as e:
         logger.error(f"Failed to test Tempmail: {e}")
-        return {"success": False, "message": f"Test failed: {str(e)}"}
+        return {"success": False, "message": f"Failed to test: {str(e)}"}

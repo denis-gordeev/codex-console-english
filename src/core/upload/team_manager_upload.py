@@ -56,8 +56,8 @@ def upload_to_team_manager(
             timeout=30
         )
         if resp.status_code in (200, 201):
-            return True, "Upload successful"
-        error_msg = f"Upload failed: HTTP {resp.status_code}"
+            return True, "Upload complete"
+        error_msg = f"Failed to upload: HTTP {resp.status_code}"
         try:
             detail = resp.json()
             if isinstance(detail, dict):
@@ -141,10 +141,10 @@ def batch_upload_to_team_manager(
                 for account in valid_accounts:
                     results["success_count"] += 1
                     results["details"].append(
-                        {"id": account.id, "email": account.email, "success": True, "message": "Batch upload successful"}
+                        {"id": account.id, "email": account.email, "success": True, "message": "Batch upload complete"}
                     )
             else:
-                error_msg = f"Batch upload failed: HTTP {resp.status_code}"
+                error_msg = f"Failed to batch upload: HTTP {resp.status_code}"
                 try:
                     detail = resp.json()
                     if isinstance(detail, dict):
@@ -201,4 +201,4 @@ def test_team_manager_connection(api_url: str, api_key: str) -> Tuple[bool, str]
     except cffi_requests.exceptions.Timeout:
         return False, "Connection timed out; check your connection"
     except Exception as e:
-        return False, f"Connection test failed: {str(e)}"
+        return False, f"Failed to test connection: {str(e)}"

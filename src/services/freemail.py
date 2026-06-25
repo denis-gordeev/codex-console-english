@@ -90,7 +90,7 @@ class FreemailService(BaseEmailService):
             response = self.http_client.request(method, url, **kwargs)
 
             if response.status_code >= 400:
-                error_msg = f"Request failed: {response.status_code}"
+                error_msg = f"Failed to make request: HTTP {response.status_code}"
                 try:
                     error_data = response.json()
                     error_msg = f"{error_msg} - {error_data}"
@@ -108,7 +108,7 @@ class FreemailService(BaseEmailService):
             self.update_status(False, e)
             if isinstance(e, EmailServiceError):
                 raise
-            raise EmailServiceError(f"Request failed: {method} {path} - {e}")
+            raise EmailServiceError(f"Failed to make request: {method} {path} - {e}")
 
     def _ensure_domains(self):
         """Get and cache the list of available domains"""

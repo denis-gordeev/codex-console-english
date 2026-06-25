@@ -93,7 +93,7 @@ class TokenInfo:
 
 @dataclass
 class ProviderHealth:
-    """Runtime health information for a provider."""
+    """Runtime health details for a provider."""
     provider_type: ProviderType
     status: ProviderStatus = ProviderStatus.HEALTHY
     failure_count: int = 0                       # Number of consecutive failures

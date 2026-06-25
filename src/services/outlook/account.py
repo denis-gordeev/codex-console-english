@@ -8,7 +8,7 @@ from typing import Dict, Any, Optional
 
 @dataclass
 class OutlookAccount:
-    """Outlook account information"""
+    """Outlook account details"""
     email: str
     password: str = ""
     client_id: str = ""

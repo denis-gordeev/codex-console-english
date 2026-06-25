@@ -154,8 +154,8 @@ OTP_MAX_ATTEMPTS = 40 # Maximum number of polling attempts
 # OTP extraction patterns (enhanced)
 # Simple match: any 6-digit number
 OTP_CODE_SIMPLE_PATTERN = r"(?<!\d)(\d{6})(?!\d)"
-# Semantic matching: OTP with context (e.g., "code is 123456", "verification code 123456")
-OTP_CODE_SEMANTIC_PATTERN = r'(?:code\s+is|verification code[is]?\s*[::]?\s*)(\d{6})'
+# Semantic matching: OTP with context (e.g., "code is 123456", "OTP 123456")
+OTP_CODE_SEMANTIC_PATTERN = r'(?:code\s+is|verification code|OTP)[is]?\s*[::]?\s*)(\d{6})'
 
 # OpenAI verify email sender
 OPENAI_EMAIL_SENDERS = [
@@ -168,7 +168,7 @@ OPENAI_EMAIL_SENDERS = [
 # OpenAI OTP email keywords
 OPENAI_VERIFICATION_KEYWORDS = [
     "verify your email",
-    "verification code",
+    "verification code",  # matches actual email subject wording
     "Verification code",
     "your openai code",
     "code is",
@@ -309,7 +309,7 @@ MAX_PAGE_SIZE = 100
 
 ERROR_MESSAGES = {
     # Common errors
-    "DATABASE_ERROR": "Database operation failed",
+    "DATABASE_ERROR": "Failed to perform database operation",
     "CONFIG_ERROR": "Configuration error",
     "NETWORK_ERROR": "Failed to connect to network",
     "TIMEOUT": "Operation timed out",

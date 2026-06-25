@@ -251,7 +251,7 @@ def check_subscription_status(account: Account, proxy: Optional[str] = None) -> 
     if "plus" in plan.lower():
         return "plus"
 
-    # Try to determine from orgs or workspace information
+    # Try to determine from orgs or workspace details
     orgs = data.get("orgs", {}).get("data", [])
     for org in orgs:
         settings_ = org.get("settings", {})

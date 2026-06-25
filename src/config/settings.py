@@ -41,7 +41,7 @@ class SettingDefinition:
 
 # Definition of all settings (including database key, default value, category, and description)
 SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
-    # Application information
+    # Application details
     "app_name": SettingDefinition(
         db_key="app.name",
         default_value="OpenAI/Codex CLI Auto-Registration System",
@@ -219,7 +219,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         description="JSON field path to extract the proxy URL from (leave blank to use raw response text)"
     ),
 
-    # Registration configuration
+    # Registration settings
     "registration_max_retries": SettingDefinition(
         db_key="registration.max_retries",
         default_value=3,
@@ -585,7 +585,7 @@ class Settings(BaseModel):
     Application configuration -- fully backed by database storage
     """
 
-    # Application information
+    # Application details
     app_name: str = "OpenAI/Codex CLI Auto-Registration System"
     app_version: str = "2.0.0"
     debug: bool = False
@@ -659,7 +659,7 @@ class Settings(BaseModel):
 
         return f"{scheme}://{auth}{self.proxy_host}:{self.proxy_port}"
 
-    # Registration configuration
+    # Registration settings
     registration_max_retries: int = 3
     registration_timeout: int = 120
     registration_default_password_length: int = 12

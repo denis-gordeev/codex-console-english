@@ -116,9 +116,9 @@ def upload_to_sub2api(
         )
 
         if response.status_code in (200, 201):
-            return True, f"Successfully uploaded {len(account_items)} accounts"
+            return True, f"Uploaded {len(account_items)} accounts"
 
-        error_msg = f"Upload failed: HTTP {response.status_code}"
+        error_msg = f"Failed to upload: HTTP {response.status_code}"
         try:
             detail = response.json()
             if isinstance(detail, dict):
@@ -221,4 +221,4 @@ def test_sub2api_connection(api_url: str, api_key: str) -> Tuple[bool, str]:
     except cffi_requests.exceptions.Timeout:
         return False, "Connection timed out; check your connection"
     except Exception as e:
-        return False, f"Connection test failed: {str(e)}"
+        return False, f"Failed to test connection: {str(e)}"

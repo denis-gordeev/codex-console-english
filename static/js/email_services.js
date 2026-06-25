@@ -156,7 +156,7 @@ function initEventListeners() {
     elements.cancelEditOutlook.addEventListener('click', () => elements.editOutlookModal.classList.remove('active'));
     elements.editOutlookForm.addEventListener('submit', handleEditOutlook);
 
-    // Temp mail configuration
+    // Temp mail settings
     elements.tempmailForm.addEventListener('submit', handleSaveTempmail);
     elements.testTempmailBtn.addEventListener('click', handleTestTempmail);
 
@@ -378,7 +378,7 @@ async function loadCustomServices() {
     }
 }
 
-// Load temp mail configuration
+// Load temp mail settings
 async function loadTempmailConfig() {
     try {
         const settings = await api.get('/settings');
@@ -409,20 +409,20 @@ async function handleOutlookImport() {
         elements.importResult.style.display = 'block';
         elements.importResult.innerHTML = `
             <div class="import-stats">
-                <span>✅ Successful import: <strong>${result.success || 0}</strong></span>
+                <span>✅ Imported: <strong>${result.success || 0}</strong></span>
                 <span>❌ Failed: <strong>${result.failed || 0}</strong></span>
             </div>
             ${result.errors?.length ? `<div class="import-errors" style="margin-top: var(--spacing-sm);"><strong>Error details:</strong><ul>${result.errors.map(e => `<li>${escapeHtml(e)}</li>`).join('')}</ul></div>` : ''}
         `;
 
         if (result.success > 0) {
-            toast.success(`Successfully imported ${result.success} accounts`);
+            toast.success(`Imported ${result.success} accounts`);
             loadOutlookServices();
             loadStats();
             elements.outlookImportData.value = '';
         }
     } catch (error) {
-        toast.error('Import failed: ' + error.message);
+        toast.error('Failed to import: ' + error.message);
     } finally {
         elements.outlookImportBtn.disabled = false;
         elements.outlookImportBtn.textContent = '📥 Start importing';
@@ -515,9 +515,9 @@ async function testService(id) {
     try {
         const result = await api.post(`/email-services/${id}/test`);
         if (result.success) toast.success('Test successful');
-        else toast.error('Test failed: ' + (result.error || 'Unknown error'));
+        else toast.error('Failed to test: ' + (result.error || 'Unknown error'));
     } catch (error) {
-        toast.error('Test failed: ' + error.message);
+        toast.error('Failed to test: ' + error.message);
     }
 }
 
@@ -548,7 +548,7 @@ async function handleBatchDeleteOutlook() {
             method: 'DELETE',
             body: Array.from(selectedOutlook)
         });
-        toast.success(`Successfully deleted ${result.deleted || selectedOutlook.size} accounts`);
+        toast.success(`Deleted ${result.deleted || selectedOutlook.size} accounts`);
         selectedOutlook.clear();
         loadOutlookServices();
         loadStats();
@@ -557,7 +557,7 @@ async function handleBatchDeleteOutlook() {
     }
 }
 
-// Save temp mail configuration
+// Save temp mail settings
 async function handleSaveTempmail(e) {
     e.preventDefault();
     try {
@@ -565,7 +565,7 @@ async function handleSaveTempmail(e) {
             api_url: elements.tempmailApi.value,
             enabled: elements.tempmailEnabled.checked
         });
-        toast.success('Configuration saved');
+        toast.success('Settings saved');
     } catch (error) {
         toast.error('Failed to save: ' + error.message);
     }
@@ -582,7 +582,7 @@ async function handleTestTempmail() {
         if (result.success) toast.success('The temp mail connection is normal');
         else toast.error('Failed to connect: ' + (result.error || 'Unknown error'));
     } catch (error) {
-        toast.error('Test failed: ' + error.message);
+        toast.error('Failed to test: ' + error.message);
     } finally {
         elements.testTempmailBtn.disabled = false;
         elements.testTempmailBtn.textContent = '🔌 Test connection';

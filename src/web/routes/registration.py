@@ -435,7 +435,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                                         saved_account.cpa_uploaded = True
                                         saved_account.cpa_uploaded_at = datetime.utcnow()
                                         db.commit()
-                                        log_callback(f"[CPA] Upload successful: {_svc.name}")
+                                        log_callback(f"[CPA] Upload complete: {_svc.name}")
                                     else:
                                         log_callback(f"[CPA] upload failed ({_svc.name}): {_msg}")
                                 except Exception as _e:

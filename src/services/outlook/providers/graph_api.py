@@ -156,7 +156,7 @@ class GraphAPIProvider(OutlookProvider):
             if resp.status_code != 200:
                 error_body = resp.text[:200]
                 self.record_failure(f"HTTP {resp.status_code}: {error_body}")
-                logger.error(f"[{self.account.email}] Graph API request failed: HTTP {resp.status_code}")
+                logger.error(f"[{self.account.email}] Failed to make Graph API request: HTTP {resp.status_code}")
                 return []
 
             data = resp.json()

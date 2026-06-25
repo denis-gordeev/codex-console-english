@@ -91,7 +91,7 @@ class TokenRefreshManager:
             )
 
             if response.status_code != 200:
-                result.error_message = f"Session token refresh failed: HTTP {response.status_code}"
+                result.error_message = f"Failed to refresh session token: HTTP {response.status_code}"
                 logger.warning(result.error_message)
                 return result
 
@@ -100,7 +100,7 @@ class TokenRefreshManager:
             # Extract access_token
             access_token = data.get("accessToken")
             if not access_token:
-                result.error_message = "Session token refresh failed: accessToken not found"
+                result.error_message = "Failed to refresh session token: accessToken not found"
                 logger.warning(result.error_message)
                 return result
 
@@ -167,7 +167,7 @@ class TokenRefreshManager:
             )
 
             if response.status_code != 200:
-                result.error_message = f"OAuth token refresh failed: HTTP {response.status_code}"
+                result.error_message = f"Failed to refresh OAuth token: HTTP {response.status_code}"
                 logger.warning(f"{result.error_message}, response: {response.text[:200]}")
                 return result
 
@@ -179,7 +179,7 @@ class TokenRefreshManager:
             expires_in = data.get("expires_in", 3600)
 
             if not access_token:
-                result.error_message = "OAuth token refresh failed: access_token not found"
+                result.error_message = "Failed to refresh OAuth token: access_token not found"
                 logger.warning(result.error_message)
                 return result
 
@@ -266,7 +266,7 @@ class TokenRefreshManager:
             elif response.status_code == 403:
                 return False, "Account may be banned"
             else:
-                return False, f"Authentication failed: HTTP {response.status_code}"
+                return False, f"Failed to authenticate: HTTP {response.status_code}"
 
         except Exception as e:
             return False, f"Validation error: {str(e)}"

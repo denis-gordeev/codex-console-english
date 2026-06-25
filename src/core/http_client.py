@@ -132,7 +132,7 @@ class HTTPClient:
             except (cffi_requests.RequestsError, ConnectionError, TimeoutError) as e:
                 last_exception = e
                 logger.warning(
-                    f"Request failed: {method} {url} (attempt {attempt + 1}/{self.config.max_retries}): {e}"
+                    f"Failed to make request: {method} {url} (attempt {attempt + 1}/{self.config.max_retries}): {e}"
                 )
 
                 if attempt < self.config.max_retries - 1:
@@ -141,7 +141,7 @@ class HTTPClient:
                     break
 
         raise HTTPClientError(
-            f"Request failed: maximum retries reached for {method} {url} - {last_exception}"
+            f"Failed to make request: maximum retries reached for {method} {url} - {last_exception}"
         )
 
     def get(self, url: str, **kwargs) -> Response:
@@ -348,7 +348,7 @@ class OpenAIHTTPClient(HTTPClient):
                 return {"raw_response": response.text}
 
         except cffi_requests.RequestsError as e:
-            raise HTTPClientError(f"OpenAI request failed: {endpoint} - {e}")
+            raise HTTPClientError(f"Failed to make OpenAI request: {endpoint} - {e}")
 
     def check_sentinel(self, did: str, proxies: Optional[Dict] = None) -> Optional[str]:
         """

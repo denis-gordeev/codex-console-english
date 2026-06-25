@@ -463,7 +463,7 @@ class RegistrationEngine:
 
         self._log("Verifying the login code...")
         if not self._validate_verification_code(code):
-            result.error_message = "OTP validation failed"
+            result.error_message = "Failed to validate OTP"
             return False
 
         self._log("Fetching Workspace ID...")
@@ -560,7 +560,7 @@ class RegistrationEngine:
 
             if response.status_code != 200:
                 error_text = response.text[:500]
-                self._log(f"Password registration failed: {error_text}", "warning")
+                self._log(f"Failed to register with password: {error_text}", "warning")
 
                 # Parse the error message to check if the email address is already registered
                 try:
@@ -581,7 +581,7 @@ class RegistrationEngine:
             return True, password
 
         except Exception as e:
-            self._log(f"Password registration failed: {e}", "error")
+            self._log(f"Failed to register with password: {e}", "error")
             return False, None
 
     def _mark_email_as_registered(self):
@@ -693,7 +693,7 @@ class RegistrationEngine:
             self._log(f"Account creation status: {response.status_code}")
 
             if response.status_code != 200:
-                self._log(f"Account creation failed: {response.text[:200]}", "warning")
+                self._log(f"Failed to create account: {response.text[:200]}", "warning")
                 return False
 
             return True
@@ -890,7 +890,7 @@ class RegistrationEngine:
                 result.error_message = "Failed to get Device ID"
                 return result
             if not sen_token:
-                result.error_message = "Sentinel POW challenge failed"
+                result.error_message = "Failed to complete Sentinel POW challenge"
                 return result
 
             # 4. Submit the registration email address
@@ -906,7 +906,7 @@ class RegistrationEngine:
                 self._log("5. Setting account password...")
                 password_ok, _ = self._register_password()
                 if not password_ok:
-                    result.error_message = "Password registration failed"
+                    result.error_message = "Failed to register with password"
                     return result
 
                 self._log("6. Send registration OTP...")
@@ -981,7 +981,7 @@ class RegistrationEngine:
             settings = get_settings()
 
             with get_db() as db:
-                # Save account information
+                # Save account details
                 account = crud.create_account(
                     db,
                     email=result.email,

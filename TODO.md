@@ -1,5 +1,21 @@
 # TODO
 
+## Completed In This Round (June 25, 2026 - Round 47)
+
+- Pulled `origin/main` - repository was already up to date.
+- Deep scan found ~118 remaining translation artifacts (Chinese-English calques, "X failed" patterns, "configuration"/"information" overuse, "successfully" suffix) that previous rounds had missed.
+- Replaced all "X failed" → "Failed to X" Chinese-English pattern across Python backend (~43 occurrences in cpa_upload.py, team_manager_upload.py, sub2api_upload.py, moe_mail.py, tempmail.py, temp_mail.py, freemail.py, duck_mail.py, graph_api.py, token_refresh.py, oauth.py, http_client.py, register.py, email.py routes, settings.py routes, constants.py).
+- Replaced all "X failed" → "Failed to X" across JS frontend (~29 occurrences in settings.js, email_services.js, accounts.js, payment.js, app.js).
+- Replaced "configuration" → "settings" in UI context comments and labels across settings.py, settings.js, email_services.js (13 occurrences).
+- Replaced "information" → "details"/"data" across settings.py, oauth.py, register.py, outlook/account.py, outlook/base.py, outlook_legacy_mail.py, crud.py, payment.py, settings.py routes, service.py, app.js (14 occurrences).
+- Replaced "X successful" / "Successfully X" → simple past tense across cpa_upload.py, team_manager_upload.py, sub2api_upload.py, registration.py routes, email_services.js, accounts.js (11 occurrences).
+- Replaced "execute" → "run" in app.js batch task messages (2 occurrences).
+- Replaced "Server returns exception status code" → "Server returned error status code" in cpa_upload.py (1 occurrence).
+- Updated OTP regex pattern to also match "OTP" keyword alongside "verification code" in constants.py.
+- Added clarifying comments to "verification code" keyword entries that must remain because they match actual OpenAI email content.
+- Updated test assertions in test_cpa_upload.py to match new "Upload complete" message.
+- Verified all 32 tests pass successfully (pytest on Python 3.10 via .venv).
+
 ## Completed In This Round (June 19, 2026 - Round 46)
 
 - Pulled `origin/main` - repository was already up to date.

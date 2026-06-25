@@ -111,7 +111,7 @@ function initTabs() {
 
 // Event listening
 function initEventListeners() {
-    // Registration configuration form
+    // Registration settings form
     if (elements.registrationForm) {
         elements.registrationForm.addEventListener('submit', handleSaveRegistration);
     }
@@ -325,14 +325,14 @@ async function loadSettings() {
         document.getElementById('dynamic-proxy-api-key-header').value = data.proxy?.dynamic_api_key_header || 'X-API-Key';
         document.getElementById('dynamic-proxy-result-field').value = data.proxy?.dynamic_result_field || '';
 
-        // Register configuration
+        // Registration settings
         document.getElementById('max-retries').value = data.registration?.max_retries || 3;
         document.getElementById('timeout').value = data.registration?.timeout || 120;
         document.getElementById('password-length').value = data.registration?.default_password_length || 12;
         document.getElementById('sleep-min').value = data.registration?.sleep_min || 5;
         document.getElementById('sleep-max').value = data.registration?.sleep_max || 30;
 
-        // OTP retrieval configuration
+        // OTP retrieval settings
         if (data.email_code) {
             document.getElementById('email-code-timeout').value = data.email_code.timeout || 120;
             document.getElementById('email-code-poll-interval').value = data.email_code.poll_interval || 3;
@@ -463,7 +463,7 @@ async function loadDatabaseInfo() {
     }
 }
 
-// Save registration configuration
+// Save registration settings
 async function handleSaveRegistration(e) {
     e.preventDefault();
 
@@ -483,7 +483,7 @@ async function handleSaveRegistration(e) {
     }
 }
 
-// Save OTP retrieval configuration
+// Save OTP retrieval settings
 async function handleSaveEmailCode(e) {
     e.preventDefault();
 
@@ -549,7 +549,7 @@ async function handleCleanup() {
     }
 }
 
-// Load service configuration fields
+// Load service settings fields
 async function loadServiceConfigFields(serviceType) {
     try {
         const data = await api.get('/email-services/types');
@@ -573,7 +573,7 @@ async function loadServiceConfigFields(serviceType) {
         `).join('');
 
     } catch (error) {
-        console.error('Failed to load configuration fields:', error);
+        console.error('Failed to load settings fields:', error);
     }
 }
 
@@ -617,7 +617,7 @@ async function testService(id) {
             toast.warning('Failed to connect to service: ' + data.message);
         }
     } catch (error) {
-        toast.error('Test failed: ' + error.message);
+        toast.error('Failed to test: ' + error.message);
     }
 }
 
@@ -742,7 +742,7 @@ async function handleOutlookBatchImport() {
         loadEmailServices();
 
     } catch (error) {
-        toast.error('Import failed: ' + error.message);
+        toast.error('Failed to import: ' + error.message);
     } finally {
         elements.outlookImportBtn.disabled = false;
         elements.outlookImportBtn.textContent = '📥 Start importing';
@@ -929,7 +929,7 @@ async function testProxyItem(id) {
             toast.error(result.message);
         }
     } catch (error) {
-        toast.error('Test failed: ' + error.message);
+        toast.error('Failed to test: ' + error.message);
     }
 }
 
@@ -969,7 +969,7 @@ async function handleTestAllProxies() {
         toast.info(`Test completed: successful ${result.success}, failed ${result.failed}`);
         loadProxies();
     } catch (error) {
-        toast.error('Test failed: ' + error.message);
+        toast.error('Failed to test: ' + error.message);
     } finally {
         elements.testAllProxiesBtn.disabled = false;
         elements.testAllProxiesBtn.textContent = '🔌 Test all';
@@ -1048,7 +1048,7 @@ async function handleTestDynamicProxy() {
             toast.error(result.message);
         }
     } catch (error) {
-        toast.error('Test failed: ' + error.message);
+        toast.error('Failed to test: ' + error.message);
     } finally {
         btn.disabled = false;
         btn.textContent = '🔌 Test dynamic proxy';
@@ -1174,7 +1174,7 @@ async function testTmServiceById(id) {
             toast.error(result.message);
         }
     } catch (e) {
-        toast.error('Test failed: ' + e.message);
+        toast.error('Failed to test: ' + e.message);
     }
 }
 
@@ -1208,7 +1208,7 @@ async function handleTestTmService() {
             toast.error(result.message);
         }
     } catch (e) {
-        toast.error('Test failed: ' + e.message);
+        toast.error('Failed to test: ' + e.message);
     } finally {
         elements.testTmServiceBtn.disabled = false;
         elements.testTmServiceBtn.textContent = '🔌 Test connection';
@@ -1330,7 +1330,7 @@ async function testCpaServiceById(id) {
             toast.error(result.message);
         }
     } catch (e) {
-        toast.error('Test failed: ' + e.message);
+        toast.error('Failed to test: ' + e.message);
     }
 }
 
@@ -1366,7 +1366,7 @@ async function handleTestCpaService() {
             toast.error(result.message);
         }
     } catch (e) {
-        toast.error('Test failed: ' + e.message);
+        toast.error('Failed to test: ' + e.message);
     } finally {
         elements.testCpaServiceBtn.disabled = false;
         elements.testCpaServiceBtn.textContent = '🔌 Test connection';
@@ -1492,7 +1492,7 @@ async function testSub2ApiServiceById(id) {
             toast.error(result.message);
         }
     } catch (e) {
-        toast.error('Test failed: ' + e.message);
+        toast.error('Failed to test: ' + e.message);
     }
 }
 
@@ -1526,7 +1526,7 @@ async function handleTestSub2ApiService() {
             toast.error(result.message);
         }
     } catch (e) {
-        toast.error('Test failed: ' + e.message);
+        toast.error('Failed to test: ' + e.message);
     } finally {
         elements.testSub2ApiServiceBtn.disabled = false;
         elements.testSub2ApiServiceBtn.textContent = '🔌 Test connection';

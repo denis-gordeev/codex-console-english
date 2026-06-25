@@ -88,8 +88,8 @@ class TempmailService(BaseEmailService):
             )
 
             if response.status_code not in (200, 201):
-                self.update_status(False, EmailServiceError(f"Request failed, status code: {response.status_code}"))
-                raise EmailServiceError(f"Tempmail.lol request failed, status code: {response.status_code}")
+                self.update_status(False, EmailServiceError(f"Failed to make request, status code: {response.status_code}"))
+                raise EmailServiceError(f"Failed to make Tempmail.lol request, status code: {response.status_code}")
 
             data = response.json()
             email = str(data.get("address", "")).strip()

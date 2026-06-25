@@ -173,7 +173,7 @@ async def test_dynamic_proxy(request: DynamicProxySettings):
     )
 
     if not proxy_url:
-        return {"success": False, "message": "Dynamic proxy API returned an empty response, or the request failed"}
+        return {"success": False, "message": "Dynamic proxy API returned an empty response, or failed to make the request"}
 
     # Test connectivity using the retrieved proxy
     import time
@@ -192,9 +192,9 @@ async def test_dynamic_proxy(request: DynamicProxySettings):
             ip = resp.json().get("ip", "")
             return {"success": True, "proxy_url": proxy_url, "ip": ip, "response_time": elapsed,
                     "message": f"Dynamic proxy is available, outgoing IP: {ip}, response time: {elapsed}ms"}
-        return {"success": False, "proxy_url": proxy_url, "message": f"Proxy connection failed: HTTP {resp.status_code}"}
+        return {"success": False, "proxy_url": proxy_url, "message": f"Failed to connect to proxy: HTTP {resp.status_code}"}
     except Exception as e:
-        return {"success": False, "proxy_url": proxy_url, "message": f"Proxy connection failed: {e}"}
+        return {"success": False, "proxy_url": proxy_url, "message": f"Failed to connect to proxy: {e}"}
 
 
 @router.get("/registration")
@@ -244,7 +244,7 @@ async def update_webui_settings(request: WebUISettings):
 
 @router.get("/database")
 async def get_database_info():
-    """Get database information"""
+    """Get database details"""
     settings = get_settings()
 
     import os
@@ -603,7 +603,7 @@ async def test_proxy_item(proxy_id: int):
         except Exception as e:
             return {
                 "success": False,
-                "message": f"Proxy connection failed: {str(e)}"
+                "message": f"Failed to connect to proxy: {str(e)}"
             }
 
 

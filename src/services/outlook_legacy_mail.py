@@ -49,7 +49,7 @@ logger = logging.getLogger(__name__)
 
 
 class OutlookAccount:
-    """Outlook account information"""
+    """Outlook account details"""
 
     def __init__(
         self,
@@ -432,7 +432,7 @@ class OutlookService(BaseEmailService):
             Dictionary containing email data:
             - email: email address
             - service_id: account email (same as email)
-            - account: account information
+            - account: account details
         """
         if not self.accounts:
             self.update_status(False, EmailServiceError("No Outlook account available"))
@@ -625,7 +625,7 @@ class OutlookService(BaseEmailService):
     def _is_oai_mail(self, mail: Dict[str, Any]) -> bool:
         """Check if an email is OpenAI-related (old method, kept for backward compatibility)"""
         combined = f"{mail.get('from', '')} {mail.get('subject', '')} {mail.get('body', '')}".lower()
-        keywords = ["openai", "chatgpt", "verification", "verification code", "code"]
+        keywords = ["openai", "chatgpt", "verification", "verification code", "code"]  # "verification code" matches actual email text
         return any(keyword in combined for keyword in keywords)
 
     def _is_openai_verification_mail(

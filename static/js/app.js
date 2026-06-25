@@ -396,7 +396,7 @@ function handleServiceChange(e) {
         elements.regModeGroup.style.display = 'block';
     }
 
-    // Display service information
+    // Display service details
     if (type === 'outlook') {
         const service = availableServices.outlook.services.find(s => s.id == id);
         if (service) {
@@ -1283,8 +1283,8 @@ function connectBatchWebSocket(batchId) {
                                 toast.warning('Outlook batch registration completed, but no accounts were registered');
                             }
                         } else if (data.status === 'failed') {
-                            addLog('error', '[Error] Failed to execute batch task');
-                            toast.error('Failed to execute batch task');
+                            addLog('error', '[Error] Failed to run batch task');
+                            toast.error('Failed to run batch task');
                         } else if (data.status === 'cancelled' || data.status === 'cancelling') {
                             addLog('warning', '[Warning] Batch task canceled');
                         }

@@ -516,7 +516,7 @@ async function handleBatchRefresh() {
 
     try {
         const result = await api.post('/accounts/batch-refresh', buildBatchPayload());
-        toast.success(`Successfully refreshed ${result.success_count} items, failed ${result.failed_count} items`);
+        toast.success(`Refreshed ${result.success_count} items, ${result.failed_count} failed`);
         loadAccounts();
     } catch (error) {
         toast.error('Failed to batch-refresh: ' + error.message);
@@ -677,7 +677,7 @@ async function handleBatchDelete() {
 
     try {
         const result = await api.post('/accounts/batch-delete', buildBatchPayload());
-        toast.success(`Successfully deleted ${result.deleted_count} accounts`);
+        toast.success(`Deleted ${result.deleted_count} accounts`);
         selectedAccounts.clear();
         selectAllPages = false;
         loadStats();
@@ -707,7 +707,7 @@ async function exportAccounts(format) {
         });
 
         if (!response.ok) {
-            throw new Error(`Export failed: HTTP ${response.status}`);
+            throw new Error(`Failed to export: HTTP ${response.status}`);
         }
 
         // Get file content
@@ -735,8 +735,8 @@ async function exportAccounts(format) {
 
         toast.success('Export successful');
     } catch (error) {
-        console.error('Export failed:', error);
-        toast.error('Export failed: ' + error.message);
+        console.error('Failed to export:', error);
+        toast.error('Failed to export: ' + error.message);
     }
 }
 
@@ -870,10 +870,10 @@ async function uploadToCpa(id) {
             toast.success('Upload successful');
             loadAccounts();
         } else {
-            toast.error('Upload failed: ' + (result.error || 'Unknown error'));
+            toast.error('Failed to upload: ' + (result.error || 'Unknown error'));
         }
     } catch (error) {
-        toast.error('Upload failed: ' + error.message);
+        toast.error('Failed to upload: ' + error.message);
     }
 }
 
@@ -903,7 +903,7 @@ async function handleBatchUploadCpa() {
         toast.success(message);
         loadAccounts();
     } catch (error) {
-        toast.error('Batch upload failed: ' + error.message);
+        toast.error('Failed to batch upload: ' + error.message);
     } finally {
         updateBatchButtons();
     }
@@ -1048,7 +1048,7 @@ async function handleBatchUploadSub2Api() {
         toast.success(message);
         loadAccounts();
     } catch (error) {
-        toast.error('Batch upload failed: ' + error.message);
+        toast.error('Failed to batch upload: ' + error.message);
     } finally {
         updateBatchButtons();
     }
@@ -1069,10 +1069,10 @@ async function uploadToSub2Api(id) {
             toast.success('Upload successful');
             loadAccounts();
         } else {
-            toast.error('Upload failed: ' + (result.error || result.message || 'Unknown error'));
+            toast.error('Failed to upload: ' + (result.error || result.message || 'Unknown error'));
         }
     } catch (e) {
-        toast.error('Upload failed: ' + e.message);
+        toast.error('Failed to upload: ' + e.message);
     }
 }
 
@@ -1155,10 +1155,10 @@ async function uploadToTm(id) {
         if (result.success) {
             toast.success('Upload successful');
         } else {
-            toast.error('Upload failed: ' + (result.message || 'Unknown error'));
+            toast.error('Failed to upload: ' + (result.message || 'Unknown error'));
         }
     } catch (e) {
-        toast.error('Upload failed: ' + e.message);
+        toast.error('Failed to upload: ' + e.message);
     }
 }
 
@@ -1186,7 +1186,7 @@ async function handleBatchUploadTm() {
         toast.success(message);
         loadAccounts();
     } catch (e) {
-        toast.error('Batch upload failed: ' + e.message);
+        toast.error('Failed to batch upload: ' + e.message);
     } finally {
         updateBatchButtons();
     }

@@ -239,7 +239,7 @@ class OutlookService(BaseEmailService):
                         emails = provider.get_recent_emails(count, only_unseen)
 
                         if emails:
-                            # Get email successfully
+                            # Emails retrieved
                             self.health_checker.record_success(provider_type)
                             logger.debug(
                                 f"[{account.email}] {provider_type.value} got {len(emails)} emails"

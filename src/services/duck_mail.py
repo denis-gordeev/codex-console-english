@@ -96,7 +96,7 @@ class DuckMailService(BaseEmailService):
         try:
             response = self.http_client.request(method, url, **kwargs)
             if response.status_code >= 400:
-                error_message = f"API request failed: {response.status_code}"
+                error_message = f"Failed to make API request: HTTP {response.status_code}"
                 try:
                     error_payload = response.json()
                     error_message = f"{error_message} - {error_payload}"
@@ -112,7 +112,7 @@ class DuckMailService(BaseEmailService):
             self.update_status(False, e)
             if isinstance(e, EmailServiceError):
                 raise
-            raise EmailServiceError(f"Request failed: {method} {path} - {e}")
+            raise EmailServiceError(f"Failed to make request: {method} {path} - {e}")
 
     def _generate_local_part(self) -> str:
         first = random.choice(string.ascii_lowercase)

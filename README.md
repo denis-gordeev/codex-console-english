@@ -117,6 +117,13 @@ This repository keeps the original structure and overall approach, while applyin
 - Replaced "skip repeated registration" → "skip duplicate registration" in task manager.
 - Replaced various stilted JS patterns ("page reactivated" → "Page became visible again", "Batch detection" → "Batch subscription check", etc.).
 
+- Replaced all "X failed" with "Failed to X" across Python backend and JS frontend (~72 occurrences) for standard English verb order.
+- Replaced "configuration" with "settings" in UI context comments and labels (13 occurrences).
+- Replaced "information" with "details"/"data" across docstrings, log messages, and comments (14 occurrences).
+- Replaced "X successful" / "Successfully X" with simple past tense (11 occurrences).
+- Replaced "execute" with "run" in batch task messages (2 occurrences).
+- Fixed "Server returns exception status code" → "Server returned error status code" calque.
+
 ### Next Iterations
 
 - Continue polishing wording consistency in logs, tests, and low-traffic routes.

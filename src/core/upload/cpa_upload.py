@@ -46,7 +46,7 @@ def _build_cpa_headers(api_token: str, content_type: Optional[str] = None) -> di
 
 
 def _extract_cpa_error(response) -> str:
-    error_msg = f"Upload failed: HTTP {response.status_code}"
+    error_msg = f"Failed to upload: HTTP {response.status_code}"
     try:
         error_detail = response.json()
         if isinstance(error_detail, dict):
@@ -153,7 +153,7 @@ def upload_to_cpa(
         )
 
         if response.status_code in (200, 201):
-            return True, "Upload successful"
+            return True, "Upload complete"
 
         if response.status_code in (404, 405, 415):
             logger.warning("CPA multipart upload failed, try original JSON fallback: %s", response.status_code)
@@ -164,7 +164,7 @@ def upload_to_cpa(
                 effective_token,
             )
             if fallback_response.status_code in (200, 201):
-                return True, "Upload successful"
+                return True, "Upload complete"
             response = fallback_response
 
         return False, _extract_cpa_error(response)
@@ -292,11 +292,11 @@ def test_cpa_connection(api_url: str, api_token: str, proxy: str = None) -> Tupl
         if response.status_code == 503:
             return False, "Connection successful, but server authentication manager is unavailable"
 
-        return False, f"The server returns exception status code: {response.status_code}"
+        return False, f"Server returned error status code: {response.status_code}"
 
     except cffi_requests.exceptions.ConnectionError as e:
         return False, f"Unable to connect to server: {str(e)}"
     except cffi_requests.exceptions.Timeout:
         return False, "Connection timed out; check your connection"
     except Exception as e:
-        return False, f"Connection test failed: {str(e)}"
+        return False, f"Failed to test connection: {str(e)}"

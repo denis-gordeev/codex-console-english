@@ -133,7 +133,7 @@ class MeoMailEmailService(BaseEmailService):
                 response = self.http_client.request(method, url, **kwargs)
 
             if response.status_code >= 400:
-                error_msg = f"API request failed: {response.status_code}"
+                error_msg = f"API request failed: HTTP {response.status_code}"
                 try:
                     error_data = response.json()
                     error_msg = f"{error_msg} - {error_data}"
@@ -153,7 +153,7 @@ class MeoMailEmailService(BaseEmailService):
             self.update_status(False, e)
             if isinstance(e, EmailServiceError):
                 raise
-            raise EmailServiceError(f"API request failed: {method} {endpoint} - {e}")
+            raise EmailServiceError(f"Failed to make API request: {method} {endpoint} - {e}")
 
     def get_config(self, force_refresh: bool = False) -> Dict[str, Any]:
         """Get system configuration
@@ -517,7 +517,7 @@ class MeoMailEmailService(BaseEmailService):
             return None
 
     def get_service_info(self) -> Dict[str, Any]:
-        """Get service information"""
+        """Get service details"""
         config = self.get_config()
         return {
             "service_type": self.service_type.value,

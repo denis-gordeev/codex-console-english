@@ -101,7 +101,7 @@ def update_account(
     account_id: int,
     **kwargs
 ) -> Optional[Account]:
-    """Update account information"""
+    """Update account details"""
     db_account = get_account_by_id(db, account_id)
     if not db_account:
         return None
