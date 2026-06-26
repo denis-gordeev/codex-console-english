@@ -471,7 +471,7 @@ async function handleStartRegistration(e) {
     // Clear the log
     elements.consoleLog.innerHTML = '';
 
-    // Build request data (the proxy automatically gets it from settings)
+    // Build request data (proxy is fetched automatically from settings)
     const requestData = {
         email_service_type: emailServiceType,
         auto_upload_cpa: elements.autoUploadCpa ? elements.autoUploadCpa.checked : false,
@@ -832,11 +832,11 @@ function startBatchPolling(batchId) {
                     toastShown = true;
                     addLog('info', `[Done] Batch task completed! Succeeded: ${data.success}, Failed: ${data.failed}`);
                     if (data.success > 0) {
-                        toast.success(`Batch registration completed, ${data.success} successful`);
+                        toast.success(`Batch registration done: ${data.success} succeeded`);
                         // Refresh the account list
                         loadRecentAccounts();
                     } else {
-                        toast.warning('Batch registration completed, but no accounts were registered');
+                        toast.warning('Batch registration finished with no accounts registered');
                     }
                 }
             }
@@ -1277,10 +1277,10 @@ function connectBatchWebSocket(batchId) {
                         if (data.status === 'completed') {
                             addLog('success', `[Done] Outlook batch task completed! Succeeded: ${data.success}, Failed: ${data.failed}, Skipped: ${data.skipped || 0}`);
                             if (data.success > 0) {
-                                toast.success(`Outlook batch registration completed, ${data.success} successful`);
+                                toast.success(`Outlook batch registration done: ${data.success} succeeded`);
                                 loadRecentAccounts();
                             } else {
-                                toast.warning('Outlook batch registration completed, but no accounts were registered');
+                                toast.warning('Outlook batch registration finished with no accounts registered');
                             }
                         } else if (data.status === 'failed') {
                             addLog('error', '[Error] Failed to run batch task');
@@ -1392,10 +1392,10 @@ function startOutlookBatchPolling(batchId) {
                     toastShown = true;
                     addLog('info', `[Done] Outlook batch task completed! Succeeded: ${data.success}, Failed: ${data.failed}, Skipped: ${data.skipped || 0}`);
                     if (data.success > 0) {
-                        toast.success(`Outlook batch registration completed, ${data.success} successful`);
+                        toast.success(`Outlook batch registration done: ${data.success} succeeded`);
                         loadRecentAccounts();
                     } else {
-                        toast.warning('Outlook batch registration completed, but no accounts were registered');
+                        toast.warning('Outlook batch registration finished with no accounts registered');
                     }
                 }
             }

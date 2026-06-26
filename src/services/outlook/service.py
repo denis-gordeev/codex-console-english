@@ -227,7 +227,7 @@ class OutlookService(BaseEmailService):
             # Check if the provider is available
             if not self.health_checker.is_available(provider_type):
                 logger.debug(
-                    f"[{account.email}] {provider_type.value} is not available, skip"
+                    f"[{account.email}] {provider_type.value} is not available, skipping"
                 )
                 continue
 

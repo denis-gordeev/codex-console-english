@@ -834,7 +834,7 @@ async def batch_upload_accounts_to_sub2api(request: BatchSub2ApiUploadRequest):
                 api_key = svcs[0].api_key
 
     if not api_url or not api_key:
-        raise HTTPException(status_code=400, detail="No available Sub2API service found; please configure it in Settings first")
+        raise HTTPException(status_code=400, detail="No Sub2API service found; please configure it in Settings first")
 
     with get_db() as db:
         ids = resolve_account_ids(
@@ -875,14 +875,14 @@ async def upload_account_to_sub2api(account_id: int, request: Optional[Sub2ApiUp
                 api_key = svcs[0].api_key
 
     if not api_url or not api_key:
-        raise HTTPException(status_code=400, detail="No available Sub2API service found; please configure it in Settings first")
+        raise HTTPException(status_code=400, detail="No Sub2API service found; please configure it in Settings first")
 
     with get_db() as db:
         account = crud.get_account_by_id(db, account_id)
         if not account:
             raise HTTPException(status_code=404, detail="Account not found")
         if not account.access_token:
-            return {"success": False, "error": "This account has no token and cannot be uploaded"}
+            return {"success": False, "error": "Account has no token; cannot upload"}
 
         success, message = upload_to_sub2api(
             [account], api_url, api_key,
@@ -921,7 +921,7 @@ async def batch_upload_accounts_to_tm(request: BatchUploadTMRequest):
             svc = svcs[0] if svcs else None
 
         if not svc:
-            raise HTTPException(status_code=400, detail="No available Team Manager service found; please configure it in Settings first")
+            raise HTTPException(status_code=400, detail="No Team Manager service found; please configure it in Settings first")
 
         api_url = svc.api_url
         api_key = svc.api_key
@@ -949,7 +949,7 @@ async def upload_account_to_tm(account_id: int, request: Optional[UploadTMReques
             svc = svcs[0] if svcs else None
 
         if not svc:
-            raise HTTPException(status_code=400, detail="No available Team Manager service found; please configure it in Settings first")
+            raise HTTPException(status_code=400, detail="No Team Manager service found; please configure it in Settings first")
 
         api_url = svc.api_url
         api_key = svc.api_key
@@ -1047,7 +1047,7 @@ async def get_account_inbox_code(account_id: int):
 
         config = _build_inbox_config(db, service_type, account.email)
         if config is None:
-            return {"success": False, "error": "No available email service found"}
+            return {"success": False, "error": "No email service found"}
 
         try:
             svc = EmailServiceFactory.create(service_type, config)

@@ -150,7 +150,7 @@ class GraphAPIProvider(OutlookProvider):
                 if self._token_manager:
                     self._token_manager.clear_cache()
                 self._connected = False
-                logger.warning(f"[{self.account.email}] Graph API returns 401, client_id may not have Graph permission, skip")
+                logger.warning(f"[{self.account.email}] Graph API returned 401; client_id may not have Graph permission, skipping")
                 return []
 
             if resp.status_code != 200:

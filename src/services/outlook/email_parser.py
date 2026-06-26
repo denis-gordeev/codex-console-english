@@ -148,7 +148,7 @@ class EmailParser:
             # Timestamp filtering
             if min_timestamp > 0 and email.received_timestamp > 0:
                 if email.received_timestamp < min_timestamp:
-                    logger.debug(f"Skip old emails: {email.subject[:50]}")
+                    logger.debug(f"Skipping old email: {email.subject[:50]}")
                     continue
 
             # Check if it is an OpenAI verification email

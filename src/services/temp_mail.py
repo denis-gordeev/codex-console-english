@@ -239,7 +239,7 @@ class TempMailService(BaseEmailService):
             jwt = response.get("jwt", "").strip()
 
             if not address:
-                raise EmailServiceError(f"API return data is incomplete: {response}")
+                raise EmailServiceError(f"API response is incomplete: {response}")
 
             email_info = {
                 "email": address,
@@ -365,7 +365,7 @@ class TempMailService(BaseEmailService):
             response = self._make_request("GET", "/admin/mails", params=params)
             mails = response.get("results", [])
             if not isinstance(mails, list):
-                raise EmailServiceError(f"API return data format error: {response}")
+                raise EmailServiceError(f"API response format error: {response}")
 
             emails: List[Dict[str, Any]] = []
             for mail in mails:

@@ -191,7 +191,7 @@ async def upload_accounts_to_sub2api(request: Sub2ApiUploadRequest):
             svc = svcs[0] if svcs else None
 
         if not svc:
-            raise HTTPException(status_code=400, detail="No available Sub2API service found")
+            raise HTTPException(status_code=400, detail="No Sub2API service found")
 
         api_url = svc.api_url
         api_key = svc.api_key

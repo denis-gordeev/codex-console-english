@@ -83,7 +83,7 @@ def solve_sentinel_pow(
         if digest[:prefix_length] <= target:
             return encoded.decode("ascii")
 
-    raise SentinelPOWError(f"failed to solve sentinel pow after {max_iterations} attempts")
+    raise SentinelPOWError(f"Failed to solve Sentinel POW after {max_iterations} attempts")
 
 
 def build_sentinel_pow_token(

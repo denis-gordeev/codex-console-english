@@ -1,5 +1,36 @@
 # TODO
 
+## Completed In This Round (June 26, 2026 - Round 51)
+
+- Pulled `origin/main` - repository was already up to date.
+- Verified zero remaining CJK/Cyrillic characters in all tracked files.
+- Deep scan found ~24 remaining Chinese-English translation artifacts (bare "skip" instead of "skipping", "API return data" calque, "No available X", "Distributed to", lowercase error message, awkward empty-state phrasing) that previous rounds had missed.
+- Replaced bare "skip" → "skipping" in log messages and UI text (8 occurrences):
+  - outlook/service.py: "is not available, skip" → "is not available, skipping"
+  - graph_api.py: "Graph API returns 401, ... skip" → "Graph API returned 401; ... skipping"
+  - email_parser.py: "Skip old emails" → "Skipping old email"
+  - outlook_legacy_mail.py: "Skip old emails" → "Skipping old email"
+  - imap_new.py: "Skip IMAP_NEW" → "Skipping IMAP_NEW"
+  - task_manager.py: "skip duplicate registration" → "skipping duplicate registration" (2 occurrences)
+  - registration.py: "skip upload" → "skipping upload" (2 occurrences)
+- Replaced "API return data" Chinese calque with "API response" in temp_mail.py (2 occurrences):
+  - "API return data format error" → "API response format error"
+  - "API return data is incomplete" → "API response is incomplete"
+- Replaced "Distributed to" → "Dispatch to" in registration.py docstring.
+- Simplified "First try to get it from the proxy list" → "First try the proxy list" in registration.py.
+- Capitalized "failed to solve sentinel pow" → "Failed to solve Sentinel POW" in sentinel.py error message.
+- Standardized "No available X" → "No X" / "No X found" in error messages (7 occurrences in accounts.py, registration.py, sub2api_services.py).
+- Replaced "This account has no token and cannot be uploaded" → "Account has no token; cannot upload" in accounts.py.
+- Replaced "Batch registration completed, N successful" → "Batch registration done: N succeeded" in app.js (3 occurrences).
+- Replaced "completed, but no accounts were registered" → "finished with no accounts registered" in app.js (3 occurrences).
+- Replaced "the proxy automatically gets it from settings" → "proxy is fetched automatically from settings" in app.js.
+- Replaced "skip: N" → "skipped: N" in accounts.js batch status (3 occurrences).
+- Replaced "There is currently no enabled X" → "No enabled X; the first one will be selected automatically" in accounts.js (2 occurrences).
+- Replaced "There is currently no X, click 'Add Service' to add one" → "No X yet. Click 'Add Service' to add one" in settings.js (3 occurrences).
+- Replaced "Click the 'Add Service' button above to add" → "Click 'Add Service' above to add" in settings.js and email_services.js (2 occurrences).
+- Replaced "Click the 'Add Proxy' button to add" → "Click 'Add Proxy' to add" in settings.js.
+- All 32 tests pass.
+
 ## Completed In This Round (June 25, 2026 - Round 47)
 
 - Pulled `origin/main` - repository was already up to date.

@@ -898,7 +898,7 @@ async function handleBatchUploadCpa() {
 
         let message = `Success: ${result.success_count}`;
         if (result.failed_count > 0) message += `, failed: ${result.failed_count}`;
-        if (result.skipped_count > 0) message += `, skip: ${result.skipped_count}`;
+        if (result.skipped_count > 0) message += `, skipped: ${result.skipped_count}`;
 
         toast.success(message);
         loadAccounts();
@@ -976,7 +976,7 @@ function selectSub2ApiService() {
         }
 
         if (services.length === 0) {
-            listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:12px;">There is currently no enabled Sub2API service, the first one will be automatically selected</div>';
+            listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:12px;">No enabled Sub2API service; the first one will be selected automatically</div>';
         } else {
             listEl.innerHTML = services.map(s => `
                 <div class="sub2api-service-item" data-id="${s.id}" style="
@@ -1043,7 +1043,7 @@ async function handleBatchUploadSub2Api() {
 
         let message = `Success: ${result.success_count}`;
         if (result.failed_count > 0) message += `, failed: ${result.failed_count}`;
-        if (result.skipped_count > 0) message += `, skip: ${result.skipped_count}`;
+        if (result.skipped_count > 0) message += `, skipped: ${result.skipped_count}`;
 
         toast.success(message);
         loadAccounts();
@@ -1097,7 +1097,7 @@ function selectTmService() {
         }
 
         if (services.length === 0) {
-            listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:12px;">There is no enabled Team Manager service, the first one will be automatically selected</div>';
+            listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:12px;">No enabled Team Manager service; the first one will be selected automatically</div>';
         } else {
             listEl.innerHTML = services.map(s => `
                 <div class="tm-service-item" data-id="${s.id}" style="
@@ -1182,7 +1182,7 @@ async function handleBatchUploadTm() {
         const result = await api.post('/accounts/batch-upload-tm', payload);
         let message = `Success: ${result.success_count}`;
         if (result.failed_count > 0) message += `, failed: ${result.failed_count}`;
-        if (result.skipped_count > 0) message += `, skip: ${result.skipped_count}`;
+        if (result.skipped_count > 0) message += `, skipped: ${result.skipped_count}`;
         toast.success(message);
         loadAccounts();
     } catch (e) {

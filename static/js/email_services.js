@@ -331,7 +331,7 @@ async function loadCustomServices() {
                         <div class="empty-state">
                             <div class="empty-state-icon">📭</div>
                             <div class="empty-state-title">No custom email service yet</div>
-                            <div class="empty-state-description">Click the "Add Service" button to create a new service</div>
+                            <div class="empty-state-description">Click "Add Service" to create a new service</div>
                         </div>
                     </td>
                 </tr>

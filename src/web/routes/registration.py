@@ -43,7 +43,7 @@ def get_proxy_for_registration(db) -> Tuple[Optional[str], Optional[int]]:
     Returns:
         Tuple[proxy_url, proxy_id]: proxy URL and proxy ID (if from proxy list)
     """
-    # First try to get it from the proxy list
+    # First try the proxy list
     proxy = crud.get_random_proxy(db)
     if proxy:
         return proxy.proxy_url, proxy.id
@@ -384,7 +384,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                         crud.update_registration_task(db, task_uuid, email_service_id=db_service.id)
                         logger.info(f"Use database IMAP email service: {db_service.name}")
                     else:
-                        raise ValueError("No available IMAP email service; please add it on the Email Services page first")
+                        raise ValueError("No IMAP email service available; please add it on the Email Services page first")
                 else:
                     config = email_service_config or {}
 
@@ -423,7 +423,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                                 # If not specified, get all enabled services
                                 _cpa_ids = [s.id for s in crud.get_cpa_services(db, enabled=True)]
                             if not _cpa_ids:
-                                log_callback("[CPA] No CPA service available, skip upload")
+                                log_callback("[CPA] No CPA service available, skipping upload")
                             for _sid in _cpa_ids:
                                 try:
                                     _svc = crud.get_cpa_service_by_id(db, _sid)
@@ -454,7 +454,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                             if not _s2a_ids:
                                 _s2a_ids = [s.id for s in crud.get_sub2api_services(db, enabled=True)]
                             if not _s2a_ids:
-                                log_callback("[Sub2API] No Sub2API service available, skip upload")
+                                log_callback("[Sub2API] No Sub2API service available, skipping upload")
                             for _sid in _s2a_ids:
                                 try:
                                     _svc = crud.get_sub2api_service_by_id(db, _sid)
@@ -779,7 +779,7 @@ async def run_batch_registration(
     auto_upload_tm: bool = False,
     tm_service_ids: List[int] = None,
 ):
-    """Distributed to parallel or pipelined execution based on mode"""
+    """Dispatch to parallel or pipelined execution based on mode"""
     if mode == "parallel":
         await run_batch_parallel(
             batch_id, task_uuids, email_service_type, proxy,

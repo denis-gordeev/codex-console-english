@@ -535,7 +535,7 @@ class OutlookService(BaseEmailService):
                             # Timestamp filtering
                             mail_ts = mail.get("date_timestamp", 0)
                             if min_timestamp > 0 and mail_ts > 0 and mail_ts < min_timestamp:
-                                logger.debug(f"[{email}] Skip old emails: {mail.get('subject', '')[:50]}")
+                                logger.debug(f"[{email}] Skipping old email: {mail.get('subject', '')[:50]}")
                                 continue
 
                             # Check if it is an OpenAI verification email

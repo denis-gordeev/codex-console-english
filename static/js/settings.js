@@ -412,7 +412,7 @@ function renderEmailServices(services) {
                     <div class="empty-state">
                         <div class="empty-state-icon">📭</div>
                         <div class="empty-state-title">No services configured yet</div>
-                        <div class="empty-state-description">Click the "Add Service" button above to add an email service</div>
+                        <div class="empty-state-description">Click "Add Service" above to add an email service</div>
                     </div>
                 </td>
             </tr>
@@ -791,7 +791,7 @@ function renderProxies(proxies) {
                     <div class="empty-state">
                         <div class="empty-state-icon">🌐</div>
                         <div class="empty-state-title">No proxies yet</div>
-                        <div class="empty-state-description">Click the "Add Proxy" button to add a proxy server</div>
+                        <div class="empty-state-description">Click "Add Proxy" to add a proxy server</div>
                     </div>
                 </td>
             </tr>
@@ -1069,7 +1069,7 @@ async function loadTmServices() {
 
 function renderTmServicesTable(services) {
     if (!services || services.length === 0) {
-        elements.tmServicesTable.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">There is currently no Team Manager service, click "Add Service" to add one</td></tr>';
+        elements.tmServicesTable.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">No Team Manager service yet. Click "Add Service" to add one</td></tr>';
         return;
     }
     elements.tmServicesTable.innerHTML = services.map(s => `
@@ -1230,7 +1230,7 @@ async function loadCpaServices() {
 
 function renderCpaServicesTable(services) {
     if (!services || services.length === 0) {
-        elements.cpaServicesTable.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">There is currently no CPA service, click "Add Service" to add one</td></tr>';
+        elements.cpaServicesTable.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">No CPA service yet. Click "Add Service" to add one</td></tr>';
         return;
     }
     elements.cpaServicesTable.innerHTML = services.map(s => `
@@ -1393,7 +1393,7 @@ async function loadSub2ApiServices() {
 function renderSub2ApiServices(services) {
     if (!elements.sub2ApiServicesTable) return;
     if (!services || services.length === 0) {
-        elements.sub2ApiServicesTable.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">There is currently no Sub2API service, click "Add Service" to add one</td></tr>';
+        elements.sub2ApiServicesTable.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">No Sub2API service yet. Click "Add Service" to add one</td></tr>';
         return;
     }
     elements.sub2ApiServicesTable.innerHTML = services.map(s => `
