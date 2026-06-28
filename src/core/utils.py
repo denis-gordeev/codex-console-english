@@ -381,7 +381,7 @@ def get_project_root() -> Path:
         if (parent / "pyproject.toml").exists() or (parent / "setup.py").exists():
             return parent
 
-    # If not found, return the parent directory of the current directory
+    # If not found, return the current directory's parent
     return current_dir.parent
 
 

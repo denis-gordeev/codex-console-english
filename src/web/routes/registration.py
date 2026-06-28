@@ -258,7 +258,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                 if actual_proxy_url:
                     logger.info(f"Task {task_uuid} uses proxy: {actual_proxy_url[:50]}...")
 
-            # Update the proxy record of the task
+            # Update the task's proxy record
             crud.update_registration_task(db, task_uuid, proxy=actual_proxy_url)
 
             # Create email service
@@ -1519,7 +1519,7 @@ async def cancel_outlook_batch(batch_id: str):
     if batch.get("finished"):
         raise HTTPException(status_code=400, detail="Batch task completed")
 
-    # Update the cancellation status of both systems simultaneously
+    # Update both systems' cancellation status simultaneously
     batch["cancelled"] = True
     task_manager.cancel_batch(batch_id)
 

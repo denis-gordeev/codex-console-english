@@ -253,7 +253,7 @@ async def update_account(account_id: int, request: AccountUpdateRequest):
 
 @router.get("/{account_id}/cookies")
 async def get_account_cookies(account_id: int):
-    """Get the cookie string of the account (for payment only)"""
+    """Get the account's cookie string (for payment only)"""
     with get_db() as db:
         account = crud.get_account_by_id(db, account_id)
         if not account:
@@ -692,7 +692,7 @@ async def batch_validate_tokens(request: BatchValidateRequest):
 
 @router.post("/{account_id}/validate")
 async def validate_account_token(account_id: int, request: Optional[TokenValidateRequest] = Body(default=None)):
-    """Verify the Token validity of a single account"""
+    """Verify a single account's token validity"""
     proxy = _get_proxy(request.proxy if request else None)
     is_valid, error = do_validate(account_id, proxy)
 

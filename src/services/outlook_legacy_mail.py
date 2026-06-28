@@ -33,7 +33,7 @@ from ..config.settings import get_settings
 
 def get_email_code_settings() -> dict:
     """
-    Get OTP and wait for configuration
+    Get OTP polling settings (timeout and interval)
 
     Returns:
         dict: Dictionary containing timeout and poll_interval

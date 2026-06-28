@@ -884,7 +884,7 @@ class RegistrationEngine:
 
             result.email = self.email
 
-            # 3. Prepare for the first round of authorization process
+            # 3. Prepare for the first authorization round
             did, sen_token = self._prepare_authorize_flow("First authorization")
             if not did:
                 result.error_message = "Failed to get Device ID"

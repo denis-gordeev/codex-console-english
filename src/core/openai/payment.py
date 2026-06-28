@@ -221,7 +221,7 @@ def open_url_incognito(url: str, cookies_str: Optional[str] = None) -> bool:
 
 def check_subscription_status(account: Account, proxy: Optional[str] = None) -> str:
     """
-    Check the current subscription status of the account.
+    Check the account's current subscription status.
 
     Returns:
         'free' / 'plus' / 'team'

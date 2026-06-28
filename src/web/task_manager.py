@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 # Global thread pool (supports up to 50 concurrent registration tasks)
 _executor = ThreadPoolExecutor(max_workers=50, thread_name_prefix="reg_worker")
 
-# Global meta lock: protect the first key creation of all defaultdicts (to avoid multi-thread race conditions)
+# Global meta lock: protect the initial key creation in all defaultdicts (to avoid multi-thread race conditions)
 _meta_lock = threading.Lock()
 
 # Task log queue (task_uuid -> list of logs)
@@ -186,7 +186,7 @@ class TaskManager:
         logger.info(f"WebSocket disconnected: {task_uuid}")
 
     def get_logs(self, task_uuid: str) -> List[str]:
-        """Get all logs of the task"""
+        """Get all task logs"""
         with _get_log_lock(task_uuid):
             return _log_queues.get(task_uuid, []).copy()
 

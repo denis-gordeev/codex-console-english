@@ -67,7 +67,7 @@ class ImapMailService(BaseEmailService):
         return " ".join(decoded)
 
     def _get_text_body(self, msg) -> str:
-        """Extract the plain text content of the email"""
+        """Extract the email's plain text content"""
         body = ""
         if msg.is_multipart():
             for part in msg.walk():
