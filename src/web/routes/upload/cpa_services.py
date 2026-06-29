@@ -165,6 +165,6 @@ async def test_cpa_service(service_id: int):
 async def test_cpa_connection_direct(request: CpaServiceTestRequest):
     """Test CPA connection directly (to verify connectivity before adding)"""
     if not request.api_url or not request.api_token:
-        raise HTTPException(status_code=400, detail="api_url and api_token cannot be empty")
+        raise HTTPException(status_code=400, detail="api_url and api_token are required")
     success, message = test_cpa_connection(request.api_url, request.api_token)
     return {"success": success, "message": message}

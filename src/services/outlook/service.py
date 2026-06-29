@@ -54,7 +54,7 @@ class OutlookService(BaseEmailService):
         Initialize the Outlook service
 
         Args:
-            config: configuration dictionary with the following keys:
+            config: settings dict with the following keys:
                 - accounts: Outlook account list
                 - provider_priority: provider priority list
                 - health_failure_threshold: Consecutive failure threshold
@@ -65,7 +65,7 @@ class OutlookService(BaseEmailService):
         """
         super().__init__(ServiceType.OUTLOOK, name)
 
-        # Default configuration
+        # Default settings
         default_config = {
             "accounts": [],
             "provider_priority": [p.value for p in DEFAULT_PROVIDER_PRIORITY],
@@ -84,7 +84,7 @@ class OutlookService(BaseEmailService):
         if not self.provider_priority:
             self.provider_priority = DEFAULT_PROVIDER_PRIORITY
 
-        # Provider configuration
+        # Provider settings
         self.provider_config = ProviderConfig(
             timeout=self.config.get("timeout", 30),
             proxy_url=self.config.get("proxy_url"),
@@ -103,7 +103,7 @@ class OutlookService(BaseEmailService):
         self._current_account_index = 0
         self._account_lock = threading.Lock()
 
-        # Support two configuration formats
+        # Support two settings formats
         if "email" in self.config and "password" in self.config:
             account = OutlookAccount.from_config(self.config)
             if not account.client_id and _default_client_id:
@@ -307,7 +307,7 @@ class OutlookService(BaseEmailService):
             email_id: Not used
             timeout: timeout (seconds)
             pattern: OTP regex pattern (not used)
-            otp_sent_at: OTP send timestamp
+            otp_sent_at: OTP sent timestamp
 
         Returns:
             OTP string
@@ -405,7 +405,7 @@ class OutlookService(BaseEmailService):
 
     def delete_email(self, email_id: str) -> bool:
         """Delete email address (Outlook does not support deleting accounts)"""
-        logger.warning(f"Outlook service does not support deletion of account: {email_id}")
+        logger.warning(f"Outlook service does not support account deletion: {email_id}")
         return False
 
     def check_health(self) -> bool:

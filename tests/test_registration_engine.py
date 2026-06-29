@@ -299,4 +299,4 @@ def test_existing_account_login_uses_auto_sent_otp_without_manual_send():
     assert email_service.otp_requests[0]["otp_sent_at"] is not None
     assert result.metadata["token_acquired_via_relogin"] is False
     assert any("Detected an existing account; switching to the login flow automatically" in entry for entry in result.logs)
-    assert any("Login successful" in entry for entry in result.logs)
+    assert any("Logged in successfully" in entry for entry in result.logs)

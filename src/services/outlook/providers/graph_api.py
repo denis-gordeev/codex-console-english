@@ -47,7 +47,7 @@ class GraphAPIProvider(OutlookProvider):
         # Note: Graph API must use OAuth2
         if not account.has_oauth():
             logger.warning(
-                f"[{self.account.email}] Graph API provider requires OAuth2 configuration"
+                f"[{self.account.email}] Graph API provider requires OAuth2 credentials"
                 f"(client_id + refresh_token)"
             )
 
@@ -59,7 +59,7 @@ class GraphAPIProvider(OutlookProvider):
             True if connection is successful
         """
         if not self.account.has_oauth():
-            error = "Graph API requires OAuth2 configuration"
+            error = "Graph API requires OAuth2 credentials"
             self.record_failure(error)
             logger.error(f"[{self.account.email}] {error}")
             return False

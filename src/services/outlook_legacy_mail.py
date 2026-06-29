@@ -360,7 +360,7 @@ class OutlookService(BaseEmailService):
         Initialize the Outlook service
 
         Args:
-            config: configuration dictionary with the following keys:
+            config: settings dict with the following keys:
                 - accounts: Outlook account list, each account contains:
                   - email: email address
                   - password: password
@@ -374,7 +374,7 @@ class OutlookService(BaseEmailService):
         """
         super().__init__(EmailServiceType.OUTLOOK, name)
 
-        # Default configuration
+        # Default settings
         default_config = {
             "accounts": [],
             "imap_host": "outlook.office365.com",
@@ -391,7 +391,7 @@ class OutlookService(BaseEmailService):
         self._current_account_index = 0
         self._account_locks: Dict[str, threading.Lock] = {}
 
-        # Supports two configuration formats:
+        # Supports two settings formats:
         # 1. Single account format: {"email": "xxx", "password": "xxx"}
         # 2. Multiple account format: {"accounts": [{"email": "xxx", "password": "xxx"}]}
         if "email" in self.config and "password" in self.config:
@@ -594,7 +594,7 @@ class OutlookService(BaseEmailService):
         Returns:
             False (Outlook does not support deleting accounts)
         """
-        logger.warning(f"Outlook service does not support deletion of account: {email_id}")
+        logger.warning(f"Outlook service does not support account deletion: {email_id}")
         return False
 
     def check_health(self) -> bool:

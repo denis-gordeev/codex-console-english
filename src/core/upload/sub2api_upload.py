@@ -191,9 +191,9 @@ def test_sub2api_connection(api_url: str, api_key: str) -> Tuple[bool, str]:
         (success sign, message)
     """
     if not api_url:
-        return False, "API URL cannot be empty"
+        return False, "API URL is required"
     if not api_key:
-        return False, "API Key cannot be empty"
+        return False, "API Key is required"
 
     url = api_url.rstrip("/") + "/api/v1/admin/accounts/data"
     headers = {"x-api-key": api_key}
@@ -208,13 +208,13 @@ def test_sub2api_connection(api_url: str, api_key: str) -> Tuple[bool, str]:
         )
 
         if response.status_code in (200, 201, 204, 405):
-            return True, "Sub2API connection test successful"
+            return True, "Sub2API connection test passed"
         if response.status_code == 401:
-            return False, "Connection successful, but API Key is invalid"
+            return False, "Connected, but API Key is invalid"
         if response.status_code == 403:
-            return False, "Connection successful, but insufficient permissions"
+            return False, "Connected, but insufficient permissions"
 
-        return False, f"The server returned an exception status code: {response.status_code}"
+        return False, f"Server returned error status code: {response.status_code}"
 
     except cffi_requests.exceptions.ConnectionError as e:
         return False, f"Unable to connect to server: {str(e)}"

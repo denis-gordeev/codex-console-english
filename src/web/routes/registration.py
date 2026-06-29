@@ -651,7 +651,7 @@ async def run_batch_parallel(
                     new_failed = batch_tasks[batch_id]["failed"]
                     if t.status == "completed":
                         new_success += 1
-                        add_batch_log(f"{prefix} [Success] Registration successful")
+                        add_batch_log(f"{prefix} [Success] Registered successfully")
                     elif t.status == "failed":
                         new_failed += 1
                         add_batch_log(f"{prefix} [Failed] Failed to register: {t.error_message}")
@@ -717,7 +717,7 @@ async def run_batch_pipeline(
                         new_failed = batch_tasks[batch_id]["failed"]
                         if t.status == "completed":
                             new_success += 1
-                            add_batch_log(f"{pfx} [Success] Registration successful")
+                            add_batch_log(f"{pfx} [Success] Registered successfully")
                         elif t.status == "failed":
                             new_failed += 1
                             add_batch_log(f"{pfx} [Failed] Failed to register: {t.error_message}")
@@ -966,7 +966,7 @@ async def cancel_batch(batch_id: str):
 
     batch["cancelled"] = True
     task_manager.cancel_batch(batch_id)
-    return {"success": True, "message": "Batch cancellation submitted; remaining tasks are finishing gracefully"}
+    return {"success": True, "message": "Batch cancelled; remaining tasks are completing"}
 
 
 @router.get("/tasks", response_model=TaskListResponse)
@@ -1523,4 +1523,4 @@ async def cancel_outlook_batch(batch_id: str):
     batch["cancelled"] = True
     task_manager.cancel_batch(batch_id)
 
-    return {"success": True, "message": "Batch cancellation submitted; remaining tasks are finishing gracefully"}
+    return {"success": True, "message": "Batch cancelled; remaining tasks are completing"}

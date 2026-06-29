@@ -129,7 +129,7 @@ class OutlookProvider(abc.ABC):
             )
         else:
             logger.warning(
-                f"[{self.account.email}] {self.provider_type.value} operation failed"
+                f"[{self.account.email}] {self.provider_type.value} failed"
                 f"({self._health.failure_count}/{self.config.health_failure_threshold}): {error}"
             )
 

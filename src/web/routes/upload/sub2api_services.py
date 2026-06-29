@@ -172,7 +172,7 @@ async def test_sub2api_service(service_id: int):
 async def test_sub2api_connection_direct(request: Sub2ApiTestRequest):
     """Test Sub2API connection directly (to verify connectivity before adding)"""
     if not request.api_url or not request.api_key:
-        raise HTTPException(status_code=400, detail="api_url and api_key cannot be empty")
+        raise HTTPException(status_code=400, detail="api_url and api_key are required")
     success, message = test_sub2api_connection(request.api_url, request.api_key)
     return {"success": success, "message": message}
 

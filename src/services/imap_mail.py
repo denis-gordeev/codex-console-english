@@ -106,7 +106,7 @@ class ImapMailService(BaseEmailService):
         return None
 
     def create_email(self, config: Dict[str, Any] = None) -> Dict[str, Any]:
-        """IMAP mode does not create a new email address and directly returns the fixed address in the configuration"""
+        """IMAP mode does not create a new email address; it returns the fixed address from settings"""
         self.update_status(True)
         return {
             "email": self.email_addr,

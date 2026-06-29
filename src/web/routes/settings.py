@@ -173,7 +173,7 @@ async def test_dynamic_proxy(request: DynamicProxySettings):
     )
 
     if not proxy_url:
-        return {"success": False, "message": "Dynamic proxy API returned an empty response, or failed to make the request"}
+        return {"success": False, "message": "Dynamic proxy API returned no response or the request failed"}
 
     # Test connectivity using the retrieved proxy
     import time
@@ -303,7 +303,7 @@ async def backup_database():
 
     return {
         "success": True,
-        "message": "Database backup successful",
+        "message": "Database backed up successfully",
         "backup_path": str(backup_path)
     }
 
@@ -592,7 +592,7 @@ async def test_proxy_item(proxy_id: int):
                     "success": True,
                     "ip": ip_info.get("ip", ""),
                     "response_time": round(elapsed_time * 1000),
-                    "message": f"Proxy connection successful, outgoing IP: {ip_info.get('ip', 'unknown')}"
+                    "message": f"Proxy connected, outgoing IP: {ip_info.get('ip', 'unknown')}"
                 }
             else:
                 return {

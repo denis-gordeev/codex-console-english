@@ -98,7 +98,7 @@ CUSTOM_DOMAIN_API_ENDPOINTS = {
     "get_message": "/api/emails/{emailId}/{messageId}",
 }
 
-# Default email service configuration
+# Default email service settings
 EMAIL_SERVICE_DEFAULTS = {
     "tempmail": {
         "base_url": "https://api.tempmail.lol/v2",
@@ -379,7 +379,7 @@ MICROSOFT_TOKEN_ENDPOINTS = {
     "COMMON": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
 }
 
-# IMAP server configuration
+# IMAP server settings
 OUTLOOK_IMAP_SERVERS = {
     "OLD": "outlook.office365.com",  # Legacy IMAP
     "NEW": "outlook.live.com",  # New IMAP endpoint

@@ -84,7 +84,7 @@ const elements = {
     concurrencyCount: document.getElementById('concurrency-count'),
     concurrencyHint: document.getElementById('concurrency-hint'),
     intervalGroup: document.getElementById('interval-group'),
-    // Automatic operation after registration
+    // Post-registration actions
     autoUploadCpa: document.getElementById('auto-upload-cpa'),
     cpaServiceSelectGroup: document.getElementById('cpa-service-select-group'),
     cpaServiceSelect: document.getElementById('cpa-service-select'),
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initAutoUploadOptions();
 });
 
-// Automatic operation options after initialization registration (CPA/Sub2API/TM)
+// Post-registration auto-upload options (CPA/Sub2API/TM)
 async function initAutoUploadOptions() {
     await Promise.all([
         loadServiceSelect('/cpa-services?enabled=true', elements.cpaServiceSelect, elements.autoUploadCpa, elements.cpaServiceSelectGroup),
@@ -537,7 +537,7 @@ function connectWebSocket(taskUuid) {
         webSocket = new WebSocket(wsUrl);
 
         webSocket.onopen = () => {
-            console.log('WebSocket connection successful');
+            console.log('WebSocket connected');
             useWebSocket = true;
             // Stop polling (if any)
             stopLogPolling();
@@ -570,8 +570,8 @@ function connectWebSocket(taskUuid) {
                     if (!toastShown) {
                         toastShown = true;
                         if (data.status === 'completed') {
-                            addLog('success', '[Success] Registration successful!');
-                            toast.success('Registration successful!');
+                            addLog('success', '[Success] Registered successfully!');
+                            toast.success('Registered successfully!');
                             // Refresh the account list
                             loadRecentAccounts();
                         } else if (data.status === 'failed') {

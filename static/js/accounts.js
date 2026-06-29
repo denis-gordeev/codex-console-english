@@ -653,7 +653,7 @@ function copyEmail(email) {
 
 // Delete account
 async function deleteAccount(id, email) {
-    const confirmed = await confirm(`Are you sure you want to delete account ${email}? This operation is irreversible.`);
+    const confirmed = await confirm(`Are you sure you want to delete account ${email}? This cannot be undone.`);
     if (!confirmed) return;
 
     try {
@@ -672,7 +672,7 @@ async function handleBatchDelete() {
     const count = getEffectiveCount();
     if (count === 0) return;
 
-    const confirmed = await confirm(`Are you sure you want to delete the selected ${count} accounts? This operation is irreversible.`);
+    const confirmed = await confirm(`Are you sure you want to delete the selected ${count} accounts? This cannot be undone.`);
     if (!confirmed) return;
 
     try {
@@ -733,7 +733,7 @@ async function exportAccounts(format) {
         window.URL.revokeObjectURL(url);
         a.remove();
 
-        toast.success('Export successful');
+        toast.success('Export complete');
     } catch (error) {
         console.error('Failed to export:', error);
         toast.error('Failed to export: ' + error.message);
@@ -867,7 +867,7 @@ async function uploadToCpa(id) {
         const result = await api.post(`/accounts/${id}/upload-cpa`, payload);
 
         if (result.success) {
-            toast.success('Upload successful');
+            toast.success('Uploaded successfully');
             loadAccounts();
         } else {
             toast.error('Failed to upload: ' + (result.error || 'Unknown error'));
@@ -916,7 +916,7 @@ async function markSubscription(id) {
     const type = prompt('Please enter the subscription type (plus / team / free):', 'plus');
     if (!type) return;
     if (!['plus', 'team', 'free'].includes(type.trim().toLowerCase())) {
-        toast.error('Invalid subscription type, please enter plus, team or free');
+        toast.error('Invalid subscription type. Enter plus, team, or free.');
         return;
     }
     try {
@@ -1066,7 +1066,7 @@ async function uploadToSub2Api(id) {
         if (choice.service_id != null) payload.service_id = choice.service_id;
         const result = await api.post(`/accounts/${id}/upload-sub2api`, payload);
         if (result.success) {
-            toast.success('Upload successful');
+            toast.success('Uploaded successfully');
             loadAccounts();
         } else {
             toast.error('Failed to upload: ' + (result.error || result.message || 'Unknown error'));
@@ -1153,7 +1153,7 @@ async function uploadToTm(id) {
         if (choice.service_id != null) payload.service_id = choice.service_id;
         const result = await api.post(`/accounts/${id}/upload-tm`, payload);
         if (result.success) {
-            toast.success('Upload successful');
+            toast.success('Uploaded successfully');
         } else {
             toast.error('Failed to upload: ' + (result.message || 'Unknown error'));
         }

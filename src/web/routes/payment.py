@@ -105,7 +105,7 @@ def generate_payment_link(request: GenerateLinkRequest):
 def open_browser_incognito(request: OpenIncognitoRequest):
     """The backend opens the specified URL in incognito mode and can inject account cookies"""
     if not request.url:
-        raise HTTPException(status_code=400, detail="URL cannot be empty")
+        raise HTTPException(status_code=400, detail="URL is required")
 
     cookies_str = None
     if request.account_id:

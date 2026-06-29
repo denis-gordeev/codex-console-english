@@ -61,7 +61,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         description="Debug mode"
     ),
 
-    # Database configuration
+    # Database settings
     "database_url": SettingDefinition(
         db_key="database.url",
         default_value="data/database.db",
@@ -69,7 +69,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         description="Database path or connection string"
     ),
 
-    # Web UI configuration
+    # Web UI settings
     "webui_host": SettingDefinition(
         db_key="webui.host",
         default_value="0.0.0.0",
@@ -97,7 +97,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         is_secret=True
     ),
 
-    # Log configuration
+    # Log settings
     "log_level": SettingDefinition(
         db_key="log.level",
         default_value="INFO",
@@ -117,7 +117,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         description="Number of days to retain logs"
     ),
 
-    # OpenAI configuration
+    # OpenAI settings
     "openai_client_id": SettingDefinition(
         db_key="openai.client_id",
         default_value="app_EMoamEEZ73f0CkXaXp7hrann",
@@ -149,7 +149,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         description="OpenAI OAuth permission scope"
     ),
 
-    # Proxy configuration
+    # Proxy settings
     "proxy_enabled": SettingDefinition(
         db_key="proxy.enabled",
         default_value=False,
@@ -251,7 +251,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         description="Maximum registration interval (seconds)"
     ),
 
-    # Email service configuration
+    # Email service settings
     "email_service_priority": SettingDefinition(
         db_key="email.service_priority",
         default_value={"tempmail": 0, "outlook": 1, "moe_mail": 2},
@@ -259,7 +259,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         description="Email service priority"
     ),
 
-    # Tempmail.lol configuration
+    # Tempmail.lol settings
     "tempmail_base_url": SettingDefinition(
         db_key="tempmail.base_url",
         default_value="https://api.tempmail.lol/v2",
@@ -279,7 +279,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         description="Tempmail maximum retries"
     ),
 
-    # Custom domain email configuration
+    # Custom domain email settings
     "custom_domain_base_url": SettingDefinition(
         db_key="custom_domain.base_url",
         default_value="",
@@ -294,7 +294,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         is_secret=True
     ),
 
-    # Security configuration
+    # Security settings
     "encryption_key": SettingDefinition(
         db_key="security.encryption_key",
         default_value="your-encryption-key-change-in-production",
@@ -303,7 +303,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         is_secret=True
     ),
 
-    # Team Manager configuration
+    # Team Manager settings
     "tm_enabled": SettingDefinition(
         db_key="tm.enabled",
         default_value=False,
@@ -324,7 +324,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         is_secret=True
     ),
 
-    # CPA upload configuration
+    # CPA upload settings
     "cpa_enabled": SettingDefinition(
         db_key="cpa.enabled",
         default_value=False,
@@ -345,7 +345,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         is_secret=True
     ),
 
-    # OTP configuration
+    # OTP settings
     "email_code_timeout": SettingDefinition(
         db_key="email_code.timeout",
         default_value=120,
@@ -359,7 +359,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         description="OTP polling interval (seconds)"
     ),
 
-    # Outlook configuration
+    # Outlook settings
     "outlook_provider_priority": SettingDefinition(
         db_key="outlook.provider_priority",
         default_value=["imap_old", "imap_new", "graph_api"],
@@ -582,7 +582,7 @@ def _save_settings_to_db(**kwargs) -> None:
 
 class Settings(BaseModel):
     """
-    Application configuration -- fully backed by database storage
+    Application settings -- fully backed by database storage
     """
 
     # Application details
@@ -590,7 +590,7 @@ class Settings(BaseModel):
     app_version: str = "2.0.0"
     debug: bool = False
 
-    # Database configuration
+    # Database settings
     database_url: str = "data/database.db"
 
     @field_validator('database_url', mode='before')
@@ -609,25 +609,25 @@ class Settings(BaseModel):
                 return f"sqlite:///{v}"
         return v
 
-    # Web UI configuration
+    # Web UI settings
     webui_host: str = "0.0.0.0"
     webui_port: int = 8000
     webui_secret_key: SecretStr = SecretStr("your-secret-key-change-in-production")
     webui_access_password: SecretStr = SecretStr("admin123")
 
-    # Log configuration
+    # Log settings
     log_level: str = "INFO"
     log_file: str = "logs/app.log"
     log_retention_days: int = 30
 
-    # OpenAI configuration
+    # OpenAI settings
     openai_client_id: str = "app_EMoamEEZ73f0CkXaXp7hrann"
     openai_auth_url: str = "https://auth.openai.com/oauth/authorize"
     openai_token_url: str = "https://auth.openai.com/oauth/token"
     openai_redirect_uri: str = "http://localhost:1455/auth/callback"
     openai_scope: str = "openid email profile offline_access"
 
-    # Proxy configuration
+    # Proxy settings
     proxy_enabled: bool = False
     proxy_type: str = "http"
     proxy_host: str = "127.0.0.1"
@@ -666,50 +666,50 @@ class Settings(BaseModel):
     registration_sleep_min: int = 5
     registration_sleep_max: int = 30
 
-    # Email service configuration
+    # Email service settings
     email_service_priority: Dict[str, int] = {"tempmail": 0, "outlook": 1, "moe_mail": 2}
 
-    # Tempmail.lol configuration
+    # Tempmail.lol settings
     tempmail_base_url: str = "https://api.tempmail.lol/v2"
     tempmail_timeout: int = 30
     tempmail_max_retries: int = 3
 
-    # Custom domain email configuration
+    # Custom domain email settings
     custom_domain_base_url: str = ""
     custom_domain_api_key: Optional[SecretStr] = None
 
-    # Security configuration
+    # Security settings
     encryption_key: SecretStr = SecretStr("your-encryption-key-change-in-production")
 
-    # Team Manager configuration
+    # Team Manager settings
     tm_enabled: bool = False
     tm_api_url: str = ""
     tm_api_key: Optional[SecretStr] = None
 
-    # CPA upload configuration
+    # CPA upload settings
     cpa_enabled: bool = False
     cpa_api_url: str = ""
     cpa_api_token: SecretStr = SecretStr("")
 
-    # OTP configuration
+    # OTP settings
     email_code_timeout: int = 120
     email_code_poll_interval: int = 3
 
-    # Outlook configuration
+    # Outlook settings
     outlook_provider_priority: List[str] = ["imap_old", "imap_new", "graph_api"]
     outlook_health_failure_threshold: int = 5
     outlook_health_disable_duration: int = 60
     outlook_default_client_id: str = "24d9a0ed-8787-4584-883c-2fd79308940a"
 
 
-# Global configuration instance
+# Global settings instance
 _settings: Optional[Settings] = None
 
 
 def get_settings() -> Settings:
     """
-    Get the global configuration instance (singleton).
-    Load all configuration from the database.
+    Get the global settings instance (singleton).
+    Load all settings from the database.
     """
     global _settings
     if _settings is None:
@@ -723,13 +723,13 @@ def get_settings() -> Settings:
 
 def update_settings(**kwargs) -> Settings:
     """
-    Update configuration and save to the database
+    Update settings and save to the database
     """
     global _settings
     if _settings is None:
         _settings = get_settings()
 
-    # Create a new configuration instance
+    # Create a new settings instance
     updated_data = _settings.model_dump()
     updated_data.update(kwargs)
     _settings = Settings(**updated_data)

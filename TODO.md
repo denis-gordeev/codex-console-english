@@ -1,5 +1,66 @@
 # TODO
 
+## Completed In This Round (June 29, 2026 - Round 54)
+
+- Pulled `origin/main` - repository was already up to date.
+- Verified zero non-ASCII/CJK/Cyrillic characters across all tracked files.
+- Deep scan found ~103 remaining Chinese-English translation artifacts (Noun+successful calques, "cannot be empty", "configuration" in comments, stilted docstrings).
+- Replaced "Noun + successful" Chinese-English pattern with natural verb-based phrasing (26 occurrences):
+  - "Registration successful" → "Registered successfully" in register.py, registration.py routes, app.js (7 occurrences)
+  - "Login successful" → "Logged in successfully" in register.py
+  - "Upload successful" → "Uploaded successfully" in accounts.js (3 occurrences)
+  - "Service update successful" → "Service updated" in email_services.js
+  - "Test successful" → "Test passed" in email_services.js
+  - "Backup successful" → "Backup complete" in settings.js
+  - "Database backup successful" → "Database backed up successfully" in settings.py routes
+  - "Export successful" → "Export complete" in accounts.js
+  - "connection test successful" → "connection test passed" in cpa_upload.py, sub2api_upload.py, team_manager_upload.py (3 occurrences)
+  - "Connection successful, but" → "Connected, but" in cpa_upload.py, sub2api_upload.py, team_manager_upload.py (5 occurrences)
+  - "WebSocket connection successful" → "WebSocket connected" in app.js
+  - "Proxy connection successful" → "Proxy connected" in settings.py routes
+  - "operation failed" → "failed" in outlook/providers/base.py
+- Replaced "cannot be empty" → "is required" Chinese-English calque (14 occurrences):
+  - cpa_upload.py: "API URL/Token cannot be empty" → "API URL/Token is required" (2)
+  - sub2api_upload.py: "API URL/Key cannot be empty" → "API URL/Key is required" (2)
+  - team_manager_upload.py: "API URL/Key cannot be empty" → "API URL/Key is required" (2)
+  - Upload routes: "cannot be empty" → "are required" in sub2api_services.py, cpa_services.py, tm_services.py (3)
+  - payment.py routes: "URL cannot be empty" → "URL is required" (1)
+  - settings.js: "cannot be empty" → "are required" (4)
+- Replaced "configuration" → "settings" in comments where the class is literally called Settings (36 occurrences):
+  - settings.py DEFAULT_SETTINGS section headers: 15 occurrences
+  - settings.py Settings class section headers: 15 occurrences
+  - settings.py docstrings/comments: 6 occurrences ("Application configuration" → "Application settings", "Global configuration instance" → "Global settings instance", etc.)
+  - constants.py: 2 occurrences ("Default email service configuration" → "Default email service settings", "IMAP server configuration" → "IMAP server settings")
+- Replaced "configuration dictionary" → "settings dict" in service module docstrings (6 occurrences: outlook_legacy_mail.py, temp_mail.py, outlook/service.py, freemail.py, tempmail.py, moe_mail.py)
+- Replaced "Default configuration" → "Default settings", "Provider configuration" → "Provider settings", "Support two configuration formats" → "Support two settings formats" in outlook_legacy_mail.py and outlook/service.py (5 occurrences)
+- Replaced other stilted Chinese-English patterns:
+  - "This operation is irreversible/not reversible" → "This cannot be undone" in settings.js, accounts.js (3 occurrences)
+  - "deletion of account" → "account deletion" in outlook_legacy_mail.py, outlook/service.py (2 occurrences)
+  - "sent automatically by the system" → "auto-sent" in register.py (2 occurrences)
+  - "Wait for the" → "Waiting for" in register.py log messages (2 occurrences)
+  - "Verifying email code" → "Verifying OTP" in register.py
+  - "The server returned an exception status code" → "Server returned error status code" in sub2api_upload.py, team_manager_upload.py (2 occurrences)
+  - "After the login state is established" → "Once logged in" in register.py docstring
+  - "Mark the email address as already registered to avoid retrying" → "Mark the email as already registered to prevent retries" in register.py
+  - "Create a failed record" → "Create a failed entry" in register.py comment
+  - "An empty password indicates unsuccessful registration" → "An empty password indicates a failed registration" in register.py comment
+  - "Unable to parse; default to success" → "Failed to parse; assuming success" in register.py comment
+  - "OTP send/sending timestamp" → "OTP sent timestamp" in register.py, temp_mail.py, freemail.py, tempmail.py, moe_mail.py, outlook/service.py (7 occurrences)
+  - "switch to the login flow automatically" → "automatically switch to the login flow" in register.py docstring
+  - "account-profile creation" → "account profile creation" in register.py docstring
+  - "Shared steps still include" → "Both flows share" in register.py docstring
+  - "does not create a new email address and directly returns the fixed address in the configuration" → "does not create a new email address; it returns the fixed address from settings" in imap_mail.py
+  - "the first domain configured by the system" → "the first system-configured domain" in moe_mail.py
+  - "does not support custom configuration" → "does not support custom settings" in tempmail.py
+  - "requires OAuth2 configuration" → "requires OAuth2 credentials" in imap_new.py, graph_api.py (3 occurrences)
+  - "Automatic operation after registration" → "Post-registration actions" in app.js (2 occurrences)
+  - "Invalid subscription type, please enter plus, team or free" → "Invalid subscription type. Enter plus, team, or free." in accounts.js
+  - "OTP email not received" → "OTP not received" in accounts.py routes
+  - "Dynamic proxy API returned an empty response, or failed to make the request" → "Dynamic proxy API returned no response or the request failed" in settings.py routes
+  - "Batch cancellation submitted; remaining tasks are finishing gracefully" → "Batch cancelled; remaining tasks are completing" in registration.py routes (2 occurrences)
+  - Updated test assertions in test_cpa_upload.py and test_registration_engine.py for message changes.
+- All 32 tests pass.
+
 ## Completed In This Round (June 28, 2026 - Round 53)
 
 - Pulled `origin/main` - repository was already up to date.
@@ -828,7 +889,7 @@
 
 ## Next Actions
 
-- Continue polishing wording consistency in logs, tests, and low-traffic routes.
+- Continue deep-scanning for remaining Chinese-English translation artifacts (e.g., "information" → "data/details", "obtain" → "get", remaining stilted docstrings).
 - Expand regression coverage for translated API messages and settings flows.
 - Add API tests for access-control edge cases such as malformed cookies and custom logout `next` targets.
 - Verify Docker environment variable examples against the actual `settings` names used by the app.

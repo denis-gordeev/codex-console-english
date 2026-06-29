@@ -28,7 +28,7 @@ class FreemailService(BaseEmailService):
         Initialize Freemail service
 
         Args:
-            config: configuration dictionary with the following keys:
+            config: settings dict with the following keys:
                 - base_url: Worker URL (required)
                 - admin_token: Admin Token for JWT_TOKEN (required)
                 - domain: email domain, such as example.com
@@ -193,7 +193,7 @@ class FreemailService(BaseEmailService):
             email_id: Unused, reserved for API compatibility
             timeout: timeout (seconds)
             pattern: OTP regex pattern
-            otp_sent_at: OTP sending timestamp (not used yet)
+            otp_sent_at: OTP sent timestamp (not used yet)
 
         Returns:
             OTP string, returns None when timeout

@@ -47,7 +47,7 @@ class IMAPNewProvider(OutlookProvider):
         # Note: New versions of IMAP must use OAuth2
         if not account.has_oauth():
             logger.warning(
-                f"[{self.account.email}] New IMAP provider requires OAuth2 configuration"
+                f"[{self.account.email}] New IMAP provider requires OAuth2 credentials"
                 f"(client_id + refresh_token)"
             )
 

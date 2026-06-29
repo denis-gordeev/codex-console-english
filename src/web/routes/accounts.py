@@ -1060,6 +1060,6 @@ async def get_account_inbox_code(account_id: int):
             return {"success": False, "error": str(e)}
 
         if not code:
-            return {"success": False, "error": "OTP email not received"}
+            return {"success": False, "error": "OTP not received"}
 
         return {"success": True, "code": code, "email": account.email}

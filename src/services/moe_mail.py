@@ -24,7 +24,7 @@ class MeoMailEmailService(BaseEmailService):
         """Initialize custom domain email service
 
         Args:
-            config: configuration dictionary with the following keys:
+            config: settings dict with the following keys:
                 - base_url: API base address (required)
                 - api_key: API key (required)
                 - api_key_header: API key header name (default: X-API-Key)
@@ -196,7 +196,7 @@ class MeoMailEmailService(BaseEmailService):
         sys_config = self.get_config()
         default_domain = self.config.get("default_domain")
         if not default_domain and sys_config.get("emailDomains"):
-            # Use the first domain configured by the system
+            # Use the first system-configured domain
             domains = sys_config["emailDomains"].split(",")
             default_domain = domains[0].strip() if domains else None
 
@@ -258,7 +258,7 @@ class MeoMailEmailService(BaseEmailService):
             email_id: Email ID (if not provided, search from cache)
             timeout: timeout (seconds)
             pattern: OTP regex pattern
-            otp_sent_at: OTP sending timestamp (custom domain service does not use this parameter yet)
+            otp_sent_at: OTP sent timestamp (custom domain service does not use this parameter yet)
 
         Returns:
             OTP string, or None on timeout / not found"""

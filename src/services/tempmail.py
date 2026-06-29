@@ -29,7 +29,7 @@ class TempmailService(BaseEmailService):
         Initialize Tempmail service
 
         Args:
-            config: configuration dictionary with the following keys:
+            config: settings dict with the following keys:
                 - base_url: API base address (default: https://api.tempmail.lol/v2)
                 - timeout: request timeout (default: 30)
                 - max_retries: Maximum number of retries (default: 3)
@@ -38,7 +38,7 @@ class TempmailService(BaseEmailService):
         """
         super().__init__(EmailServiceType.TEMPMAIL, name)
 
-        # Default configuration
+        # Default settings
         default_config = {
             "base_url": "https://api.tempmail.lol/v2",
             "timeout": 30,
@@ -67,7 +67,7 @@ class TempmailService(BaseEmailService):
         Create a new temporary email address
 
         Args:
-            config: Configuration options (Tempmail.lol does not support custom configuration)
+            config: Settings options (Tempmail.lol does not support custom settings)
 
         Returns:
             Dictionary containing email data:
@@ -134,7 +134,7 @@ class TempmailService(BaseEmailService):
             email_id: Email token (if not provided, search from cache)
             timeout: timeout (seconds)
             pattern: OTP regex pattern
-            otp_sent_at: OTP sending timestamp (Tempmail service does not use this parameter yet)
+            otp_sent_at: OTP sent timestamp (Tempmail service does not use this parameter yet)
 
         Returns:
             OTP string, or None on timeout / not found

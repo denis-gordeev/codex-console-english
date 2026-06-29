@@ -132,7 +132,7 @@ class RegistrationEngine:
         self.session: Optional[cffi_requests.Session] = None
         self.session_token: Optional[str] = None  # Session token
         self.logs: list = []
-        self._otp_sent_at: Optional[float] = None  # OTP send timestamp
+        self._otp_sent_at: Optional[float] = None  # OTP sent timestamp
         self._is_existing_account: bool = False  # Email already has an existing account
         self._token_acquisition_requires_login: bool = False  # Newly registered accounts need a second login to fetch tokens
 
@@ -335,7 +335,7 @@ class RegistrationEngine:
                         self._log("Detected an existing account; switching to the login flow automatically")
                         self._is_existing_account = True
                     else:
-                        self._log("Login flow started; waiting for the OTP sent automatically by the system")
+                        self._log("Login flow started; waiting for the auto-sent OTP")
 
                 return SignupFormResult(
                     success=True,
@@ -346,7 +346,7 @@ class RegistrationEngine:
 
             except Exception as parse_error:
                 self._log(f"Failed to parse response: {parse_error}", "warning")
-                # Unable to parse; default to success
+                # Failed to parse; assuming success
                 return SignupFormResult(success=True)
 
         except Exception as e:
@@ -409,7 +409,7 @@ class RegistrationEngine:
             is_existing = page_type == OPENAI_PAGE_TYPES["EMAIL_OTP_VERIFICATION"]
             if is_existing:
                 self._otp_sent_at = time.time()
-                self._log("Login password accepted; waiting for the OTP sent automatically by the system")
+                self._log("Login password accepted; waiting for the auto-sent OTP")
 
             return SignupFormResult(
                 success=True,
@@ -454,8 +454,8 @@ class RegistrationEngine:
         return did, sen_token
 
     def _complete_token_exchange(self, result: RegistrationResult) -> bool:
-        """After the login state is established, complete the workspace and OAuth token retrieval."""
-        self._log("Wait for the login OTP...")
+        """Once logged in, complete workspace and OAuth token retrieval."""
+        self._log("Waiting for login OTP...")
         code = self._get_verification_code()
         if not code:
             result.error_message = "Failed to get OTP"
@@ -585,17 +585,17 @@ class RegistrationEngine:
             return False, None
 
     def _mark_email_as_registered(self):
-        """Mark the email address as already registered to avoid retrying."""
+        """Mark the email as already registered to prevent retries."""
         try:
             with get_db() as db:
                 # Check if a record of this email address already exists
                 existing = crud.get_account_by_email(db, self.email)
                 if not existing:
-                    # Create a failed record and mark the email address as already registered
+                    # Create a failed entry and mark the email as already registered
                     crud.create_account(
                         db,
                         email=self.email,
-                        password="",  # An empty password indicates unsuccessful registration
+                        password="",  # An empty password indicates a failed registration
                         email_service=self.email_service.service_type.value,
                         email_service_id=self.email_info.get("service_id") if self.email_info else None,
                         status="failed",
@@ -848,9 +848,9 @@ class RegistrationEngine:
         Run the full registration flow.
 
         Support automatic login for registered accounts:
-        - If the email address is already registered, switch to the login flow automatically.
-        - Existing accounts skip password setup, OTP send, and account-profile creation.
-        - Shared steps still include OTP retrieval, OTP verification, workspace selection, and OAuth callbacks.
+        - If the email is already registered, automatically switch to the login flow.
+        - Existing accounts skip password setup, OTP sending, and account profile creation.
+        - Both flows share OTP retrieval, OTP verification, workspace selection, and OAuth callbacks.
 
         Returns:
             RegistrationResult: Final registration or login result.
@@ -913,12 +913,12 @@ class RegistrationEngine:
                 if not self._send_verification_code():
                     result.error_message = "Failed to send OTP"
 
-                self._log("7. Wait for the OTP...")
+                self._log("7. Waiting for OTP...")
                 code = self._get_verification_code()
                 if not code:
                     result.error_message = "Failed to get OTP"
 
-                self._log("8. Verifying email code...")
+                self._log("8. Verifying OTP...")
                 if not self._validate_verification_code(code):
                     result.error_message = "Failed to validate OTP"
                     return result
@@ -939,9 +939,9 @@ class RegistrationEngine:
             # 10. Complete
             self._log("=" * 60)
             if self._is_existing_account:
-                self._log("Login successful")
+                self._log("Logged in successfully")
             else:
-                self._log("Registration successful")
+                self._log("Registered successfully")
             self._log(f"Email: {result.email}")
             self._log(f"Account ID: {result.account_id}")
             self._log(f"Workspace ID: {result.workspace_id}")

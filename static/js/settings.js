@@ -520,7 +520,7 @@ async function handleBackup() {
 
     try {
         const data = await api.post('/settings/database/backup');
-        toast.success(`Backup successful: ${data.backup_path}`);
+        toast.success(`Backup complete: ${data.backup_path}`);
     } catch (error) {
         toast.error('Failed to back up: ' + error.message);
     } finally {
@@ -531,7 +531,7 @@ async function handleBackup() {
 
 // clean data
 async function handleCleanup() {
-    const confirmed = await confirm('Are you sure you want to clean up expired data? This operation is not reversible.');
+    const confirmed = await confirm('Are you sure you want to clean up expired data? This cannot be undone.');
     if (!confirmed) return;
 
     elements.cleanupBtn.disabled = true;
@@ -1126,11 +1126,11 @@ async function handleSaveTmService(e) {
     const enabled = document.getElementById('tm-service-enabled').checked;
 
     if (!name || !apiUrl) {
-        toast.error('Name and API URL cannot be empty');
+        toast.error('Name and API URL are required');
         return;
     }
     if (!id && !apiKey) {
-        toast.error('API Key cannot be empty when adding a service');
+        toast.error('API Key is required when adding a service');
         return;
     }
 
@@ -1282,11 +1282,11 @@ async function handleSaveCpaService(e) {
     const enabled = document.getElementById('cpa-service-enabled').checked;
 
     if (!name || !apiUrl) {
-        toast.error('Name and API URL cannot be empty');
+        toast.error('Name and API URL are required');
         return;
     }
     if (!id && !apiToken) {
-        toast.error('API Token cannot be empty when adding a service');
+        toast.error('API Token is required when adding a service');
         return;
     }
 

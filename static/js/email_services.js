@@ -514,7 +514,7 @@ async function toggleService(id, enabled) {
 async function testService(id) {
     try {
         const result = await api.post(`/email-services/${id}/test`);
-        if (result.success) toast.success('Test successful');
+        if (result.success) toast.success('Test passed');
         else toast.error('Failed to test: ' + (result.error || 'Unknown error'));
     } catch (error) {
         toast.error('Failed to test: ' + error.message);
@@ -723,7 +723,7 @@ async function handleEditCustom(e) {
 
     try {
         await api.patch(`/email-services/${id}`, updateData);
-        toast.success('Service update successful');
+        toast.success('Service updated');
         elements.editCustomModal.classList.remove('active');
         loadCustomServices();
         loadStats();

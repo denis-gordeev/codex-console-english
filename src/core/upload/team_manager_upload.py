@@ -176,9 +176,9 @@ def test_team_manager_connection(api_url: str, api_key: str) -> Tuple[bool, str]
         (success sign, message)
     """
     if not api_url:
-        return False, "API URL cannot be empty"
+        return False, "API URL is required"
     if not api_key:
-        return False, "API Key cannot be empty"
+        return False, "API Key is required"
 
     url = api_url.rstrip("/") + "/admin/teams/import"
     headers = {"X-API-Key": api_key}
@@ -193,9 +193,9 @@ def test_team_manager_connection(api_url: str, api_key: str) -> Tuple[bool, str]
         )
         if resp.status_code in (200, 204, 401, 403, 405):
             if resp.status_code == 401:
-                return False, "Connection successful, but API Key is invalid"
-            return True, "Team Manager connection test successful"
-        return False, f"The server returned an exception status code: {resp.status_code}"
+                return False, "Connected, but API Key is invalid"
+            return True, "Team Manager connection test passed"
+        return False, f"Server returned error status code: {resp.status_code}"
     except cffi_requests.exceptions.ConnectionError as e:
         return False, f"Unable to connect to server: {str(e)}"
     except cffi_requests.exceptions.Timeout:

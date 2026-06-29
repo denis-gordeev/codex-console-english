@@ -30,7 +30,7 @@ class TempMailService(BaseEmailService):
         """Initialize TempMail service
 
         Args:
-            config: configuration dictionary with the following keys:
+            config: settings dict with the following keys:
                 - base_url: Worker URL, such as https://mail.example.com (required)
                 - admin_password: Admin password for the x-admin-auth header (required)
                 - domain: email domain, such as example.com (required)
@@ -277,7 +277,7 @@ class TempMailService(BaseEmailService):
             email_id: Unused, reserved for API compatibility
             timeout: timeout (seconds)
             pattern: OTP regex pattern
-            otp_sent_at: OTP sending timestamp (not used yet)
+            otp_sent_at: OTP sent timestamp (not used yet)
 
         Returns:
             OTP string, returns None when timeout"""

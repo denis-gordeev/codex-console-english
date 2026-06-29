@@ -105,6 +105,6 @@ def test_test_cpa_connection_uses_get_and_normalized_url(monkeypatch):
     )
 
     assert success is True
-    assert message == "CPA connection test successful"
+    assert message == "CPA connection test passed"
     assert calls[0]["url"] == "https://cpa.example.com/v0/management/auth-files"
     assert calls[0]["kwargs"]["headers"]["Authorization"] == "Bearer token-123"
