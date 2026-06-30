@@ -34,7 +34,7 @@ def upload_to_sub2api(
         priority: account priority, default 50
 
     Returns:
-        (success sign, message)
+        (bool, str): (True on success, status message)
     """
     if not accounts:
         return False, "No account to upload"
@@ -188,7 +188,7 @@ def test_sub2api_connection(api_url: str, api_key: str) -> Tuple[bool, str]:
     Test Sub2API connection (GET /api/v1/admin/accounts/data test)
 
     Returns:
-        (success sign, message)
+        (bool, str): (True on success, status message)
     """
     if not api_url:
         return False, "API URL is required"

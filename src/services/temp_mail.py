@@ -349,7 +349,7 @@ class TempMailService(BaseEmailService):
         """List emails
 
         Args:
-            limit: the maximum number of results
+            limit: max results
             offset: paging offset
             **kwargs: additional query parameters, forwarded to the admin API
 

@@ -122,7 +122,7 @@ def upload_to_cpa(
         api_token: Specify CPA API Token (takes precedence over global settings)
 
     Returns:
-        (success sign, message or error message)"""
+        (bool, str): (True on success, status or error message)"""
     settings = get_settings()
 
     # Use provided parameters first, falling back to global settings.
@@ -262,7 +262,7 @@ def test_cpa_connection(api_url: str, api_token: str, proxy: str = None) -> Tupl
         proxy: placeholder parameter (unused); CPA always connects directly
 
     Returns:
-        (success sign, message)"""
+        (bool, str): (True on success, status message)"""
     if not api_url:
         return False, "API URL is required"
 

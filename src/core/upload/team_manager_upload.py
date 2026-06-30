@@ -23,7 +23,7 @@ def upload_to_team_manager(
     Upload your account to Team Manager (direct connection, no proxy)
 
     Returns:
-        (success sign, message)
+        (bool, str): (True on success, status message)
     """
     if not api_url:
         return False, "Team Manager API URL is not configured"
@@ -173,7 +173,7 @@ def test_team_manager_connection(api_url: str, api_key: str) -> Tuple[bool, str]
     Test Team Manager connection (direct connection)
 
     Returns:
-        (success sign, message)
+        (bool, str): (True on success, status message)
     """
     if not api_url:
         return False, "API URL is required"

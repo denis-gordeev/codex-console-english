@@ -309,7 +309,7 @@ MAX_PAGE_SIZE = 100
 
 ERROR_MESSAGES = {
     # Common errors
-    "DATABASE_ERROR": "Failed to perform database operation",
+    "DATABASE_ERROR": "Database operation failed",
     "CONFIG_ERROR": "Configuration error",
     "NETWORK_ERROR": "Failed to connect to network",
     "TIMEOUT": "Operation timed out",

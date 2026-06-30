@@ -111,7 +111,7 @@ class FreemailService(BaseEmailService):
             raise EmailServiceError(f"Failed to make request: {method} {path} - {e}")
 
     def _ensure_domains(self):
-        """Get and cache the list of available domains"""
+        """Fetch and cache available domains"""
         if not self._domains:
             try:
                 domains = self._make_request("GET", "/api/domains")

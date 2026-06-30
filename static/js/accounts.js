@@ -428,7 +428,7 @@ function buildBatchPayload(extraFields = {}) {
     return { ids: Array.from(selectedAccounts), ...extraFields };
 }
 
-// Get the effective number of selections (use the total number when selecting_all)
+// Get the effective selection count (uses total when selecting_all)
 function getEffectiveCount() {
     return selectAllPages ? totalAccounts : selectedAccounts.size;
 }
@@ -934,7 +934,7 @@ async function markSubscription(id) {
 async function handleBatchCheckSubscription() {
     const count = getEffectiveCount();
     if (count === 0) return;
-    const confirmed = await confirm(`Are you sure you want to check the subscription status of the selected ${count} accounts?`);
+    const confirmed = await confirm(`Check the selected ${count} accounts' subscription status?`);
     if (!confirmed) return;
 
     elements.batchCheckSubBtn.disabled = true;

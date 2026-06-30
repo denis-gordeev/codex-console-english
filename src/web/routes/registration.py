@@ -624,7 +624,7 @@ async def run_batch_parallel(
     tm_service_ids: List[int] = None,
 ):
     """
-    Parallel mode: All tasks are submitted simultaneously, and Semaphore limits the maximum number of concurrent tasks.
+    Parallel mode: all tasks are submitted simultaneously; a Semaphore caps the concurrency limit.
     """
     _init_batch_state(batch_id, task_uuids)
     add_batch_log, update_batch_status = _make_batch_helpers(batch_id)
@@ -690,7 +690,7 @@ async def run_batch_pipeline(
     tm_service_ids: List[int] = None,
 ):
     """
-    Pipeline mode: start a new task every interval seconds, Semaphore limits the maximum number of concurrent tasks
+    Pipeline mode: start a new task every interval seconds; a Semaphore caps the concurrency limit
     """
     _init_batch_state(batch_id, task_uuids)
     add_batch_log, update_batch_status = _make_batch_helpers(batch_id)

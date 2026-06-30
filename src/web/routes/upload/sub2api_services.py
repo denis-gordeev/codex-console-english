@@ -181,7 +181,7 @@ async def test_sub2api_connection_direct(request: Sub2ApiTestRequest):
 async def upload_accounts_to_sub2api(request: Sub2ApiUploadRequest):
     """Batch upload accounts to Sub2API platform"""
     if not request.account_ids:
-        raise HTTPException(status_code=400, detail="Account ID list cannot be empty")
+        raise HTTPException(status_code=400, detail="Account ID list is required")
 
     with get_db() as db:
         if request.service_id:
