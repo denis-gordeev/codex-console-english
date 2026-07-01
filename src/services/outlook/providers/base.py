@@ -14,12 +14,12 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class ProviderConfig:
-    """Provider configuration"""
+    """Provider settings"""
     timeout: int = 30
     max_retries: int = 3
     proxy_url: Optional[str] = None
 
-    # Health check configuration
+    # Health check settings
     health_failure_threshold: int = 3
     health_disable_duration: int = 300  # Seconds
 
@@ -37,7 +37,7 @@ class OutlookProvider(abc.ABC):
 
         Args:
             account: Outlook account
-            config: provider configuration"""
+            config: provider settings"""
         self.account = account
         self.config = config or ProviderConfig()
 

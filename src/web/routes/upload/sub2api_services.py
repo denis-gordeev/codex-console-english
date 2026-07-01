@@ -123,7 +123,7 @@ async def get_sub2api_service_full(service_id: int):
 
 @router.patch("/{service_id}", response_model=Sub2ApiServiceResponse)
 async def update_sub2api_service(service_id: int, request: Sub2ApiServiceUpdate):
-    """Update Sub2API service configuration"""
+    """Update Sub2API service settings"""
     with get_db() as db:
         svc = crud.get_sub2api_service_by_id(db, service_id)
         if not svc:

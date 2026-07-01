@@ -33,7 +33,7 @@ class ImapMailService(BaseEmailService):
         required_keys = ["host", "email", "password"]
         missing_keys = [k for k in required_keys if not cfg.get(k)]
         if missing_keys:
-            raise ValueError(f"Missing required configuration: {missing_keys}")
+            raise ValueError(f"Missing required settings: {missing_keys}")
 
         self.host: str = str(cfg["host"]).strip()
         self.port: int = int(cfg.get("port", 993))

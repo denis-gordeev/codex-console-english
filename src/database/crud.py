@@ -162,7 +162,7 @@ def create_email_service(
     enabled: bool = True,
     priority: int = 0
 ) -> EmailService:
-    """Create an email service configuration"""
+    """Create email service settings"""
     db_service = EmailService(
         service_type=service_type,
         name=name,
@@ -210,7 +210,7 @@ def update_email_service(
     service_id: int,
     **kwargs
 ) -> Optional[EmailService]:
-    """Update an email service configuration"""
+    """Update email service settings"""
     db_service = get_email_service_by_id(db, service_id)
     if not db_service:
         return None
@@ -225,7 +225,7 @@ def update_email_service(
 
 
 def delete_email_service(db: Session, service_id: int) -> bool:
-    """Delete an email service configuration"""
+    """Delete email service settings"""
     db_service = get_email_service_by_id(db, service_id)
     if not db_service:
         return False
@@ -397,7 +397,7 @@ def create_proxy(
     enabled: bool = True,
     priority: int = 0
 ) -> Proxy:
-    """Create proxy configuration"""
+    """Create proxy settings"""
     db_proxy = Proxy(
         name=name,
         type=type,
@@ -445,7 +445,7 @@ def update_proxy(
     proxy_id: int,
     **kwargs
 ) -> Optional[Proxy]:
-    """Update proxy configuration"""
+    """Update proxy settings"""
     db_proxy = get_proxy_by_id(db, proxy_id)
     if not db_proxy:
         return None
@@ -460,7 +460,7 @@ def update_proxy(
 
 
 def delete_proxy(db: Session, proxy_id: int) -> bool:
-    """Delete proxy configuration"""
+    """Delete proxy settings"""
     db_proxy = get_proxy_by_id(db, proxy_id)
     if not db_proxy:
         return False
@@ -527,7 +527,7 @@ def create_cpa_service(
     enabled: bool = True,
     priority: int = 0
 ) -> CpaService:
-    """Create a CPA service configuration"""
+    """Create CPA service settings"""
     db_service = CpaService(
         name=name,
         api_url=api_url,
@@ -562,7 +562,7 @@ def update_cpa_service(
     service_id: int,
     **kwargs
 ) -> Optional[CpaService]:
-    """Update CPA service configuration"""
+    """Update CPA service settings"""
     db_service = get_cpa_service_by_id(db, service_id)
     if not db_service:
         return None
@@ -575,7 +575,7 @@ def update_cpa_service(
 
 
 def delete_cpa_service(db: Session, service_id: int) -> bool:
-    """Delete CPA service configuration"""
+    """Delete CPA service settings"""
     db_service = get_cpa_service_by_id(db, service_id)
     if not db_service:
         return False
@@ -596,7 +596,7 @@ def create_sub2api_service(
     enabled: bool = True,
     priority: int = 0
 ) -> Sub2ApiService:
-    """Create Sub2API service configuration"""
+    """Create Sub2API service settings"""
     svc = Sub2ApiService(
         name=name,
         api_url=api_url,
@@ -627,7 +627,7 @@ def get_sub2api_services(
 
 
 def update_sub2api_service(db: Session, service_id: int, **kwargs) -> Optional[Sub2ApiService]:
-    """Update Sub2API service configuration"""
+    """Update Sub2API service settings"""
     svc = get_sub2api_service_by_id(db, service_id)
     if not svc:
         return None
@@ -639,7 +639,7 @@ def update_sub2api_service(db: Session, service_id: int, **kwargs) -> Optional[S
 
 
 def delete_sub2api_service(db: Session, service_id: int) -> bool:
-    """Delete Sub2API service configuration"""
+    """Delete Sub2API service settings"""
     svc = get_sub2api_service_by_id(db, service_id)
     if not svc:
         return False
@@ -660,7 +660,7 @@ def create_tm_service(
     enabled: bool = True,
     priority: int = 0,
 ):
-    """Create a Team Manager service configuration"""
+    """Create Team Manager service settings"""
     from .models import TeamManagerService
     svc = TeamManagerService(
         name=name,
@@ -691,7 +691,7 @@ def get_tm_services(db: Session, enabled=None):
 
 
 def update_tm_service(db: Session, service_id: int, **kwargs):
-    """Update Team Manager service configuration"""
+    """Update Team Manager service settings"""
     svc = get_tm_service_by_id(db, service_id)
     if not svc:
         return None
@@ -703,7 +703,7 @@ def update_tm_service(db: Session, service_id: int, **kwargs):
 
 
 def delete_tm_service(db: Session, service_id: int) -> bool:
-    """Delete Team Manager service configuration"""
+    """Delete Team Manager service settings"""
     svc = get_tm_service_by_id(db, service_id)
     if not svc:
         return False

@@ -121,7 +121,7 @@ class RegistrationEngine:
             token_url=settings.openai_token_url,
             redirect_uri=settings.openai_redirect_uri,
             scope=settings.openai_scope,
-            proxy_url=proxy_url  # Pass proxy configuration
+            proxy_url=proxy_url  # Pass proxy settings
         )
 
         # State variables

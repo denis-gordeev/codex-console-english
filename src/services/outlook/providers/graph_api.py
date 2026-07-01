@@ -125,7 +125,7 @@ class GraphAPIProvider(OutlookProvider):
             if only_unseen:
                 params["$filter"] = "isRead eq false"
 
-            # Build proxy configuration
+            # Build proxy settings
             proxies = None
             if self.config.proxy_url:
                 proxies = {"http": self.config.proxy_url, "https": self.config.proxy_url}

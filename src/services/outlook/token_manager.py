@@ -15,7 +15,7 @@ from .account import OutlookAccount
 logger = logging.getLogger(__name__)
 
 
-# Scope configuration for each provider.
+# Scope settings for each provider.
 PROVIDER_SCOPES = {
     ProviderType.IMAP_OLD: "",  # Legacy IMAP does not require a dedicated scope
     ProviderType.IMAP_NEW: "https://outlook.office.com/IMAP.AccessAsUser.All offline_access",
@@ -52,7 +52,7 @@ class TokenManager:
         """Initialize the token manager.
 
         Args:
-            account: Outlook account configuration.
+            account: Outlook account settings.
             provider_type: Provider implementation to use.
             proxy_url: Optional proxy URL.
             timeout: HTTP request timeout in seconds.
@@ -218,7 +218,7 @@ def create_token_manager(
     """Create a token manager instance.
 
     Args:
-        account: Outlook account configuration.
+        account: Outlook account settings.
         provider_type: Provider implementation to use.
         proxy_url: Optional proxy URL.
         timeout: HTTP request timeout in seconds.

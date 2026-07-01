@@ -16,7 +16,7 @@ class OutlookAccount:
 
     @classmethod
     def from_config(cls, config: Dict[str, Any]) -> "OutlookAccount":
-        """Create account from configuration"""
+        """Create account from settings dict"""
         return cls(
             email=config.get("email", ""),
             password=config.get("password", ""),
@@ -47,5 +47,5 @@ class OutlookAccount:
         return result
 
     def __str__(self) -> str:
-        """ string represents """
+        """String representation"""
         return f"OutlookAccount({self.email})"

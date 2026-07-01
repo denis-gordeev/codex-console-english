@@ -282,7 +282,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                 else:
                     raise ValueError(f"Email service not found or disabled: {email_service_id}")
             else:
-                # Use default configuration or passed configuration
+                # Use default settings or provided settings
                 if service_type == EmailServiceType.TEMPMAIL:
                     config = {
                         "base_url": settings.tempmail_base_url,
@@ -811,7 +811,7 @@ async def start_registration(
 
     - email_service_type: Email service type (tempmail, outlook, moe_mail)
     - proxy: proxy address
-    - email_service_config: Email service configuration (Outlook requires account credentials)
+    - email_service_config: Email service settings (Outlook requires account credentials)
     """
     # Verify email service type
     try:
@@ -1080,7 +1080,7 @@ async def get_available_email_services():
     Get a list of email services available for registration
 
     Returns all enabled email services, including:
-    - tempmail: Tempmail (no configuration required)
+    - tempmail: Tempmail (no setup required)
     - outlook: Imported Outlook account
     - moe_mail: configured custom domain service
     """

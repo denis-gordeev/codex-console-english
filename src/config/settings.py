@@ -1,5 +1,5 @@
 """
-Configuration management backed by database storage.
+Settings management backed by database storage.
 
 Most settings are stored in the database, with startup-time environment
 variables still supported for deployment overrides.

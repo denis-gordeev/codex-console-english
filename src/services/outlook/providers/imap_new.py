@@ -23,7 +23,7 @@ class IMAPNewProvider(OutlookProvider):
     Use outlook.live.com:993 and login.microsoftonline.com/consumers Token endpoints
     Requires IMAP.AccessAsUser.All scope"""
 
-    # IMAP server configuration
+    # IMAP server settings
     IMAP_HOST = "outlook.live.com"
     IMAP_PORT = 993
 

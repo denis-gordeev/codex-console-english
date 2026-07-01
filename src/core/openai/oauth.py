@@ -140,7 +140,7 @@ def _post_form(
     Returns:
         Response JSON data
     """
-    # Build proxy configuration
+    # Build proxy settings
     proxies = None
     if proxy_url:
         proxies = {

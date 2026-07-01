@@ -55,7 +55,7 @@ class BaseEmailService(abc.ABC):
         """Create new email address
 
         Args:
-            config: configuration options, such as email prefix, domain, etc.
+            config: settings options, such as email prefix, domain, etc.
 
         Returns:
             A dictionary with at least:
@@ -251,7 +251,7 @@ class BaseEmailService(abc.ABC):
         """Update service status
 
         Args:
-            success: True if the operation was successful
+            success: True if the operation succeeded
             error: error message"""
         if success:
             self._status = EmailServiceStatus.HEALTHY
@@ -294,14 +294,14 @@ class EmailServiceFactory:
 
         Args:
             service_type: service type
-            config: service configuration
+            config: service settings
             name: service name
 
         Returns:
             Email service instance
 
         Raises:
-            ValueError: The service type is not registered or the configuration is invalid"""
+            ValueError: The service type is not registered or the settings are invalid"""
         if service_type not in cls._registry:
             raise ValueError(f"Unknown service type: {service_type.value}")
 
@@ -342,7 +342,7 @@ def create_email_service(
 
     Args:
         service_type: service type
-        config: service configuration
+        config: service settings
         name: service name
 
     Returns:

@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class RequestConfig:
-    """HTTP request configuration"""
+    """HTTP request settings"""
     timeout: int = 30
     max_retries: int = 3
     retry_delay: float = 1.0
@@ -53,7 +53,7 @@ class HTTPClient:
 
         Args:
             proxy_url: proxy URL, such as "http://127.0.0.1:7890"
-            config: request configuration
+            config: request settings
             session: reusable session object
         """
         self.proxy_url = proxy_url
@@ -62,7 +62,7 @@ class HTTPClient:
 
     @property
     def proxies(self) -> Optional[Dict[str, str]]:
-        """Get proxy configuration"""
+        """Get proxy settings"""
         if not self.proxy_url:
             return None
         return {
@@ -106,7 +106,7 @@ class HTTPClient:
         kwargs.setdefault("timeout", self.config.timeout)
         kwargs.setdefault("allow_redirects", self.config.follow_redirects)
 
-        # Add proxy configuration
+        # Add proxy settings
         if self.proxies and "proxies" not in kwargs:
             kwargs["proxies"] = self.proxies
 
@@ -244,11 +244,11 @@ class OpenAIHTTPClient(HTTPClient):
 
         Args:
             proxy_url: proxy URL
-            config: request configuration
+            config: request settings
         """
         super().__init__(proxy_url, config)
 
-        # OpenAI specific default configuration
+        # OpenAI-specific defaults
         if config is None:
             self.config.timeout = 30
             self.config.max_retries = 3
@@ -356,7 +356,7 @@ class OpenAIHTTPClient(HTTPClient):
 
         Args:
             did: Device ID
-            proxies: proxy configuration
+            proxies: proxy settings
 
         Returns:
             Sentinel token or None
@@ -404,7 +404,7 @@ def create_http_client(
 
     Args:
         proxy_url: proxy URL
-        config: request configuration
+        config: request settings
 
     Returns:
         HTTPClient instance
@@ -421,7 +421,7 @@ def create_openai_client(
 
     Args:
         proxy_url: proxy URL
-        config: request configuration
+        config: request settings
 
     Returns:
         OpenAIHTTPClient instance

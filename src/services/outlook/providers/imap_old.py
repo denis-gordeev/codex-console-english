@@ -21,7 +21,7 @@ class IMAPOldProvider(OutlookProvider):
     """Legacy IMAP provider
     Use outlook.office365.com:993 and login.live.com Token endpoints"""
 
-    # IMAP server configuration
+    # IMAP server settings
     IMAP_HOST = "outlook.office365.com"
     IMAP_PORT = 993
 

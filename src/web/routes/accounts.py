@@ -965,7 +965,7 @@ async def upload_account_to_tm(account_id: int, request: Optional[UploadTMReques
 # ============== Inbox Code ==============
 
 def _build_inbox_config(db, service_type, email: str) -> dict:
-    """Build service configuration from database based on account email service type (do not pass proxy_url)"""
+    """Build service settings from database based on account email service type (do not pass proxy_url)"""
     from ...database.models import EmailService as EmailServiceModel
     from ...services import EmailServiceType as EST
 

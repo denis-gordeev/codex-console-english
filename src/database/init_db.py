@@ -9,7 +9,7 @@ from .models import Base
 def initialize_database(database_url: str = None):
     """
     Initialize database
-    Create all tables and set default configuration
+    Create all tables and set default settings
     """
     # Initialize database connection and tables
     db_manager = init_database(database_url)

@@ -88,7 +88,7 @@ def fetch_dynamic_proxy(api_url: str, api_key: str = "", api_key_header: str = "
 
 def get_proxy_url_for_task() -> Optional[str]:
     """Get the proxy URL for the registration task.
-    Prefers dynamic proxies if enabled; otherwise falls back to static proxy configuration.
+    Prefers dynamic proxies if enabled; otherwise falls back to static proxy settings.
 
     Returns:
         Proxy URL or None"""

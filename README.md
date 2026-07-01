@@ -19,6 +19,8 @@ This repository keeps the original structure and overall approach, while applyin
 
 ## Progress Tracker
 
+- Replaced all remaining "configuration" with "settings" in user-facing contexts across Python backend, JS frontend, and HTML templates (~50 occurrences in models, CRUD, routes, services, and templates).
+
 ### Completed
 
 - Rewrote the public `README.md` into clear English and aligned it with the current project positioning.

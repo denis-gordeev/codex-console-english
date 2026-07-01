@@ -99,7 +99,7 @@ async def get_tm_service(service_id: int):
 
 @router.patch("/{service_id}", response_model=TmServiceResponse)
 async def update_tm_service(service_id: int, request: TmServiceUpdate):
-    """Update Team Manager service configuration"""
+    """Update Team Manager service settings"""
     with get_db() as db:
         svc = crud.get_tm_service_by_id(db, service_id)
         if not svc:

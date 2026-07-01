@@ -1,5 +1,5 @@
 """
-Email service configuration API routing
+Email service settings API routing
 """
 
 import logging
@@ -86,7 +86,7 @@ class OutlookBatchImportResponse(BaseModel):
 SENSITIVE_FIELDS = {'password', 'api_key', 'refresh_token', 'access_token', 'admin_token'}
 
 def filter_sensitive_config(config: Dict[str, Any]) -> Dict[str, Any]:
-    """Filter sensitive configuration fields"""
+    """Filter sensitive settings fields"""
     if not config:
         return {}
 
@@ -297,7 +297,7 @@ async def get_email_service_full(service_id: int):
             "name": service.name,
             "enabled": service.enabled,
             "priority": service.priority,
-            "config": service.config or {}, # Return the complete configuration
+            "config": service.config or {}, # Return the complete settings
             "last_used": service.last_used.isoformat() if service.last_used else None,
             "created_at": service.created_at.isoformat() if service.created_at else None,
             "updated_at": service.updated_at.isoformat() if service.updated_at else None,
@@ -306,7 +306,7 @@ async def get_email_service_full(service_id: int):
 
 @router.post("", response_model=EmailServiceResponse)
 async def create_email_service(request: EmailServiceCreate):
-    """Create email service configuration"""
+    """Create email service settings"""
     # Verify service type
     try:
         EmailServiceType(request.service_type)
@@ -335,7 +335,7 @@ async def create_email_service(request: EmailServiceCreate):
 
 @router.patch("/{service_id}", response_model=EmailServiceResponse)
 async def update_email_service(service_id: int, request: EmailServiceUpdate):
-    """Update email service configuration"""
+    """Update email service settings"""
     with get_db() as db:
         service = db.query(EmailServiceModel).filter(EmailServiceModel.id == service_id).first()
         if not service:
@@ -345,7 +345,7 @@ async def update_email_service(service_id: int, request: EmailServiceUpdate):
         if request.name is not None:
             update_data["name"] = request.name
         if request.config is not None:
-            # Merge configuration instead of replacing
+            # Merge settings instead of replacing
             current_config = service.config or {}
             merged_config = {**current_config, **request.config}
             # Remove null values
@@ -367,7 +367,7 @@ async def update_email_service(service_id: int, request: EmailServiceUpdate):
 
 @router.delete("/{service_id}")
 async def delete_email_service(service_id: int):
-    """Delete email service configuration"""
+    """Delete email service settings"""
     with get_db() as db:
         service = db.query(EmailServiceModel).filter(EmailServiceModel.id == service_id).first()
         if not service:
@@ -509,7 +509,7 @@ async def batch_import_outlook(request: OutlookBatchImportRequest):
                 errors.append(f"Line {i+1}: Email already exists: {email}")
                 continue
 
-            # Build configuration
+            # Build settings dict
             config = {
                 "email": email,
                 "password": password

@@ -65,7 +65,7 @@ class OutlookAccount:
 
     @classmethod
     def from_config(cls, config: Dict[str, Any]) -> "OutlookAccount":
-        """Create account from configuration"""
+        """Create account from settings dict"""
         return cls(
             email=config.get("email", ""),
             password=config.get("password", ""),
@@ -401,7 +401,7 @@ class OutlookService(BaseEmailService):
                 self.accounts.append(account)
                 self._account_locks[account.email] = threading.Lock()
             else:
-                logger.warning(f"Invalid Outlook account configuration: {self.config}")
+                logger.warning(f"Invalid Outlook account settings: {self.config}")
         else:
             # Multiple account format
             for account_config in self.config.get("accounts", []):
@@ -410,7 +410,7 @@ class OutlookService(BaseEmailService):
                     self.accounts.append(account)
                     self._account_locks[account.email] = threading.Lock()
                 else:
-                    logger.warning(f"Invalid Outlook account configuration: {account_config}")
+                    logger.warning(f"Invalid Outlook account settings: {account_config}")
 
         if not self.accounts:
             logger.warning("No valid Outlook account configured")
@@ -426,7 +426,7 @@ class OutlookService(BaseEmailService):
         Select an available Outlook account
 
         Args:
-            config: Configuration options (currently unused)
+            config: Settings options (currently unused)
 
         Returns:
             Dictionary containing email data:

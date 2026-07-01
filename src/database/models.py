@@ -85,13 +85,13 @@ class Account(Base):
 
 
 class EmailService(Base):
-    """Email service configuration table"""
+    """Email service settings table"""
     __tablename__ = 'email_services'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     service_type = Column(String(50), nullable=False)  # 'outlook', 'moe_mail'
     name = Column(String(100), nullable=False)
-    config = Column(JSONEncodedDict, nullable=False) # Service configuration (stored encrypted)
+    config = Column(JSONEncodedDict, nullable=False) # Service settings (stored encrypted)
     enabled = Column(Boolean, default=True)
     priority = Column(Integer, default=0) # Priority
     last_used = Column(DateTime)
@@ -131,7 +131,7 @@ class Setting(Base):
 
 
 class CpaService(Base):
-    """CPA service configuration table"""
+    """CPA service settings table"""
     __tablename__ = 'cpa_services'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -145,7 +145,7 @@ class CpaService(Base):
 
 
 class Sub2ApiService(Base):
-    """Sub2API service configuration table"""
+    """Sub2API service settings table"""
     __tablename__ = 'sub2api_services'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -159,7 +159,7 @@ class Sub2ApiService(Base):
 
 
 class TeamManagerService(Base):
-    """Team Manager service configuration table"""
+    """Team Manager service settings table"""
     __tablename__ = 'tm_services'
 
     id = Column(Integer, primary_key=True, autoincrement=True)

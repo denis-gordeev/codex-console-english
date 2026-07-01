@@ -116,7 +116,7 @@ async def get_cpa_service_full(service_id: int):
 
 @router.patch("/{service_id}", response_model=CpaServiceResponse)
 async def update_cpa_service(service_id: int, request: CpaServiceUpdate):
-    """Update CPA service configuration"""
+    """Update CPA service settings"""
     with get_db() as db:
         service = crud.get_cpa_service_by_id(db, service_id)
         if not service:

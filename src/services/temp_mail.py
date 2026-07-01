@@ -43,7 +43,7 @@ class TempMailService(BaseEmailService):
         required_keys = ["base_url", "admin_password", "domain"]
         missing_keys = [key for key in required_keys if not (config or {}).get(key)]
         if missing_keys:
-            raise ValueError(f"Missing required configuration: {missing_keys}")
+            raise ValueError(f"Missing required settings: {missing_keys}")
 
         default_config = {
             "enable_prefix": True,

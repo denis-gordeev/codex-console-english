@@ -36,14 +36,14 @@ class MeoMailEmailService(BaseEmailService):
             name: service name"""
         super().__init__(EmailServiceType.MOE_MAIL, name)
 
-        # Required configuration check
+        # Required settings check
         required_keys = ["base_url", "api_key"]
         missing_keys = [key for key in required_keys if key not in (config or {})]
 
         if missing_keys:
-            raise ValueError(f"Missing required configuration: {missing_keys}")
+            raise ValueError(f"Missing required settings: {missing_keys}")
 
-        # Default configuration
+        # Default settings
         default_config = {
             "base_url": "",
             "api_key": "",
@@ -156,13 +156,13 @@ class MeoMailEmailService(BaseEmailService):
             raise EmailServiceError(f"Failed to make API request: {method} {endpoint} - {e}")
 
     def get_config(self, force_refresh: bool = False) -> Dict[str, Any]:
-        """Get system configuration
+        """Get system settings
 
         Args:
             force_refresh: Force cache refresh
 
         Returns:
-            Configuration dictionary"""
+            Settings dictionary"""
         # Check cache
         if not force_refresh and self._cached_config and time.time() - self._last_config_check < 300:
             return self._cached_config
@@ -174,14 +174,14 @@ class MeoMailEmailService(BaseEmailService):
             self.update_status(True)
             return response
         except Exception as e:
-            logger.warning(f"Failed to get configuration: {e}")
+            logger.warning(f"Failed to get settings: {e}")
             return {}
 
     def create_email(self, config: Dict[str, Any] = None) -> Dict[str, Any]:
         """Create temporary email address
 
         Args:
-            config: configuration options:
+            config: settings options:
                 - name: email prefix (optional)
                 - expiryTime: validity duration (milliseconds) (optional)
                 - domain: email domain (optional)
@@ -192,7 +192,7 @@ class MeoMailEmailService(BaseEmailService):
             - service_id: Email ID
             - id: Email ID (same as service_id)
             - expiry: expiry time"""
-        # Get default configuration
+        # Get default settings
         sys_config = self.get_config()
         default_domain = self.config.get("default_domain")
         if not default_domain and sys_config.get("emailDomains"):
@@ -409,7 +409,7 @@ class MeoMailEmailService(BaseEmailService):
     def check_health(self) -> bool:
         """Check if the custom domain email service is available"""
         try:
-            # Try to get configuration
+            # Try to get settings
             config = self.get_config(force_refresh=True)
             if config:
                 logger.debug(f"Custom-domain email health check passed, config: {config.get('defaultRole', 'N/A')}")
