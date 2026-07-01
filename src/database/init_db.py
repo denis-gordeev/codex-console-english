@@ -33,11 +33,11 @@ def reset_database(database_url: str = None):
 
     # Delete all tables
     db_manager.drop_tables()
-    print("All tables have been deleted")
+    print("All tables deleted")
 
     # Recreate all tables
     db_manager.create_tables()
-    print("All tables have been recreated")
+    print("All tables recreated")
 
     # Initialize default settings
     from ..config.settings import init_default_settings

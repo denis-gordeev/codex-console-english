@@ -222,7 +222,7 @@ async def update_registration_settings(request: RegistrationSettings):
         registration_sleep_max=request.sleep_max,
     )
 
-    return {"success": True, "message": "Registration settings have been updated"}
+    return {"success": True, "message": "Registration settings updated"}
 
 
 @router.post("/webui")

@@ -128,8 +128,8 @@ def upload_to_sub2api(
         return False, error_msg
 
     except Exception as e:
-        logger.error(f"Sub2API upload exception: {e}")
-        return False, f"Upload exception: {str(e)}"
+        logger.error(f"Sub2API upload error: {e}")
+        return False, f"Upload error: {str(e)}"
 
 
 def batch_upload_to_sub2api(

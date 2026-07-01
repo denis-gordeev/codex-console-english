@@ -66,8 +66,8 @@ def upload_to_team_manager(
             error_msg = f"{error_msg} - {resp.text[:200]}"
         return False, error_msg
     except Exception as e:
-        logger.error(f"Team Manager upload exception: {e}")
-        return False, f"Upload exception: {str(e)}"
+        logger.error(f"Team Manager upload error: {e}")
+        return False, f"Upload error: {str(e)}"
 
 
 def batch_upload_to_team_manager(
@@ -157,8 +157,8 @@ def batch_upload_to_team_manager(
                         {"id": account.id, "email": account.email, "success": False, "error": error_msg}
                     )
         except Exception as e:
-            logger.error(f"Team Manager batch upload exception: {e}")
-            error_msg = f"Upload exception: {str(e)}"
+            logger.error(f"Team Manager batch upload error: {e}")
+            error_msg = f"Upload error: {str(e)}"
             for account in valid_accounts:
                 results["failed_count"] += 1
                 results["details"].append(

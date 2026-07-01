@@ -128,7 +128,7 @@ class BaseEmailService(abc.ABC):
             True if the service is healthy
 
         Note:
-            This method should not throw an exception, it should catch the exception and return False"""
+            This method should not raise an exception; it should catch errors and return False"""
         pass
 
     def get_email_info(self, email_id: str) -> Optional[Dict[str, Any]]:

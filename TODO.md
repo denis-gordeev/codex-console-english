@@ -1,5 +1,28 @@
 # TODO
 
+## Completed In This Round (July 1, 2026 - Round 56)
+
+- Pulled `origin/main` - repository was already up to date.
+- Verified zero non-ASCII/CJK/Cyrillic characters across all tracked source files.
+- Deep scan found ~20 remaining Chinese-English translation artifacts ("exception" in error messages, "have been" passive constructions, stilted docstrings).
+- Replaced "exception" → "error" in user-facing log messages and return values across upload modules, Outlook providers, and registration routes (18 occurrences):
+  - cpa_upload.py: "CPA upload exception" → "CPA upload error", "Upload exception" → "Upload error" (2)
+  - sub2api_upload.py: "Sub2API upload exception" → "Sub2API upload error", "Upload exception" → "Upload error" (2)
+  - team_manager_upload.py: "Team Manager upload exception" → "Team Manager upload error", "Team Manager batch upload exception" → "Team Manager batch upload error", "Upload exception" → "Upload error" (4)
+  - imap_new.py: "XOAUTH2 authentication exception" → "XOAUTH2 authentication error" (1)
+  - imap_old.py: "XOAUTH2 authentication exception" → "XOAUTH2 authentication error" (1)
+  - registration.py routes: "[CPA/Sub2API/TM] Exception" → "[CPA/Sub2API/TM] Error", "upload exception" → "upload error", "Registration task exception" → "Registration task error", "Thread pool execution exception" → "Thread pool execution error", "Batch task exception" → "Batch task error" (10)
+  - base.py: "should not throw an exception, it should catch the exception" → "should not raise an exception; it should catch errors" (1)
+- Replaced "have been" Chinese-style passive constructions with concise English (4 occurrences):
+  - init_db.py: "All tables have been deleted" → "All tables deleted"
+  - init_db.py: "All tables have been recreated" → "All tables recreated"
+  - settings.py routes: "Registration settings have been updated" → "Registration settings updated"
+  - email.py routes: "{N} services have been deleted" → "{N} services deleted"
+- Replaced stilted docstrings in temp_mail.py (2 occurrences):
+  - "Decode MIME headers, compatible with RFC 2047 encoding topics" → "Decode MIME headers (RFC 2047 encoded subjects)"
+  - "Unified extraction of email fields, compatible with raw MIME and different Worker return formats" → "Extract email fields from either raw MIME or Worker response formats"
+- All 32 tests pass.
+
 ## Completed In This Round (June 30, 2026 - Round 55)
 
 - Pulled `origin/main` - repository was already up to date.
@@ -904,7 +927,7 @@
 
 ## Next Actions
 
-- Continue deep-scanning for remaining Chinese-English translation artifacts (e.g., "information" → "data/details", "obtain" → "get", remaining stilted docstrings).
+- Continue deep-scanning for remaining Chinese-English translation artifacts (e.g., remaining "configuration" in technical docstrings, stilted docstrings in moe_mail.py).
 - Expand regression coverage for translated API messages and settings flows.
 - Add API tests for access-control edge cases such as malformed cookies and custom logout `next` targets.
 - Verify Docker environment variable examples against the actual `settings` names used by the app.

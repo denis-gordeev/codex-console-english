@@ -63,7 +63,7 @@ class TempMailService(BaseEmailService):
         self._email_cache: Dict[str, Dict[str, Any]] = {}
 
     def _decode_mime_header(self, value: str) -> str:
-        """Decode MIME headers, compatible with RFC 2047 encoding topics."""
+        """Decode MIME headers (RFC 2047 encoded subjects)."""
         if not value:
             return ""
         try:
@@ -115,7 +115,7 @@ class TempMailService(BaseEmailService):
         return unescape("\n".join(part for part in parts if part).strip())
 
     def _extract_mail_fields(self, mail: Dict[str, Any]) -> Dict[str, str]:
-        """Unified extraction of email fields, compatible with raw MIME and different Worker return formats."""
+        """Extract email fields from either raw MIME or Worker response formats."""
         sender = str(
             mail.get("source")
             or mail.get("from")

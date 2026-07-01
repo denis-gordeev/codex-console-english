@@ -118,7 +118,7 @@ class IMAPNewProvider(OutlookProvider):
             self._conn.authenticate("XOAUTH2", lambda _: auth_string.encode("utf-8"))
             return True
         except Exception as e:
-            logger.error(f"[{self.account.email}] XOAUTH2 authentication exception: {e}")
+            logger.error(f"[{self.account.email}] XOAUTH2 authentication error: {e}")
             # Clear cached tokens
             self._token_manager.clear_cache()
             return False

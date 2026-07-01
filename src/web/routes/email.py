@@ -573,7 +573,7 @@ async def batch_delete_outlook(service_ids: List[int]):
                 deleted += 1
         db.commit()
 
-    return {"success": True, "deleted": deleted, "message": f"{deleted} services have been deleted"}
+    return {"success": True, "deleted": deleted, "message": f"{deleted} services deleted"}
 
 
 # ============== Tempmail test ==============

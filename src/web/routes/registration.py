@@ -439,9 +439,9 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                                     else:
                                         log_callback(f"[CPA] upload failed ({_svc.name}): {_msg}")
                                 except Exception as _e:
-                                    log_callback(f"[CPA] Exception ({_sid}): {_e}")
+                                    log_callback(f"[CPA] Error ({_sid}): {_e}")
                     except Exception as cpa_err:
-                        log_callback(f"[CPA] upload exception: {cpa_err}")
+                        log_callback(f"[CPA] upload error: {cpa_err}")
 
                 # Automatically upload to Sub2API (multiple services available)
                 if auto_upload_sub2api:
@@ -464,9 +464,9 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                                     _ok, _msg = upload_to_sub2api([saved_account], _svc.api_url, _svc.api_key)
                                     log_callback(f"[Sub2API] {'success' if _ok else 'failure'}({_svc.name}): {_msg}")
                                 except Exception as _e:
-                                    log_callback(f"[Sub2API] Exception ({_sid}): {_e}")
+                                    log_callback(f"[Sub2API] Error ({_sid}): {_e}")
                     except Exception as s2a_err:
-                        log_callback(f"[Sub2API] upload exception: {s2a_err}")
+                        log_callback(f"[Sub2API] upload error: {s2a_err}")
 
                 # Automatically upload to Team Manager (multiple services available)
                 if auto_upload_tm:
@@ -489,9 +489,9 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                                     _ok, _msg = upload_to_team_manager(saved_account, _svc.api_url, _svc.api_key)
                                     log_callback(f"[TM] {'success' if _ok else 'failure'}({_svc.name}): {_msg}")
                                 except Exception as _e:
-                                    log_callback(f"[TM] Exception ({_sid}): {_e}")
+                                    log_callback(f"[TM] Error ({_sid}): {_e}")
                     except Exception as tm_err:
-                        log_callback(f"[TM] Upload exception: {tm_err}")
+                        log_callback(f"[TM] Upload error: {tm_err}")
 
                 # Update task status
                 crud.update_registration_task(
@@ -520,7 +520,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                 logger.warning(f"Registration task failed: {task_uuid}, reason: {result.error_message}")
 
         except Exception as e:
-            logger.error(f"Registration task exception: {task_uuid}, error: {e}")
+            logger.error(f"Registration task error: {task_uuid}, error: {e}")
 
             try:
                 with get_db() as db:
@@ -572,8 +572,8 @@ async def run_registration_task(task_uuid: str, email_service_type: str, proxy: 
             tm_service_ids or [],
         )
     except Exception as e:
-        logger.error(f"Thread pool execution exception: {task_uuid}, error: {e}")
-        task_manager.add_log(task_uuid, f"[Error] Thread pool execution exception: {str(e)}")
+        logger.error(f"Thread pool execution error: {task_uuid}, error: {e}")
+        task_manager.add_log(task_uuid, f"[Error] Thread pool execution error: {str(e)}")
         task_manager.update_status(task_uuid, "failed", error=str(e))
 
 
@@ -665,8 +665,8 @@ async def run_batch_parallel(
         else:
             update_batch_status(finished=True, status="cancelled")
     except Exception as e:
-        logger.error(f"Batch task {batch_id} exception: {e}")
-        add_batch_log(f"[Error] Batch task exception: {str(e)}")
+        logger.error(f"Batch task {batch_id} error: {e}")
+        add_batch_log(f"[Error] Batch task error: {str(e)}")
         update_batch_status(finished=True, status="failed")
     finally:
         batch_tasks[batch_id]["finished"] = True
@@ -754,8 +754,8 @@ async def run_batch_pipeline(
             add_batch_log(f"[Done] Batch task completed! Succeeded: {batch_tasks[batch_id]['success']}, Failed: {batch_tasks[batch_id]['failed']}")
             update_batch_status(finished=True, status="completed")
     except Exception as e:
-        logger.error(f"Batch task {batch_id} exception: {e}")
-        add_batch_log(f"[Error] Batch task exception: {str(e)}")
+        logger.error(f"Batch task {batch_id} error: {e}")
+        add_batch_log(f"[Error] Batch task error: {str(e)}")
         update_batch_status(finished=True, status="failed")
     finally:
         batch_tasks[batch_id]["finished"] = True

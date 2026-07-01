@@ -170,8 +170,8 @@ def upload_to_cpa(
         return False, _extract_cpa_error(response)
 
     except Exception as e:
-        logger.error(f"CPA upload exception: {e}")
-        return False, f"Upload exception: {str(e)}"
+        logger.error(f"CPA upload error: {e}")
+        return False, f"Upload error: {str(e)}"
 
 
 def batch_upload_to_cpa(
