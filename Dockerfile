@@ -7,7 +7,7 @@ WORKDIR /app
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    # WebUI default configuration
+    # WebUI default settings
     WEBUI_HOST=0.0.0.0 \
     WEBUI_PORT=1455 \
     LOG_LEVEL=info \

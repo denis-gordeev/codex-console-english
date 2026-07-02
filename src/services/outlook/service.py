@@ -264,7 +264,7 @@ class OutlookService(BaseEmailService):
         Select an available Outlook account
 
         Args:
-            config: Configuration options (unused)
+            config: Settings options (unused)
 
         Returns:
             Dictionary containing email data
