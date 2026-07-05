@@ -131,7 +131,7 @@ class TempmailService(BaseEmailService):
 
         Args:
             email: email address
-            email_id: Email token (if not provided, search from cache)
+            email_id: Email token (if not provided, look up in cache)
             timeout: timeout (seconds)
             pattern: OTP regex pattern
             otp_sent_at: OTP sent timestamp (Tempmail service does not use this parameter yet)
@@ -141,7 +141,7 @@ class TempmailService(BaseEmailService):
         """
         token = email_id
         if not token:
-            # Find token from cache
+            # Look up token in cache
             if email in self._email_cache:
                 token = self._email_cache[email].get("token")
             else:
@@ -245,7 +245,7 @@ class TempmailService(BaseEmailService):
 
         for email in emails_to_delete:
             del self._email_cache[email]
-            logger.info(f"Remove email from cache: {email}")
+            logger.info(f"Removing email from cache: {email}")
 
         return len(emails_to_delete) > 0
 

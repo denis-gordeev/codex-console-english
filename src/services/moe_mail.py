@@ -255,7 +255,7 @@ class MeoMailEmailService(BaseEmailService):
 
         Args:
             email: email address
-            email_id: Email ID (if not provided, search from cache)
+            email_id: Email ID (if not provided, look up in cache)
             timeout: timeout (seconds)
             pattern: OTP regex pattern
             otp_sent_at: OTP sent timestamp (custom domain service does not use this parameter yet)
@@ -265,7 +265,7 @@ class MeoMailEmailService(BaseEmailService):
         # Find email ID
         target_email_id = email_id
         if not target_email_id:
-            # Find from cache
+            # Look up in cache
             for eid, info in self._emails_cache.items():
                 if info.get("email") == email:
                     target_email_id = eid

@@ -74,13 +74,13 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         db_key="webui.host",
         default_value="0.0.0.0",
         category=SettingCategory.WEBUI,
-        description="Web UI listening address"
+        description="Web UI bind address"
     ),
     "webui_port": SettingDefinition(
         db_key="webui.port",
         default_value=8000,
         category=SettingCategory.WEBUI,
-        description="Web UI listening port"
+        description="Web UI bind port"
     ),
     "webui_secret_key": SettingDefinition(
         db_key="webui.secret_key",
@@ -264,7 +264,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         db_key="tempmail.base_url",
         default_value="https://api.tempmail.lol/v2",
         category=SettingCategory.TEMPMAIL,
-        description="Tempmail API address"
+        description="Tempmail API URL"
     ),
     "tempmail_timeout": SettingDefinition(
         db_key="tempmail.timeout",
@@ -314,7 +314,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         db_key="tm.api_url",
         default_value="",
         category=SettingCategory.GENERAL,
-        description="Team Manager API address"
+        description="Team Manager API URL"
     ),
     "tm_api_key": SettingDefinition(
         db_key="tm.api_key",
@@ -335,7 +335,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         db_key="cpa.api_url",
         default_value="",
         category=SettingCategory.CPA,
-        description="CPA API address"
+        description="CPA API URL"
     ),
     "cpa_api_token": SettingDefinition(
         db_key="cpa.api_token",

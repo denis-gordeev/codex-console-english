@@ -1,5 +1,37 @@
 # TODO
 
+## Completed In This Round (July 5, 2026 - Round 64)
+
+- Pulled `origin/main` - repository was already up to date.
+- Verified zero CJK/Cyrillic characters across all tracked source files.
+- Deep scan found 67 remaining Chinese-English translation artifacts and fixed all of them:
+  - registration.py: "Prioritize randomly selecting" -> "First, randomly select", "call the API to get" -> "call the API to fetch a proxy URL", "Prioritize using" -> "Prefer", "Update proxy usage time" -> "Update proxy last-used time", "if empty, take the first enabled one" -> "if empty, the first enabled service is used", "Registered number" -> "Registered count", "total number" -> "Total", "Number of skips (registered)" -> "Skipped (already registered)", "Number to be registered" -> "To register", "The actual service ID to be registered" -> "Service IDs to register", "Check if there is" -> "Check for/Check if already", "Verify parameters" -> "Validate input", "automatically created" -> "created automatically", "If there is no ... check settings" -> "If no ... exists, fall back to settings" (16 occurrences)
+  - accounts.py: "If left blank, it will be cleared; if it is not blank, it will be updated." -> "Blank clears the field; non-blank updates it.", "Supports paging" -> "Supports pagination", "If not passed, the global settings will be used" -> "defaults to global settings if omitted", "If not passed, the first enabled one will be used" -> "uses the first enabled service if omitted" (5 occurrences)
+  - outlook_legacy_mail.py: "Prioritize using XOAUTH2" -> "Try XOAUTH2 authentication first" (1 occurrence)
+  - cpa_services.py: "If left blank, the original value will be retained" -> "if omitted, the current value is kept" (1 occurrence)
+  - sub2api_services.py: "If left blank, the original value will be retained" -> "if omitted, the current value is kept" (1 occurrence)
+  - moe_mail.py: "search from cache" -> "look up in cache", "Find from cache" -> "Look up in cache" (2 occurrences)
+  - tempmail.py: "search from cache" -> "look up in cache", "Find token from cache" -> "Look up token in cache", "Remove email from cache" -> "Removing email from cache" (3 occurrences)
+  - graph_api.py: "clears the cache but does not record health failures" -> "cache is cleared without recording a health failure" (1 occurrence)
+  - crud.py: "supports paging" -> "supports pagination" (1 occurrence)
+  - cpa_upload.py: "Specify CPA API URL (takes precedence over global settings)" -> "CPA API URL (overrides global settings)", "Check if there is already a Token" -> "Check if a token already exists" (3 occurrences)
+  - imap_mail.py: "Only used to receive OTPs, requiring a direct connection" -> "Used only for receiving OTPs; requires a direct connection" (1 occurrence)
+  - config/settings.py: "listening address/port" -> "bind address/port", "API address" -> "API URL" (5 occurrences)
+  - config/constants.py: "Requires user setup" -> "Must be configured by the user", "Randomly select" -> "Select a random", "Determine the days" -> "Get the number of days", "listening host/port" -> "bind host/port" (5 occurrences)
+  - dynamic_proxy.py: "proxy API address" -> "proxy API URL" (1 occurrence)
+  - webui.py: "Listen host/port" -> "Bind host/port" (2 occurrences)
+  - accounts.js: "Query the inbox OTP" -> "Check inbox for OTP", "Querying inbox" -> "Checking inbox" (2 occurrences)
+  - app.js: "used for reconnection when the page becomes visible again" -> "for reconnecting when the page regains visibility", "The page is visible again, reconnect" -> "Page visible again; reconnecting" (4 occurrences)
+  - settings.html: "Set tab page" -> "Settings tabs", "through the API, taking priority over" -> "via the API, overriding", "Operation" -> "Actions" (5 table headers), "Password used to access the page" -> "Page access password", "The smaller the number, the higher the priority" -> "Lower numbers mean higher priority" (3 occurrences), "Supports the root address" -> "Accepts the root URL", "If client_id is not provided ... this default value will be used" -> "Used as the default when no client_id is provided", "The time interval for checking the email" -> "How often to check for new emails", "Task records" -> "Tasks" (12 occurrences)
+  - email_services.html: "Operation" -> "Actions" (2 table headers)
+  - payment.html: "Operation area" -> "Actions" (1 occurrence)
+- All 32 tests pass.
+
+## Next Actions
+
+- Continue scanning for any remaining Chinese-English translation artifacts in less-trafficked code paths.
+- Monitor for any newly introduced non-English content from upstream changes.
+
 ## Completed In This Round (July 4, 2026 - Round 63)
 
 - Pulled `origin/main` - repository was already up to date.

@@ -1219,9 +1219,9 @@ async function saveCookies(id) {
     }
 }
 
-// Query the inbox OTP
+// Check inbox for OTP
 async function checkInboxCode(id) {
-    toast.info('Querying inbox...');
+    toast.info('Checking inbox...');
     try {
         const result = await api.post(`/accounts/${id}/inbox-code`);
         if (result.success) {

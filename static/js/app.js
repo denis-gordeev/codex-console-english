@@ -33,8 +33,8 @@ let batchWebSocket = null; // Batch task WebSocket
 let useWebSocket = true; // Use WebSocket (vs REST polling)
 let wsHeartbeatInterval = null; // Heartbeat timer
 let batchWsHeartbeatInterval = null; // Batch task heartbeat timer
-let activeTaskUuid = null; // Currently active single task UUID (used for reconnection when the page becomes visible again)
-let activeBatchId = null; // Currently active batch task ID (used for reconnection when the page becomes visible again)
+let activeTaskUuid = null; // Currently active single task UUID (for reconnecting when the page regains visibility)
+let activeBatchId = null; // Currently active batch task ID (for reconnecting when the page regains visibility)
 
 // DOM element
 const elements = {
@@ -1419,14 +1419,14 @@ function initVisibilityReconnect() {
 
         // Single task reconnection
         if (activeTaskUuid && !taskCompleted && wsDisconnected) {
-            console.log('[Reconnect] The page is visible again, reconnect the single task WebSocket:', activeTaskUuid);
+            console.log('[Reconnect] Page visible again; reconnecting single-task WebSocket:', activeTaskUuid);
             addLog('info', '[System] Page became visible again, reconnecting task monitoring...');
             connectWebSocket(activeTaskUuid);
         }
 
         // Batch task reconnection
         if (activeBatchId && !batchCompleted && batchWsDisconnected) {
-            console.log('[Reconnect] The page is visible again, reconnect to the batch task WebSocket:', activeBatchId);
+            console.log('[Reconnect] Page visible again; reconnecting batch-task WebSocket:', activeBatchId);
             addLog('info', '[System] Page became visible again, reconnecting batch task monitoring...');
             connectBatchWebSocket(activeBatchId);
         }

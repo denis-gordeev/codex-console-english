@@ -1,7 +1,7 @@
 """
 IMAP email service
 Supports standard IMAP protocol email service providers such as Gmail / QQ / 163 / Yahoo / Outlook.
-Only used to receive OTPs, requiring a direct connection (imaplib does not support proxy).
+Used only for receiving OTPs; requires a direct connection (imaplib does not support proxy).
 """
 
 import imaplib

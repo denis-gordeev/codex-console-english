@@ -161,7 +161,7 @@ async def list_accounts(
     """
     Get account list
 
-    Supports paging, status filtering, email service filtering and search
+    Supports pagination, status filtering, email service filtering and search
     """
     with get_db() as db:
         # Build query
@@ -244,7 +244,7 @@ async def update_account(account_id: int, request: AccountUpdateRequest):
             update_data["metadata"] = current_metadata
 
         if request.cookies is not None:
-            # If left blank, it will be cleared; if it is not blank, it will be updated.
+            # Blank clears the field; non-blank updates it.
             update_data["cookies"] = request.cookies or None
 
         account = crud.update_account(db, account_id, **update_data)
@@ -708,7 +708,7 @@ async def validate_account_token(account_id: int, request: Optional[TokenValidat
 class CPAUploadRequest(BaseModel):
     """CPA upload request"""
     proxy: Optional[str] = None
-    cpa_service_id: Optional[int] = None  # Specify the CPA service ID. If not passed, the global settings will be used.
+    cpa_service_id: Optional[int] = None  # CPA service ID; defaults to global settings if omitted
 
 
 class BatchCPAUploadRequest(BaseModel):
@@ -719,7 +719,7 @@ class BatchCPAUploadRequest(BaseModel):
     status_filter: Optional[str] = None
     email_service_filter: Optional[str] = None
     search_filter: Optional[str] = None
-    cpa_service_id: Optional[int] = None  # Specify the CPA service ID. If not passed, the global settings will be used.
+    cpa_service_id: Optional[int] = None  # CPA service ID; defaults to global settings if omitted
 
 
 @router.post("/batch-upload-cpa")
@@ -807,7 +807,7 @@ class BatchSub2ApiUploadRequest(BaseModel):
     status_filter: Optional[str] = None
     email_service_filter: Optional[str] = None
     search_filter: Optional[str] = None
-    service_id: Optional[int] = None  # Specify the Sub2API service ID. If not passed, the first enabled one will be used.
+    service_id: Optional[int] = None  # Sub2API service ID; uses the first enabled service if omitted
     concurrency: int = 3
     priority: int = 50
 

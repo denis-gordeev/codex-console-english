@@ -145,7 +145,7 @@ class GraphAPIProvider(OutlookProvider):
             )
 
             if resp.status_code == 401:
-                # Token has no Graph permission (client_id is not authorized), clears the cache but does not record health failures
+                # Token has no Graph permission (client_id is not authorized); cache is cleared without recording a health failure
                 # Avoid the health checker disabling the provider due to insufficient permissions and affecting other accounts
                 if self._token_manager:
                     self._token_manager.clear_cache()

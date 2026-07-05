@@ -34,7 +34,7 @@
                 <p class="subtitle">Configure proxies, email services and system parameters</p>
             </div>
 
-            <!-- Set tab page -->
+            <!-- Settings tabs -->
             <div class="tabs">
                 <button class="tab-btn active" data-tab="proxy">🌐 Proxy settings</button>
                 <button class="tab-btn" data-tab="webui">🔒 Access Control</button>
@@ -51,7 +51,7 @@
                 <div class="card" style="margin-top: var(--spacing-lg);">
                     <div class="card-header">
                         <h3>Dynamic proxy settings</h3>
-                        <span class="hint">Get a new proxy IP every time through the API, taking priority over the proxy list</span>
+                        <span class="hint">Fetch a new proxy IP via the API for each task, overriding the proxy list</span>
                     </div>
                     <div class="card-body">
                         <form id="dynamic-proxy-form">
@@ -110,7 +110,7 @@
                                         <th style="width: 60px;">Default</th>
                                         <th style="width: 80px;">Status</th>
                                         <th style="width: 120px;">Last used</th>
-                                        <th style="width: 180px;">Operation</th>
+                                        <th style="width: 180px;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="proxies-table">
@@ -135,7 +135,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h3>Web UI access password</h3>
-                        <span class="hint">Password used to access the page; leave blank to keep current</span>
+                        <span class="hint">Page access password; leave blank to keep current</span>
                     </div>
                     <div class="card-body">
                         <form id="webui-settings-form">
@@ -218,7 +218,7 @@
                                         <th>API URL</th>
                                         <th style="width:80px;">Status</th>
                                         <th style="width:60px;text-align:center;">Priority</th>
-                                        <th style="width:220px;">Operation</th>
+                                        <th style="width:220px;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="cpa-services-table">
@@ -244,7 +244,7 @@
                                         <th>API URL</th>
                                         <th style="width:80px;">Status</th>
                                         <th style="width:60px;text-align:center;">Priority</th>
-                                        <th style="width:220px;">Operation</th>
+                                        <th style="width:220px;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="sub2api-services-table">
@@ -270,7 +270,7 @@
                                         <th>API URL</th>
                                         <th style="width:80px;">Status</th>
                                         <th style="width:60px;text-align:center;">Priority</th>
-                                        <th style="width:220px;">Operation</th>
+                                        <th style="width:220px;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tm-services-table">
@@ -308,7 +308,7 @@
                                 <div class="form-group">
                                     <label for="tm-service-priority">Priority</label>
                                     <input type="number" id="tm-service-priority" value="0" min="0">
-                                    <p class="hint">The smaller the number, the higher the priority</p>
+                                    <p class="hint">Lower numbers mean higher priority</p>
                                 </div>
                                 <div class="form-group">
                                     <label>&nbsp;</label>
@@ -353,7 +353,7 @@
                                 <div class="form-group">
                                     <label for="sub2api-service-priority">Priority</label>
                                     <input type="number" id="sub2api-service-priority" value="0" min="0">
-                                    <p class="hint">The smaller the number, the higher the priority</p>
+                                    <p class="hint">Lower numbers mean higher priority</p>
                                 </div>
                                 <div class="form-group">
                                     <label>&nbsp;</label>
@@ -389,7 +389,7 @@
                             <div class="form-group">
                                 <label for="cpa-service-url">API URL *</label>
                                 <input type="text" id="cpa-service-url" placeholder="https://cpa.example.com" required>
-                                <p class="hint">Supports the root address, `/v0/management` or the complete `/v0/management/auth-files` address</p>
+                                <p class="hint">Accepts the root URL, `/v0/management`, or the full `/v0/management/auth-files` URL</p>
                             </div>
                             <div class="form-group">
                                 <label for="cpa-service-token">API Token</label>
@@ -399,7 +399,7 @@
                                 <div class="form-group">
                                     <label for="cpa-service-priority">Priority</label>
                                     <input type="number" id="cpa-service-priority" value="0" min="0">
-                                    <p class="hint">The smaller the number, the higher the priority</p>
+                                    <p class="hint">Lower numbers mean higher priority</p>
                                 </div>
                                 <div class="form-group">
                                     <label>&nbsp;</label>
@@ -431,7 +431,7 @@
                                 <label for="outlook-default-client-id">Default Client ID</label>
                                 <input type="text" id="outlook-default-client-id" name="default_client_id"
                                     placeholder="24d9a0ed-8787-4584-883c-2fd79308940a">
-                                <p class="hint">Client ID for the Outlook OAuth application. If client_id is not provided when importing the account, this default value will be used. </p>
+                                <p class="hint">Used as the default when no client_id is provided during account import.</p>
                             </div>
 
                             <div class="form-actions">
@@ -506,7 +506,7 @@
                                 <div class="form-group">
                                     <label for="email-code-poll-interval">Polling interval (seconds)</label>
                                     <input type="number" id="email-code-poll-interval" name="poll_interval" value="3" min="1" max="30">
-                                    <span class="hint">The time interval for checking the email, 2-5 seconds is recommended</span>
+                                    <span class="hint">How often to check for new emails; 2-5 seconds is recommended</span>
                                 </div>
                             </div>
 
@@ -554,7 +554,7 @@
                                 <span id="db-services" class="value">-</span>
                             </div>
                             <div class="info-item">
-                                <span class="label">Task records</span>
+                                <span class="label">Tasks</span>
                                 <span id="db-tasks" class="value">-</span>
                             </div>
                         </div>

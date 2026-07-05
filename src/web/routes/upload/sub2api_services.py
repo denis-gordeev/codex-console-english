@@ -134,7 +134,7 @@ async def update_sub2api_service(service_id: int, request: Sub2ApiServiceUpdate)
             update_data["name"] = request.name
         if request.api_url is not None:
             update_data["api_url"] = request.api_url
-        # api_key If left blank, the original value will be retained.
+        # api_key: if omitted, the current value is kept
         if request.api_key:
             update_data["api_key"] = request.api_key
         if request.enabled is not None:

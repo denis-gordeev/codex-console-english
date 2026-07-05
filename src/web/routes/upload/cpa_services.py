@@ -127,7 +127,7 @@ async def update_cpa_service(service_id: int, request: CpaServiceUpdate):
             update_data["name"] = request.name
         if request.api_url is not None:
             update_data["api_url"] = request.api_url
-        # api_token If left blank, the original value will be retained.
+        # api_token: if omitted, the current value is kept
         if request.api_token:
             update_data["api_token"] = request.api_token
         if request.enabled is not None:

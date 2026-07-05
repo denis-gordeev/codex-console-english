@@ -75,7 +75,7 @@ def get_accounts(
     status: Optional[str] = None,
     search: Optional[str] = None
 ) -> List[Account]:
-    """Get the account list (supports paging and filtering)"""
+    """Get the account list (supports pagination and filtering)"""
     query = db.query(Account)
 
     if email_service:

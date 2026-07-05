@@ -118,8 +118,8 @@ def upload_to_cpa(
     Args:
         token_data: Token JSON data
         proxy: placeholder parameter (unused); CPA upload always connects directly
-        api_url: Specify CPA API URL (takes precedence over global settings)
-        api_token: Specify CPA API Token (takes precedence over global settings)
+        api_url: CPA API URL (overrides global settings)
+        api_token: CPA API Token (overrides global settings)
 
     Returns:
         (bool, str): (True on success, status or error message)"""
@@ -185,8 +185,8 @@ def batch_upload_to_cpa(
     Args:
         account_ids: Account ID list
         proxy: optional proxy URL
-        api_url: Specify CPA API URL (takes precedence over global settings)
-        api_token: Specify CPA API Token (takes precedence over global settings)
+        api_url: CPA API URL (overrides global settings)
+        api_token: CPA API Token (overrides global settings)
 
     Returns:
         Dictionary containing success/failure statistics and details"""
@@ -211,7 +211,7 @@ def batch_upload_to_cpa(
                 })
                 continue
 
-            # Check if there is already a Token
+            # Check if a token already exists
             if not account.access_token:
                 results["skipped_count"] += 1
                 results["details"].append({

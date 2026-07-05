@@ -36,8 +36,8 @@ def get_proxy_for_registration(db) -> Tuple[Optional[str], Optional[int]]:
     Get the proxy used for registration
 
     Strategy:
-    1. Prioritize randomly selecting an enabled proxy from the proxy list
-    2. If the proxy list is empty and dynamic proxy is enabled, call the dynamic proxy API to get
+    1. First, randomly select an enabled proxy from the proxy list
+    2. If the proxy list is empty and dynamic proxy is enabled, call the dynamic proxy API to fetch a proxy URL
     3. Otherwise use the static default proxy in system settings
 
     Returns:
@@ -58,7 +58,7 @@ def get_proxy_for_registration(db) -> Tuple[Optional[str], Optional[int]]:
 
 
 def update_proxy_usage(db, proxy_id: Optional[int]):
-    """Update proxy usage time"""
+    """Update proxy last-used time"""
     if proxy_id:
         crud.update_proxy_last_used(db, proxy_id)
 
@@ -72,7 +72,7 @@ class RegistrationTaskCreate(BaseModel):
     email_service_config: Optional[dict] = None
     email_service_id: Optional[int] = None
     auto_upload_cpa: bool = False
-    cpa_service_ids: List[int] = [] # Specify the CPA service ID list, if empty, take the first enabled one
+    cpa_service_ids: List[int] = [] # CPA service ID list; if empty, the first enabled service is used
     auto_upload_sub2api: bool = False
     sub2api_service_ids: List[int] = [] # Specify the Sub2API service ID list
     auto_upload_tm: bool = False
@@ -143,8 +143,8 @@ class OutlookAccountForRegistration(BaseModel):
 class OutlookAccountsListResponse(BaseModel):
     """Outlook Account List Response"""
     total: int
-    registered_count: int # Registered number
-    unregistered_count: int # Unregistered number
+    registered_count: int # Registered count
+    unregistered_count: int # Unregistered count
     accounts: List[OutlookAccountForRegistration]
 
 
@@ -168,10 +168,10 @@ class OutlookBatchRegistrationRequest(BaseModel):
 class OutlookBatchRegistrationResponse(BaseModel):
     """Outlook batch registration response"""
     batch_id: str
-    total: int # total number
-    skipped: int # Number of skips (registered)
-    to_register: int # Number to be registered
-    service_ids: List[int] # The actual service ID to be registered
+    total: int # Total
+    skipped: int # Skipped (already registered)
+    to_register: int # To register
+    service_ids: List[int] # Service IDs to register
 
 
 # ============== Helper Functions ==============
@@ -265,7 +265,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
             service_type = EmailServiceType(email_service_type)
             settings = get_settings()
 
-            # Prioritize using the email service configured in the database
+            # Prefer the email service configured in the database
             if email_service_id:
                 from ...database.models import EmailService as EmailServiceModel
                 db_service = db.query(EmailServiceModel).filter(
@@ -291,7 +291,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                         "proxy_url": actual_proxy_url,
                     }
                 elif service_type == EmailServiceType.MOE_MAIL:
-                    # Check if there is an available custom domain service in the database
+                    # Check for an available custom domain service in the database
                     from ...database.models import EmailService as EmailServiceModel
                     db_service = db.query(EmailServiceModel).filter(
                         EmailServiceModel.service_type == "moe_mail",
@@ -311,7 +311,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                     else:
                         raise ValueError("No custom domain email service available; please configure it in Settings first")
                 elif service_type == EmailServiceType.OUTLOOK:
-                    # Check if there is an available Outlook account in the database
+                    # Check for an available Outlook account in the database
                     from ...database.models import EmailService as EmailServiceModel, Account
                     # Get all enabled Outlook services
                     outlook_services = db.query(EmailServiceModel).filter(
@@ -867,7 +867,7 @@ async def start_batch_registration(
     - interval_min: minimum interval seconds
     - interval_max: maximum interval seconds
     """
-    # Verify parameters
+    # Validate input
     if request.count < 1 or request.count > 100:
         raise HTTPException(status_code=400, detail="Registration count must be between 1 and 100")
 
@@ -1096,7 +1096,7 @@ async def get_available_email_services():
                 "id": None,
                 "name": "Tempmail.lol",
                 "type": "tempmail",
-                "description": "Tempmail, automatically created"
+                "description": "Tempmail, created automatically"
             }]
         },
         "outlook": {
@@ -1170,7 +1170,7 @@ async def get_available_email_services():
         result["moe_mail"]["count"] = len(custom_services)
         result["moe_mail"]["available"] = len(custom_services) > 0
 
-        # If there is no custom domain service in the database, check settings
+        # If no custom domain service exists in the database, fall back to settings
         if not result["moe_mail"]["available"]:
             if settings.custom_domain_base_url and settings.custom_domain_api_key:
                 result["moe_mail"]["available"] = True
@@ -1286,7 +1286,7 @@ async def get_outlook_accounts_for_registration():
             config = service.config or {}
             email = config.get("email") or service.name
 
-            # Check if it is already registered (query the accounts table)
+            # Check if already registered (look up in the accounts table)
             existing_account = db.query(Account).filter(
                 Account.email == email
             ).first()
@@ -1392,7 +1392,7 @@ async def start_outlook_batch_registration(
     from ...database.models import EmailService as EmailServiceModel
     from ...database.models import Account
 
-    # Verify parameters
+    # Validate input
     if not request.service_ids:
         raise HTTPException(status_code=400, detail="Please select at least one Outlook account")
 

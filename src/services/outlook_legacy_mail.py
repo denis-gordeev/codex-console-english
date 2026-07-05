@@ -155,7 +155,7 @@ class OutlookIMAPClient:
         """Connect to IMAP server"""
         self._conn = imaplib.IMAP4_SSL(self.host, self.port, timeout=self.timeout)
 
-        # Prioritize using XOAUTH2 authentication
+        # Try XOAUTH2 authentication first
         if self.account.has_oauth():
             try:
                 token = self.refresh_ms_token(self.account)

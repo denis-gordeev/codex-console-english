@@ -113,7 +113,7 @@ EMAIL_SERVICE_DEFAULTS = {
         "timeout": 30,
     },
     "moe_mail": {
-        "base_url": "", # Requires user setup
+        "base_url": "", # Must be configured by the user
         "api_key_header": "X-API-Key",
         "timeout": 30,
         "max_retries": 3,
@@ -197,14 +197,14 @@ def generate_random_user_info() -> dict:
     Returns:
         Dictionary containing name and birthdate
     """
-    # Randomly select a name
+    # Select a random name
     name = random.choice(FIRST_NAMES)
 
     # Generate a random birthday (18-45 years old)
     current_year = datetime.now().year
     birth_year = random.randint(current_year - 45, current_year - 18)
     birth_month = random.randint(1, 12)
-    # Determine the days in the month
+    # Get the number of days in the month
     if birth_month in [1, 3, 5, 7, 8, 10, 12]:
         birth_day = random.randint(1, 31)
     elif birth_month in [4, 6, 9, 11]:
@@ -268,8 +268,8 @@ DEFAULT_SETTINGS = [
     ("registration.max_retries", "3", "Maximum number of retries", "registration"),
     ("registration.timeout", "120", "Timeout (seconds)", "registration"),
     ("registration.default_password_length", "12", "Default password length", "registration"),
-    ("webui.host", "0.0.0.0", "Web UI listening host", "webui"),
-    ("webui.port", "8000", "Web UI listening port", "webui"),
+    ("webui.host", "0.0.0.0", "Web UI bind host", "webui"),
+    ("webui.port", "8000", "Web UI bind port", "webui"),
     ("webui.debug", "true", "Debug mode", "webui"),
 ]
 
