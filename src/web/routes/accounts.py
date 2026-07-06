@@ -153,7 +153,7 @@ def account_to_response(account: Account) -> AccountResponse:
 @router.get("", response_model=AccountListResponse)
 async def list_accounts(
     page: int = Query(1, ge=1, description="page number"),
-    page_size: int = Query(20, ge=1, le=100, description="number per page"),
+    page_size: int = Query(20, ge=1, le=100, description="items per page"),
     status: Optional[str] = Query(None, description="Status filter"),
     email_service: Optional[str] = Query(None, description="Email service filtering"),
     search: Optional[str] = Query(None, description="search keyword"),

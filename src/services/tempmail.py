@@ -30,7 +30,7 @@ class TempmailService(BaseEmailService):
 
         Args:
             config: settings dict with the following keys:
-                - base_url: API base address (default: https://api.tempmail.lol/v2)
+                - base_url: API base URL (default: https://api.tempmail.lol/v2)
                 - timeout: request timeout (default: 30)
                 - max_retries: Maximum number of retries (default: 3)
                 - proxy_url: proxy URL

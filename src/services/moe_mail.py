@@ -25,11 +25,11 @@ class MeoMailEmailService(BaseEmailService):
 
         Args:
             config: settings dict with the following keys:
-                - base_url: API base address (required)
+                - base_url: API base URL (required)
                 - api_key: API key (required)
                 - api_key_header: API key header name (default: X-API-Key)
                 - timeout: request timeout (default: 30)
-                - max_retries: Maximum number of retries (default: 3)
+                - max_retries: Max retries (default: 3)
                 - proxy_url: proxy URL
                 - default_domain: default domain
                 - default_expiry: default expiration time (milliseconds)
@@ -386,7 +386,7 @@ class MeoMailEmailService(BaseEmailService):
             email_id: Email ID
 
         Returns:
-            True if deletion was successful"""
+            True if the deletion succeeded"""
         try:
             response = self._make_request("DELETE", f"/api/emails/{email_id}")
             success = response.get("success", False)

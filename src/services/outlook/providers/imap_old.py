@@ -46,7 +46,7 @@ class IMAPOldProvider(OutlookProvider):
         """Connect to IMAP server
 
         Returns:
-            True if connection is successful"""
+            True if the connection succeeds"""
         if self._connected and self._conn:
             # Check existing connections
             try:
@@ -70,7 +70,7 @@ class IMAPOldProvider(OutlookProvider):
                 if self._authenticate_xoauth2():
                     self._connected = True
                     self.record_success()
-                    logger.info(f"[{self.account.email}] IMAP connection successful (XOAUTH2)")
+                    logger.info(f"[{self.account.email}] IMAP connected (XOAUTH2)")
                     return True
                 else:
                     logger.warning(f"[{self.account.email}] XOAUTH2 authentication failed, try password authentication")
@@ -80,7 +80,7 @@ class IMAPOldProvider(OutlookProvider):
                 self._conn.login(self.account.email, self.account.password)
                 self._connected = True
                 self.record_success()
-                logger.info(f"[{self.account.email}] IMAP connection successful (password authentication)")
+                logger.info(f"[{self.account.email}] IMAP connected (password auth)")
                 return True
 
             raise ValueError("No authentication method available")
@@ -92,10 +92,10 @@ class IMAPOldProvider(OutlookProvider):
             return False
 
     def _authenticate_xoauth2(self) -> bool:
-        """Use XOAUTH2 authentication
+        """Authenticate with XOAUTH2
 
         Returns:
-            True if authentication is successful"""
+            True if authentication succeeds"""
         if not self._token_manager:
             self._token_manager = TokenManager(
                 self.account,
@@ -110,7 +110,7 @@ class IMAPOldProvider(OutlookProvider):
             return False
 
         try:
-            # Build the XOAUTH2 authentication string
+            # Build the XOAUTH2 auth string
             auth_string = f"user={self.account.email}\x01auth=Bearer {token}\x01\x01"
             self._conn.authenticate("XOAUTH2", lambda _: auth_string.encode("utf-8"))
             return True

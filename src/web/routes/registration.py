@@ -247,8 +247,8 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
             # Update TaskManager status
             task_manager.update_status(task_uuid, "running")
 
-            # Determine the proxy to use
-            # If the frontend provides proxy parameters, use them
+            # Determine which proxy to use
+            # If proxy parameters are provided, use them
             # Otherwise get them from the proxy list or system settings
             actual_proxy_url = proxy
             proxy_id = None
@@ -651,7 +651,7 @@ async def run_batch_parallel(
                     new_failed = batch_tasks[batch_id]["failed"]
                     if t.status == "completed":
                         new_success += 1
-                        add_batch_log(f"{prefix} [Success] Registered successfully")
+                        add_batch_log(f"{prefix} [Success] Registration complete")
                     elif t.status == "failed":
                         new_failed += 1
                         add_batch_log(f"{prefix} [Failed] Failed to register: {t.error_message}")
@@ -717,7 +717,7 @@ async def run_batch_pipeline(
                         new_failed = batch_tasks[batch_id]["failed"]
                         if t.status == "completed":
                             new_success += 1
-                            add_batch_log(f"{pfx} [Success] Registered successfully")
+                            add_batch_log(f"{pfx} [Success] Registration complete")
                         elif t.status == "failed":
                             new_failed += 1
                             add_batch_log(f"{pfx} [Failed] Failed to register: {t.error_message}")

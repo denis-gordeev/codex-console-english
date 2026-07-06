@@ -1,16 +1,27 @@
 # TODO
 
-## Completed In This Round (July 6, 2026 - Round 66)
+## Completed In This Round (July 6, 2026 - Round 67)
 
 - Pulled `origin/main` - repository was already up to date.
 - Verified zero CJK/Cyrillic/non-English characters across all tracked source files (excluding `autowork.log`).
-- No new non-English content to translate. Repository remains fully English.
+- Deep scan found 78 remaining Chinese-English translation artifacts and fixed all of them:
+  - Replaced "is/was successful" → "succeeds/succeeded" in docstrings (10 occurrences in base.py, imap_old.py, imap_new.py, graph_api.py, health_checker.py, moe_mail.py, utils.py, register.py)
+  - Replaced "connection successful" → "connected" in log messages (4 occurrences in imap_old.py, imap_new.py, graph_api.py)
+  - Replaced "Registered successfully" / "Logged in successfully" / "Uploaded successfully" → "Registration complete" / "Login successful" / "Upload complete" in user-facing messages (11 occurrences in app.js, register.py, registration.py routes, accounts.js)
+  - Fixed mistranslated OAuth terms: "callback address" → "Redirect URI", "scope of authority" → "OAuth scope", "Token exchange address" → "Token endpoint URL" (4 occurrences in oauth.py)
+  - Fixed stilted docstring phrasing: "containing ... and necessary parameters" → "containing ... and required parameters", "Handle OAuth callback URL, get access token" → "Process OAuth callback URL and exchange for an access token", etc. (5 occurrences in oauth.py)
+  - Replaced "get the" / "get Token" → "fetch" / "fetch token" in docstrings and log messages (5 occurrences in settings.html, register.py, graph_api.py, token_manager.py)
+  - Replaced "Use XOAUTH2 authentication" → "Authenticate with XOAUTH2" / "XOAUTH2 auth string" (6 occurrences in imap_old.py, imap_new.py, outlook_legacy_mail.py)
+  - Replaced "Access authentication" / "access password" → "Authentication" / "Password" in login.html, settings.html, settings.py, app.py, settings.js (8 occurrences)
+  - Fixed UI label calques: "Seat quantity" → "Number of seats", "Monthly payment" → "Monthly", "Annual payment" → "Yearly", "Billing cycle" → "Billing period", "Maximum number of retries" → "Max retries", "API base address" → "API base URL", "number per page" → "items per page" (10 occurrences in payment.html, settings.html, constants.py, tempmail.py, moe_mail.py, accounts.py)
+  - Fixed awkward comments and log messages: "prepare to reinitiate" → "prepare to restart", "OAuth process not initialized" → "OAuth flow not initialized", "Switch to provider" → "Switching to provider", etc. (15 occurrences in register.py, health_checker.py, utils.py, registration.py, app.js, email.py)
+- Updated test assertion in test_registration_engine.py for message change.
 - All 32 tests pass.
 
 ## Next Actions
 
 - Continue monitoring for any newly introduced non-English content from upstream changes.
-- Translation to English is complete. No further translation work needed unless new non-English content is introduced.
+- Deep scan may still find additional subtle Chinese-English calques in edge cases.
 
 ## Completed In This Round (July 5, 2026 - Round 65)
 

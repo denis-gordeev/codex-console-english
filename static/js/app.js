@@ -502,7 +502,7 @@ async function handleSingleRegistration(requestData) {
     displayedLogs.clear(); // Clear the log dedup set
     toastShown = false; // Reset toast flag
 
-    addLog('info', '[System] is starting the registration task...');
+    addLog('info', '[System] Starting registration task...');
 
     try {
         const data = await api.post('/registration/start', requestData);
@@ -570,8 +570,8 @@ function connectWebSocket(taskUuid) {
                     if (!toastShown) {
                         toastShown = true;
                         if (data.status === 'completed') {
-                            addLog('success', '[Success] Registered successfully!');
-                            toast.success('Registered successfully!');
+                            addLog('success', '[Success] Registration complete!');
+                            toast.success('Registration complete!');
                             // Refresh the account list
                             loadRecentAccounts();
                         } else if (data.status === 'failed') {
@@ -672,7 +672,7 @@ async function handleBatchRegistration(requestData) {
     requestData.concurrency = Math.min(50, Math.max(1, concurrency));
     requestData.mode = mode;
 
-    addLog('info', `[System] is starting batch registration tasks (Quantity: ${count})...`);
+    addLog('info', `[System] Starting batch registration (${count} tasks)...`);
 
     try {
         const data = await api.post('/registration/batch', requestData);
@@ -789,8 +789,8 @@ function startLogPolling(taskUuid) {
                 if (!toastShown) {
                     toastShown = true;
                     if (data.status === 'completed') {
-                        addLog('success', '[Success] Registration successful!');
-                        toast.success('Registration successful!');
+                        addLog('success', '[Success] Registration complete!');
+                        toast.success('Registration complete!');
                         // Refresh the account list
                         loadRecentAccounts();
                     } else if (data.status === 'failed') {
@@ -924,7 +924,7 @@ function updateBatchProgress(data) {
     }
 }
 
-// Load the recently registered account
+// Load recently registered accounts
 async function loadRecentAccounts() {
     try {
         const data = await api.get('/accounts?page=1&page_size=10');

@@ -134,7 +134,7 @@ async def get_email_services_stats():
             func.count(EmailServiceModel.id)
         ).group_by(EmailServiceModel.service_type).all()
 
-        # enable quantity
+        # enabled count
         enabled_count = db.query(func.count(EmailServiceModel.id)).filter(
             EmailServiceModel.enabled == True
         ).scalar()

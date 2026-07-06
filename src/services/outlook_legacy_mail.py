@@ -148,7 +148,7 @@ class OutlookIMAPClient:
 
     @staticmethod
     def _build_xoauth2(email_addr: str, token: str) -> bytes:
-        """Build XOAUTH2 authentication string"""
+        """Build XOAUTH2 auth string"""
         return f"user={email_addr}\x01auth=Bearer {token}\x01\x01".encode()
 
     def connect(self):
@@ -163,7 +163,7 @@ class OutlookIMAPClient:
                     "XOAUTH2",
                     lambda _: self._build_xoauth2(self.account.email, token)
                 )
-                logger.debug(f"Use XOAUTH2 authentication connection: {self.account.email}")
+                logger.debug(f"Connected using XOAUTH2 auth: {self.account.email}")
                 return
             except Exception as e:
                 logger.warning(f"XOAUTH2 authentication failed, falling back to password authentication: {e}")

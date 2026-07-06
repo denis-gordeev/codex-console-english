@@ -114,7 +114,7 @@ class BaseEmailService(abc.ABC):
             email_id: ID in the email service
 
         Returns:
-            True if deletion was successful
+            True if the deletion succeeded
 
         Raises:
             EmailServiceError: Service error"""

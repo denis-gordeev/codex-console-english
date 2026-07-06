@@ -159,7 +159,7 @@ def create_app() -> FastAPI:
         password: str = Form(...),
         next: Optional[str] = Form("/"),
     ):
-        """Validate the access password and create an auth cookie."""
+        """Validate the password and create an auth cookie."""
         expected = get_settings().webui_access_password.get_secret_value()
         if not secrets.compare_digest(password, expected):
             return templates.TemplateResponse(

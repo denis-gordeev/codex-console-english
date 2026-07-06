@@ -55,7 +55,7 @@ class IMAPNewProvider(OutlookProvider):
         """Connect to IMAP server
 
         Returns:
-            True if connection is successful"""
+            True if the connection succeeds"""
         if self._connected and self._conn:
             try:
                 self._conn.noop()
@@ -82,7 +82,7 @@ class IMAPNewProvider(OutlookProvider):
             if self._authenticate_xoauth2():
                 self._connected = True
                 self.record_success()
-                logger.info(f"[{self.account.email}] New IMAP connection successful (XOAUTH2)")
+                logger.info(f"[{self.account.email}] New IMAP connected (XOAUTH2)")
                 return True
 
             return False
@@ -94,10 +94,10 @@ class IMAPNewProvider(OutlookProvider):
             return False
 
     def _authenticate_xoauth2(self) -> bool:
-        """Use XOAUTH2 authentication
+        """Authenticate with XOAUTH2
 
         Returns:
-            True if authentication is successful"""
+            True if authentication succeeds"""
         if not self._token_manager:
             self._token_manager = TokenManager(
                 self.account,
@@ -113,7 +113,7 @@ class IMAPNewProvider(OutlookProvider):
             return False
 
         try:
-            # Build the XOAUTH2 authentication string
+            # Build the XOAUTH2 auth string
             auth_string = f"user={self.account.email}\x01auth=Bearer {token}\x01\x01"
             self._conn.authenticate("XOAUTH2", lambda _: auth_string.encode("utf-8"))
             return True

@@ -341,7 +341,7 @@ async function loadSettings() {
         // Load Outlook settings
         loadOutlookSettings();
 
-        // Web UI access password prompt
+        // Web UI password prompt
         if (data.webui?.has_access_password) {
             const input = document.getElementById('webui-access-password');
             if (input) {

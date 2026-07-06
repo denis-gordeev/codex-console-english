@@ -93,7 +93,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         db_key="webui.access_password",
         default_value="admin123",
         category=SettingCategory.WEBUI,
-        description="Web UI access password",
+        description="Web UI password",
         is_secret=True
     ),
 

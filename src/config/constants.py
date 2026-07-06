@@ -265,7 +265,7 @@ DEFAULT_SETTINGS = [
     ("proxy.type", "http", "Proxy type (http/socks5)", "proxy"),
     ("proxy.host", "127.0.0.1", "Proxy host", "proxy"),
     ("proxy.port", "7890", "Proxy port", "proxy"),
-    ("registration.max_retries", "3", "Maximum number of retries", "registration"),
+    ("registration.max_retries", "3", "Max retries", "registration"),
     ("registration.timeout", "120", "Timeout (seconds)", "registration"),
     ("registration.default_password_length", "12", "Default password length", "registration"),
     ("webui.host", "0.0.0.0", "Web UI bind host", "webui"),

@@ -867,7 +867,7 @@ async function uploadToCpa(id) {
         const result = await api.post(`/accounts/${id}/upload-cpa`, payload);
 
         if (result.success) {
-            toast.success('Uploaded successfully');
+            toast.success('Upload complete');
             loadAccounts();
         } else {
             toast.error('Failed to upload: ' + (result.error || 'Unknown error'));
@@ -1066,7 +1066,7 @@ async function uploadToSub2Api(id) {
         if (choice.service_id != null) payload.service_id = choice.service_id;
         const result = await api.post(`/accounts/${id}/upload-sub2api`, payload);
         if (result.success) {
-            toast.success('Uploaded successfully');
+            toast.success('Upload complete');
             loadAccounts();
         } else {
             toast.error('Failed to upload: ' + (result.error || result.message || 'Unknown error'));
@@ -1153,7 +1153,7 @@ async function uploadToTm(id) {
         if (choice.service_id != null) payload.service_id = choice.service_id;
         const result = await api.post(`/accounts/${id}/upload-tm`, payload);
         if (result.success) {
-            toast.success('Uploaded successfully');
+            toast.success('Upload complete');
         } else {
             toast.error('Failed to upload: ' + (result.message || 'Unknown error'));
         }

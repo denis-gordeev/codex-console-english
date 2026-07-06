@@ -423,7 +423,7 @@ class RegistrationEngine:
             return SignupFormResult(success=False, error_message=str(e))
 
     def _reset_auth_flow(self) -> None:
-        """Reset the session and prepare to reinitiate the OAuth process."""
+        """Reset the session and prepare to restart the OAuth flow."""
         self.http_client.close()
         self.session = None
         self.oauth_start = None
@@ -486,7 +486,7 @@ class RegistrationEngine:
             result.error_message = "Failed to follow redirect chain"
             return False
 
-        self._log("Process OAuth callback, preparing to request token...")
+        self._log("Processing OAuth callback, requesting token...")
         token_info = self._handle_oauth_callback(callback_url)
         if not token_info:
             result.error_message = "Failed to handle OAuth callback"
@@ -508,7 +508,7 @@ class RegistrationEngine:
         return True
 
     def _restart_login_flow(self) -> Tuple[bool, str]:
-        """After the newly registered account is created, re-initiate the login process to get the token."""
+        """After the newly registered account is created, restart the login flow to fetch tokens."""
         self._token_acquisition_requires_login = True
         self._log("Registration completed; restarting the login flow to fetch tokens...")
         self._reset_auth_flow()
@@ -826,10 +826,10 @@ class RegistrationEngine:
         """Handle the OAuth callback."""
         try:
             if not self.oauth_start:
-                self._log("OAuth process not initialized", "error")
+                self._log("OAuth flow not initialized", "error")
                 return None
 
-            self._log("Process OAuth callback...")
+            self._log("Processing OAuth callback...")
             token_info = self.oauth_manager.handle_callback(
                 callback_url=callback_url,
                 expected_state=self.oauth_start.state,
@@ -840,7 +840,7 @@ class RegistrationEngine:
             return token_info
 
         except Exception as e:
-            self._log(f"Failed to process OAuth callback: {e}", "error")
+            self._log(f"Failed to handle OAuth callback: {e}", "error")
             return None
 
     def run(self) -> RegistrationResult:
@@ -939,9 +939,9 @@ class RegistrationEngine:
             # 10. Complete
             self._log("=" * 60)
             if self._is_existing_account:
-                self._log("Logged in successfully")
+                self._log("Login successful")
             else:
-                self._log("Registered successfully")
+                self._log("Registration complete")
             self._log(f"Email: {result.email}")
             self._log(f"Account ID: {result.account_id}")
             self._log(f"Workspace ID: {result.workspace_id}")
@@ -959,7 +959,7 @@ class RegistrationEngine:
             return result
 
         except Exception as e:
-            self._log(f"An unexpected error occurred during the registration process: {e}", "error")
+            self._log(f"An unexpected error occurred during registration: {e}", "error")
             result.error_message = str(e)
             return result
 
@@ -971,7 +971,7 @@ class RegistrationEngine:
             result: Registration result.
 
         Returns:
-            bool: True if the save was successful.
+            bool: True if the save succeeded.
         """
         if not result.success:
             return False

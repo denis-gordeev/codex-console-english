@@ -53,10 +53,10 @@ class GraphAPIProvider(OutlookProvider):
 
     def connect(self) -> bool:
         """
-        Validate connection (get Token)
+        Validate connection (fetch token)
 
         Returns:
-            True if connection is successful
+            True if the connection succeeds
         """
         if not self.account.has_oauth():
             error = "Graph API requires OAuth2 credentials"
@@ -72,12 +72,12 @@ class GraphAPIProvider(OutlookProvider):
                 self.config.timeout,
             )
 
-        # Try to get Token
+        # Try to fetch token
         token = self._token_manager.get_access_token()
         if token:
             self._connected = True
             self.record_success()
-            logger.info(f"[{self.account.email}] Graph API connection successful")
+            logger.info(f"[{self.account.email}] Graph API connected")
             return True
 
         return False

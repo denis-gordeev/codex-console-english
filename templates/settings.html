@@ -64,7 +64,7 @@
                             <div class="form-group">
                                 <label for="dynamic-proxy-api-url">Proxy API address</label>
                                 <input type="text" id="dynamic-proxy-api-url" name="api_url" placeholder="http://api.example.com/get_proxy">
-                                <small style="color: var(--text-muted);">Call this API to get the proxy URL whenever a registration task starts</small>
+                                <small style="color: var(--text-muted);">Call this API to fetch the proxy URL when a registration task starts</small>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
@@ -134,13 +134,13 @@
             <div class="tab-content" id="webui-tab">
                 <div class="card">
                     <div class="card-header">
-                        <h3>Web UI access password</h3>
-                        <span class="hint">Page access password; leave blank to keep current</span>
+                        <h3>Web UI password</h3>
+                        <span class="hint">Page password; leave blank to keep current</span>
                     </div>
                     <div class="card-body">
                         <form id="webui-settings-form">
                             <div class="form-group">
-                                <label for="webui-access-password">Access password</label>
+                                <label for="webui-access-password">Password</label>
                                 <input type="password" id="webui-access-password" name="access_password" placeholder="leave blank to keep current" autocomplete="new-password">
                             </div>
                             <div class="form-actions">
@@ -423,7 +423,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h3>Outlook OAuth settings</h3>
-                        <span class="hint">Configure Outlook email OAuth authentication parameters</span>
+                        <span class="hint">Set up Outlook OAuth parameters</span>
                     </div>
                     <div class="card-body">
                         <form id="outlook-settings-form">
@@ -452,7 +452,7 @@
                         <form id="registration-settings-form">
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="max-retries">Maximum number of retries</label>
+                                    <label for="max-retries">Max retries</label>
                                     <input type="number" id="max-retries" name="max_retries" value="3" min="1" max="10">
                                 </div>
 

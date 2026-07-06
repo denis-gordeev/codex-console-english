@@ -196,12 +196,12 @@ def generate_oauth_url(
     Generate OAuth authorization URL
 
     Args:
-        redirect_uri: callback address
-        scope: scope of authority
+        redirect_uri: Redirect URI
+        scope: OAuth scope
         client_id: OpenAI Client ID
 
     Returns:
-        OAuthStart object, containing the authorization URL and necessary parameters
+        OAuthStart object containing the authorization URL and required parameters
     """
     state = _random_state()
     code_verifier = _pkce_verifier()
@@ -239,19 +239,19 @@ def submit_callback_url(
     proxy_url: Optional[str] = None
 ) -> str:
     """
-    Handle OAuth callback URL, get access token
+    Process OAuth callback URL and exchange for an access token
 
     Args:
         callback_url: callback URL
         expected_state: expected state value
         code_verifier: PKCE code_verifier
-        redirect_uri: callback address
+        redirect_uri: Redirect URI
         client_id: OpenAI Client ID
-        token_url: Token exchange address
+        token_url: Token endpoint URL
         proxy_url: proxy URL
 
     Returns:
-        A JSON string containing data such as the access token
+        A JSON string containing the access token and related data
 
     Raises:
         RuntimeError: OAuth error
@@ -263,9 +263,9 @@ def submit_callback_url(
         raise RuntimeError(f"oauth error: {cb['error']}: {desc}".strip())
 
     if not cb["code"]:
-        raise ValueError("callback url missing ?code=")
+        raise ValueError("Callback URL missing ?code=")
     if not cb["state"]:
-        raise ValueError("callback url missing ?state=")
+        raise ValueError("Callback URL missing ?state=")
     if cb["state"] != expected_state:
         raise ValueError("state mismatch")
 

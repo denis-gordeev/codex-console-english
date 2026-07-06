@@ -110,7 +110,7 @@ class TokenManager:
                 self.set_cached_token(token)
                 return token.access_token
         except Exception as e:
-            logger.error(f"[{self.account.email}] Failed to get Token ({self.provider_type.value}): {e}")
+            logger.error(f"[{self.account.email}] Failed to fetch token ({self.provider_type.value}): {e}")
 
         return None
 

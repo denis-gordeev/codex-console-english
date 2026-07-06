@@ -266,19 +266,19 @@ class FailoverManager:
         with self._lock:
             self._current_index = (self._current_index + 1) % len(available)
             next_provider = available[self._current_index]
-            logger.info(f"Switch to provider: {next_provider.value}")
+            logger.info(f"Switching to provider: {next_provider.value}")
             return next_provider
 
     def on_provider_success(self, provider_type: ProviderType):
         """
-        Called when the provider is successful
+        Called when the provider succeeds
 
         Args:
             provider_type: provider type
         """
         self.health_checker.record_success(provider_type)
 
-        # Reset index to successful provider
+        # Reset index to the successful provider
         with self._lock:
             available = self.health_checker.get_available_providers(self.priority_order)
             if provider_type in available:

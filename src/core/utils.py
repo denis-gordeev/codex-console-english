@@ -230,7 +230,7 @@ def retry_with_backoff(
             logger = logging.getLogger(__name__)
             logger.warning(
                 f"Attempt {func.__name__} failed (attempt {attempt + 1}/{max_retries + 1}): {e}. "
-                f"Wait {delay:.2f} seconds and try again..."
+                f"Retrying in {delay:.2f} seconds..."
             )
 
             time.sleep(delay)
@@ -351,7 +351,7 @@ def write_json_file(filepath: str, data: Dict[str, Any], indent: int = 2) -> boo
         indent: number of indent spaces
 
     Returns:
-        True if successful
+        True on success
     """
     try:
         # Make sure the directory exists
