@@ -204,7 +204,7 @@ def generate_random_user_info() -> dict:
     current_year = datetime.now().year
     birth_year = random.randint(current_year - 45, current_year - 18)
     birth_month = random.randint(1, 12)
-    # Get the number of days in the month
+    # Days in the month
     if birth_month in [1, 3, 5, 7, 8, 10, 12]:
         birth_day = random.randint(1, 31)
     elif birth_month in [4, 6, 9, 11]:

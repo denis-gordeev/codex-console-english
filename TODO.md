@@ -1,12 +1,13 @@
 # TODO
 
-## Completed In This Round (July 19, 2026 - Round 82)
+## Completed In This Round (July 19, 2026 - Round 83)
 
 - Pulled `origin/main` — repository was already up to date.
 - Full CJK/Cyrillic scan: zero CJK/Cyrillic content across all tracked source files (excluding `autowork.log`).
+- Deep scan for Chinese-English calque patterns found 2 remaining artifacts and fixed them:
+  - `src/config/constants.py:207`: "Get the number of days in the month" → "Days in the month" ("the number of" calque)
+  - `src/web/routes/email.py:246`: "Password/Authorization Code" → "Password/App Password" (inconsistent with prior changelog fix)
 - Non-ASCII content limited to legitimate exceptions: emojis (UI icons in HTML/JS), `Türkiye` in test assertion, `→` arrows in changelog notes.
-- Backtick-quoted Chinese locale terms in TODO.md changelog (lines 75, 84) are legitimate meta-references, not translatable content.
-- No new non-English content to translate. Repository remains fully English.
 - All 32 tests pass.
 
 ## Next Actions

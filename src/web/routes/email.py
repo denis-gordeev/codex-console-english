@@ -243,7 +243,7 @@ async def get_service_types():
                     {"name": "port", "label": "port", "required": False, "default": 993},
                     {"name": "use_ssl", "label": "Use SSL", "required": False, "default": True},
                     {"name": "email", "label": "Email address", "required": True},
-                    {"name": "password", "label": "Password/Authorization Code", "required": True, "secret": True},
+                    {"name": "password", "label": "Password/App Password", "required": True, "secret": True},
                 ]
             }
         ]
