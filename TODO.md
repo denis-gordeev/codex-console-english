@@ -1,9 +1,11 @@
 # TODO
 
-## Completed In This Round (July 18, 2026 - Round 81)
+## Completed In This Round (July 19, 2026 - Round 82)
 
 - Pulled `origin/main` — repository was already up to date.
-- Full non-ASCII scan: zero non-ASCII content across all tracked source files (excluding `autowork.log`).
+- Full CJK/Cyrillic scan: zero CJK/Cyrillic content across all tracked source files (excluding `autowork.log`).
+- Non-ASCII content limited to legitimate exceptions: emojis (UI icons in HTML/JS), `Türkiye` in test assertion, `→` arrows in changelog notes.
+- Backtick-quoted Chinese locale terms in TODO.md changelog (lines 75, 84) are legitimate meta-references, not translatable content.
 - No new non-English content to translate. Repository remains fully English.
 - All 32 tests pass.
 
