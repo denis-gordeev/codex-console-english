@@ -1,11 +1,11 @@
 # TODO
 
-## Completed In This Round (July 22, 2026 - Round 89)
+## Completed In This Round (July 23, 2026 - Round 90)
 
 - Pulled `origin/main` -- repository was already up to date.
 - Full CJK/Cyrillic/non-English scan: zero translatable non-English content across all tracked source files (excluding `autowork.log`).
-- Non-ASCII content in source files limited to legitimate exceptions: emojis (UI icons in HTML/JS), `Türkiye` in test assertion.
-- Deep scan for Chinese-English calque patterns -- no new artifacts found in source code.
+- Replaced em dash (`—`, U+2014) with `--` in `templates/settings.html:81` placeholder text for ASCII consistency.
+- Non-ASCII content in source files now limited to legitimate exceptions: emojis (UI icons in HTML/JS), `Türkiye` in test assertion.
 - All 32 tests pass.
 
 ## Next Actions
