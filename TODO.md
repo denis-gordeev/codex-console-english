@@ -1,5 +1,16 @@
 # TODO
 
+## Completed In This Round (July 27, 2026 - Round 94)
+
+- Pulled `origin/main` -- repository was already up to date.
+- Full CJK/Cyrillic/non-English scan: zero translatable non-English content across all tracked source files (excluding `autowork.log`).
+- Chinese-English calque pattern deep scan: found and fixed 1 remaining calque in `src/services/base.py:197`: "Check topic" -> "Check subject" (Chinese calque for "subject").
+- Non-ASCII content in source files limited to legitimate exceptions: emojis (UI icons in HTML/JS), `Türkiye` in test assertion.
+
+## Next Actions
+
+- Continue monitoring for any newly introduced non-English content from upstream changes.
+
 ## Completed In This Round (July 24, 2026 - Round 93)
 
 - Pulled `origin/main` -- repository was already up to date.

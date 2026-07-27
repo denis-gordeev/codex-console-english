@@ -194,7 +194,7 @@ class BaseEmailService(abc.ABC):
                         if expected_sender and expected_sender not in message.get("from", ""):
                             continue
 
-                        # Check topic
+                        # Check subject
                         if expected_subject and expected_subject not in message.get("subject", ""):
                             continue
 
