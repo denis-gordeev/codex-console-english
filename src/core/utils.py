@@ -32,7 +32,7 @@ def setup_logging(
 
     Args:
         log_level: log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-        log_file: log file path, if not specified, it will only be output to the console
+        log_file: log file path; if omitted, logs are only written to the console
         log_format: log format
 
     Returns:
