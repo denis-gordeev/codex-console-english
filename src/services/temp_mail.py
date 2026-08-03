@@ -350,7 +350,7 @@ class TempMailService(BaseEmailService):
 
         Args:
             limit: max results
-            offset: paging offset
+            offset: pagination offset
             **kwargs: additional query parameters, forwarded to the admin API
 
         Returns:

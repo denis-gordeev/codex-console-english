@@ -386,7 +386,7 @@ class TempmailService(BaseEmailService):
                         "status": "error",
                         "email": email,
                         "error": str(e),
-                        "message": "An error occurred while checking mail"
+                        "message": "Error checking mail"
                     })
 
             time.sleep(3)

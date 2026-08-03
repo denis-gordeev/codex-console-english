@@ -316,7 +316,7 @@ ERROR_MESSAGES = {
     "VALIDATION_ERROR": "Validation failed",
 
     # Email service error
-    "EMAIL_SERVICE_UNAVAILABLE": "The email service is unavailable",
+    "EMAIL_SERVICE_UNAVAILABLE": "Email service unavailable",
     "EMAIL_CREATION_FAILED": "Failed to create email",
     "OTP_NOT_RECEIVED": "OTP not received",
     "OTP_INVALID": "Invalid OTP",

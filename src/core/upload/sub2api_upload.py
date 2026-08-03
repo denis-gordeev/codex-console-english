@@ -40,10 +40,10 @@ def upload_to_sub2api(
         return False, "No account to upload"
 
     if not api_url:
-        return False, "Sub2API URL is not configured"
+        return False, "Sub2API URL not configured"
 
     if not api_key:
-        return False, "Sub2API API Key is not configured"
+        return False, "Sub2API API Key not configured"
 
     exported_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 

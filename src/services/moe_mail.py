@@ -353,7 +353,7 @@ class MeoMailEmailService(BaseEmailService):
         """List all emails
 
         Args:
-            cursor: paging cursor
+            cursor: pagination cursor
             **kwargs: other parameters
 
         Returns:
@@ -429,7 +429,7 @@ class MeoMailEmailService(BaseEmailService):
 
         Args:
             email_id: Email ID
-            cursor: paging cursor
+            cursor: pagination cursor
 
         Returns:
             message list"""

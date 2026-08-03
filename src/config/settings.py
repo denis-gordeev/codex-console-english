@@ -39,7 +39,7 @@ class SettingDefinition:
     is_secret: bool = False
 
 
-# Definition of all settings (including database key, default value, category, and description)
+# All settings definitions (database key, default value, category, and description)
 SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
     # Application details
     "app_name": SettingDefinition(

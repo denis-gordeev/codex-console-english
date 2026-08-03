@@ -174,7 +174,7 @@ function updateMsdLabel(ddId) {
     const checked = dd.querySelectorAll('.msd-item input:checked');
     const label = dd.querySelector('.msd-label');
     if (!label) return;
-    if (checked.length === 0) label.textContent = 'Not selected';
+    if (checked.length === 0) label.textContent = 'None selected';
     else if (checked.length === all.length) label.textContent = `all (${all.length})`;
     else label.textContent = Array.from(checked).map(c => c.nextElementSibling.textContent).join(', ');
 }
@@ -699,7 +699,7 @@ async function handleBatchRegistration(requestData) {
 async function handleCancelTask() {
     // Disable the cancel button to prevent repeated clicks
     elements.cancelBtn.disabled = true;
-    addLog('info', '[System] is submitting a cancellation request...');
+    addLog('info', '[System] Submitting cancellation request...');
 
     try {
         // Batch task cancellation (including normal batch mode and Outlook batch mode)

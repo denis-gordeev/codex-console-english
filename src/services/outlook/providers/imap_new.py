@@ -63,7 +63,7 @@ class IMAPNewProvider(OutlookProvider):
             except Exception:
                 self.disconnect()
 
-        # New IMAP requires OAuth2; without OAuth it will be skipped without recording a health failure.
+        # New IMAP requires OAuth2; without OAuth, the provider is skipped without recording a health failure.
         if not self.account.has_oauth():
             logger.debug(f"[{self.account.email}] Skipping IMAP_NEW (no OAuth)")
             return False

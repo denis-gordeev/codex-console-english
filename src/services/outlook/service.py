@@ -193,7 +193,7 @@ class OutlookService(BaseEmailService):
             raise ValueError(f"Unknown provider type: {provider_type}")
 
     def _get_provider_priority_for_account(self, account: OutlookAccount) -> List[ProviderType]:
-        """Returns a prioritized list of suitable providers based on if the account has OAuth"""
+        """Return a prioritized list of suitable providers, depending on whether the account has OAuth"""
         if account.has_oauth():
             return self.provider_priority
         else:
@@ -227,7 +227,7 @@ class OutlookService(BaseEmailService):
             # Check if the provider is available
             if not self.health_checker.is_available(provider_type):
                 logger.debug(
-                    f"[{account.email}] {provider_type.value} is not available, skipping"
+                    f"[{account.email}] {provider_type.value} not available, skipping"
                 )
                 continue
 
@@ -478,7 +478,7 @@ class OutlookService(BaseEmailService):
         logger.info("All provider health statuses reset")
 
     def force_provider(self, provider_type: ProviderType):
-        """Force use of the specified provider"""
+        """Force the specified provider"""
         self.health_checker.force_enable(provider_type)
         # Disable other providers
         for pt in ProviderType:

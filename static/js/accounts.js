@@ -193,7 +193,7 @@ async function loadStats() {
     }
 }
 
-// digital animation
+// Animated counter
 function animateValue(element, value) {
     element.style.transition = 'transform 0.2s ease';
     element.style.transform = 'scale(1.1)';
@@ -402,7 +402,7 @@ function updatePagination() {
     elements.prevPage.disabled = currentPage <= 1;
     elements.nextPage.disabled = currentPage >= totalPages;
 
-    elements.pageInfo.textContent = `Page ${currentPage} / Total Page ${totalPages}`;
+    elements.pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
 }
 
 // Reset all selected pages

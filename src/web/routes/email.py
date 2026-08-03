@@ -252,8 +252,8 @@ async def get_service_types():
 
 @router.get("", response_model=EmailServiceListResponse)
 async def list_email_services(
-    service_type: Optional[str] = Query(None, description="Service type filtering"),
-    enabled_only: bool = Query(False, description="Only show enabled services"),
+    service_type: Optional[str] = Query(None, description="Filter by service type"),
+    enabled_only: bool = Query(False, description="Show only enabled services"),
 ):
     """Get email service list"""
     with get_db() as db:
@@ -396,7 +396,7 @@ async def test_email_service(service_id: int):
             if health:
                 return ServiceTestResult(
                     success=True,
-                    message="Service connection is normal",
+                    message="Service connection successful",
                     details=email_service.get_service_info() if hasattr(email_service, 'get_service_info') else None
                 )
             else:
@@ -424,7 +424,7 @@ async def enable_email_service(service_id: int):
         service.enabled = True
         db.commit()
 
-        return {"success": True, "message": f"Service {service.name} is enabled"}
+        return {"success": True, "message": f"Service {service.name} enabled"}
 
 
 @router.post("/{service_id}/disable")
@@ -438,7 +438,7 @@ async def disable_email_service(service_id: int):
         service.enabled = False
         db.commit()
 
-        return {"success": True, "message": f"Service {service.name} is disabled"}
+        return {"success": True, "message": f"Service {service.name} disabled"}
 
 
 @router.post("/reorder")

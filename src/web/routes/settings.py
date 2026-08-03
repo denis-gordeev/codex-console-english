@@ -173,7 +173,7 @@ async def test_dynamic_proxy(request: DynamicProxySettings):
     )
 
     if not proxy_url:
-        return {"success": False, "message": "Dynamic proxy API returned no response or the request failed"}
+        return {"success": False, "message": "Dynamic proxy API returned no response or request failed"}
 
     # Test connectivity using the retrieved proxy
     import time
@@ -353,7 +353,7 @@ async def get_recent_logs(
 
     log_file = settings.log_file
     if not log_file:
-        return {"logs": [], "message": "The log file is not configured"}
+        return {"logs": [], "message": "Log file not configured"}
 
     from pathlib import Path
     log_path = Path(log_file)

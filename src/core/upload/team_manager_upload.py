@@ -26,9 +26,9 @@ def upload_to_team_manager(
         (bool, str): (True on success, status message)
     """
     if not api_url:
-        return False, "Team Manager API URL is not configured"
+        return False, "Team Manager API URL not configured"
     if not api_key:
-        return False, "Team Manager API Key is not configured"
+        return False, "Team Manager API Key not configured"
     if not account.access_token:
         return False, "Account has no access_token"
 

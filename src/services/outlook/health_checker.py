@@ -167,7 +167,7 @@ class HealthChecker:
             health = self._health_status.get(provider_type)
             if health:
                 health.enable()
-                logger.info(f"{provider_type.value} is enabled")
+                logger.info(f"{provider_type.value} enabled")
 
     def get_all_health_status(self) -> Dict[str, Any]:
         """

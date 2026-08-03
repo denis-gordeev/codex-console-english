@@ -137,7 +137,7 @@ def upload_to_cpa(
         return False, "CPA API URL not configured"
 
     if not effective_token:
-        return False, "CPA API Token is not configured"
+        return False, "CPA API Token not configured"
 
     upload_url = _normalize_cpa_auth_files_url(effective_url)
 
@@ -290,7 +290,7 @@ def test_cpa_connection(api_url: str, api_token: str, proxy: str = None) -> Tupl
         if response.status_code == 404:
             return False, "CPA auth-files API endpoint not found. Ensure the API URL is set to the root address, /v0/management, or the full auth-files URL."
         if response.status_code == 503:
-            return False, "Connected, but server authentication manager is unavailable"
+            return False, "Connected, but server authentication manager unavailable"
 
         return False, f"Server returned error status code: {response.status_code}"
 

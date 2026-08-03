@@ -94,7 +94,7 @@ document.addEventListener('click', () => {
     document.querySelectorAll('.dropdown-menu.active').forEach(m => m.classList.remove('active'));
 });
 
-// Initialize tab page
+// Initialize tabs
 function initTabs() {
     elements.tabs.forEach(btn => {
         btn.addEventListener('click', () => {

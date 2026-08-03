@@ -1,5 +1,31 @@
 # TODO
 
+## Completed In This Round (August 3, 2026 - Round 97)
+
+- Pulled `origin/main` -- repository was already up to date.
+- Full CJK/Cyrillic/non-English scan: zero translatable non-English content across all tracked source files (excluding `autowork.log`).
+- Fixed 17 Chinese-English calque patterns and awkward phrasings:
+  - "Service connection is normal" -> "Service connection successful" in `src/web/routes/email.py` (Chinese calque "连接正常").
+  - "'The temp mail connection is normal'" -> "'Temp mail connection successful'" in `static/js/email_services.js`.
+  - "`Page X / Total Page Y`" -> "`Page X of Y`" in `static/js/accounts.js` (Chinese pagination style).
+  - "`'just'`" -> "`'just now'`" in `static/js/utils.js`.
+  - "`'Not selected'`" -> "`'None selected'`" in `static/js/app.js`.
+  - "'[System] is submitting a cancellation request...'" -> "'[System] Submitting cancellation request...'" in `static/js/app.js` (Chinese "正在X" pattern).
+  - "Service type filtering" -> "Filter by service type", "Only show enabled services" -> "Show only enabled services" in `src/web/routes/email.py`.
+  - "is not available, skipping" -> "not available, skipping" in `src/services/outlook/service.py`.
+  - "CPA API Token is not configured" -> "CPA API Token not configured" in `src/core/upload/cpa_upload.py`.
+  - "Team Manager API URL/Key is not configured" -> "not configured" in `src/core/upload/team_manager_upload.py` (2 occurrences).
+  - "Sub2API URL/API Key is not configured" -> "not configured" in `src/core/upload/sub2api_upload.py` (2 occurrences).
+  - "The email service is unavailable" -> "Email service unavailable" in `src/config/constants.py`.
+  - "server authentication manager is unavailable" -> "unavailable" in `src/core/upload/cpa_upload.py`.
+  - "An error occurred while checking mail" -> "Error checking mail" in `src/services/tempmail.py`.
+  - "Service X is enabled/disabled" -> "Service X enabled/disabled" in `src/web/routes/email.py` (2 occurrences).
+  - "The log file is not configured" -> "Log file not configured" in `src/web/routes/settings.py`.
+  - "or the request failed" -> "or request failed" in `src/web/routes/settings.py`.
+  - "is enabled" -> "enabled" in `src/services/outlook/health_checker.py`.
+- Applied pending edits from previous round (9 files with "paging" -> "pagination", "Initialize tab page" -> "Initialize tabs", "digital animation" -> "Animated counter", and docstring improvements).
+- All 32 tests pass.
+
 ## Completed In This Round (July 29, 2026 - Round 96)
 
 - Pulled `origin/main` -- repository was already up to date.
