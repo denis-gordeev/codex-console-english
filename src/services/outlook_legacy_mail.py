@@ -538,7 +538,7 @@ class OutlookService(BaseEmailService):
                                 logger.debug(f"[{email}] Skipping old email: {mail.get('subject', '')[:50]}")
                                 continue
 
-                            # Check if it is an OpenAI verification email
+                            # Skip non-OpenAI verification emails
                             if not self._is_openai_verification_mail(mail, email):
                                 continue
 

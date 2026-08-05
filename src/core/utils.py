@@ -61,7 +61,7 @@ def setup_logging(
 
     # File handler (if log file is specified)
     if log_file:
-        # Make sure the log directory exists
+        # Ensure the log directory exists
         log_dir = os.path.dirname(log_file)
         if log_dir:
             os.makedirs(log_dir, exist_ok=True)
@@ -354,7 +354,7 @@ def write_json_file(filepath: str, data: Dict[str, Any], indent: int = 2) -> boo
         True on success
     """
     try:
-        # Make sure the directory exists
+        # Ensure the directory exists
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
         with open(filepath, 'w', encoding='utf-8') as f:
@@ -404,7 +404,7 @@ def get_data_dir() -> Path:
         db_path = settings.database_url[10:] # Remove "sqlite:///"
         data_dir = Path(db_path).parent
 
-    # Make sure the directory exists
+    # Ensure the directory exists
     data_dir.mkdir(parents=True, exist_ok=True)
 
     return data_dir
@@ -421,7 +421,7 @@ def get_logs_dir() -> Path:
     log_file = Path(settings.log_file)
     log_dir = log_file.parent
 
-    # Make sure the directory exists
+    # Ensure the directory exists
     log_dir.mkdir(parents=True, exist_ok=True)
 
     return log_dir
@@ -464,7 +464,7 @@ def mask_sensitive_data(data: Union[str, Dict, List], mask_char: str = "*") -> U
         masked data
     """
     if isinstance(data, str):
-        # If it is an email address, mask the middle part
+        # For email addresses, mask the local part
         if "@" in data:
             local, domain = data.split("@", 1)
             if len(local) > 2:

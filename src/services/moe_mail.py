@@ -297,7 +297,7 @@ class MeoMailEmailService(BaseEmailService):
 
                     seen_message_ids.add(message_id)
 
-                    # Check if it is the target email
+                    # Filter by target email
                     sender = str(message.get("from_address", "")).lower()
                     subject = str(message.get("subject", ""))
 
@@ -308,7 +308,7 @@ class MeoMailEmailService(BaseEmailService):
 
                     content = f"{sender} {subject} {message_content}"
 
-                    # Check if it is an OpenAI email
+                    # Skip non-OpenAI emails
                     if "openai" not in sender and "openai" not in content.lower():
                         continue
 
@@ -324,7 +324,7 @@ class MeoMailEmailService(BaseEmailService):
             except Exception as e:
                 logger.debug(f"Error checking mail: {e}")
 
-            # Wait for some time and check again
+            # Wait briefly and retry
             time.sleep(3)
 
         logger.warning(f"Timeout waiting for OTP: {email}")

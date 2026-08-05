@@ -441,7 +441,7 @@ function handleConcurrencyModeChange(selectEl, hintEl, intervalGroupEl) {
         hintEl.textContent = 'All tasks are divided into N concurrent batches and run simultaneously';
         intervalGroupEl.style.display = 'none';
     } else {
-        hintEl.textContent = 'Run up to N tasks at the same time and start new tasks every interval seconds';
+        hintEl.textContent = 'Run up to N tasks concurrently, starting new tasks every interval seconds';
         intervalGroupEl.style.display = 'block';
     }
 }

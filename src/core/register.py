@@ -562,13 +562,13 @@ class RegistrationEngine:
                 error_text = response.text[:500]
                 self._log(f"Failed to register with password: {error_text}", "warning")
 
-                # Parse the error message to check if the email address is already registered
+                # Parse the error message to detect an already-registered email
                 try:
                     error_json = response.json()
                     error_msg = error_json.get("error", {}).get("message", "")
                     error_code = error_json.get("error", {}).get("code", "")
 
-                    # Check if the email address is already registered
+                    # Detect already-registered emails
                     if "already" in error_msg.lower() or "exists" in error_msg.lower() or error_code == "user_exists":
                         self._log(f"Email {self.email} may have been registered with OpenAI", "error")
                         # Mark this email as registered
@@ -808,7 +808,7 @@ class RegistrationEngine:
                 import urllib.parse
                 next_url = urllib.parse.urljoin(current_url, location)
 
-                # Check if the callback parameters are already present
+                # Detect callback parameters in the redirect URL
                 if "code=" in next_url and "state=" in next_url:
                     self._log(f"Callback URL found: {next_url[:100]}...")
                     return next_url

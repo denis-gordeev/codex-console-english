@@ -172,7 +172,7 @@ class TempmailService(BaseEmailService):
 
                 data = response.json()
 
-                # Check if the inbox has expired
+                # Detect expired inbox
                 if data is None or (isinstance(data, dict) and not data):
                     logger.warning(f"Email {email} has expired")
                     return None
@@ -200,7 +200,7 @@ class TempmailService(BaseEmailService):
 
                     content = "\n".join([sender, subject, body, html])
 
-                    # Check if it is an OpenAI email
+                    # Skip non-OpenAI emails
                     if "openai" not in sender and "openai" not in content.lower():
                         continue
 
@@ -215,7 +215,7 @@ class TempmailService(BaseEmailService):
             except Exception as e:
                 logger.debug(f"Error checking email: {e}")
 
-            # Wait for some time and check again
+            # Wait briefly and retry
             time.sleep(3)
 
         logger.warning(f"Timed out waiting for OTP: {email}")
@@ -329,7 +329,7 @@ class TempmailService(BaseEmailService):
                     time.sleep(3)
                     continue
 
-                # Check if the inbox has expired
+                # Detect expired inbox
                 if data is None or (isinstance(data, dict) and not data):
                     if callback:
                         callback({
@@ -354,7 +354,7 @@ class TempmailService(BaseEmailService):
 
                     content = "\n".join([sender, subject, body, html])
 
-                    # Check if it is an OpenAI email
+                    # Skip non-OpenAI emails
                     if "openai" not in sender and "openai" not in content.lower():
                         continue
 

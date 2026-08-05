@@ -297,7 +297,7 @@ async def get_email_service_full(service_id: int):
             "name": service.name,
             "enabled": service.enabled,
             "priority": service.priority,
-            "config": service.config or {}, # Return the complete settings
+            "config": service.config or {}, # Return all settings
             "last_used": service.last_used.isoformat() if service.last_used else None,
             "created_at": service.created_at.isoformat() if service.created_at else None,
             "updated_at": service.updated_at.isoformat() if service.updated_at else None,
@@ -314,7 +314,7 @@ async def create_email_service(request: EmailServiceCreate):
         raise HTTPException(status_code=400, detail=f"Invalid service type: {request.service_type}")
 
     with get_db() as db:
-        # Check if the name is duplicated
+        # Reject duplicate names
         existing = db.query(EmailServiceModel).filter(EmailServiceModel.name == request.name).first()
         if existing:
             raise HTTPException(status_code=400, detail="Service name already in use")

@@ -249,7 +249,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
 
             # Determine which proxy to use
             # If proxy parameters are provided, use them
-            # Otherwise get them from the proxy list or system settings
+            # Otherwise fetch from the proxy list or system settings
             actual_proxy_url = proxy
             proxy_id = None
 
@@ -328,7 +328,7 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                         email = svc.config.get("email") if svc.config else None
                         if not email:
                             continue
-                        # Check if it is registered in the accounts table
+                        # Skip accounts already in the accounts table
                         existing = db.query(Account).filter(Account.email == email).first()
                         if not existing:
                             selected_service = svc

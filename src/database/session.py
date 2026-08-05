@@ -36,7 +36,7 @@ class DatabaseSessionManager:
                     'data'
                 )
                 db_path = os.path.join(data_dir, 'database.db')
-                # Make sure the directory exists
+                # Ensure the directory exists
                 os.makedirs(data_dir, exist_ok=True)
                 database_url = f"sqlite:///{db_path}"
 
@@ -105,7 +105,7 @@ class DatabaseSessionManager:
             ("proxies", "is_default", "BOOLEAN DEFAULT 0"),
         ]
 
-        # Make sure all current tables exist before applying column migrations.
+        # Ensure all current tables exist before applying column migrations.
         Base.metadata.create_all(bind=self.engine)
 
         with self.engine.connect() as conn:

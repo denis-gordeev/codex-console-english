@@ -179,7 +179,7 @@ class BaseEmailService(abc.ABC):
                     email_data = email_info.get("email", {})
                     current_email_id = email_info.get("id")
 
-                    # Check if it is a new email
+                    # Skip already-seen emails
                     if last_email_id and current_email_id == last_email_id:
                         continue
 

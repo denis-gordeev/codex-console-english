@@ -1,5 +1,30 @@
 # TODO
 
+## Completed In This Round (August 5, 2026 - Round 101)
+
+- Pulled `origin/main` -- repository was already up to date.
+- Full CJK/Cyrillic/non-English scan: zero translatable non-English content across all tracked source files (excluding `autowork.log`).
+- Chinese-English calque and awkward-English cleanup (19 changes):
+  - "Check if it is a new email" -> "Skip already-seen emails" in `src/services/base.py`.
+  - "Check if it is an OpenAI email" -> "Skip non-OpenAI emails" in `src/services/moe_mail.py`, `src/services/tempmail.py` (2 occurrences).
+  - "Check if it is an OpenAI verification email" -> "Skip non-OpenAI verification emails" in `src/services/outlook/email_parser.py`, `src/services/outlook_legacy_mail.py`.
+  - "Check if it is the target email" -> "Filter by target email" in `src/services/moe_mail.py`.
+  - "Check if the provider is available" -> "Skip unavailable providers" in `src/services/outlook/service.py`.
+  - "Check if the inbox has expired" -> "Detect expired inbox" in `src/services/tempmail.py` (2 occurrences).
+  - "Check if the email address is already registered" -> "Detect already-registered emails" in `src/core/register.py`.
+  - "Parse the error message to check if the email address is already registered" -> "Parse the error message to detect an already-registered email" in `src/core/register.py`.
+  - "Check if the callback parameters are already present" -> "Detect callback parameters in the redirect URL" in `src/core/register.py`.
+  - "Check if it is registered in the accounts table" -> "Skip accounts already in the accounts table" in `src/web/routes/registration.py`.
+  - "Check if the name is duplicated" -> "Reject duplicate names" in `src/web/routes/email.py`.
+  - "If it is an email address, mask the middle part" -> "For email addresses, mask the local part" in `src/core/utils.py`.
+  - "Make sure" -> "Ensure" in `src/core/utils.py` (4 occurrences) and `src/database/session.py` (2 occurrences).
+  - "Get the full CPA service config" -> "Return the full CPA service config" in `src/web/routes/upload/cpa_services.py`.
+  - "Return the complete settings" -> "Return all settings" in `src/web/routes/email.py`.
+  - "Otherwise get them from the proxy list" -> "Otherwise fetch from the proxy list" in `src/web/routes/registration.py`.
+  - "Wait for some time and check again" -> "Wait briefly and retry" in `src/services/moe_mail.py`, `src/services/tempmail.py`.
+  - "Run up to N tasks at the same time and start new tasks" -> "Run up to N tasks concurrently, starting new tasks" in `static/js/app.js`, `templates/index.html` (2 occurrences).
+- All 32 tests pass.
+
 ## Completed In This Round (August 5, 2026 - Round 100)
 
 - Pulled `origin/main` -- repository was already up to date.

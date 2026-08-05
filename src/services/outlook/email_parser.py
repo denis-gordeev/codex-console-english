@@ -151,7 +151,7 @@ class EmailParser:
                     logger.debug(f"Skipping old email: {email.subject[:50]}")
                     continue
 
-            # Check if it is an OpenAI verification email
+            # Skip non-OpenAI verification emails
             if not self.is_openai_verification_email(email, target_email):
                 continue
 

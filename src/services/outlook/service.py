@@ -224,7 +224,7 @@ class OutlookService(BaseEmailService):
 
         # Try each provider in order of priority
         for provider_type in priority:
-            # Check if the provider is available
+            # Skip unavailable providers
             if not self.health_checker.is_available(provider_type):
                 logger.debug(
                     f"[{account.email}] {provider_type.value} not available, skipping"
