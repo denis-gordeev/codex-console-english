@@ -540,7 +540,7 @@ class RegistrationEngine:
             self.password = password  # Save password to instance variable
             self._log(f"Generated password: {password}")
 
-            # Submit password registration
+            # Submit the registration password
             register_body = json.dumps({
                 "password": password,
                 "username": self.email
@@ -556,7 +556,7 @@ class RegistrationEngine:
                 data=register_body,
             )
 
-            self._log(f"Submit password status: {response.status_code}")
+            self._log(f"Password submission status: {response.status_code}")
 
             if response.status_code != 200:
                 error_text = response.text[:500]

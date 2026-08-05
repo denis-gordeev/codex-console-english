@@ -1,5 +1,14 @@
 # TODO
 
+## Completed In This Round (August 5, 2026 - Round 99)
+
+- Pulled `origin/main` -- repository was already up to date.
+- Full CJK/Cyrillic/non-English scan: zero translatable non-English content across all tracked source files (excluding `autowork.log`).
+- Fixed 2 awkward phrasings in `src/core/register.py`:
+  - "Submit password registration" → "Submit the registration password" (line 543, ambiguous compound).
+  - "Submit password status" → "Password submission status" (line 559, unnatural noun phrase).
+- All 32 tests pass.
+
 ## Completed In This Round (August 4, 2026 - Round 98)
 
 - Pulled `origin/main` -- repository was already up to date.
