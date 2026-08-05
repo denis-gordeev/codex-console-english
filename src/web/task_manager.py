@@ -370,7 +370,7 @@ class TaskManager:
         def callback(msg: str):
             full_msg = f"{prefix} {msg}" if prefix else msg
             self.add_log(task_uuid, full_msg)
-            # If it is a batch task, push it to the batch channel as well. The frontend can see the detailed steps in the mixed log.
+            # For batch tasks, push to the batch channel as well. The frontend can see the detailed steps in the mixed log.
             if batch_id:
                 self.add_batch_log(batch_id, full_msg)
         return callback

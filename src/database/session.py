@@ -50,7 +50,7 @@ class DatabaseSessionManager:
         self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
 
     def get_db(self) -> Generator[Session, None, None]:
-        """Get the context manager for a database session
+        """Context manager for a database session
         Usage example:
             with get_db() as db:
                 # Use db for database operations
@@ -151,7 +151,7 @@ def init_database(database_url: str = None) -> DatabaseSessionManager:
 
 
 def get_session_manager() -> DatabaseSessionManager:
-    """Get the database session manager"""
+    """Return the database session manager"""
     if _db_manager is None:
         raise RuntimeError("Database not initialized; call init_database() first")
     return _db_manager

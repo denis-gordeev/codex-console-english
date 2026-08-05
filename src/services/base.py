@@ -47,7 +47,7 @@ class BaseEmailService(abc.ABC):
 
     @property
     def last_error(self) -> Optional[str]:
-        """Get the last error message"""
+        """Return the last error message"""
         return self._last_error
 
     @abc.abstractmethod
@@ -220,7 +220,7 @@ class BaseEmailService(abc.ABC):
         return None
 
     def get_email_messages(self, email_id: str, **kwargs) -> List[Dict[str, Any]]:
-        """Get the email message list (optional implementation)
+        """Fetch the email message list (optional implementation)
 
         Args:
             email_id: ID in the email service

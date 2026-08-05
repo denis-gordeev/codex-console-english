@@ -1355,7 +1355,7 @@ async function handleTestCpaService() {
     try {
         let result;
         if (id && !apiToken) {
-            // If the token is not provided when editing, test the saved service directly.
+            // When editing without providing a token, test the saved service directly.
             result = await api.post(`/cpa-services/${id}/test`);
         } else {
             result = await api.post('/cpa-services/test-connection', { api_url: apiUrl, api_token: apiToken });

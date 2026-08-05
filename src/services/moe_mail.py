@@ -425,7 +425,7 @@ class MeoMailEmailService(BaseEmailService):
             return False
 
     def get_email_messages(self, email_id: str, cursor: str = None) -> List[Dict[str, Any]]:
-        """Get the email message list
+        """Fetch the email message list
 
         Args:
             email_id: Email ID

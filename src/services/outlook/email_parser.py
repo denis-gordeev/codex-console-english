@@ -221,7 +221,7 @@ _parser: Optional[EmailParser] = None
 
 
 def get_email_parser() -> EmailParser:
-    """Get the global email parser instance"""
+    """Return the global email parser instance"""
     global _parser
     if _parser is None:
         _parser = EmailParser()

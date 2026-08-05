@@ -216,7 +216,7 @@ class GraphAPIProvider(OutlookProvider):
         except Exception:
             pass
 
-        # Get the text
+        # Extract the text
         body_info = msg.get("body", {})
         body = body_info.get("content", "")
         body_preview = msg.get("bodyPreview", "")

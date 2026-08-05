@@ -66,7 +66,7 @@ def create_app() -> FastAPI:
         try:
             initialize_database()
         except Exception as e:
-            logger.warning(f"Database initialization failed: {e}")
+            logger.warning(f"Database init failed: {e}")
 
         task_manager.set_loop(asyncio.get_running_loop())
 

@@ -123,7 +123,7 @@ def generate_uuid() -> str:
 
 
 def get_timestamp() -> int:
-    """Get the current timestamp (seconds)"""
+    """Current timestamp in seconds"""
     return int(time.time())
 
 
@@ -368,7 +368,7 @@ def write_json_file(filepath: str, data: Dict[str, Any], indent: int = 2) -> boo
 
 def get_project_root() -> Path:
     """
-    Get the project root directory
+    Return the project root directory
 
     Returns:
         Project root directory Path object
@@ -473,7 +473,7 @@ def mask_sensitive_data(data: Union[str, Dict, List], mask_char: str = "*") -> U
                 masked_local = mask_char * len(local)
             return f"{masked_local}@{domain}"
 
-        # If it is a token or key, mask most of the content
+        # For tokens/keys, mask most of the content
         if len(data) > 10:
             return data[:4] + mask_char * (len(data) - 8) + data[-4:]
         return mask_char * len(data)
@@ -562,7 +562,7 @@ class Timer:
         logger.debug(f"{self.name} took: {self.elapsed:.2f} seconds")
 
     def get_elapsed(self) -> float:
-        """Get the elapsed time (seconds)"""
+        """Elapsed time in seconds"""
         if self.elapsed is not None:
             return self.elapsed
         if self.start_time is not None:

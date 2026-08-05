@@ -548,7 +548,7 @@ async def delete_proxy_item(proxy_id: int):
 
 @router.post("/proxies/{proxy_id}/set-default")
 async def set_proxy_default(proxy_id: int):
-    """Set the specified proxy as default"""
+    """Mark the specified proxy as default"""
     with get_db() as db:
         proxy = crud.set_proxy_default(db, proxy_id)
         if not proxy:

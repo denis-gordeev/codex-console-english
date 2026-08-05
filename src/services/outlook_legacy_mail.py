@@ -209,7 +209,7 @@ class OutlookIMAPClient:
         if not data or not data[0]:
             return []
 
-        # Get the latest email
+        # Fetch the latest email
         ids = data[0].split()[-count:]
         result = []
 
@@ -270,7 +270,7 @@ class OutlookIMAPClient:
             "delivered_to": delivered_to,
             "x_original_to": x_original_to,
             "body": body,
-            "raw": raw.hex()[:100] # Store a partial hash of the original data for debugging
+            "raw": raw.hex()[:100] # Partial hash of the original data for debugging
         }
 
     @staticmethod

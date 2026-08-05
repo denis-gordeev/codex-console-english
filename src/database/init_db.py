@@ -67,7 +67,7 @@ if __name__ == "__main__":
     # When running this script directly, initialize the database
     import argparse
 
-    parser = argparse.ArgumentParser(description="Database initialization script")
+    parser = argparse.ArgumentParser(description="Database init script")
     parser.add_argument("--reset", action="store_true", help="Reset database (delete all data)")
     parser.add_argument("--check", action="store_true", help="Check database connection")
     parser.add_argument("--url", help="Database connection string")

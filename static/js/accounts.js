@@ -428,7 +428,7 @@ function buildBatchPayload(extraFields = {}) {
     return { ids: Array.from(selectedAccounts), ...extraFields };
 }
 
-// Get the effective selection count (uses total when selecting_all)
+// Effective selection count (uses total when selecting_all)
 function getEffectiveCount() {
     return selectAllPages ? totalAccounts : selectedAccounts.size;
 }
@@ -713,7 +713,7 @@ async function exportAccounts(format) {
         // Get file content
         const blob = await response.blob();
 
-        // Get the file name from Content-Disposition
+        // Extract the filename from Content-Disposition
         const disposition = response.headers.get('Content-Disposition');
         let filename = `accounts_${Date.now()}.${(format === 'cpa' || format === 'sub2api') ? 'json' : format}`;
         if (disposition) {

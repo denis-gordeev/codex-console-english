@@ -59,7 +59,7 @@ def setup_application():
     try:
         initialize_database()
     except Exception as e:
-        print(f"Database initialization failed: {e}")
+        print(f"Database init failed: {e}")
         raise
 
     # Load application settings after the database is ready.
@@ -73,7 +73,7 @@ def setup_application():
     )
 
     logger = logging.getLogger(__name__)
-    logger.info("Database initialization completed")
+    logger.info("Database initialized")
     logger.info("Using data directory: %s", data_dir)
     logger.info("Using log directory: %s", logs_dir)
     logger.info("Application setup completed")

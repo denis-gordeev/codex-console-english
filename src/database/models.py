@@ -214,7 +214,7 @@ class Proxy(Base):
 
     @property
     def proxy_url(self) -> str:
-        """Get the complete proxy URL"""
+        """Return the complete proxy URL"""
         if self.type == "http":
             scheme = "http"
         elif self.type == "socks5":

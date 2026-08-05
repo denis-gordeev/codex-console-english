@@ -563,7 +563,7 @@ function connectWebSocket(taskUuid) {
                     // Disconnect WebSocket (asynchronous operation)
                     disconnectWebSocket();
 
-                    // Reset the button after the task is completed
+                    // Reset the button after the task completes
                     resetButtons();
 
                     // Show toast only once
@@ -591,10 +591,10 @@ function connectWebSocket(taskUuid) {
             console.log('WebSocket connection closed:', event.code);
             stopWebSocketHeartbeat();
 
-            // Only switch to polling if the task is not completed and the final status is not completed
+            // Switch to polling only when the task is not completed and no final status is available
             // Use taskFinalStatus instead of currentTask.status because currentTask may have been reset
             const shouldPoll = !taskCompleted &&
-                               taskFinalStatus === null; // If taskFinalStatus has a value, the task is complete
+                               taskFinalStatus === null; // A non-null taskFinalStatus means the task is complete
 
             if (shouldPoll && currentTask) {
                 console.log('Switch to polling mode');
@@ -780,7 +780,7 @@ function startLogPolling(taskUuid) {
             }
             lastLogIndex = logs.length;
 
-            // Check if the task is completed
+            // Check if the task has completed
             if (['completed', 'failed', 'cancelled'].includes(data.status)) {
                 stopLogPolling();
                 resetButtons();
@@ -998,7 +998,7 @@ function addLog(type, message) {
 
     // Limit the dedup set size to avoid memory leaks
     if (displayedLogs.size > 1000) {
-        // Clear half of the records
+        // Remove half the entries
         const keys = Array.from(displayedLogs);
         keys.slice(0, 500).forEach(k => displayedLogs.delete(k));
     }
@@ -1268,7 +1268,7 @@ function connectBatchWebSocket(batchId) {
                     // Disconnect WebSocket (asynchronous operation)
                     disconnectBatchWebSocket();
 
-                    // Reset the button after the task is completed
+                    // Reset the button after the task completes
                     resetButtons();
 
                     // Show toast only once
@@ -1299,10 +1299,10 @@ function connectBatchWebSocket(batchId) {
             console.log('Batch task WebSocket connection closed:', event.code);
             stopBatchWebSocketHeartbeat();
 
-            // Only switch to polling if the task is not completed and the final status is not completed
+            // Switch to polling only when the batch is not completed and no final status is available
             // Use batchFinalStatus instead of currentBatch.status because currentBatch may have been reset
             const shouldPoll = !batchCompleted &&
-                               batchFinalStatus === null; // If batchFinalStatus has a value, the task is complete
+                               batchFinalStatus === null; // A non-null batchFinalStatus means the task is complete
 
             if (shouldPoll && currentBatch) {
                 console.log('Switch to polling mode');

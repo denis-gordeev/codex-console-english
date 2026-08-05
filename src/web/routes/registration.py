@@ -33,7 +33,7 @@ batch_tasks: Dict[str, dict] = {}
 
 def get_proxy_for_registration(db) -> Tuple[Optional[str], Optional[int]]:
     """
-    Get the proxy used for registration
+    Return the proxy used for registration
 
     Strategy:
     1. First, randomly select an enabled proxy from the proxy list
@@ -1182,7 +1182,7 @@ async def get_available_email_services():
                     "from_settings": True
                 })
 
-        # Get the TempMail service (self-hosted Cloudflare Worker Tempmail)
+        # Fetch the TempMail service (self-hosted Cloudflare Worker Tempmail)
         temp_mail_services = db.query(EmailServiceModel).filter(
             EmailServiceModel.service_type == "temp_mail",
             EmailServiceModel.enabled == True

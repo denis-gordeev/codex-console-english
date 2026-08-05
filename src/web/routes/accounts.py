@@ -208,7 +208,7 @@ async def get_account(account_id: int):
 
 @router.get("/{account_id}/tokens")
 async def get_account_tokens(account_id: int):
-    """Get the account's token details"""
+    """Return the account's token details"""
     with get_db() as db:
         account = crud.get_account_by_id(db, account_id)
         if not account:
@@ -253,7 +253,7 @@ async def update_account(account_id: int, request: AccountUpdateRequest):
 
 @router.get("/{account_id}/cookies")
 async def get_account_cookies(account_id: int):
-    """Get the account's cookie string (for payment only)"""
+    """Return the account's cookie string (for payment only)"""
     with get_db() as db:
         account = crud.get_account_by_id(db, account_id)
         if not account:

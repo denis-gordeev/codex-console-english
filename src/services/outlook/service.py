@@ -92,7 +92,7 @@ class OutlookService(BaseEmailService):
             health_disable_duration=self.config.get("health_disable_duration", 300),
         )
 
-        # Get the default client_id (for accounts without client_id)
+        # Use the default client_id (for accounts without client_id)
         try:
             _default_client_id = get_settings().outlook_default_client_id
         except Exception:

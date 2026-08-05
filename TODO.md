@@ -1,5 +1,19 @@
 # TODO
 
+## Completed In This Round (August 5, 2026 - Round 100)
+
+- Pulled `origin/main` -- repository was already up to date.
+- Full CJK/Cyrillic/non-English scan: zero translatable non-English content across all tracked source files (excluding `autowork.log`).
+- Replaced "If it is a X" → "For X" / "When X" in 3 comments (`settings.py`, `utils.py`, `task_manager.py`) -- wordy Chinese-influenced conditional pattern.
+- Replaced "If the setting is not found, create it" → "Missing settings are created" in `settings.py` docstring.
+- Replaced "If the token is not provided when editing" → "When editing without providing a token" in `settings.js`.
+- Replaced "Get the X" → "Return/Fetch/List X" in 20 docstrings and comments across `register.py`, `utils.py`, `crud.py`, `session.py`, `http_client.py`, `dynamic_proxy.py`, `settings.py`, `models.py`, `base.py`, `moe_mail.py`, `email_parser.py`, `sub2api_services.py`, `accounts.py`, `registration.py`, `health_checker.py`, `outlook_legacy_mail.py`, `graph_api.py`.
+- Replaced "Set the specified proxy" → "Mark the specified proxy" in `crud.py` and `settings.py`.
+- Shortened "Database initialization completed/failed" → "Database initialized/init failed" in `webui.py` and `app.py`.
+- Shortened "Store a partial hash of the original data" → "Partial hash of the original data" in `outlook_legacy_mail.py`.
+- Polished 4 JS comments: "Only switch to polling if" → "Switch to polling only when", "Reset the button after the task is completed" → "after the task completes", "Get the file name" → "Extract the filename", "Get the effective selection count" → "Effective selection count".
+- All 32 tests pass.
+
 ## Completed In This Round (August 5, 2026 - Round 99)
 
 - Pulled `origin/main` -- repository was already up to date.

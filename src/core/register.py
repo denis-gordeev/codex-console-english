@@ -215,7 +215,7 @@ class RegistrationEngine:
             return False
 
     def _get_device_id(self) -> Optional[str]:
-        """Get the Device ID."""
+        """Fetch the Device ID."""
         if not self.oauth_start:
             return None
 
@@ -423,7 +423,7 @@ class RegistrationEngine:
             return SignupFormResult(success=False, error_message=str(e))
 
     def _reset_auth_flow(self) -> None:
-        """Reset the session and prepare to restart the OAuth flow."""
+        """Reset the session and prepare for the OAuth flow restart."""
         self.http_client.close()
         self.session = None
         self.oauth_start = None
@@ -627,7 +627,7 @@ class RegistrationEngine:
             return False
 
     def _get_verification_code(self) -> Optional[str]:
-        """Get the OTP."""
+        """Fetch the OTP."""
         try:
             self._log(f"Waiting for the OTP for {self.email}...")
 
@@ -703,7 +703,7 @@ class RegistrationEngine:
             return False
 
     def _get_workspace_id(self) -> Optional[str]:
-        """Get the Workspace ID."""
+        """Fetch the Workspace ID."""
         try:
             auth_cookie = self.session.cookies.get("oai-client-auth-session")
             if not auth_cookie:
@@ -977,7 +977,7 @@ class RegistrationEngine:
             return False
 
         try:
-            # Get the default client_id
+            # Use the default client_id
             settings = get_settings()
 
             with get_db() as db:

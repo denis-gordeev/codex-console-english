@@ -490,8 +490,8 @@ def _value_to_string(value: Any) -> str:
 
 def init_default_settings() -> None:
     """
-    Initialize default settings in database
-    If the setting is not found, create it and set the default value
+    Initialize default settings in database.
+    Missing settings are created with their default values.
     """
     try:
         from ..database.session import get_db
@@ -604,7 +604,7 @@ class Settings(BaseModel):
         if isinstance(v, str) and v.startswith("sqlite:///"):
             return v
         if isinstance(v, str) and not v.startswith(("sqlite:///", "postgresql://", "postgresql+psycopg://", "postgresql+psycopg2://", "mysql://")):
-            # If it is a file path, convert it to a SQLite URL
+            # For file paths, convert to a SQLite URL
             if os.path.isabs(v) or ":/" not in v:
                 return f"sqlite:///{v}"
         return v
@@ -642,7 +642,7 @@ class Settings(BaseModel):
 
     @property
     def proxy_url(self) -> Optional[str]:
-        """Get the complete proxy URL"""
+        """Return the complete proxy URL"""
         if not self.proxy_enabled:
             return None
 
@@ -708,7 +708,7 @@ _settings: Optional[Settings] = None
 
 def get_settings() -> Settings:
     """
-    Get the global settings instance (singleton).
+    Return the global settings instance (singleton).
     Load all settings from the database.
     """
     global _settings
@@ -742,7 +742,7 @@ def update_settings(**kwargs) -> Settings:
 
 def get_database_url() -> str:
     """
-    Get the database URL (handles relative paths)
+    Return the database URL (handles relative paths).
     """
     settings = get_settings()
     url = settings.database_url

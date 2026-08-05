@@ -75,7 +75,7 @@ def get_accounts(
     status: Optional[str] = None,
     search: Optional[str] = None
 ) -> List[Account]:
-    """Get the account list (supports pagination and filtering)"""
+    """List accounts (with pagination and filtering)"""
     query = db.query(Account)
 
     if email_service:
@@ -495,10 +495,10 @@ def get_random_proxy(db: Session) -> Optional[Proxy]:
 
 
 def set_proxy_default(db: Session, proxy_id: int) -> Optional[Proxy]:
-    """Set the specified proxy as the default and clear the default flag on all other proxies"""
+    """Mark the specified proxy as default and clear the default flag on all other proxies"""
     # Clear all default flags
     db.query(Proxy).filter(Proxy.is_default == True).update({"is_default": False})
-    # Set the new default proxy
+    # Mark the new default proxy
     proxy = db.query(Proxy).filter(Proxy.id == proxy_id).first()
     if proxy:
         proxy.is_default = True

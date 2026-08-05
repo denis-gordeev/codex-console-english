@@ -72,7 +72,7 @@ class HTTPClient:
 
     @property
     def session(self) -> Session:
-        """Get the session object (singleton)"""
+        """Return the session object (singleton)"""
         if self._session is None:
             self._session = Session(
                 proxies=self.proxies,

@@ -131,7 +131,7 @@ class HealthChecker:
         priority_order: Optional[List[ProviderType]] = None,
     ) -> Optional[ProviderType]:
         """
-        Get the next available provider
+        Return the next available provider
 
         Args:
             priority_order: priority order
