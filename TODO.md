@@ -1,5 +1,16 @@
 # TODO
 
+## Completed In This Round (August 6, 2026 - Round 102)
+
+- Pulled `origin/main` -- repository was already up to date.
+- Full CJK/Cyrillic/non-English scan: zero translatable non-English content across all tracked source files (excluding `autowork.log`).
+- Chinese-English calque cleanup (4 changes):
+  - "Get the service IDs" -> "Retrieve the service IDs" in `static/js/app.js`.
+  - "Get the log type" -> "Determine the log type" in `static/js/app.js`.
+  - "Get the selected account" -> "Collect the selected account IDs" in `static/js/app.js`.
+  - "dynamic proxy is enabled" -> "dynamic proxy is configured" in `src/web/routes/registration.py`.
+- All 32 tests pass.
+
 ## Completed In This Round (August 5, 2026 - Round 101)
 
 - Pulled `origin/main` -- repository was already up to date.

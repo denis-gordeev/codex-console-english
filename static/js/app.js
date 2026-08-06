@@ -179,7 +179,7 @@ function updateMsdLabel(ddId) {
     else label.textContent = Array.from(checked).map(c => c.nextElementSibling.textContent).join(', ');
 }
 
-// Get the service IDs selected in the custom multi-select dropdown
+// Retrieve the service IDs selected in the custom multi-select dropdown
 function getSelectedServiceIds(container) {
     if (!container) return [];
     return Array.from(container.querySelectorAll('.msd-item input:checked')).map(cb => parseInt(cb.value));
@@ -1026,7 +1026,7 @@ function addLog(type, message) {
     }
 }
 
-// Get the log type
+// Determine the log type
 function getLogType(log) {
     if (typeof log !== 'string') return 'info';
 
@@ -1153,7 +1153,7 @@ async function handleOutlookBatchRegistration() {
     displayedLogs.clear(); // Clear the log dedup set
     toastShown = false; // Reset toast flag
 
-    // Get the selected account
+    // Collect the selected account IDs
     const selectedIds = [];
     document.querySelectorAll('.outlook-account-checkbox:checked').forEach(cb => {
         selectedIds.push(parseInt(cb.value));

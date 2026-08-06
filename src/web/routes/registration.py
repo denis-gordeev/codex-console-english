@@ -37,7 +37,7 @@ def get_proxy_for_registration(db) -> Tuple[Optional[str], Optional[int]]:
 
     Strategy:
     1. First, randomly select an enabled proxy from the proxy list
-    2. If the proxy list is empty and dynamic proxy is enabled, call the dynamic proxy API to fetch a proxy URL
+    2. If the proxy list is empty and dynamic proxy is configured, call the dynamic proxy API to fetch a proxy URL
     3. Otherwise use the static default proxy in system settings
 
     Returns:
