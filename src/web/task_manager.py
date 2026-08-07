@@ -123,7 +123,7 @@ class TaskManager:
                     if task_uuid in _ws_sent_index and ws_id in _ws_sent_index[task_uuid]:
                         _ws_sent_index[task_uuid][ws_id] += 1
             except Exception as e:
-                logger.warning(f"WebSocket sending failed: {e}")
+                logger.warning(f"WebSocket send failed: {e}")
 
     async def broadcast_status(self, task_uuid: str, status: str, **kwargs):
         """Broadcast task status update"""
@@ -155,7 +155,7 @@ class TaskManager:
                 # Record log count to avoid resending historical logs
                 with _get_log_lock(task_uuid):
                     _ws_sent_index[task_uuid][id(websocket)] = len(_log_queues.get(task_uuid, []))
-                logger.info(f"WebSocket registered, log broadcast starting: {task_uuid}")
+                logger.info(f"WebSocket registered, starting log broadcast: {task_uuid}")
             else:
                 logger.warning(f"WebSocket connection already exists, skipping duplicate registration: {task_uuid}")
 
@@ -333,7 +333,7 @@ class TaskManager:
                 # Record log count to avoid resending historical logs
                 with _get_batch_lock(batch_id):
                     _ws_sent_index[key][id(websocket)] = len(_batch_logs.get(batch_id, []))
-                logger.info(f"Batch WebSocket registered, batch log broadcast starting: {batch_id}")
+                logger.info(f"Batch WebSocket registered, starting log broadcast: {batch_id}")
             else:
                 logger.warning(f"Batch task WebSocket connection already exists, skipping duplicate registration: {batch_id}")
 

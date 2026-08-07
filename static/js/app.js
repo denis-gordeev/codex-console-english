@@ -16,7 +16,7 @@ let taskCompleted = false; // Track if the task is completed
 let batchCompleted = false; // Track if the batch task is completed
 let taskFinalStatus = null; // Save the task's final status
 let batchFinalStatus = null; // Save the batch task's final status
-let displayedLogs = new Set(); // Used for log dedup
+let displayedLogs = new Set(); // For log deduplication
 let toastShown = false; // Tracks if toast was shown
 let availableServices = {
     tempmail: { available: true, services: [] },
@@ -27,14 +27,14 @@ let availableServices = {
     freemail: { available: false, services: [] }
 };
 
-// WebSocket related variables
+// WebSocket state
 let webSocket = null;
 let batchWebSocket = null; // Batch task WebSocket
 let useWebSocket = true; // Use WebSocket (vs REST polling)
 let wsHeartbeatInterval = null; // Heartbeat timer
 let batchWsHeartbeatInterval = null; // Batch task heartbeat timer
-let activeTaskUuid = null; // Currently active single task UUID (for reconnecting when the page regains visibility)
-let activeBatchId = null; // Currently active batch task ID (for reconnecting when the page regains visibility)
+let activeTaskUuid = null; // Currently active single task UUID (for reconnecting when the page becomes visible again)
+let activeBatchId = null; // Currently active batch task ID (for reconnecting when the page becomes visible again)
 
 // DOM element
 const elements = {

@@ -73,7 +73,7 @@ class IMAPOldProvider(OutlookProvider):
                     logger.info(f"[{self.account.email}] IMAP connected (XOAUTH2)")
                     return True
                 else:
-                    logger.warning(f"[{self.account.email}] XOAUTH2 authentication failed, try password authentication")
+                    logger.warning(f"[{self.account.email}] XOAUTH2 authentication failed; trying password authentication")
 
             # Password authentication
             if self.account.password:

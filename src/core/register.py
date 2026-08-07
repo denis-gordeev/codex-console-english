@@ -277,7 +277,7 @@ class RegistrationEngine:
         record_existing_account: bool = True,
     ) -> SignupFormResult:
         """
-        Submit the authorization entry form.
+        Submit the authorization form.
 
         Returns:
             SignupFormResult: Result including the detected page type.
@@ -360,7 +360,7 @@ class RegistrationEngine:
         *,
         record_existing_account: bool = True,
     ) -> SignupFormResult:
-        """Submit the registration entry form."""
+        """Submit the signup form."""
         return self._submit_auth_start(
             did,
             sen_token,
@@ -382,7 +382,7 @@ class RegistrationEngine:
         )
 
     def _submit_login_password(self) -> SignupFormResult:
-        """Submit the login password and continue to the email verification step."""
+        """Submit the password and proceed to email verification."""
         try:
             response = self.session.post(
                 OPENAI_API_ENDPOINTS["password_verify"],
@@ -537,10 +537,10 @@ class RegistrationEngine:
         try:
             # Generate password
             password = self._generate_password()
-            self.password = password  # Save password to instance variable
+            self.password = password  # Store on instance
             self._log(f"Generated password: {password}")
 
-            # Submit the registration password
+            # Set the account password
             register_body = json.dumps({
                 "password": password,
                 "username": self.email

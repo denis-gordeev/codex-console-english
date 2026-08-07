@@ -10,7 +10,7 @@ let totalAccounts = 0;
 let selectedAccounts = new Set();
 let isLoading = false;
 let selectAllPages = false; // True when all pages are selected
-let currentFilters = { status: '', email_service: '', search: '' }; // Current filter conditions
+let currentFilters = { status: '', email_service: '', search: '' }; // Current filters
 
 // DOM element
 const elements = {
@@ -220,7 +220,7 @@ async function loadAccounts() {
         </tr>
     `;
 
-    // Record the current filter conditions
+    // Save current filters
     currentFilters.status = elements.filterStatus.value;
     currentFilters.email_service = elements.filterService.value;
     currentFilters.search = elements.searchInput.value.trim();
@@ -469,7 +469,7 @@ function selectAllPagesAction() {
     renderSelectAllBanner();
 }
 
-// Update batch operation button
+// Update batch action buttons
 function updateBatchButtons() {
     const count = getEffectiveCount();
     elements.batchDeleteBtn.disabled = count === 0;

@@ -215,7 +215,7 @@ class TokenRefreshManager:
         """
         # Try Session Token first
         if account.session_token:
-            logger.info(f"Trying Session Token to refresh account {account.email}")
+            logger.info(f"Refreshing account {account.email} with Session Token")
             result = self.refresh_by_session_token(account.session_token)
             if result.success:
                 return result
@@ -223,7 +223,7 @@ class TokenRefreshManager:
 
         # Try OAuth Refresh Token
         if account.refresh_token:
-            logger.info(f"Trying OAuth Refresh Token to refresh account {account.email}")
+            logger.info(f"Refreshing account {account.email} with OAuth Refresh Token")
             result = self.refresh_by_oauth_token(
                 refresh_token=account.refresh_token,
                 client_id=account.client_id

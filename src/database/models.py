@@ -34,7 +34,7 @@ class Account(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     email = Column(String(255), nullable=False, unique=True, index=True)
-    password = Column(String(255)) # Registration password (stored in clear text)
+    password = Column(String(255)) # Account password (stored in plain text)
     access_token = Column(Text)
     refresh_token = Column(Text)
     id_token = Column(Text)

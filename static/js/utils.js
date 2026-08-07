@@ -1,6 +1,6 @@
 /**
- * General tool library
- * Contains Toast notifications, theme switching, tool functions, etc.
+ * General utility library
+ * Contains Toast notifications, theme switching, utility functions, etc.
  */
 
 // ============================================

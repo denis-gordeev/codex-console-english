@@ -28,7 +28,7 @@ async def task_websocket(websocket: WebSocket, task_uuid: str):
 
     # Register connection; record current log count to avoid resending historical logs
     task_manager.register_websocket(task_uuid, websocket)
-    logger.info(f"WebSocket connection established, log channel active: {task_uuid}")
+    logger.info(f"WebSocket connection established, log streaming active: {task_uuid}")
 
     try:
         # Send current status
@@ -49,10 +49,10 @@ async def task_websocket(websocket: WebSocket, task_uuid: str):
                 "message": log
             })
 
-        # Keep connected and wait for client messages
+        # Stay connected and wait for client messages
         while True:
             try:
-                # Use wait_for to implement timeout, but not disconnect
+                # Use wait_for for timeout handling without disconnecting
                 # Instead send a heartbeat ping
                 data = await asyncio.wait_for(
                     websocket.receive_json(),
@@ -109,7 +109,7 @@ async def batch_websocket(websocket: WebSocket, batch_id: str):
 
     # Register connection; record current log count to avoid resending historical logs
     task_manager.register_batch_websocket(batch_id, websocket)
-    logger.info(f"Batch task WebSocket connection established, log channel active: {batch_id}")
+    logger.info(f"Batch task WebSocket connection established, log streaming active: {batch_id}")
 
     try:
         # Send current status
@@ -130,7 +130,7 @@ async def batch_websocket(websocket: WebSocket, batch_id: str):
                 "message": log
             })
 
-        # Keep connected and wait for client messages
+        # Stay connected and wait for client messages
         while True:
             try:
                 data = await asyncio.wait_for(

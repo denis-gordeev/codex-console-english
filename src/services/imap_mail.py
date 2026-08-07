@@ -1,6 +1,6 @@
 """
 IMAP email service
-Supports standard IMAP protocol email service providers such as Gmail / QQ / 163 / Yahoo / Outlook.
+Works with standard IMAP email providers such as Gmail, QQ, 163, Yahoo, and Outlook.
 Used only for receiving OTPs; requires a direct connection (imaplib does not support proxy).
 """
 

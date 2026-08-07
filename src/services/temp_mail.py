@@ -280,8 +280,8 @@ class TempMailService(BaseEmailService):
             otp_sent_at: OTP sent timestamp (not used yet)
 
         Returns:
-            OTP string, returns None when timeout"""
-        logger.info(f"Retrieving OTP from TempMail email address {email}...")
+            OTP string, or None on timeout"""
+        logger.info(f"Retrieving OTP from TempMail address {email}...")
 
         start_time = time.time()
         seen_mail_ids: set = set()

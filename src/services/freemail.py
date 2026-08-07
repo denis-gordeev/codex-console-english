@@ -196,9 +196,9 @@ class FreemailService(BaseEmailService):
             otp_sent_at: OTP sent timestamp (not used yet)
 
         Returns:
-            OTP string, returns None when timeout
+            OTP string, or None on timeout
         """
-        logger.info(f"Getting OTP from Freemail email address {email}...")
+        logger.info(f"Retrieving OTP from Freemail address {email}...")
 
         start_time = time.time()
         seen_mail_ids: set = set()

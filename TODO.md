@@ -1,5 +1,54 @@
 # TODO
 
+## Completed In This Round (August 7, 2026 - Round 103)
+
+- Pulled `origin/main` -- repository was already up to date.
+- Full CJK/Cyrillic/non-English scan: zero translatable non-English content across all tracked source files (excluding `autowork.log`).
+- Chinese-English calque and awkward-English cleanup (42 changes across 20 files):
+  - "returns None when timeout" -> "or None on timeout" in `src/services/freemail.py`, `src/services/temp_mail.py` (docstring calque).
+  - "Getting OTP from Freemail email address" -> "Retrieving OTP from Freemail address" in `src/services/freemail.py`.
+  - "Retrieving OTP from TempMail email address" -> "Retrieving OTP from TempMail address" in `src/services/temp_mail.py`.
+  - "Total time spent Xs, polling N times" -> "elapsed Xs, after N polls" in `src/services/outlook/service.py`, `src/services/outlook_legacy_mail.py`.
+  - "check error" -> "check failed" in `src/services/outlook/service.py`, `src/services/outlook_legacy_mail.py`.
+  - "Wait for next polling" -> "Wait before next poll" in `src/services/outlook/service.py`, `src/services/outlook_legacy_mail.py`.
+  - "OTP timeout (Xs), total polling N times" -> "OTP timeout (Xs) after N polls" in `src/services/outlook/service.py`, `src/services/outlook_legacy_mail.py`.
+  - "loop takes" -> "loop took" (past tense) in `src/services/outlook_legacy_mail.py`.
+  - "fetching OTP" -> "Fetching OTP" (capitalization) in `src/services/outlook_legacy_mail.py`.
+  - "Supports IMAP protocol, XOAUTH2 and password authentication" -> "IMAP-based service with XOAUTH2 and password authentication" in `src/services/outlook_legacy_mail.py`.
+  - "XOAUTH2 authentication failed, try password" -> "failed; trying password" in `src/services/outlook/providers/imap_old.py`.
+  - "Token has no Graph permission" -> "Token lacks Graph permission" in `src/services/outlook/providers/graph_api.py`.
+  - "recording a health failure" -> "counting as a health check failure" in `src/services/outlook/providers/graph_api.py`, `src/services/outlook/providers/imap_new.py`.
+  - "Avoid the health checker disabling" -> "Prevent the health checker from disabling" in `src/services/outlook/providers/graph_api.py`.
+  - "log channel active" -> "log streaming active" in `src/web/routes/websocket.py` (2 occurrences).
+  - "Keep connected" -> "Stay connected" in `src/web/routes/websocket.py` (2 occurrences).
+  - "Use wait_for to implement timeout, but not disconnect" -> "Use wait_for for timeout handling without disconnecting" in `src/web/routes/websocket.py`.
+  - "WebSocket sending failed" -> "WebSocket send failed" in `src/web/task_manager.py`.
+  - "log broadcast starting" -> "starting log broadcast" in `src/web/task_manager.py` (2 occurrences).
+  - "Wait N seconds before starting the next task" -> "Waiting Ns before next task" in `src/web/routes/registration.py`.
+  - "Registration password (stored in clear text)" -> "Account password (stored in plain text)" in `src/database/models.py`.
+  - "authorization entry form" -> "authorization form" in `src/core/register.py`.
+  - "registration entry form" -> "signup form" in `src/core/register.py`.
+  - "Submit the login password and continue to the email verification step" -> "Submit the password and proceed to email verification" in `src/core/register.py`.
+  - "Save password to instance variable" -> "Store on instance" in `src/core/register.py`.
+  - "Submit the registration password" -> "Set the account password" in `src/core/register.py`.
+  - "Trying Session Token to refresh account" -> "Refreshing account with Session Token" in `src/core/openai/token_refresh.py`.
+  - "Trying OAuth Refresh Token to refresh account" -> "Refreshing account with OAuth Refresh Token" in `src/core/openai/token_refresh.py`.
+  - "supporting proxy and error handling" -> "with proxy support and error handling" in `src/core/http_client.py`.
+  - "Supports standard IMAP protocol email service providers such as" -> "Works with standard IMAP email providers such as" in `src/services/imap_mail.py`.
+  - "General tool library" -> "General utility library" in `static/js/utils.js`.
+  - "tool functions" -> "utility functions" in `static/js/utils.js`.
+  - "Set page JavaScript" -> "Settings page JavaScript" in `static/js/settings.js`.
+  - "Use the tool library" -> "Uses the utility library" in `static/js/settings.js`.
+  - "batch operation" -> "batch actions" in `static/js/settings.js`.
+  - "Related to proxy list" -> "Proxy list handlers" in `static/js/settings.js`.
+  - "Current filter conditions" -> "Current filters" in `static/js/accounts.js`.
+  - "Record the current filter conditions" -> "Save current filters" in `static/js/accounts.js`.
+  - "Update batch operation button" -> "Update batch action buttons" in `static/js/accounts.js`.
+  - "Used for log dedup" -> "For log deduplication" in `static/js/app.js`.
+  - "WebSocket related variables" -> "WebSocket state" in `static/js/app.js`.
+  - "regains visibility" -> "becomes visible again" in `static/js/app.js` (2 occurrences).
+- All 32 tests pass.
+
 ## Completed In This Round (August 6, 2026 - Round 102)
 
 - Pulled `origin/main` -- repository was already up to date.

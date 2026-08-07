@@ -376,19 +376,19 @@ class OutlookService(BaseEmailService):
                         elapsed = int(time.time() - start_time)
                         logger.info(
                             f"[{email}] found OTP: {code},"
-                            f"Total time spent {elapsed}s, polling {poll_count} times"
+                            f"elapsed {elapsed}s, after {poll_count} polls"
                         )
                         self.update_status(True)
                         return code
 
             except Exception as e:
-                logger.warning(f"[{email}] check error: {e}")
+                logger.warning(f"[{email}] check failed: {e}")
 
-            # Wait for next polling
+            # Wait before next poll
             time.sleep(poll_interval)
 
         elapsed = int(time.time() - start_time)
-        logger.warning(f"[{email}] OTP timeout ({actual_timeout}s), total polling {poll_count} times")
+        logger.warning(f"[{email}] OTP timeout ({actual_timeout}s) after {poll_count} polls")
         return None
 
     def list_emails(self, **kwargs) -> List[Dict[str, Any]]:

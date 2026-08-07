@@ -1,6 +1,6 @@
 """
 Outlook email service implementation
-Supports IMAP protocol, XOAUTH2 and password authentication
+IMAP-based service with XOAUTH2 and password authentication
 """
 
 import imaplib
@@ -493,7 +493,7 @@ class OutlookService(BaseEmailService):
         actual_timeout = timeout or code_settings["timeout"]
         poll_interval = code_settings["poll_interval"]
 
-        logger.info(f"[{email}] fetching OTP, timeout {actual_timeout}s, OTP sent at: {otp_sent_at}")
+        logger.info(f"[{email}] Fetching OTP (timeout {actual_timeout}s, OTP sent at: {otp_sent_at})")
 
         # Initialize OTP dedup set
         if email not in self._used_codes:
@@ -552,19 +552,19 @@ class OutlookService(BaseEmailService):
 
                                 used_codes.add(code)
                                 elapsed = int(time.time() - start_time)
-                                logger.info(f"[{email}] found OTP: {code}, total time spent {elapsed}s, polling {poll_count} times")
+                                logger.info(f"[{email}] found OTP: {code}, elapsed {elapsed}s, after {poll_count} polls")
                                 self.update_status(True)
                                 return code
 
             except Exception as e:
                 loop_elapsed = time.time() - loop_start
-                logger.warning(f"[{email}] check error: {e}, loop takes {loop_elapsed:.2f}s")
+                logger.warning(f"[{email}] check failed: {e}, loop took {loop_elapsed:.2f}s")
 
-            # Wait for next polling
+            # Wait before next poll
             time.sleep(poll_interval)
 
         elapsed = int(time.time() - start_time)
-        logger.warning(f"[{email}] OTP timeout ({actual_timeout}s), total polling {poll_count} times")
+        logger.warning(f"[{email}] OTP timeout ({actual_timeout}s) after {poll_count} polls")
         return None
 
     def list_emails(self, **kwargs) -> List[Dict[str, Any]]:

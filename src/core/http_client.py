@@ -1,6 +1,6 @@
 """
 HTTP client wrapper
-HTTP request wrapper based on curl_cffi, supporting proxy and error handling
+HTTP request wrapper based on curl_cffi, with proxy support and error handling
 """
 
 import time

@@ -1,6 +1,6 @@
 /**
- * Set page JavaScript
- * Use the tool library in utils.js
+ * Settings page JavaScript
+ * Uses the utility library in utils.js
  */
 
 // DOM element
@@ -25,7 +25,7 @@ const elements = {
     clearImportBtn: document.getElementById('clear-import-btn'),
     outlookImportData: document.getElementById('outlook-import-data'),
     importResult: document.getElementById('import-result'),
-    // batch operation
+    // batch actions
     selectAllServices: document.getElementById('select-all-services'),
     // proxy list
     proxiesTable: document.getElementById('proxies-table'),
@@ -197,7 +197,7 @@ function initEventListeners() {
         });
     }
 
-    // Related to proxy list
+    // Proxy list handlers
     if (elements.addProxyBtn) {
         elements.addProxyBtn.addEventListener('click', () => openProxyModal());
     }
