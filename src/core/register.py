@@ -394,7 +394,7 @@ class RegistrationEngine:
                 data=json.dumps({"password": self.password}),
             )
 
-            self._log(f"Submit login password status: {response.status_code}")
+            self._log(f"Login password response status: {response.status_code}")
 
             if response.status_code != 200:
                 return SignupFormResult(
@@ -556,7 +556,7 @@ class RegistrationEngine:
                 data=register_body,
             )
 
-            self._log(f"Password submission status: {response.status_code}")
+            self._log(f"Password response status: {response.status_code}")
 
             if response.status_code != 200:
                 error_text = response.text[:500]

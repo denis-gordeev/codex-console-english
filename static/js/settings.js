@@ -490,13 +490,13 @@ async function handleSaveEmailCode(e) {
     const timeout = parseInt(document.getElementById('email-code-timeout').value);
     const pollInterval = parseInt(document.getElementById('email-code-poll-interval').value);
 
-    // Client verification
+    // Client validation
     if (timeout < 30 || timeout > 600) {
-        toast.error('Waiting timeout must be between 30-600 seconds');
+        toast.error('Wait timeout must be between 30 and 600 seconds');
         return;
     }
     if (pollInterval < 1 || pollInterval > 30) {
-        toast.error('Polling interval must be between 1-30 seconds');
+        toast.error('Polling interval must be between 1 and 30 seconds');
         return;
     }
 

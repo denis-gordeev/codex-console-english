@@ -431,9 +431,9 @@ async def update_email_code_settings(request: EmailCodeSettings):
     """Update OTP wait settings"""
     # Validate parameter ranges
     if request.timeout < 30 or request.timeout > 600:
-        raise HTTPException(status_code=400, detail="Timeout must be between 30-600 seconds")
+        raise HTTPException(status_code=400, detail="Timeout must be between 30 and 600 seconds")
     if request.poll_interval < 1 or request.poll_interval > 30:
-        raise HTTPException(status_code=400, detail="Polling interval must be between 1-30 seconds")
+        raise HTTPException(status_code=400, detail="Polling interval must be between 1 and 30 seconds")
 
     update_settings(
         email_code_timeout=request.timeout,

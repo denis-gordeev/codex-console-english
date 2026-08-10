@@ -1,6 +1,6 @@
 """
 WebSocket routing
-Provide real-time log push and task status updates
+Live log delivery and task status updates
 """
 
 import asyncio

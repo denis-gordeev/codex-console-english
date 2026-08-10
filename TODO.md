@@ -1,11 +1,19 @@
 # TODO
 
-## Completed In This Round (August 7, 2026 - Round 104)
+## Completed In This Round (August 10, 2026 - Round 105)
 
 - Pulled `origin/main` -- repository was already up to date.
-- Full non-ASCII scan: zero non-ASCII content across all tracked source files (excluding `autowork.log`).
-- Deep scan for Chinese-English calque patterns (21 patterns): no new artifacts found. All source code is clean.
-- No new non-English content to translate. Repository remains fully English.
+- Zero CJK/Cyrillic content in all tracked source files.
+- Deep scan found and fixed 7 Chinese-English calque patterns and awkward phrasings:
+  - "Service connection successful" → "Service connected" in `src/web/routes/email.py` (Chinese calque "连接成功").
+  - "Temp mail connection successful" → "Temp mail connected" in `static/js/email_services.js`.
+  - "Password submission status" → "Password response status" in `src/core/register.py` (unnatural noun phrase).
+  - "Submit login password status" → "Login password response status" in `src/core/register.py`.
+  - "real-time log push" → "Live log delivery" in `src/web/routes/websocket.py` (Chinese calque "实时推送").
+  - "Configuration module" → "Settings module" in `src/config/__init__.py` (inconsistent with prior "configuration" → "settings" sweep).
+  - "Client verification" → "Client validation" in `static/js/settings.js` (inconsistent with prior "Verification" → "Validation" sweep).
+- Fixed 4 "between X-Y" → "between X and Y" range error messages in `src/web/routes/settings.py` and `static/js/settings.js`.
+- Fixed "Waiting timeout" → "Wait timeout" in `static/js/settings.js`.
 - All 32 tests pass.
 
 ## Next Actions

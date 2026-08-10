@@ -579,7 +579,7 @@ async function handleTestTempmail() {
         const result = await api.post('/email-services/test-tempmail', {
             api_url: elements.tempmailApi.value
         });
-        if (result.success) toast.success('Temp mail connection successful');
+        if (result.success) toast.success('Temp mail connected');
         else toast.error('Failed to connect: ' + (result.error || 'Unknown error'));
     } catch (error) {
         toast.error('Failed to test: ' + error.message);

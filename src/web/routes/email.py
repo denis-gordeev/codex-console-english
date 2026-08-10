@@ -396,7 +396,7 @@ async def test_email_service(service_id: int):
             if health:
                 return ServiceTestResult(
                     success=True,
-                    message="Service connection successful",
+                    message="Service connected",
                     details=email_service.get_service_info() if hasattr(email_service, 'get_service_info') else None
                 )
             else:
