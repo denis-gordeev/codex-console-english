@@ -149,7 +149,7 @@ EMAIL_SERVICE_DEFAULTS = {
 
 # OTP constants
 OTP_CODE_PATTERN = r"(?<!\d)(\d{6})(?!\d)"
-OTP_MAX_ATTEMPTS = 40 # Maximum number of polling attempts
+OTP_MAX_ATTEMPTS = 40 # Max polling attempts
 
 # OTP extraction patterns (enhanced)
 # Simple match: any 6-digit number

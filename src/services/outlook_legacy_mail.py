@@ -369,7 +369,7 @@ class OutlookService(BaseEmailService):
                 - imap_host: IMAP server (default: outlook.office365.com)
                 - imap_port: IMAP port (default: 993)
                 - timeout: timeout (default: 30)
-                - max_retries: Maximum number of retries (default: 3)
+                - max_retries: Max retries (default: 3)
             name: service name
         """
         super().__init__(EmailServiceType.OUTLOOK, name)

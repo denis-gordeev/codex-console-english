@@ -1,6 +1,6 @@
 /**
- *Account management page JavaScript
- * Use the tool library in utils.js
+ * Account management page JavaScript
+ * Uses the utility library in utils.js
  */
 
 // state
@@ -128,7 +128,7 @@ function initEventListeners() {
         renderSelectAllBanner();
     });
 
-    // paging
+    // pagination
     elements.prevPage.addEventListener('click', () => {
         if (currentPage > 1 && !isLoading) {
             currentPage--;

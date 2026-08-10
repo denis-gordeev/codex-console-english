@@ -196,7 +196,7 @@ def retry_with_backoff(
 
     Args:
         func: function to retry
-        max_retries: Maximum number of retries
+        max_retries: Max retries
         base_delay: base delay (seconds)
         max_delay: maximum delay (seconds)
         backoff_factor: backoff factor

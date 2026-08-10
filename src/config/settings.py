@@ -224,7 +224,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         db_key="registration.max_retries",
         default_value=3,
         category=SettingCategory.REGISTRATION,
-        description="Maximum number of registration retries"
+        description="Max registration retries"
     ),
     "registration_timeout": SettingDefinition(
         db_key="registration.timeout",

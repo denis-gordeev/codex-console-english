@@ -106,10 +106,10 @@ class GraphAPIProvider(OutlookProvider):
                 return []
 
         try:
-            # Get Access Token
+            # Acquire Access Token
             token = self._token_manager.get_access_token()
             if not token:
-                self.record_failure("Unable to get Access Token")
+                self.record_failure("Unable to acquire Access Token")
                 return []
 
             # Build API request
@@ -178,7 +178,7 @@ class GraphAPIProvider(OutlookProvider):
 
         except Exception as e:
             self.record_failure(str(e))
-            logger.error(f"[{self.account.email}] Graph API failed to get email: {e}")
+            logger.error(f"[{self.account.email}] Graph API email fetch failed: {e}")
             return []
 
     def _parse_graph_message(self, msg: dict) -> Optional[EmailMessage]:

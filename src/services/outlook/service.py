@@ -251,7 +251,7 @@ class OutlookService(BaseEmailService):
                 errors.append(f"{provider_type.value}: {error_msg}")
                 self.health_checker.record_failure(provider_type, error_msg)
                 logger.warning(
-                    f"[{account.email}] {provider_type.value} failed to get email: {e}"
+                    f"[{account.email}] {provider_type.value} email fetch failed: {e}"
                 )
 
         logger.error(

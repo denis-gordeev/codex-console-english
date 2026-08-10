@@ -141,8 +141,7 @@ class OutlookProvider(abc.ABC):
         # Check if disabled
         if self._health.is_disabled():
             logger.debug(
-                f"[{self.account.email}] {self.provider_type.value} is disabled,"
-                f"Resumes at {self._health.disabled_until}"
+                f"[{self.account.email}] {self.provider_type.value} disabled until {self._health.disabled_until}"
             )
             return False
 

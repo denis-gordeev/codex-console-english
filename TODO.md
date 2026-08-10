@@ -1,5 +1,31 @@
 # TODO
 
+## Completed In This Round (August 10, 2026 - Round 106)
+
+- Pulled `origin/main` -- repository was already up to date.
+- Zero CJK/Cyrillic content in all tracked source files.
+- Deep scan found and fixed 22 remaining Chinese-English calque patterns and awkward phrasings:
+  - "tool library" → "utility library" in `static/js/app.js` and `static/js/accounts.js` (2 occurrences; calque for "工具库").
+  - "paging" → "pagination" in `static/js/accounts.js` (inconsistent with prior sweep).
+  - "Maximum number of retries" → "Max retries" in `src/services/freemail.py`, `src/services/temp_mail.py`, `src/services/tempmail.py`, `src/services/outlook_legacy_mail.py`, `src/core/utils.py` (5 occurrences; calque for "最大数量").
+  - "Maximum number of registration retries" → "Max registration retries" in `src/config/settings.py`.
+  - "Maximum number of polling attempts" → "Max polling attempts" in `src/config/constants.py`.
+  - "is disabled, Resumes at" → "disabled until" in `src/services/outlook/providers/base.py` (awkward phrasing).
+  - "Failed to get" → "Failed to fetch" for network/API operations in `src/services/moe_mail.py` (4), `src/services/outlook/providers/imap_old.py`, `src/services/outlook/providers/imap_new.py`, `src/services/freemail.py` (2), `src/services/tempmail.py`, `static/js/settings.js` (2), `static/js/email_services.js` (3) (15 occurrences).
+  - "Graph API failed to get email" → "Graph API email fetch failed" in `src/services/outlook/providers/graph_api.py`.
+  - "failed to get email" → "email fetch failed" in `src/services/outlook/service.py`.
+  - "Failed to get IMAP Token" → "Failed to acquire IMAP Token" in `src/services/outlook/providers/imap_new.py`.
+  - "Get Access Token" → "Acquire Access Token" in `src/services/outlook/providers/imap_old.py`, `imap_new.py`, `graph_api.py` (3 occurrences).
+  - "Unable to get Access Token" → "Unable to acquire Access Token" in `src/services/outlook/providers/graph_api.py`.
+  - "Create the directory if it is missing" → "if missing" in `src/web/app.py` (2 occurrences; wordy Chinese-influenced conditional).
+  - "Wait for and get mail" → "Wait for and retrieve mail" in `src/services/base.py`.
+  - Fixed missing space after `*` in JS file headers: `*Registration` → `* Registration`, `*Account` → `* Account`.
+- All 32 tests pass.
+
+## Next Actions
+
+- Continue monitoring for any newly introduced non-English content from upstream changes.
+
 ## Completed In This Round (August 10, 2026 - Round 105)
 
 - Pulled `origin/main` -- repository was already up to date.

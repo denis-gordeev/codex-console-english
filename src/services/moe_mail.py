@@ -174,7 +174,7 @@ class MeoMailEmailService(BaseEmailService):
             self.update_status(True)
             return response
         except Exception as e:
-            logger.warning(f"Failed to get settings: {e}")
+            logger.warning(f"Failed to load settings: {e}")
             return {}
 
     def create_email(self, config: Dict[str, Any] = None) -> Dict[str, Any]:
@@ -346,7 +346,7 @@ class MeoMailEmailService(BaseEmailService):
 
             return content
         except Exception as e:
-            logger.debug(f"Failed to get email content: {e}")
+            logger.debug(f"Failed to fetch email content: {e}")
             return None
 
     def list_emails(self, cursor: str = None, **kwargs) -> List[Dict[str, Any]]:
@@ -443,7 +443,7 @@ class MeoMailEmailService(BaseEmailService):
             self.update_status(True)
             return messages
         except Exception as e:
-            logger.error(f"Failed to get message list: {email_id} - {e}")
+            logger.error(f"Failed to fetch message list: {email_id} - {e}")
             self.update_status(False, e)
             return []
 
@@ -462,7 +462,7 @@ class MeoMailEmailService(BaseEmailService):
             self.update_status(True)
             return message
         except Exception as e:
-            logger.error(f"Failed to get email details: {email_id}/{message_id} - {e}")
+            logger.error(f"Failed to fetch email details: {email_id}/{message_id} - {e}")
             self.update_status(False, e)
             return None
 

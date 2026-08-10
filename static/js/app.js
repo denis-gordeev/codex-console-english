@@ -1,6 +1,6 @@
 /**
- *Registration page JavaScript
- * Use the tool library in utils.js
+ * Registration page JavaScript
+ * Uses the utility library in utils.js
  */
 
 // state

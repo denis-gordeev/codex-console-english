@@ -661,7 +661,7 @@ async function editCustomService(id, subType) {
 
         elements.editCustomModal.classList.add('active');
     } catch (error) {
-        toast.error('Failed to get service details: ' + error.message);
+        toast.error('Failed to fetch service details: ' + error.message);
     }
 }
 
@@ -747,7 +747,7 @@ async function editOutlookService(id) {
         document.getElementById('edit-outlook-enabled').checked = service.enabled;
         elements.editOutlookModal.classList.add('active');
     } catch (error) {
-        toast.error('Failed to get service details: ' + error.message);
+        toast.error('Failed to fetch service details: ' + error.message);
     }
 }
 
@@ -761,7 +761,7 @@ async function handleEditOutlook(e) {
     try {
         currentService = await api.get(`/email-services/${id}/full`);
     } catch (error) {
-        toast.error('Failed to get service details');
+        toast.error('Failed to fetch service details');
         return;
     }
 

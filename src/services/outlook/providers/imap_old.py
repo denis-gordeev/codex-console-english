@@ -104,7 +104,7 @@ class IMAPOldProvider(OutlookProvider):
                 self.config.timeout,
             )
 
-        # Get Access Token
+        # Acquire Access Token
         token = self._token_manager.get_access_token()
         if not token:
             return False
@@ -180,7 +180,7 @@ class IMAPOldProvider(OutlookProvider):
 
         except Exception as e:
             self.record_failure(str(e))
-            logger.error(f"[{self.account.email}] Failed to get email: {e}")
+            logger.error(f"[{self.account.email}] Failed to fetch email: {e}")
             return []
 
     def _fetch_email(self, msg_id: bytes) -> Optional[EmailMessage]:

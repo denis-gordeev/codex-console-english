@@ -32,7 +32,7 @@ class TempmailService(BaseEmailService):
             config: settings dict with the following keys:
                 - base_url: API base URL (default: https://api.tempmail.lol/v2)
                 - timeout: request timeout (default: 30)
-                - max_retries: Maximum number of retries (default: 3)
+                - max_retries: Max retries (default: 3)
                 - proxy_url: proxy URL
             name: service name
         """
@@ -286,7 +286,7 @@ class TempmailService(BaseEmailService):
 
             return response.json()
         except Exception as e:
-            logger.error(f"Failed to get inbox: {e}")
+            logger.error(f"Failed to fetch inbox: {e}")
             return None
 
     def wait_for_verification_code_with_callback(

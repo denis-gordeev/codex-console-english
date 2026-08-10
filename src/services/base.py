@@ -154,7 +154,7 @@ class BaseEmailService(abc.ABC):
         expected_sender: str = None,
         expected_subject: str = None
     ) -> Optional[Dict[str, Any]]:
-        """Wait for and get mail (optional implementation)
+        """Wait for and retrieve mail (optional implementation)
 
         Args:
             email: email address

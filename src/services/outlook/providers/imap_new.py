@@ -106,10 +106,10 @@ class IMAPNewProvider(OutlookProvider):
                 self.config.timeout,
             )
 
-        # Get Access Token
+        # Acquire Access Token
         token = self._token_manager.get_access_token()
         if not token:
-            logger.error(f"[{self.account.email}] Failed to get IMAP Token")
+            logger.error(f"[{self.account.email}] Failed to acquire IMAP Token")
             return False
 
         try:
@@ -183,7 +183,7 @@ class IMAPNewProvider(OutlookProvider):
 
         except Exception as e:
             self.record_failure(str(e))
-            logger.error(f"[{self.account.email}] Failed to get email: {e}")
+            logger.error(f"[{self.account.email}] Failed to fetch email: {e}")
             return []
 
     def _fetch_email(self, msg_id: bytes) -> Optional[EmailMessage]:

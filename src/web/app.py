@@ -103,12 +103,12 @@ def create_app() -> FastAPI:
         app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
         logger.info(f"Static asset directory: {STATIC_DIR}")
     else:
-        # Create the static directory if it is missing.
+        # Create the static directory if missing.
         STATIC_DIR.mkdir(parents=True, exist_ok=True)
         app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
         logger.info(f"Created static asset directory: {STATIC_DIR}")
 
-    # Create the template directory if it is missing.
+    # Create the template directory if missing.
     if not TEMPLATES_DIR.exists():
         TEMPLATES_DIR.mkdir(parents=True, exist_ok=True)
         logger.info(f"Created template directory: {TEMPLATES_DIR}")

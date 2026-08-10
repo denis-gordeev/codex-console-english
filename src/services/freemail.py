@@ -33,7 +33,7 @@ class FreemailService(BaseEmailService):
                 - admin_token: Admin Token for JWT_TOKEN (required)
                 - domain: email domain, such as example.com
                 - timeout: request timeout, default 30
-                - max_retries: Maximum number of retries, default 3
+                - max_retries: Max retries, default 3
             name: service name
         """
         super().__init__(EmailServiceType.FREEMAIL, name)
@@ -118,7 +118,7 @@ class FreemailService(BaseEmailService):
                 if isinstance(domains, list):
                     self._domains = domains
             except Exception as e:
-                logger.warning(f"Failed to get Freemail domain list: {e}")
+                logger.warning(f"Failed to fetch Freemail domain list: {e}")
 
     def create_email(self, config: Dict[str, Any] = None) -> Dict[str, Any]:
         """
@@ -252,7 +252,7 @@ class FreemailService(BaseEmailService):
                             self.update_status(True)
                             return code
                     except Exception as e:
-                        logger.debug(f"Failed to get Freemail email details: {e}")
+                        logger.debug(f"Failed to fetch Freemail email details: {e}")
 
             except Exception as e:
                 logger.debug(f"Error checking Freemail mail: {e}")

@@ -36,7 +36,7 @@ class TempMailService(BaseEmailService):
                 - domain: email domain, such as example.com (required)
                 - enable_prefix: Enable prefix (default: True)
                 - timeout: request timeout, default 30
-                - max_retries: Maximum number of retries, default 3
+                - max_retries: Max retries, default 3
             name: service name"""
         super().__init__(EmailServiceType.TEMP_MAIL, name)
 
