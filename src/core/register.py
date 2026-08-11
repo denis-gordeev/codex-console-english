@@ -236,12 +236,12 @@ class RegistrationEngine:
                     return did
 
                 self._log(
-                    f"Failed to get Device ID: oai-did cookie was not returned (HTTP {response.status_code}, attempt {attempt}/{max_attempts})",
+                    f"Failed to obtain Device ID: oai-did cookie was not returned (HTTP {response.status_code}, attempt {attempt}/{max_attempts})",
                     "warning" if attempt < max_attempts else "error"
                 )
             except Exception as e:
                 self._log(
-                    f"Failed to get Device ID: {e} (attempt {attempt}/{max_attempts})",
+                    f"Failed to obtain Device ID: {e} (attempt {attempt}/{max_attempts})",
                     "warning" if attempt < max_attempts else "error"
                 )
 
@@ -458,7 +458,7 @@ class RegistrationEngine:
         self._log("Waiting for login OTP...")
         code = self._get_verification_code()
         if not code:
-            result.error_message = "Failed to get OTP"
+            result.error_message = "Failed to obtain OTP"
             return False
 
         self._log("Verifying the login code...")
@@ -469,7 +469,7 @@ class RegistrationEngine:
         self._log("Fetching Workspace ID...")
         workspace_id = self._get_workspace_id()
         if not workspace_id:
-            result.error_message = "Failed to get Workspace ID"
+            result.error_message = "Failed to obtain Workspace ID"
             return False
 
         result.workspace_id = workspace_id
@@ -515,7 +515,7 @@ class RegistrationEngine:
 
         did, sen_token = self._prepare_authorize_flow("Relogin")
         if not did:
-            return False, "Failed to get Device ID during re-login"
+            return False, "Failed to obtain Device ID during re-login"
         if not sen_token:
             return False, "Sentinel POW challenge failed during re-login"
 
@@ -648,7 +648,7 @@ class RegistrationEngine:
                 return None
 
         except Exception as e:
-            self._log(f"Failed to get OTP: {e}", "error")
+            self._log(f"Failed to obtain OTP: {e}", "error")
             return None
 
     def _validate_verification_code(self, code: str) -> bool:
@@ -707,7 +707,7 @@ class RegistrationEngine:
         try:
             auth_cookie = self.session.cookies.get("oai-client-auth-session")
             if not auth_cookie:
-                self._log("Failed to get authorization cookie", "error")
+                self._log("Failed to obtain authorization cookie", "error")
                 return None
 
             # Decode JWT
@@ -744,7 +744,7 @@ class RegistrationEngine:
                 return None
 
         except Exception as e:
-            self._log(f"Failed to get Workspace ID: {e}", "error")
+            self._log(f"Failed to obtain Workspace ID: {e}", "error")
             return None
 
     def _select_workspace(self, workspace_id: str) -> Optional[str]:
@@ -887,7 +887,7 @@ class RegistrationEngine:
             # 3. Prepare for the first authorization round
             did, sen_token = self._prepare_authorize_flow("First authorization")
             if not did:
-                result.error_message = "Failed to get Device ID"
+                result.error_message = "Failed to obtain Device ID"
                 return result
             if not sen_token:
                 result.error_message = "Failed to complete Sentinel POW challenge"
@@ -916,7 +916,7 @@ class RegistrationEngine:
                 self._log("7. Waiting for OTP...")
                 code = self._get_verification_code()
                 if not code:
-                    result.error_message = "Failed to get OTP"
+                    result.error_message = "Failed to obtain OTP"
 
                 self._log("8. Verifying OTP...")
                 if not self._validate_verification_code(code):
