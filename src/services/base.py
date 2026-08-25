@@ -68,7 +68,7 @@ class BaseEmailService(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_verification_code(
+    def get_otp(
         self,
         email: str,
         email_id: str = None,

@@ -114,7 +114,7 @@ class ImapMailService(BaseEmailService):
             "id": self.email_addr,
         }
 
-    def get_verification_code(
+    def get_otp(
         self,
         email: str,
         email_id: str = None,

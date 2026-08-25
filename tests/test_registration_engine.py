@@ -70,7 +70,7 @@ class FakeEmailService(BaseEmailService):
             "service_id": "mailbox-1",
         }
 
-    def get_verification_code(self, email, email_id=None, timeout=120, pattern=r"(?<!\d)(\d{6})(?!\d)", otp_sent_at=None):
+    def get_otp(self, email, email_id=None, timeout=120, pattern=r"(?<!\d)(\d{6})(?!\d)", otp_sent_at=None):
         self.otp_requests.append({
             "email": email,
             "email_id": email_id,
@@ -299,4 +299,4 @@ def test_existing_account_login_uses_auto_sent_otp_without_manual_send():
     assert email_service.otp_requests[0]["otp_sent_at"] is not None
     assert result.metadata["token_acquired_via_relogin"] is False
     assert any("Detected an existing account; switching to the login flow automatically" in entry for entry in result.logs)
-    assert any("Login successful" in entry for entry in result.logs)
+    assert any("Logged in successfully" in entry for entry in result.logs)

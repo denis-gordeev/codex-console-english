@@ -291,7 +291,7 @@ class OutlookService(BaseEmailService):
         self.update_status(True)
         return email_info
 
-    def get_verification_code(
+    def get_otp(
         self,
         email: str,
         email_id: str = None,
@@ -364,7 +364,7 @@ class OutlookService(BaseEmailService):
                     )
 
                     # Find the OTP in the email
-                    code = self.email_parser.find_verification_code_in_emails(
+                    code = self.email_parser.find_otp_in_emails(
                         emails,
                         target_email=email,
                         min_timestamp=min_timestamp,

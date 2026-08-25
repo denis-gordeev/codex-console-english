@@ -262,7 +262,7 @@ class TempMailService(BaseEmailService):
                 raise
             raise EmailServiceError(f"Failed to create email address: {e}")
 
-    def get_verification_code(
+    def get_otp(
         self,
         email: str,
         email_id: str = None,

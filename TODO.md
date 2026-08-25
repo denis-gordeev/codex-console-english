@@ -5,13 +5,25 @@
 - Pulled `origin/main` -- repository was already up to date.
 - Full non-English text scan: zero CJK/Cyrillic content across all tracked source files.
 - Non-ASCII content in source files limited to legitimate exceptions: emojis (UI icons in HTML/JS), `Türkiye` in test assertion.
-- Deep scan for Chinese-English calque patterns -- no new artifacts found in source code.
-- No translatable non-English text found; repository remains fully English.
+- Deep scan for Chinese-English calque patterns -- found and fixed remaining artifacts (see below).
+- Replaced "obtain" → "retrieve" in `src/core/register.py` (10 occurrences): "Failed to obtain Device ID" → "Failed to retrieve Device ID", "Failed to obtain OTP" → "Failed to retrieve OTP", "Failed to obtain Workspace ID" → "Failed to retrieve Workspace ID", "Failed to obtain authorization cookie" → "Failed to retrieve authorization cookie".
+- Renamed all `verification_code` function/method names to `otp` for consistency with docstrings that already use "OTP":
+  - `get_verification_code` → `get_otp` in base.py, tempmail.py, duck_mail.py, outlook_legacy_mail.py, outlook/service.py, temp_mail.py, moe_mail.py, imap_mail.py, freemail.py (9 service files)
+  - `_send_verification_code` → `_send_otp`, `_get_verification_code` → `_get_otp`, `_validate_verification_code` → `_validate_otp` in register.py
+  - `extract_verification_code` → `extract_otp`, `find_verification_code_in_emails` → `find_otp_in_emails` in email_parser.py
+  - `wait_for_verification_code_with_callback` → `wait_for_otp_with_callback` in tempmail.py
+  - Updated all call sites in register.py, accounts.py, outlook/service.py
+  - Updated test names and mock methods in test_duck_mail_service.py, test_registration_engine.py
+  - Preserved external API field `mail.get("verification_code")` in freemail.py (matches external Freemail API schema)
+- Replaced "Login successful" → "Logged in successfully" in register.py and test assertion.
+- Replaced "Verifying the login code..." → "Verifying login OTP..." in register.py for consistency.
+- Fixed JS count patterns: "Import completed, N successful" → "Import completed: N succeeded", "Test completed: successful N, failed N" → "Test completed: N passed, N failed" in settings.js.
 - All 32 tests pass.
 
 ## Next Actions
 
 - Continue monitoring for any newly introduced non-English content from upstream changes.
+- Authenticate `gh` in a future round if issue and PR inspection is required.
 
 ## Completed In This Round (August 24, 2026 - Round 117)
 

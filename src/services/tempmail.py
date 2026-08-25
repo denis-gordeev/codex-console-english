@@ -118,7 +118,7 @@ class TempmailService(BaseEmailService):
                 raise
             raise EmailServiceError(f"Failed to create Tempmail.lol email address: {e}")
 
-    def get_verification_code(
+    def get_otp(
         self,
         email: str,
         email_id: str = None,
@@ -289,7 +289,7 @@ class TempmailService(BaseEmailService):
             logger.error(f"Failed to fetch inbox: {e}")
             return None
 
-    def wait_for_verification_code_with_callback(
+    def wait_for_otp_with_callback(
         self,
         email: str,
         token: str,

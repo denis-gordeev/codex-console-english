@@ -78,7 +78,7 @@ def test_create_email_creates_account_and_fetches_token():
     }
 
 
-def test_get_verification_code_reads_message_detail_and_extracts_code():
+def test_get_otp_reads_message_detail_and_extracts_code():
     service = DuckMailService({
         "base_url": "https://api.duckmail.test",
         "default_domain": "duckmail.sbs",
@@ -124,7 +124,7 @@ def test_get_verification_code_reads_message_detail_and_extracts_code():
     service.http_client = fake_client
 
     email_info = service.create_email()
-    code = service.get_verification_code(
+    code = service.get_otp(
         email=email_info["email"],
         email_id=email_info["service_id"],
         timeout=1,

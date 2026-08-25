@@ -236,12 +236,12 @@ class RegistrationEngine:
                     return did
 
                 self._log(
-                    f"Failed to obtain Device ID: oai-did cookie was not returned (HTTP {response.status_code}, attempt {attempt}/{max_attempts})",
+                    f"Failed to retrieve Device ID: oai-did cookie was not returned (HTTP {response.status_code}, attempt {attempt}/{max_attempts})",
                     "warning" if attempt < max_attempts else "error"
                 )
             except Exception as e:
                 self._log(
-                    f"Failed to obtain Device ID: {e} (attempt {attempt}/{max_attempts})",
+                    f"Failed to retrieve Device ID: {e} (attempt {attempt}/{max_attempts})",
                     "warning" if attempt < max_attempts else "error"
                 )
 
@@ -456,20 +456,20 @@ class RegistrationEngine:
     def _complete_token_exchange(self, result: RegistrationResult) -> bool:
         """Once logged in, complete workspace and OAuth token retrieval."""
         self._log("Waiting for login OTP...")
-        code = self._get_verification_code()
+        code = self._get_otp()
         if not code:
-            result.error_message = "Failed to obtain OTP"
+            result.error_message = "Failed to retrieve OTP"
             return False
 
-        self._log("Verifying the login code...")
-        if not self._validate_verification_code(code):
+        self._log("Verifying login OTP...")
+        if not self._validate_otp(code):
             result.error_message = "Failed to validate OTP"
             return False
 
         self._log("Fetching Workspace ID...")
         workspace_id = self._get_workspace_id()
         if not workspace_id:
-            result.error_message = "Failed to obtain Workspace ID"
+            result.error_message = "Failed to retrieve Workspace ID"
             return False
 
         result.workspace_id = workspace_id
@@ -515,7 +515,7 @@ class RegistrationEngine:
 
         did, sen_token = self._prepare_authorize_flow("Relogin")
         if not did:
-            return False, "Failed to obtain Device ID during re-login"
+            return False, "Failed to retrieve Device ID during re-login"
         if not sen_token:
             return False, "Sentinel POW challenge failed during re-login"
 
@@ -605,7 +605,7 @@ class RegistrationEngine:
         except Exception as e:
             logger.warning(f"Failed to mark email address status: {e}")
 
-    def _send_verification_code(self) -> bool:
+    def _send_otp(self) -> bool:
         """Send the OTP."""
         try:
             # Record the send timestamp
@@ -626,13 +626,13 @@ class RegistrationEngine:
             self._log(f"Failed to send OTP: {e}", "error")
             return False
 
-    def _get_verification_code(self) -> Optional[str]:
+    def _get_otp(self) -> Optional[str]:
         """Fetch the OTP."""
         try:
             self._log(f"Waiting for the OTP for {self.email}...")
 
             email_id = self.email_info.get("service_id") if self.email_info else None
-            code = self.email_service.get_verification_code(
+            code = self.email_service.get_otp(
                 email=self.email,
                 email_id=email_id,
                 timeout=120,
@@ -648,10 +648,10 @@ class RegistrationEngine:
                 return None
 
         except Exception as e:
-            self._log(f"Failed to obtain OTP: {e}", "error")
+            self._log(f"Failed to retrieve OTP: {e}", "error")
             return None
 
-    def _validate_verification_code(self, code: str) -> bool:
+    def _validate_otp(self, code: str) -> bool:
         """Validate the OTP."""
         try:
             code_body = f'{{"code":"{code}"}}'
@@ -707,7 +707,7 @@ class RegistrationEngine:
         try:
             auth_cookie = self.session.cookies.get("oai-client-auth-session")
             if not auth_cookie:
-                self._log("Failed to obtain authorization cookie", "error")
+                self._log("Failed to retrieve authorization cookie", "error")
                 return None
 
             # Decode JWT
@@ -744,7 +744,7 @@ class RegistrationEngine:
                 return None
 
         except Exception as e:
-            self._log(f"Failed to obtain Workspace ID: {e}", "error")
+            self._log(f"Failed to retrieve Workspace ID: {e}", "error")
             return None
 
     def _select_workspace(self, workspace_id: str) -> Optional[str]:
@@ -887,7 +887,7 @@ class RegistrationEngine:
             # 3. Prepare for the first authorization round
             did, sen_token = self._prepare_authorize_flow("First authorization")
             if not did:
-                result.error_message = "Failed to obtain Device ID"
+                result.error_message = "Failed to retrieve Device ID"
                 return result
             if not sen_token:
                 result.error_message = "Failed to complete Sentinel POW challenge"
@@ -910,16 +910,16 @@ class RegistrationEngine:
                     return result
 
                 self._log("6. Send registration OTP...")
-                if not self._send_verification_code():
+                if not self._send_otp():
                     result.error_message = "Failed to send OTP"
 
                 self._log("7. Waiting for OTP...")
-                code = self._get_verification_code()
+                code = self._get_otp()
                 if not code:
-                    result.error_message = "Failed to obtain OTP"
+                    result.error_message = "Failed to retrieve OTP"
 
                 self._log("8. Verifying OTP...")
-                if not self._validate_verification_code(code):
+                if not self._validate_otp(code):
                     result.error_message = "Failed to validate OTP"
                     return result
 
@@ -939,7 +939,7 @@ class RegistrationEngine:
             # 10. Complete
             self._log("=" * 60)
             if self._is_existing_account:
-                self._log("Login successful")
+                self._log("Logged in successfully")
             else:
                 self._log("Registration complete")
             self._log(f"Email: {result.email}")

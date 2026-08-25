@@ -1051,7 +1051,7 @@ async def get_account_inbox_code(account_id: int):
 
         try:
             svc = EmailServiceFactory.create(service_type, config)
-            code = svc.get_verification_code(
+            code = svc.get_otp(
                 account.email,
                 email_id=account.email_service_id,
                 timeout=12

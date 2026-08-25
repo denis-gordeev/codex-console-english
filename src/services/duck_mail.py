@@ -228,7 +228,7 @@ class DuckMailService(BaseEmailService):
         self.update_status(True)
         return email_info
 
-    def get_verification_code(
+    def get_otp(
         self,
         email: str,
         email_id: str = None,

@@ -64,7 +64,7 @@ class EmailParser:
         logger.debug(f"Identified as OpenAI verification email: {subject[:50]}")
         return True
 
-    def extract_verification_code(
+    def extract_otp(
         self,
         email: EmailMessage,
     ) -> Optional[str]:
@@ -123,7 +123,7 @@ class EmailParser:
             return match.group(1)
         return None
 
-    def find_verification_code_in_emails(
+    def find_otp_in_emails(
         self,
         emails: List[EmailMessage],
         target_email: Optional[str] = None,
@@ -156,7 +156,7 @@ class EmailParser:
                 continue
 
             # Extract OTP
-            code = self.extract_verification_code(email)
+            code = self.extract_otp(email)
             if code:
                 # Deduplication check
                 if code in used_codes:

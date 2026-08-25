@@ -738,7 +738,7 @@ async function handleOutlookBatchImport() {
             </div>
         `;
 
-        toast.success(`Import completed, ${successCount} successful`);
+        toast.success(`Import completed: ${successCount} succeeded`);
         loadEmailServices();
 
     } catch (error) {
@@ -966,7 +966,7 @@ async function handleTestAllProxies() {
 
     try {
         const result = await api.post('/settings/proxies/test-all');
-        toast.info(`Test completed: successful ${result.success}, failed ${result.failed}`);
+        toast.info(`Test completed: ${result.success} passed, ${result.failed} failed`);
         loadProxies();
     } catch (error) {
         toast.error('Failed to test: ' + error.message);
